@@ -1,0 +1,13 @@
+rootProject.name = 'marmot.sample'
+
+def commonDir = file('../../../common')
+['utils'].each {
+	include ":$it"
+	project(":$it").projectDir = file("$commonDir/$it")
+}
+
+def marmotDir = file('../..')
+['marmot.api', 'marmot.client'].each {
+	include ":$it"
+	project(":$it").projectDir = file("$marmotDir/$it")
+}
