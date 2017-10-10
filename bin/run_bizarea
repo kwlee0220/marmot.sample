@@ -1,0 +1,7 @@
+#!	/bin/bash
+
+./run_sample bizarea.Step0
+./run_sample bizarea.Step1Building
+./run_sample bizarea.Step1CardSales
+./run_sample bizarea.Step1FlowPop
+./run_sample bizarea.Step2

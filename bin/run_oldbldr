@@ -1,0 +1,6 @@
+#!	/bin/bash
+
+./run_sample oldbldr.Step0
+./run_sample oldbldr.Step1Buildings
+./run_sample oldbldr.Step1CardSales
+./run_sample oldbldr.Step1FlowPop

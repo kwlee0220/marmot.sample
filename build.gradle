@@ -1,0 +1,67 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'etri'
+version = '1.2'
+
+sourceCompatibility = JavaVersion.VERSION_1_8;
+[compileJava,compileTestJava]*.options*.encoding = 'UTF-8'
+
+repositories {
+    mavenLocal()
+	maven {
+		url "http://www.datanucleus.org/downloads/maven2/"
+	}
+	maven {
+		url "http://download.osgeo.org/webdav/geotools/"
+	}
+    mavenCentral()
+    maven {
+    	name = 'dist'
+    	url = "file:${distRepositoryDir}"
+    }
+}
+
+dependencies {
+//	compile 'etri:marmot.client:1.1'
+//	compile project(':marmot.client')
+	compile files("$System.env.MARMOT_CLIENT_HOME/bin/marmot.client.jar")
+}
+
+task sourceJar(type: Jar) {
+	classifier 'sources'
+	from sourceSets.main.allSource
+}
+
+javadoc {
+	options.charSet = 'UTF-8'
+}
+task javadocJar(type: Jar) {
+	classifier 'javadoc'
+	from javadoc.destinationDir
+}
+
+artifacts {
+	archives sourceJar
+	archives javadocJar
+}
+
+uploadArchives {
+	repositories {
+		mavenDeployer {
+			repository(url: "file:${distRepositoryDir}")
+		}
+	}
+}
+
+apply plugin: 'eclipse'
+eclipse {
+	classpath {
+		file {
+			withXml {
+				def node = it.asNode()
+				node.appendNode('classpathentry', [kind: 'output', path: 'classes'])
+			}
+		}
+	}
+}

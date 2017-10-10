@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor>
+	<charset>utf-8</charset>
+	<record_schema>
+		<column name="the_geom" type="point"/>
+		<column name="id" type="string"/>
+		<column name="created_time" type="datetime"/>
+		<column name="images_standard_resolution_url" type="string"/>
+		<column name="images_low_resolution_url" type="string"/>
+		<column name="images_thumbnail_url" type="string"/>
+		<column name="caption_text" type="string"/>
+		<column name="location_id" type="string"/>
+		<column name="location_name" type="string"/>
+		<column name="tags" type="string"/>
+	</record_schema>
+	<script_descriptor>
+		<script><![CDATA[
+			json = ST_ParseJSON(text);
+
+			$.id = json.id;
+			$.created_time = ST_DTFromEpocMillis(json.created_time);
+			$.images_standard_resolution_url = json.images.standard_resolution.url;
+			$.images_low_resolution_url = json.images.low_resolution.url;
+			$.images_thumbnail_url = json.images.thumbnail.url;
+			if ( json.caption != null ) {
+				$.caption_text = json.caption.text;
+			}
+			$.location_id = json.location.?id;
+			$.location_name = json.location.?name;
+			$.the_geom = ST_Point(json.location.longitude, json.location.latitude);
+			$.tags = json.tags;
+			
+			return true;
+		]]></script>
+	</script_descriptor>
+</descriptor>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor>
+	<charset>utf-8</charset>
+	<record_schema>
+		<column name="the_geom" type="point"/>
+		<column name="id" type="long"/>
+		<column name="id_str" type="string"/>
+		<column name="created_at" type="datetime"/>
+		<column name="source" type="string"/>
+		<column name="in_reply_to_status_id" type="long"/>
+		<column name="in_reply_to_user_id" type="long"/>
+		<column name="in_reply_to_user_id_str" type="string"/>
+		<column name="in_reply_to_screen_name" type="string"/>
+		<column name="user_id" type="long"/>
+		<column name="user_id_str" type="string"/>
+		<column name="user_location" type="string"/>
+		<column name="user_description" type="string"/>
+		<column name="user_created_at" type="string"/>
+		<column name="user_followers_count" type="int"/>
+		<column name="user_friends_count" type="int"/>
+		<column name="user_listed_count" type="int"/>
+		<column name="user_favourites_count" type="int"/>
+		<column name="user_statuses_count" type="int"/>
+		<column name="user_utc_offset" type="int"/>
+		<column name="user_time_zone" type="string"/>
+		<column name="user_geo_enabled" type="boolean"/>
+		<column name="user_lang" type="string"/>
+		<column name="user_contributors_enabled" type="boolean"/>
+		<column name="user_is_translator" type="boolean"/>
+		<column name="user_profile_background_image_url" type="string"/>
+		<column name="user_profile_image_url" type="string"/>
+		<column name="user_following" type="boolean"/>
+		<column name="user_follow_request_sent" type="int"/>
+		<column name="user_notifications" type="boolean"/>
+		<column name="text" type="string"/>
+		<column name="coordinates" type="point"/>
+		<column name="place_id" type="string"/>
+		<column name="place_country" type="string"/>
+		<column name="place_country_code" type="string"/>
+		<column name="place_place_type" type="string"/>
+		<column name="place_name" type="string"/>
+		<column name="place_full_name" type="string"/>
+		<column name="place_url" type="string"/>
+		<column name="contributors" type="string"/>
+		<column name="retweet_count" type="int"/>
+		<column name="favorite_count" type="int"/>
+		<column name="favorited" type="boolean"/>
+		<column name="retweeted" type="boolean"/>
+		<column name="possibly_sensitive" type="boolean"/>
+	</record_schema>
+	<script_initializer>
+		<imports>
+			<import class="java.time.LocalDateTime"/>
+			<import class="java.time.format.DateTimeFormatter"/>
+			<import class="java.util.Locale"/>
+		</imports>
+		<script><![CDATA[
+			$formatter = DateTimeFormatter.ofPattern("MMM dd HH:mm:ss Z yyyy", Locale.US);
+		]]></script>
+	</script_initializer>
+	<script_descriptor>
+		<imports>
+			<import class="java.time.LocalDateTime"/>
+			<import class="java.time.format.DateTimeFormatter"/>
+		</imports>
+		<script><![CDATA[
+			json = ST_ParseJSON(text);
+
+			$.id = json.id;
+			$.id_str = json.id_str;
+			$.created_at = LocalDateTime.parse(json.created_at.substring(4), $formatter);
+			$.source = json.source;
+			$.in_reply_to_status_id = avoid_null(json.in_reply_to_status_id, -1);
+			$.in_reply_to_user_id = avoid_null(json.in_reply_to_user_id, -1);
+			$.in_reply_to_user_id_str = json.in_reply_to_user_id_str;
+			$.in_reply_to_screen_name = json.in_reply_to_screen_name;
+			$.user_id = json.user.id;
+			$.user_id_str = json.user.id_str;
+			$.user_location = json.user.location;
+			$.user_description = json.user.description;
+			$.user_created_at = json.user.created_at;
+			$.user_followers_count = json.user.followers_count;
+			$.user_friends_count = json.user.friends_count;
+			$.user_listed_count = json.user.listed_count;
+			$.user_favourites_count = json.user.favourites_count;
+			$.user_statuses_count = json.user.statuses_count;
+			$.user_utc_offset = avoid_null(json.user.utc_offset, -1);
+			$.user_time_zone = json.user.time_zone;
+			$.user_geo_enabled = json.user.geo_enabled;
+			$.user_lang = json.user.lang;
+			$.user_contributors_enabled = json.user.contributors_enabled;
+			$.user_is_translator = json.user.is_translator;
+			$.user_profile_background_image_url = json.user.profile_background_image_url;
+			$.user_profile_image_url = json.user.profile_image_url;
+			$.user_following = avoid_null(json.user.following, false);
+			$.user_follow_request_sent = json.user.follow_request_sent;
+			$.user_notifications = avoid_null(json.user.notifications, false);
+			$.text = json.text;
+			if ( json.coordinates != null ) {
+				$.the_geom = ST_GeomFromGeoJSON(json.coordinates);
+			}
+			else {
+				$.the_geom = null;
+			}
+			if ( json.place != null ) {
+				$.place_id  = json.place.id;
+				$.place_country = json.place.?country;
+				$.place_country_code = json.place.?country_code;
+				$.place_place_type = json.place.?place_type;
+				$.place_name  = json.place.name;
+				$.place_full_name  = json.place.full_name;
+				$.place_url = json.place.url;
+			}
+			$.contributors = json.contributors;
+			$.retweet_count = json.retweet_count;
+			$.favorite_count = json.favorite_count;
+			$.favorited = json.favorited;
+			$.retweeted = json.retweeted;
+			$.possibly_sensitive = avoid_null(json.?possibly_sensitive, false);
+			
+			return true;
+		]]></script>
+	</script_descriptor>
+</descriptor>

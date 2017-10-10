@@ -1,0 +1,100 @@
+#!	/bin/bash
+
+echo "basic.*"
+echo "------------------------------------------------------"
+run_sample basic.PrintCatalog; sleep 1
+run_sample basic.SampleAggregate; sleep 1
+run_sample basic.SampleAsyncExecutePlan; sleep 1
+run_sample basic.SampleCancelPlanExecution; sleep 1
+run_sample basic.SampleCreateDataSet; sleep 1
+run_sample basic.SampleExecuteMRPlan; sleep 1
+run_sample basic.SampleExpand; sleep 1
+run_sample basic.SampleExportGeoJson; sleep 1
+run_sample basic.SampleExportShapefile; sleep 1
+run_sample basic.SampleFilter; sleep 1
+run_sample basic.SampleGroupByAggregate; sleep 1
+run_sample basic.SampleImportGeoJson; sleep 1
+run_sample basic.SampleImportShapefile; sleep 1
+run_sample basic.SampleMarmotClient; sleep 1
+run_sample basic.SampleSort; sleep 1
+
+echo "geom.*"
+echo "------------------------------------------------------"
+run_sample geom.SampleAssignSquareGridCell; sleep 1
+run_sample geom.SampleBuffer; sleep 1
+run_sample geom.SampleClipJoin; sleep 1
+run_sample geom.SampleConvexHull; sleep 1
+run_sample geom.SampleDissolve; sleep 1
+run_sample geom.SampleIndexedRangeQuery; sleep 1
+run_sample geom.SampleLoadHexagonGridFile; sleep 1
+run_sample geom.SampleLoadSpatialIndexJoin; sleep 1
+run_sample geom.SampleLoadSquareGridFile; sleep 1
+run_sample geom.SampleSpatialJoin; sleep 1
+run_sample geom.SampleSpatialSemiJoinDistance; sleep 1
+
+echo "geom.advanced.*"
+echo "------------------------------------------------------"
+run_sample geom.advanced.SampleFindGetisOrdGiStar; sleep 1
+run_sample geom.advanced.SampleFindLocalMoranI; sleep 1
+
+echo "demo.*"
+echo "------------------------------------------------------"
+run_sample demo.WeakFireDeathArea; sleep 1
+
+echo "appls.*"
+echo "------------------------------------------------------"
+run_sample appls.FilterInSeoul; sleep 1
+run_sample appls.FindBestSubwayStationCandidates; sleep 1
+run_sample appls.FindLastestLandUsage; sleep 1
+run_sample appls.FireStationService; sleep 1
+
+echo "apttrx.*"
+echo "------------------------------------------------------"
+run_sample apttrx.SummarizeByHighSchoolLong; sleep 1
+run_sample apttrx.SummarizeByHighSchoolShort; sleep 1
+run_sample apttrx.SummarizeBySgg; sleep 1
+
+echo "bizarea.*"
+echo "------------------------------------------------------"
+run_sample bizarea.Step0; sleep 1
+run_sample bizarea.Step1Building; sleep 1
+run_sample bizarea.Step1CardSales; sleep 1
+run_sample bizarea.Step1FlowPop; sleep 1
+run_sample bizarea.Step2; sleep 1
+
+echo "carloc.*"
+echo "------------------------------------------------------"
+run_sample carloc.CalcHeapMap; sleep 1
+run_sample carloc.FindBestRoadsForPickup; sleep 1
+run_sample carloc.FindHotHospitals; sleep 1
+run_sample carloc.FindHotTaxiPlaces; sleep 1
+run_sample carloc.FindLongTaxiTravels; sleep 1
+run_sample carloc.FindPassingStation; sleep 1
+
+echo "oldbldr.*"
+echo "------------------------------------------------------"
+run_sample oldbldr.Step0; sleep 1
+run_sample oldbldr.Step1Building; sleep 1
+run_sample oldbldr.Step1CardSales; sleep 1
+run_sample oldbldr.Step1FlowPop; sleep 1
+
+echo "podo.*"
+echo "------------------------------------------------------"
+run_sample podo.Process; sleep 1
+
+echo "twitter.*"
+echo "------------------------------------------------------"
+run_sample twitter.ImportTweets; sleep 1
+run_sample twitter.CalcSggHistogram; sleep 1
+run_sample twitter.FindByDateTime; sleep 1
+run_sample twitter.FindByEmd; sleep 1
+run_sample twitter.FindByTopKUsers; sleep 1
+run_sample twitter.GroupByWeekDay; sleep 1
+
+echo "yunsei.*"
+echo "------------------------------------------------------"
+run_sample yunsei.Y2S_1; sleep 1
+run_sample yunsei.Y2T_1_2; sleep 1
+run_sample yunsei.Y2T_1; sleep 1
+run_sample yunsei.Y2T_2; sleep 1
+run_sample yunsei.Y3T_1; sleep 1

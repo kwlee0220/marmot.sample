@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor>
+	<charset>utf-8</charset>
+	<update_schema>
+		<column name="the_geom" type="point"/>
+		<column name="car_no" type="string"/>
+		<column name="driver_id" type="int"/>
+		<column name="company" type="string"/>
+		<column name="status" type="byte"/>
+		<column name="ts" type="long"/>
+	</update_schema>
+	<initializer>
+		<script><![CDATA[
+			$pattern = ST_DTPattern('yyyyMMddHHmmss');
+		]]></script>
+	</initializer>
+	<script><![CDATA[
+		if ( text.startsWith("#") ) {
+			return false
+		}
+		
+		$parts = text.split(',');
+		
+		the_geom = ST_Point($parts[9], $parts[10]);
+		car_no = $parts[0];
+		driver_id = (int)$parts[8];
+		company = $parts[7];
+		status = (byte)$parts[6];
+		ts = ST_DTToMillis(ST_DTParseLE($parts[1], $pattern));
+	]]></script>
+</descriptor>
