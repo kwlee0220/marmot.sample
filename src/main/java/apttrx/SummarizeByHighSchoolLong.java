@@ -5,6 +5,7 @@ import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.MAX;
 import static marmot.optor.AggregateFunction.MIN;
 import static marmot.optor.AggregateFunction.SUM;
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -14,7 +15,6 @@ import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
-import marmot.optor.geo.SpatialRelation;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
 import utils.CommandLine;
@@ -64,7 +64,7 @@ public class SummarizeByHighSchoolLong {
 		
 		plan = marmot.planBuilder("summarize_by_school")
 						.load(APT_TRX)
-						
+
 						// 지오코딩을 위해 대상 아파트의 지번주소 구성
 						.expand("addr:string", "addr = 시군구 + ' ' + 번지 + ' ' + 단지명")
 						// 지오코딩과 관련없는 컬럼 제거
@@ -82,7 +82,7 @@ public class SummarizeByHighSchoolLong {
 						// 고등학교 주변 1km 내의 아파트 검색.
 						.centroid("the_geom", "the_geom")
 						.buffer("the_geom", "circle", 1000)
-						.spatialJoin("circle", HIGH_SCHOOLS, SpatialRelation.INTERSECTS,
+						.spatialJoin("circle", HIGH_SCHOOLS, INTERSECTS,
 									String.format("*-{the_geom},param.{%s,id,name}",geomCol))
 						
 						// 고등학교 1km내 위치에 해당하는 아파트 거래 정보를 검색.
