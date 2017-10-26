@@ -4,9 +4,9 @@ import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.command.MarmotCommands;
-import marmot.geo.GeoJsonRecordSetWriter;
 import marmot.remote.RemoteMarmotConnector;
 import marmot.remote.robj.MarmotClient;
+import marmot.rset.GeoJsonRecordSetWriter;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
