@@ -6,7 +6,6 @@ import static marmot.optor.AggregateFunction.SUM;
 import static marmot.optor.JoinType.OUTER_JOIN;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -39,15 +38,18 @@ public class FindBestSubwayStationCandidates {
 	private static final String TAXI_LOG = "로그/나비콜/택시로그";
 	private static final String FLOW_POP_BYTIME = "주민/유동인구/월별_시간대/2015";
 	private static final String STATIONS = "교통/지하철/역사";
-	private static final String TEMP_STATIONS = "분석결과/지하철역사_버퍼_그리드";
-	private static final String TEMP_SEOUL_TAXI_LOG = "분석결과/역사외_지역/택시로그";
-	private static final String TEMP_SEOUL_FLOW_POP = "분석결과/역사외_지역/유동인구";
-	private static final String TEMP_FLOW_POP = "분석결과/후보그리드/유동인구";
-	private static final String TEMP_TAXI_LOG = "분석결과/후보그리드/택시로그";
 	private static final String RESULT = "분석결과/최종결과";
 	private static final String GEOM_COL = "the_geom";
 	private static final String SRID = "EPSG:5186";
 	private static final DimensionDouble CELL_SIZE = new DimensionDouble(500, 500);
+	
+	private static final String TEMP_STATIONS = "분석결과/지하철역사_버퍼_그리드";
+	private static final String TEMP_SEOUL_TAXI_LOG = "분석결과/역사외_지역/택시로그/집계";
+	private static final String TEMP_SEOUL_TAXI_LOG_GRID = "분석결과/역사외_지역/택시로그/그리드별_집계";
+	private static final String TEMP_SEOUL_FLOW_POP_BLOCK = "분석결과/역사외_지역/유동인구/소지역별_집계";
+	private static final String TEMP_SEOUL_FLOW_POP_GRID = "분석결과/역사외_지역/유동인구/그리드별_집계";
+	private static final String TEMP_FLOW_POP = "분석결과/후보그리드/유동인구";
+	private static final String TEMP_TAXI_LOG = "분석결과/후보그리드/택시로그";
 	
 	public static final void main(String... args) throws Exception {
 //		PropertyConfigurator.configure("log4j.properties");
@@ -92,7 +94,7 @@ public class FindBestSubwayStationCandidates {
 					+ "}"
 					+ "portion = portion + param_portion;";
 		
-		plan = marmot.planBuilder("combine")
+		plan = marmot.planBuilder("그리드 셀단위 유동인구 비율과 택시 승하차 로그 비율 합계 계산")
 					.load(TEMP_FLOW_POP)
 					.join("cell_id", TEMP_TAXI_LOG, "cell_id",
 							"the_geom,cell_id,portion,"
@@ -109,9 +111,12 @@ public class FindBestSubwayStationCandidates {
 		marmot.execute(plan);
 		watch.stop();
 		
-		marmot.deleteDataSet(TEMP_FLOW_POP);
-		marmot.deleteDataSet(TEMP_TAXI_LOG);
-		marmot.deleteDataSet(TEMP_STATIONS);
+		System.out.printf("종료: 그리드 셀단위 유동인구 비율과 택시 승하차 로그 비율 합계, output=%s, elapsed=%s%n",
+						RESULT, watch.getElapsedTimeString());
+		
+//		marmot.deleteDataSet(TEMP_FLOW_POP);
+//		marmot.deleteDataSet(TEMP_TAXI_LOG);
+//		marmot.deleteDataSet(TEMP_STATIONS);
 
 		SampleUtils.printPrefix(result, 5);
 		System.out.println("elapsed: " + watch.getElapsedTimeString());
@@ -149,8 +154,8 @@ public class FindBestSubwayStationCandidates {
 		DataSet result = marmot.createDataSet(output, schema, geomCol, srid, true);
 		marmot.execute(plan);
 		
-		System.out.println("종료: 서울지역 지하철역사 1KM 버퍼, "
-							+ "elapsed=" + watch.getElapsedTimeString());
+		System.out.printf("종료: 서울지역 지하철역사 1KM 버퍼, output=%s, elapsed=%s%n",
+							output, watch.getElapsedTimeString());
 		
 		return result;
 	}
@@ -163,7 +168,6 @@ public class FindBestSubwayStationCandidates {
 		String geomCol = input.getGeometryColumn();
 		String srid = input.getSRID();
 
-		String tmpDs = "tmp/" + UUID.randomUUID().toString();
 		Envelope bounds = seoul.getEnvelopeInternal();
 		String sumExpr = IntStream.range(0, 24)
 									.mapToObj(idx -> String.format("avg_%02dtmst", idx))
@@ -175,7 +179,7 @@ public class FindBestSubwayStationCandidates {
 								.collect(Collectors.joining());
 		
 		RecordSchema schema;
-		plan = marmot.planBuilder("서울 지하철 역사외 소지역별 유동인구 집계")
+		plan = marmot.planBuilder("소지역단위 유동인구 집계")
 					// 서울시 영역만 추출한다.
 					.load(FLOW_POP_BYTIME, INTERSECTS, seoul)
 					// 모든 지하철 역사로부터 1km 이상 떨어진 로그 데이터만 선택한다.
@@ -189,41 +193,48 @@ public class FindBestSubwayStationCandidates {
 					.groupBy("block_cd")
 						.taggedKeyColumns(geomCol)
 						.aggregate(AVG("avg"))
-					.store(TEMP_SEOUL_FLOW_POP)
+					.store(TEMP_SEOUL_FLOW_POP_BLOCK)
 					.build();
 		
-		schema = marmot.getOutputRecordSchema(plan);
-		marmot.createDataSet(TEMP_SEOUL_FLOW_POP, schema, geomCol, srid, true);
-		marmot.execute(plan);
-		System.out.println("종료: 서울 지하철 역사외 소지역별 유동인구 집계, elapsed=" + watch.getElapsedTimeString());
-
-		watch = StopWatch.start();
-		plan = marmot.planBuilder("그리드 셀단위 유동인구 집계")
-					.load(TEMP_SEOUL_FLOW_POP)
-					// 각 로그 위치가 포함된 사각 셀을  부가한다.
-					.assignSquareGridCell(geomCol, bounds, CELL_SIZE)
-					.project("cell_geom as the_geom, cell_id, cell_pos, avg")
-					// 사각 그리드 셀 단위로 그룹핑하고, 각 그룹에 속한 유동인구를 모두 더한다.
-					.groupBy("cell_id")
-						.taggedKeyColumns("the_geom")
-						.aggregate(SUM("avg").as("avg"))
-					.store(tmpDs)
-					.build();
 		try {
 			schema = marmot.getOutputRecordSchema(plan);
-			marmot.createDataSet(tmpDs, schema, GEOM_COL, srid, true);
+			marmot.createDataSet(TEMP_SEOUL_FLOW_POP_BLOCK, schema, geomCol, srid, true);
 			marmot.execute(plan);
 			
+			System.out.printf("종료: 소지역단위 유동인구 집계, output=%s, elapsed=%s%n",
+							TEMP_SEOUL_FLOW_POP_BLOCK, watch.getElapsedTimeString());
+	
+			watch = StopWatch.start();
+			plan = marmot.planBuilder("그리드 셀단위 유동인구 집계")
+						.load(TEMP_SEOUL_FLOW_POP_BLOCK)
+						// 각 로그 위치가 포함된 사각 셀을  부가한다.
+						.assignSquareGridCell(geomCol, bounds, CELL_SIZE)
+						.project("cell_geom as the_geom, cell_id, cell_pos, avg")
+						// 사각 그리드 셀 단위로 그룹핑하고, 각 그룹에 속한 유동인구를 모두 더한다.
+						.groupBy("cell_id")
+							.taggedKeyColumns("the_geom")
+							.aggregate(SUM("avg").as("avg"))
+						.store(TEMP_SEOUL_FLOW_POP_GRID)
+						.build();
+			schema = marmot.getOutputRecordSchema(plan);
+			marmot.createDataSet(TEMP_SEOUL_FLOW_POP_GRID, schema, GEOM_COL, srid, true);
+			marmot.execute(plan);
+			System.out.printf("종료: 그리드 셀단위 유동인구 집계, output=%s, elapsed=%s%n",
+								TEMP_SEOUL_FLOW_POP_GRID, watch.getElapsedTimeString());
+
+			watch = StopWatch.start();
 			AttachPortionParameters params = new AttachPortionParameters();
-			params.inputDataset(tmpDs);
+			params.inputDataset(TEMP_SEOUL_FLOW_POP_GRID);
 			params.outputDataset(output);
 			params.inputFeatureColumns("avg");
 			params.outputFeatureColumns("portion");
 			marmot.executeProcess("attach_portion", params.toMap());
-			System.out.println("종료: 그리드 셀단위 유동인구 집계, elapsed=" + watch.getElapsedTimeString());
+			System.out.printf("종료: 그리드 셀단위 유동인구 비율 계산, output=%s, elapsed=%s%n",
+								output, watch.getElapsedTimeString());
 		}
 		finally {
-			marmot.deleteDataSet(tmpDs);
+//			marmot.deleteDataSet(TEMP_SEOUL_FLOW_POP_BLOCK);
+//			marmot.deleteDataSet(TEMP_SEOUL_FLOW_POP_GRID);
 		}
 	}
 	
@@ -237,9 +248,8 @@ public class FindBestSubwayStationCandidates {
 		StopWatch watch = StopWatch.start();
 		
 		// 택시 운행 로그 기록에서 성울시 영역부분에서 승하차 로그 데이터만 추출한다.
-		String tmpDs = "tmp/" + UUID.randomUUID().toString();
 		Envelope bounds = seoul.getEnvelopeInternal();
-		plan = marmot.planBuilder("서울 지하철 역사외 택시승하차 로그")
+		plan = marmot.planBuilder("택시승하차 로그 집계")
 					// 택시 로그를  읽는다.
 					.load(TAXI_LOG)
 					// 승하차 로그만 선택한다.
@@ -254,10 +264,10 @@ public class FindBestSubwayStationCandidates {
 		RecordSchema schema = marmot.getOutputRecordSchema(plan);
 		marmot.createDataSet(TEMP_SEOUL_TAXI_LOG, schema, geomCol, srid, true);
 		marmot.execute(plan);
-		System.out.println("종료: 서울 지하철 역사외 택시승하차 로그, elapsed=" + watch.getElapsedTimeString());
+		System.out.println("종료: 택시승하차 로그 집계, elapsed=" + watch.getElapsedTimeString());
 					
 		watch = StopWatch.start();
-		plan = marmot.planBuilder("그리드 셀단위 택시승하차 로그 수집")
+		plan = marmot.planBuilder("그리드 셀단위 택시승하차 로그 집계")
 					.load(TEMP_SEOUL_TAXI_LOG)
 					// 각 로그 위치가 포함된 사각 셀을  부가한다.
 					.assignSquareGridCell(geomCol, bounds, CELL_SIZE)
@@ -267,23 +277,27 @@ public class FindBestSubwayStationCandidates {
 						.taggedKeyColumns("the_geom")
 						.aggregate(COUNT())
 						
-					.store(tmpDs)
+					.store(TEMP_SEOUL_TAXI_LOG_GRID)
 					.build();
 		try {
 			schema = marmot.getOutputRecordSchema(plan);
-			marmot.createDataSet(tmpDs, schema, GEOM_COL, srid, true);
+			marmot.createDataSet(TEMP_SEOUL_TAXI_LOG_GRID, schema, GEOM_COL, srid, true);
 			marmot.execute(plan);
+			System.out.printf("종료: 그리드 셀단위 택시승하차 로그 집계, output=%s, elapsed=%s%n",
+								TEMP_SEOUL_TAXI_LOG_GRID, watch.getElapsedTimeString());
 			
 			AttachPortionParameters params = new AttachPortionParameters();
-			params.inputDataset(tmpDs);
+			params.inputDataset(TEMP_SEOUL_TAXI_LOG_GRID);
 			params.outputDataset(output);
 			params.inputFeatureColumns("count");
 			params.outputFeatureColumns("portion");
 			marmot.executeProcess("attach_portion", params.toMap());
-			System.out.println("종료: 그리드 셀단위 택시승하차 로그 수집, elapsed=" + watch.getElapsedTimeString());
+			System.out.printf("종료: 그리드 셀단위 택시승하차 로그비율 계산, output=%s, elapsed=%s%n",
+								output, watch.getElapsedTimeString());
 		}
 		finally {
-			marmot.deleteDataSet(tmpDs);
+//			marmot.deleteDataSet(TEMP_SEOUL_TAXI_LOG);
+//			marmot.deleteDataSet(TEMP_SEOUL_TAXI_LOG_GRID);
 		}
 	}
 }
