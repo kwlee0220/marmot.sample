@@ -24,8 +24,8 @@ repositories {
 
 dependencies {
 //	compile 'etri:marmot.client:1.1'
-	compile project(':marmot.client')
-//	compile files("$System.env.MARMOT_CLIENT_HOME/bin/marmot.client.jar")
+//	compile project(':marmot.client')
+	compile files("$System.env.MARMOT_CLIENT_HOME/bin/marmot.client.jar")
 }
 
 task sourceJar(type: Jar) {
