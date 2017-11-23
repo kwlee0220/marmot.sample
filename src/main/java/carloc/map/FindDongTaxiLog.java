@@ -1,10 +1,9 @@
-package carloc;
+package carloc.map;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
 import marmot.RecordSchema;
@@ -19,15 +18,9 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class MapMatchingTaxiLog {
-	private static final String EMD = "구역/읍면동";
-	private static final String TAXI_LOG = "로그/나비콜/택시로그";
-//	private static final String TAXI_LOG_DONG = "tmp/택시로그_동";
-	private static final String TAXI_LOG_DONG = TAXI_LOG;
-	private static final String ROADS = "교통/도로/링크";
-	private static final String RESULT = "tmp/result";
-	private static final double DISTANCE = 10;
-	private static final String DONG = "방배동";
+public class FindDongTaxiLog {
+	private static final String INPUT = Globals.TAXI_LOG;
+	private static final String RESULT = Globals.TAXI_LOG_DONG;
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -50,47 +43,21 @@ public class MapMatchingTaxiLog {
 		RemoteMarmotConnector connector = new RemoteMarmotConnector();
 		MarmotClient marmot = connector.connect(host, port);
 		
-		// 관악구내 로그만 추출
-//		projectToDong(marmot);
+		Geometry guBoundary = getDongBoundary(marmot, Globals.DONG);
 		
-		DataSet input = marmot.getDataSet(TAXI_LOG_DONG);
-		String geomCol = input.getGeometryColumn();
-		String srid = input.getSRID();
-		
-		Plan plan;
-		plan = marmot.planBuilder("택시로그_맵_매핑")
-					.load(TAXI_LOG_DONG)
-					.mapMatchingJoin(geomCol, ROADS, geomCol, DISTANCE, "")
-					.store(RESULT)
-					.build();
-
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(RESULT, schema, geomCol, srid, true);
-		marmot.execute(plan);
-		watch.stop();
-
-		SampleUtils.printPrefix(result, 5);
-		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
-	}
-	
-	private static final void projectToDong(MarmotClient marmot) throws Exception {
-		StopWatch watch = StopWatch.start();
-		
-		Geometry guBoundary = getDongBoundary(marmot, DONG);
-		
-		DataSet input = marmot.getDataSet(TAXI_LOG);
+		DataSet input = marmot.getDataSet(INPUT);
 		String geomCol = input.getGeometryColumn();
 		String srid = input.getSRID();
 		
 		Plan plan;
 		plan = marmot.planBuilder("동내_로그_추출")
-					.load(TAXI_LOG)
+					.load(INPUT)
 					.intersects(geomCol, guBoundary)
-					.store(TAXI_LOG_DONG)
+					.store(RESULT)
 					.build();
 
 		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(TAXI_LOG_DONG, schema, geomCol, srid, true);
+		DataSet result = marmot.createDataSet(RESULT, schema, geomCol, srid, true);
 		marmot.execute(plan);
 		watch.stop();
 
@@ -102,7 +69,7 @@ public class MapMatchingTaxiLog {
 		throws Exception {
 		String predicate = String.format("emd_kor_nm == '%s'", dongName);
 		Plan plan = marmot.planBuilder("filter")
-							.load(EMD)
+							.load(Globals.EMD)
 							.filter(predicate)
 							.project("the_geom")
 							.build();

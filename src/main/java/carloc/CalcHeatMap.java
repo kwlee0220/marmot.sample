@@ -42,10 +42,10 @@ public class CalcHeatMap {
 														envl.getHeight() / 50);
 		
 		Plan plan = marmot.planBuilder("calc_heat_map")
-								.loadSquareGridFile(envl, cellSize, 32)
-								.aggregateJoin("the_geom", TAXI_LOG, INTERSECTS, COUNT())
-								.store(RESULT)
-								.build();
+							.loadSquareGridFile(envl, cellSize, 32)
+							.aggregateJoin("the_geom", TAXI_LOG, INTERSECTS, COUNT())
+							.store(RESULT)
+							.build();
 		
 		RecordSchema schema = marmot.getOutputRecordSchema(plan);
 		DataSet result = marmot.createDataSet(RESULT, schema, "the_geom", srid, true);

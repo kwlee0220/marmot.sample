@@ -64,17 +64,18 @@ run_sample bizarea.Step2; sleep 1
 
 echo "carloc.*"
 echo "------------------------------------------------------"
-run_sample carloc.CalcHeapMap; sleep 1
+run_sample carloc.CalcHeatMap; sleep 1
 run_sample carloc.FindBestRoadsForPickup; sleep 1
 run_sample carloc.FindHotHospitals; sleep 1
 run_sample carloc.FindHotTaxiPlaces; sleep 1
 run_sample carloc.FindLongTaxiTravels; sleep 1
 run_sample carloc.FindPassingStation; sleep 1
+run_sample carloc.MapMatchingTaxiLog; sleep 1
 
 echo "oldbldr.*"
 echo "------------------------------------------------------"
 run_sample oldbldr.Step0; sleep 1
-run_sample oldbldr.Step1Building; sleep 1
+run_sample oldbldr.Step1Buildings; sleep 1
 run_sample oldbldr.Step1CardSales; sleep 1
 run_sample oldbldr.Step1FlowPop; sleep 1
 
