@@ -44,7 +44,7 @@ public class SampleMarmotClient {
 		//
 		ds = marmot.getDataSet("교통/지하철/서울역사");
 		try ( RecordSet rset = ds.read() ) {
-			rset.take(5).forEach(System.out::println);
+			rset.stream().limit(5).forEach(System.out::println);
 		}
 		
 		Plan plan;
