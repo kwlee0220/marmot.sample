@@ -6,12 +6,11 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
 import marmot.optor.geo.SpatialRelation;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -42,8 +41,7 @@ public class FindByEmd {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		// 강남구의 행정 영역 정보를 획득한다.
 		Geometry border = getBorder(marmot);
@@ -62,10 +60,7 @@ public class FindByEmd {
 							// 검색된 레코드를 'OUTPUT_LAYER' 레이어에 저장시킨다.
 							.store(RESULT)
 							.build();
-
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(RESULT, schema, "the_geom", info.getSRID(), true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(RESULT, "the_geom", info.getSRID(), plan, true);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
@@ -74,7 +69,7 @@ public class FindByEmd {
 	}
 
 	private static final String EMD = "구역/읍면동";
-	private static Geometry getBorder(MarmotClient marmot) throws Exception {
+	private static Geometry getBorder(MarmotRuntime marmot) throws Exception {
 		// '읍면동 행정구역' 레이어에서 강남구 행정 영역 정보를 검색하는 프로그램을 구성한다.
 		//
 		Plan plan = marmot.planBuilder("find_emd")

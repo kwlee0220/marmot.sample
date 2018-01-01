@@ -11,11 +11,13 @@ import com.vividsolutions.jts.geom.Polygon;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
+import marmot.command.MarmotCommands;
 import marmot.geo.GeoClientUtils;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
+import utils.CommandLine;
+import utils.CommandLineParser;
 import utils.DimensionDouble;
+import utils.StopWatch;
 
 /**
  * 
@@ -29,9 +31,22 @@ public class CalcHeatMap {
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
+		CommandLineParser parser = new CommandLineParser("mc_list_records ");
+		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
+		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
+		
+		CommandLine cl = parser.parseArgs(args);
+		if ( cl.hasOption("help") ) {
+			cl.exitWithUsage(0);
+		}
+
+		String host = MarmotCommands.getMarmotHost(cl);
+		int port = MarmotCommands.getMarmotPort(cl);
+		
+		StopWatch watch = StopWatch.start();
+		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect("localhost", 12985);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet border = marmot.getDataSet(SEOUL);
 		String srid = border.getSRID();
@@ -43,13 +58,14 @@ public class CalcHeatMap {
 		
 		Plan plan = marmot.planBuilder("calc_heat_map")
 							.loadSquareGridFile(envl, cellSize, 32)
-							.aggregateJoin("the_geom", TAXI_LOG, INTERSECTS, COUNT())
+							.spatialJoin("the_geom", TAXI_LOG, INTERSECTS, "*")
+							.groupBy("cell_id")
+								.taggedKeyColumns("the_geom")
+								.aggregate(COUNT())
+//							.aggregateJoin("the_geom", TAXI_LOG, INTERSECTS, COUNT())
 							.store(RESULT)
 							.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(RESULT, schema, "the_geom", srid, true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(RESULT, "the_geom", srid, plan, true);
 		
 		SampleUtils.printPrefix(result, 5);
 	}

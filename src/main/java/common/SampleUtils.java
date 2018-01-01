@@ -14,7 +14,7 @@ import marmot.MarmotRuntime;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import marmot.support.DefaultRecord;
 
 /**
@@ -35,12 +35,12 @@ public class SampleUtils {
 		}
 	}
 	
-	public static void writeAsShapefile(MarmotClient marmot, String dsId, String path)
+	public static void writeAsShapefile(PBMarmotClient marmot, String dsId, String path)
 		throws IOException {
 		writeAsShapefile(marmot, marmot.getDataSet(dsId), path);
 	}
 	
-	public static void writeAsShapefile(MarmotClient marmot, DataSet ds, String path)
+	public static void writeAsShapefile(PBMarmotClient marmot, DataSet ds, String path)
 		throws IOException {
 		File file = new File(TEMP_DIR, path);
 		marmot.writeToShapefile(ds, file, "main", Charset.forName("euc-kr"), false, false);
@@ -68,7 +68,7 @@ public class SampleUtils {
 		int i = 0;
 		try {
 			while ( ++i <= count && rset.next(record) ) {
-				Map<String,Object> values = Maps.newHashMap();
+				Map<String,Object> values = Maps.newLinkedHashMap();
 				for ( int j =0; j < colIdxs.length; ++j ) {
 					String name = schema.getColumnAt(colIdxs[j]).getName();
 					Object value = record.get(colIdxs[j]);

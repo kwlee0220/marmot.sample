@@ -5,10 +5,8 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -40,8 +38,7 @@ public class ImportTweets {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		// 질의 처리를 위한 질의 프로그램 생성
 		Plan plan = marmot.planBuilder("import_tweets")
@@ -49,17 +46,15 @@ public class ImportTweets {
 							.load(RAW_DIR)
 							// 'coordinates'의 위경도 좌표계를 EPSG:5186으로 변경한 값을
 							// 'the_geom' 컬럼에 저장시킨다.
-							.transformCRS("the_geom", "the_geom", "EPSG:4326", SRID)
+							.transformCRS("the_geom", "EPSG:4326", "the_geom", SRID)
 							// 중복된 id의 tweet를 제거시킨다.
 							.distinct("id")
 							// 'OUTPUT_LAYER'에 해당하는 레이어로 저장시킨다.
 							.store(OUTPUT_DATASET)
 							.build();
 
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
 		// MarmotServer에 생성한 프로그램을 전송하여 수행시킨다.
-		DataSet result = marmot.createDataSet(OUTPUT_DATASET, schema, "the_geom", SRID, true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(OUTPUT_DATASET, "the_geom", SRID, plan, true);
 		result.cluster();
 		watch.stop();
 		

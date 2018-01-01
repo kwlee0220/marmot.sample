@@ -1,21 +1,20 @@
 package module;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.vividsolutions.jts.geom.Point;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.process.geo.KMeansParameters;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -48,26 +47,25 @@ public class SampleKMeans {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		Map<String,Object> params = Maps.newHashMap();
-		params.put("dataset.input", INPUT);
-		params.put("dataset.output", OUTPUT);
-		params.put("feature_columns", Lists.newArrayList("center"));
-		params.put("cluster_column", "cluster_id");
-		params.put("initial_centroids", getInitCentroids(marmot, 9, 0.025));
-		params.put("termination.distance", 100);
-		params.put("termination.iteration", 30);
+		KMeansParameters params = new KMeansParameters();
+		params.inputDataset(INPUT);
+		params.outputDataset(OUTPUT);
+		params.featureColumns(Lists.newArrayList("center"));
+		params.clusterColumn("cluster_id");
+//		params.initialCentroids(getInitCentroids(marmot, 9, 0.025));
+		params.terminationDistance(100);
+		params.terminationIteration(30);
 		
 		marmot.deleteDataSet(OUTPUT);
-		marmot.executeProcess("kmeans", params);
+		marmot.executeProcess("kmeans", params.toMap());
 		
 		DataSet output = marmot.getDataSet(OUTPUT);
 		SampleUtils.printPrefix(output, 10);
 	}
 	
-	private static List<Point> getInitCentroids(MarmotClient marmot, int ncentroids,
+	private static List<Point> getInitCentroids(MarmotRuntime marmot, int ncentroids,
 												double ratio) {
 		Plan plan = marmot.planBuilder("get_init_centroids")
 								.load(SGG)

@@ -6,10 +6,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -40,8 +38,7 @@ public class SplitLandCover {
 		int port = MarmotCommands.getMarmotPort(cl);
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		StopWatch watch = StopWatch.start();
 		CompletableFuture<Void> future = CompletableFuture.runAsync(() -> split(marmot, LAND_COVER_1987, OUTPUT_1987_S));
@@ -53,7 +50,7 @@ public class SplitLandCover {
 		System.out.printf("elapsed time=%s%n", watch.getElapsedTimeString());
 	}
 	
-	private static void split(MarmotClient marmot, String inputDsId, String outputDsId) {
+	private static void split(PBMarmotClient marmot, String inputDsId, String outputDsId) {
 		DataSet ds = marmot.getDataSet(inputDsId);
 		String geomCol = ds.getGeometryColumn();
 		String srid = ds.getSRID();
@@ -65,11 +62,9 @@ public class SplitLandCover {
 							.drop(0)
 							.store(outputDsId)
 							.build();
-		
+
 		StopWatch watch = StopWatch.start();
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		ds = marmot.createDataSet(outputDsId, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		marmot.createDataSet(outputDsId, geomCol, srid, plan, true);
 		watch.stop();
 		
 		System.out.printf("done: input=%s elapsed=%s%n", inputDsId, watch.getElapsedTimeString());

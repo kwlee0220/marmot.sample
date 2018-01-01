@@ -4,12 +4,10 @@ import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
 import marmot.optor.JoinOptions;
 import marmot.optor.JoinType;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -43,8 +41,7 @@ public class ConcatPoliticals {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		String merge = "if ( li_cd != null ) {"
 				     + "	bjd_nm = emd_kor_nm + ' ' + li_kor_nm;"
@@ -91,14 +88,12 @@ public class ConcatPoliticals {
 								+ "sgg_cd,sgg_nm,emd_cd,emd_nm,li_cd,li_nm")
 						.store(POLITICAL)
 						.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(POLITICAL, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(POLITICAL, geomCol, srid, plan, true);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		result.cluster();
-		
 		SampleUtils.printPrefix(result, 5);
+		
+		marmot.disconnect();
 	}
 }

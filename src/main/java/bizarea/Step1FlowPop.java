@@ -10,11 +10,9 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
 import marmot.optor.JoinOptions;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -46,8 +44,7 @@ public class Step1FlowPop {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		String handleNull = IntStream.range(0, 24)
 				.mapToObj(idx -> String.format("if ( avg_%02dtmst == null ) { avg_%02dtmst = 0; }%n", idx, idx))
@@ -82,10 +79,7 @@ public class Step1FlowPop {
 								.project(String.format("%s,*-{%s}", geomCol, geomCol))
 								.store(RESULT)
 								.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(RESULT, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

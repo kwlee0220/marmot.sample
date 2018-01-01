@@ -1,14 +1,14 @@
 package carloc;
 
+import static marmot.optor.AggregateFunction.COUNT;
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.optor.AggregateFunction;
-import marmot.optor.geo.SpatialRelation;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -40,26 +40,26 @@ public class FindHotTaxiPlaces {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
+//		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
 		
 		Plan rank = marmot.planBuilder("count")
-								.rank("count:D", "rank")
-								.build();
+							.rank("count:D", "rank")
+							.build();
 		
 		Plan plan = marmot.planBuilder("find_hot_taxi_places")
-								.load(TAXI_LOG)
-								.filter("status==1 || status==2")
-								.spatialJoin("the_geom", EMD, SpatialRelation.INTERSECTS,
-											"car_no,status,ts,param.{the_geom, EMD_CD,EMD_KOR_NM}")
-								.expand("hour:int", "hour=ts.substring(8,10)")
-								.groupBy("hour,status,EMD_CD")
-										.taggedKeyColumns("EMD_KOR_NM,the_geom")
-										.aggregate(AggregateFunction.COUNT())
-								.filter("count > 50")
-								.groupBy("hour,status").run(rank)
-								.storeMarmotFile(RESULT)
-								.build();
+							.load(TAXI_LOG)
+							.filter("status==1 || status==2")
+							.spatialJoin("the_geom", EMD, INTERSECTS,
+										"car_no,status,ts,param.{the_geom, EMD_CD,EMD_KOR_NM}")
+							.expand("hour:int", "hour=ts.substring(8,10)")
+							.groupBy("hour,status,EMD_CD")
+									.taggedKeyColumns("EMD_KOR_NM,the_geom")
+									.aggregate(COUNT())
+							.filter("count > 50")
+							.groupBy("hour,status").run(rank)
+							.storeMarmotFile(RESULT)
+							.build();
 
 		marmot.deleteFile(RESULT);
 		marmot.execute(plan);

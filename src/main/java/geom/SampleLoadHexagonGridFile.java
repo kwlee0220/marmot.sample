@@ -9,10 +9,8 @@ import com.vividsolutions.jts.geom.Envelope;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -44,8 +42,7 @@ public class SampleLoadHexagonGridFile {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet dataset = marmot.getDataSet(INPUT);
 		String srid = dataset.getSRID();
@@ -58,10 +55,7 @@ public class SampleLoadHexagonGridFile {
 							.spatialSemiJoin("the_geom", INPUT, INTERSECTS, false)
 							.store(RESULT)
 							.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(RESULT, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

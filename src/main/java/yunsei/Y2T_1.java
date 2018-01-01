@@ -15,14 +15,13 @@ import com.google.common.collect.Streams;
 import com.vividsolutions.jts.geom.Geometry;
 
 import marmot.DataSet;
+import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
 import marmot.process.geo.FeatureVector;
 import marmot.process.geo.FeatureVectorHandle;
 import marmot.process.geo.KMeansParameters;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -77,8 +76,7 @@ public class Y2T_1 {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan;
 		DataSet result;
@@ -101,9 +99,8 @@ public class Y2T_1 {
 					.intersects(geomCol, seoul)
 					.store(TEMP_BUS_SEOUL)
 					.build();
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		result = marmot.createDataSet(TEMP_BUS_SEOUL, schema, geomCol, srid, true);
-		marmot.execute(plan);
+
+		result = marmot.createDataSet(TEMP_BUS_SEOUL, geomCol, srid, plan, true);
 		System.out.println("done: crop bus_ot_dt with seoul");
 		
 		DataSet multiRings = doMultiRing(marmot, result, seoul, MULTI_RINGS);
@@ -127,9 +124,8 @@ public class Y2T_1 {
 					.buildSpatialHistogram(geomCol, MULTI_RINGS, valueColNames)
 					.store(TEMP_HISTOGRAM)
 					.build();
-		schema = marmot.getOutputRecordSchema(plan);
-		result = marmot.createDataSet(TEMP_HISTOGRAM, schema, geomCol, srid, true);
-		marmot.execute(plan);
+
+		result = marmot.createDataSet(TEMP_HISTOGRAM, geomCol, srid, plan, true);
 		
 		marmot.deleteDataSet(MULTI_RINGS);
 		System.out.println("done: build_histogram, elapsed=" + watch.getElapsedTimeString());
@@ -143,7 +139,7 @@ public class Y2T_1 {
 //		SampleUtils.printPrefix(result, 5);
 	}
 	
-	private static void kmeans(MarmotClient marmot, String input, String output) {
+	private static void kmeans(MarmotRuntime marmot, String input, String output) {
 		FeatureVectorHandle handle = new FeatureVectorHandle(FEATURE_COLNAMES);
 		List<FeatureVector> centroids = handle.sampleInitialCentroids(marmot,
 															TEMP_HISTOGRAM, 0.001, 6);
@@ -161,7 +157,7 @@ public class Y2T_1 {
 		marmot.executeProcess("kmeans", params.toMap());
 	}
 	
-	private static DataSet doMultiRing(MarmotClient marmot, DataSet bus, Geometry range,
+	private static DataSet doMultiRing(MarmotRuntime marmot, DataSet bus, Geometry range,
 										String outputDs) {
 		final String geomCol = bus.getGeometryColumn();
 		final String srid = bus.getSRID();
@@ -197,10 +193,11 @@ public class Y2T_1 {
 							.store(outputDs)
 							.build();
 			if ( multiRings == null ) {
-				RecordSchema schema = marmot.getOutputRecordSchema(plan);
-				multiRings = marmot.createDataSet(outputDs, schema, geomCol, srid, true);
+				multiRings = marmot.createDataSet(outputDs, geomCol, srid, plan, true);
 			}
-			marmot.execute(plan);
+			else {
+				marmot.execute(plan);
+			}
 			
 			System.out.printf("done: buffer (ratius=%dm, elapsed=%s)%n",
 								radius, watch.stopAndGetElpasedTimeString());

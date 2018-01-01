@@ -16,11 +16,9 @@ import com.vividsolutions.jts.geom.Geometry;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
 import marmot.optor.AggregateFunction;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -62,10 +60,8 @@ public class Y2T_1_2 {
 		int port = MarmotCommands.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
-		
-		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan;
 		DataSet result;
@@ -87,9 +83,7 @@ public class Y2T_1_2 {
 					.intersects(geomCol, seoul)
 					.store(TEMP_BUS_SEOUL)
 					.build();
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		result = marmot.createDataSet(TEMP_BUS_SEOUL, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		result = marmot.createDataSet(TEMP_BUS_SEOUL, geomCol, srid, plan, true);
 		watch.stop();
 		
 		DataSet buffereds = null;
@@ -109,10 +103,11 @@ public class Y2T_1_2 {
 						.store(MULTI_RINGS)
 						.build();
 			if ( buffereds == null ) {
-				schema = marmot.getOutputRecordSchema(plan);
-				buffereds = marmot.createDataSet(MULTI_RINGS, schema, geomCol, srid, true);
+				buffereds = marmot.createDataSet(MULTI_RINGS, geomCol, srid, plan, true);
 			}
-			marmot.execute(plan);
+			else {
+				marmot.execute(plan);
+			}
 		}
 		
 		StringBuilder builder = new StringBuilder();
@@ -145,9 +140,7 @@ public class Y2T_1_2 {
 					.expand("ratio:double", expr)
 					.store(TEMP_JOINED)
 					.build();
-		schema = marmot.getOutputRecordSchema(plan);
-		marmot.createDataSet(TEMP_JOINED, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		marmot.createDataSet(TEMP_JOINED, geomCol, srid, plan, true);
 		
 		plan = marmot.planBuilder("analysis")
 					.load(TEMP_JOINED)
@@ -157,9 +150,7 @@ public class Y2T_1_2 {
 					.project("param_geom as the_geom, *-{param_geom}")
 					.store(RESULT)
 					.build();
-		schema = marmot.getOutputRecordSchema(plan);
-		buffereds = marmot.createDataSet(RESULT, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		marmot.createDataSet(RESULT, geomCol, srid, plan, true);
 		
 //		ClusterWithKMeansParameters params = new ClusterWithKMeansParameters();
 //		params.dataset(INPUT);

@@ -9,10 +9,8 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -43,8 +41,8 @@ public class SampleGroupByAggregate {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
+//		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
 //		marmot.setDefaultDisableLocalExecution(true);
 		
 		DataSet input = marmot.getDataSet(INPUT);
@@ -55,10 +53,7 @@ public class SampleGroupByAggregate {
 								.aggregate(COUNT(), MAX("sub_sta_sn"), MIN("sub_sta_sn"))
 							.store(RESULT)
 							.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(RESULT, schema, true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(RESULT, plan, true);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

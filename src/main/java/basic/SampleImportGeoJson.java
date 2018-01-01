@@ -7,8 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import marmot.rset.GeoJsonRecordSet;
 import marmot.rset.GeoJsonRecordSetReader;
 import utils.CommandLine;
@@ -41,22 +40,20 @@ public class SampleImportGeoJson {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
+//		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
 		
-		DataSet ds;
+		DataSet result;
 		GeoJsonRecordSetReader reader = GeoJsonRecordSetReader.from(INPUT)
 																.srid("EPSG:5186");
 		try ( GeoJsonRecordSet rset = reader.read() ) {
-			ds = marmot.createDataSet(OUTPUT, rset.getRecordSchema(), "the_geom",
-										rset.getSRID(), true);
-			ds.append(rset);
+			result = marmot.createDataSet(OUTPUT, "the_geom", rset.getSRID(), rset, true);
 		}
 		watch.stop();
 
-		SampleUtils.printPrefix(ds, 5);
+		SampleUtils.printPrefix(result, 5);
 		System.out.printf("import records from %s into %s, elapsed=%s%n",
-							INPUT.getAbsolutePath(), ds.getId(),
+							INPUT.getAbsolutePath(), result.getId(),
 							watch.stopAndGetElpasedTimeString());
 		
 		marmot.disconnect();

@@ -11,10 +11,8 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.DimensionDouble;
@@ -54,8 +52,7 @@ public class Y2T_2 {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan;
 		DataSet result;
@@ -78,9 +75,8 @@ public class Y2T_2 {
 					.expand("hour:int", "hour=ts.substring(8,10)")
 					.store(TEMP_TAXI)
 					.build();
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		result = marmot.createDataSet(TEMP_TAXI, schema, geomCol, srid, true);
-		marmot.execute(plan);
+
+		result = marmot.createDataSet(TEMP_TAXI, geomCol, srid, plan, true);
 		System.out.println("done: 택시 승하차 로그 선택, elapsed=" + watch.getElapsedTimeString());
 		result.cluster();
 		System.out.println("done: 승하차 로그 클러스터링, elapsed=" + watch.getElapsedTimeString());
@@ -101,27 +97,21 @@ public class Y2T_2 {
 									SUM("demand").as("demand_count"))
 					.store(RESULT)
 					.build();
-		schema = marmot.getOutputRecordSchema(plan);
-		result = marmot.createDataSet(RESULT, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
 		
 		plan = marmot.planBuilder("새벽_01시_데이터  선택")
 					.load(RESULT)
 					.filter("hour == 1")
 					.store(RESULT01)
 					.build();
-		schema = marmot.getOutputRecordSchema(plan);
-		result = marmot.createDataSet(RESULT01, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		result = marmot.createDataSet(RESULT01, geomCol, srid, plan, true);
 		
 		plan = marmot.planBuilder("새벽_03시_데이터  선택")
 					.load(RESULT)
 					.filter("hour == 3")
 					.store(RESULT03)
 					.build();
-		schema = marmot.getOutputRecordSchema(plan);
-		result = marmot.createDataSet(RESULT03, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		result = marmot.createDataSet(RESULT03, geomCol, srid, plan, true);
 		
 		System.out.println("done, elapsed=" + watch.stopAndGetElpasedTimeString());
 		

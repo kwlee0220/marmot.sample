@@ -17,13 +17,13 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
 import marmot.optor.JoinOptions;
 import marmot.process.AttachPortionParameters;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.DimensionDouble;
@@ -70,8 +70,7 @@ public class FindBestSubwayStationCandidates {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan;
 		DataSet result;
@@ -105,10 +104,7 @@ public class FindBestSubwayStationCandidates {
 					.project("the_geom,cell_id,portion as value")
 					.store(RESULT)
 					.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		result = marmot.createDataSet(RESULT, schema, GEOM_COL, SRID, true);
-		marmot.execute(plan);
+		result = marmot.createDataSet(RESULT, GEOM_COL, SRID, plan, true);
 		watch.stop();
 		
 		System.out.printf("종료: 그리드 셀단위 유동인구 비율과 택시 승하차 로그 비율 합계, output=%s, elapsed=%s%n",
@@ -122,7 +118,7 @@ public class FindBestSubwayStationCandidates {
 		System.out.println("elapsed: " + watch.getElapsedTimeString());
 	}
 	
-	private static Geometry getSeoulBoundary(MarmotClient marmot) {
+	private static Geometry getSeoulBoundary(MarmotRuntime marmot) {
 		Plan plan;
 		
 		DataSet sid = marmot.getDataSet(SID);
@@ -134,7 +130,7 @@ public class FindBestSubwayStationCandidates {
 					.getGeometry(sid.getGeometryColumn());
 	}
 	
-	private static DataSet bufferSubwayStations(MarmotClient marmot, String output) {
+	private static DataSet bufferSubwayStations(MarmotRuntime marmot, String output) {
 		Plan plan;
 		StopWatch watch = StopWatch.start();
 		
@@ -149,10 +145,7 @@ public class FindBestSubwayStationCandidates {
 					.buffer(geomCol, geomCol, 1000)
 					.store(output)
 					.build();
-
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(output, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(output, geomCol, srid, plan, true);
 		
 		System.out.printf("종료: 서울지역 지하철역사 1KM 버퍼, output=%s, elapsed=%s%n",
 							output, watch.getElapsedTimeString());
@@ -160,7 +153,7 @@ public class FindBestSubwayStationCandidates {
 		return result;
 	}
 	
-	private static void gridFlowPopulation(MarmotClient marmot, Geometry seoul, String output) {
+	private static void gridFlowPopulation(MarmotRuntime marmot, Geometry seoul, String output) {
 		Plan plan;
 		StopWatch watch = StopWatch.start();
 		
@@ -197,9 +190,7 @@ public class FindBestSubwayStationCandidates {
 					.build();
 		
 		try {
-			schema = marmot.getOutputRecordSchema(plan);
-			marmot.createDataSet(TEMP_SEOUL_FLOW_POP_BLOCK, schema, geomCol, srid, true);
-			marmot.execute(plan);
+			DataSet result = marmot.createDataSet(TEMP_SEOUL_FLOW_POP_BLOCK, geomCol, srid, plan, true);
 			
 			System.out.printf("종료: 소지역단위 유동인구 집계, output=%s, elapsed=%s%n",
 							TEMP_SEOUL_FLOW_POP_BLOCK, watch.getElapsedTimeString());
@@ -216,13 +207,12 @@ public class FindBestSubwayStationCandidates {
 							.aggregate(SUM("avg").as("avg"))
 						.store(TEMP_SEOUL_FLOW_POP_GRID)
 						.build();
-			schema = marmot.getOutputRecordSchema(plan);
-			marmot.createDataSet(TEMP_SEOUL_FLOW_POP_GRID, schema, GEOM_COL, srid, true);
-			marmot.execute(plan);
+			marmot.createDataSet(TEMP_SEOUL_FLOW_POP_GRID, GEOM_COL, srid, plan, true);
 			System.out.printf("종료: 그리드 셀단위 유동인구 집계, output=%s, elapsed=%s%n",
 								TEMP_SEOUL_FLOW_POP_GRID, watch.getElapsedTimeString());
 
 			watch = StopWatch.start();
+			
 			AttachPortionParameters params = new AttachPortionParameters();
 			params.inputDataset(TEMP_SEOUL_FLOW_POP_GRID);
 			params.outputDataset(output);
@@ -238,7 +228,7 @@ public class FindBestSubwayStationCandidates {
 		}
 	}
 	
-	private static void gridTaxiLog(MarmotClient marmot, Geometry seoul, String output) {
+	private static void gridTaxiLog(MarmotRuntime marmot, Geometry seoul, String output) {
 		Plan plan;
 		
 		DataSet taxi = marmot.getDataSet(TAXI_LOG);
@@ -260,10 +250,7 @@ public class FindBestSubwayStationCandidates {
 					.spatialSemiJoin("the_geom", TEMP_STATIONS, INTERSECTS, true)
 					.store(TEMP_SEOUL_TAXI_LOG)
 					.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		marmot.createDataSet(TEMP_SEOUL_TAXI_LOG, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(TEMP_SEOUL_TAXI_LOG, geomCol, srid, plan, true);
 		System.out.println("종료: 택시승하차 로그 집계, elapsed=" + watch.getElapsedTimeString());
 					
 		watch = StopWatch.start();
@@ -280,9 +267,7 @@ public class FindBestSubwayStationCandidates {
 					.store(TEMP_SEOUL_TAXI_LOG_GRID)
 					.build();
 		try {
-			schema = marmot.getOutputRecordSchema(plan);
-			marmot.createDataSet(TEMP_SEOUL_TAXI_LOG_GRID, schema, GEOM_COL, srid, true);
-			marmot.execute(plan);
+			marmot.createDataSet(TEMP_SEOUL_TAXI_LOG_GRID, GEOM_COL, srid, plan, true);
 			System.out.printf("종료: 그리드 셀단위 택시승하차 로그 집계, output=%s, elapsed=%s%n",
 								TEMP_SEOUL_TAXI_LOG_GRID, watch.getElapsedTimeString());
 			

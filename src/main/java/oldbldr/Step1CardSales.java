@@ -11,11 +11,9 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
 import marmot.optor.JoinOptions;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -48,8 +46,7 @@ public class Step1CardSales {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		String sumExpr = IntStream.range(0, 24)
 								.mapToObj(idx -> String.format("sale_amt_%02dtmst", idx))
@@ -80,10 +77,7 @@ public class Step1CardSales {
 					.project(String.format("%s,*-{%s}", geomCol, geomCol))
 					.store(RESULT)
 					.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(RESULT, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

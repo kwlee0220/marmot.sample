@@ -8,10 +8,8 @@ import org.apache.log4j.LogManager;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -44,8 +42,7 @@ public class FireStationService {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan;
 		DataSet result;
@@ -61,10 +58,7 @@ public class FireStationService {
 								"param.{the_geom as the_geom,인구수 as pop}")
 					.store(RESULT)
 					.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		result = marmot.createDataSet(RESULT, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

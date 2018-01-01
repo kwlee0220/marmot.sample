@@ -13,10 +13,8 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -49,8 +47,7 @@ public class SummarizeByHighSchoolLong {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		Plan plan;
 		
@@ -105,10 +102,7 @@ public class SummarizeByHighSchoolLong {
 						
 						.store(RESULT)
 						.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(RESULT, schema, "the_geom", srid, true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(RESULT, "the_geom", srid, plan, true);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 3);
@@ -125,9 +119,7 @@ public class SummarizeByHighSchoolLong {
 							.filter("type == '고등학교'")
 							.store(HIGH_SCHOOLS)
 							.build();
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, schema, geomCol, srid, true);
-		marmot.execute(plan, false);
+		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, geomCol, srid, plan, true);
 		return result;
 	}
 }

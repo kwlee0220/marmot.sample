@@ -9,11 +9,10 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -24,7 +23,7 @@ import utils.StopWatch;
  */
 public class FilterInSeoul {
 	private static final String SID = "구역/시도";
-	private static final String LAND_USAGE = "토지/토지이용계획";
+	private static final String LAND_USAGE = "토지/토지이용계획_누적";
 	private static final String CADASTRAL = "구역/연속지적도";
 	private static final String CADASTRAL_SEOUL = "tmp/seoul";
 	private static final String RESULT = "tmp/result";
@@ -48,8 +47,7 @@ public class FilterInSeoul {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan;
 		DataSet result;
@@ -69,17 +67,14 @@ public class FilterInSeoul {
 					.project("the_geom, 고유번호 as pnu, 용도지역지구코드 as code, 용도지역지구명 as name")
 					.store(RESULT)
 					.build();
-
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		result = marmot.createDataSet(RESULT, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		result = marmot.createDataSet(RESULT, plan, true);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);
 		System.out.println("elapsed: " + watch.getElapsedTimeString());
 	}
 	
-	private static Geometry getSeoulBoundary(MarmotClient marmot) {
+	private static Geometry getSeoulBoundary(MarmotRuntime marmot) {
 		Plan plan;
 		
 		DataSet sid = marmot.getDataSet(SID);
@@ -91,7 +86,7 @@ public class FilterInSeoul {
 					.getGeometry(sid.getGeometryColumn());
 	}
 	
-	private static void getSeoulCadastral(MarmotClient marmot, Geometry seoul, String output) {
+	private static void getSeoulCadastral(MarmotRuntime marmot, Geometry seoul, String output) {
 		Plan plan;
 		
 		DataSet taxi = marmot.getDataSet(CADASTRAL);
@@ -105,9 +100,6 @@ public class FilterInSeoul {
 					.filter("pnu.startsWith('11')")
 					.store(output)
 					.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		marmot.createDataSet(output, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		marmot.createDataSet(output, geomCol, srid, plan, true);
 	}
 }

@@ -5,11 +5,9 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
 import marmot.optor.geo.SpatialRelation;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -41,8 +39,7 @@ public class CalcSggHistogram {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan = marmot.planBuilder("calc_emd_histogram")
 								.loadSpatialIndexJoin(LEFT_DATASET, RIGHT_DATASET,
@@ -55,9 +52,7 @@ public class CalcSggHistogram {
 								.build();
 		
 		// MarmotServer에 생성한 프로그램을 전송하여 수행시킨다.
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(OUTPUT_DATASET, schema, "the_geom", "EPSG:5186", true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(OUTPUT_DATASET, "the_geom", "EPSG:5186", plan, true);
 		watch.stop();
 
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

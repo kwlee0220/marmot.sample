@@ -9,8 +9,7 @@ import marmot.Plan;
 import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
 import marmot.optor.JoinOptions;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -43,8 +42,7 @@ public class BuildJinBunPOI {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		Plan plan;
 		DataSet result;
@@ -56,9 +54,7 @@ public class BuildJinBunPOI {
 					.distinct("건물관리번호", 11) 
 					.store(tempDs)
 					.build();
-		schema = marmot.getOutputRecordSchema(plan);
-		result = marmot.createDataSet(tempDs, schema, true);
-		marmot.execute(plan);
+		result = marmot.createDataSet(tempDs, plan, true);
 
 		try {
 			DataSet info = marmot.getDataSet(BUILD_POI);
@@ -77,12 +73,7 @@ public class BuildJinBunPOI {
 							.distinct("건물관리번호,법정동코드,지번본번,지번부번,산여부")
 							.store(RESULT)
 							.build();
-			
-			marmot.deleteDataSet(RESULT);
-			
-			schema = marmot.getOutputRecordSchema(plan);
-			result = marmot.createDataSet(RESULT, schema, geomCol, srid, true);
-			marmot.execute(plan);
+			result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
 			System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 			
 			SampleUtils.printPrefix(result, 5);

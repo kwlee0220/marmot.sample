@@ -8,12 +8,11 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
 import marmot.optor.AggregateFunction;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -44,8 +43,7 @@ public class FindByTopKUsers {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		List<String> userIds = findTopKUsers(marmot);
 		System.out.println("topk_users=" + userIds);
@@ -61,10 +59,7 @@ public class FindByTopKUsers {
 								.project("the_geom,id")
 								.store(RESULT)
 								.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(RESULT, schema, "the_geom", info.getSRID(), true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(RESULT, "the_geom", info.getSRID(), plan, true);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
@@ -72,7 +67,7 @@ public class FindByTopKUsers {
 		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
 	}
 
-	public static List<String> findTopKUsers(MarmotClient marmot) throws Exception {
+	public static List<String> findTopKUsers(MarmotRuntime marmot) throws Exception {
 		// 가장 자주 tweet을 한 사용자 식별자들을 저장할 임시 파일 이름을 생성한다.
 		String tempFile = "tmp/" + UUID.randomUUID().toString();
 

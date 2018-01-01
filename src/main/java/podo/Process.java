@@ -11,10 +11,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import marmot.rset.GeoJsonRecordSetWriter;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -49,8 +47,7 @@ public class Process {
 		int port = MarmotCommands.getMarmotPort(cl);
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		s_watch = StopWatch.start();
 		
@@ -66,14 +63,14 @@ public class Process {
 		System.out.printf("elapsed time=%s%n", s_watch.getElapsedTimeString());
 	}
 	
-	private static void export(MarmotClient marmot, DataSet ds, File file) throws IOException {
+	private static void export(PBMarmotClient marmot, DataSet ds, File file) throws IOException {
 		StopWatch watch = StopWatch.start();
 		System.out.printf("결과파일 생성: %s...", file.getAbsolutePath());
 		GeoJsonRecordSetWriter.into(file.getAbsolutePath()).write(ds);
 		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
 	}
 	
-	private static DataSet analysis(MarmotClient marmot) {
+	private static DataSet analysis(PBMarmotClient marmot) {
 		StopWatch watch = StopWatch.start();
 		System.out.printf("토지피복도 공간조인...");
 		
@@ -89,16 +86,13 @@ public class Process {
 						.project("the_geom,c1987,c2007")
 						.store(RESULT)
 						.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(RESULT, schema, "the_geom", "EPSG:5186", true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(RESULT, "the_geom", "EPSG:5186", plan, true);
 		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
 		
 		return result;
 	}
 	
-	private static void cluster(MarmotClient marmot, String dsId) {
+	private static void cluster(PBMarmotClient marmot, String dsId) {
 		StopWatch watch = StopWatch.start();
 		System.out.printf("토지피복도 인덱싱: %s...", dsId);
 		DataSet ds = marmot.getDataSet(dsId);
@@ -106,7 +100,7 @@ public class Process {
 		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
 	}
 	
-	private static void splitCovers(MarmotClient marmot) throws InterruptedException {
+	private static void splitCovers(PBMarmotClient marmot) throws InterruptedException {
 		CompletableFuture<Void> future
 					= CompletableFuture.runAsync(()
 									-> split(marmot, LAND_COVER_1987, OUTPUT_1987_S));
@@ -116,7 +110,7 @@ public class Process {
 		future.join();
 	}
 	
-	private static void split(MarmotClient marmot, String inputDsId, String outputDsId) {
+	private static void split(PBMarmotClient marmot, String inputDsId, String outputDsId) {
 		StopWatch watch = StopWatch.start();
 		System.out.printf("토지피복도 분할: %s...", outputDsId);
 		
@@ -132,10 +126,7 @@ public class Process {
 							.drop(0)
 							.store(outputDsId)
 							.build();
-
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		ds = marmot.createDataSet(outputDsId, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(outputDsId, geomCol, srid, plan, true);
 		
 		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
 	}

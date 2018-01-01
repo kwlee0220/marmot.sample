@@ -5,8 +5,7 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.optor.geo.LISAWeight;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -38,8 +37,7 @@ public class SampleFindGetisOrdGiStar {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan = marmot.planBuilder("local_spatial_auto_correlation")
 								.loadGetisOrdGi(INPUT, VALUE_COLUMN, 1000,

@@ -12,10 +12,8 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -47,8 +45,7 @@ public class Step1Building {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		String avgExpr = IntStream.range(0, 24)
 								.mapToObj(idx -> String.format("avg_%02dtmst", idx))
@@ -60,24 +57,21 @@ public class Step1Building {
 		String srid = info.getSRID();
 		
 		Plan plan = marmot.planBuilder("대도시 상업지역 구역별 건축물 수와 면적 집계")
-								.load(BUILDINGS)
-								// BIZ_GRID와 소지역 코드를 이용하여 조인하여,
-								// 대도시 상업지역과 겹치는 건축물 구역을 뽑는다. 
-								.spatialJoin("the_geom", BIZ_GRID, INTERSECTS,
-											"건축물용도코드,대지면적,param.*")
-								// 그리드 셀, 건축물 용도별로 건물 수와 총 면점을 집계한다. 
-								.groupBy("cell_id,block_cd,건축물용도코드")
-									.taggedKeyColumns(geomCol + ",sgg_cd")
-									.workerCount(3)
-									.aggregate(SUM("대지면적").as("대지면적"),
-												COUNT().as("bld_cnt"))
-								.project(String.format("%s,*-{%s}", geomCol, geomCol))
-								.store(RESULT)
-								.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(RESULT, schema, geomCol, srid, true);
-		marmot.execute(plan);
+							.load(BUILDINGS)
+							// BIZ_GRID와 소지역 코드를 이용하여 조인하여,
+							// 대도시 상업지역과 겹치는 건축물 구역을 뽑는다. 
+							.spatialJoin("the_geom", BIZ_GRID, INTERSECTS,
+										"건축물용도코드,대지면적,param.*")
+							// 그리드 셀, 건축물 용도별로 건물 수와 총 면점을 집계한다. 
+							.groupBy("cell_id,block_cd,건축물용도코드")
+								.taggedKeyColumns(geomCol + ",sgg_cd")
+								.workerCount(3)
+								.aggregate(SUM("대지면적").as("대지면적"),
+											COUNT().as("bld_cnt"))
+							.project(String.format("%s,*-{%s}", geomCol, geomCol))
+							.store(RESULT)
+							.build();
+		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

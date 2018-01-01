@@ -5,10 +5,8 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -41,8 +39,8 @@ public class WeakFireDeathArea {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
+//		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
 		
 		// 서울시 종합병원 위치에서 3km 버퍼 연산을 취해 clustered layer를 생성한다.
 		Plan plan0 = marmot.planBuilder("서울시 종합병원 위치에서 3km 버퍼 연산")
@@ -50,10 +48,7 @@ public class WeakFireDeathArea {
 								.buffer("the_geom", "the_geom", 3000)
 								.store("tmp/weak_area/hospital3000")
 								.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan0);
-		marmot.createDataSet("tmp/weak_area/hospital3000", schema, "the_geom", SRID, true);
-		marmot.execute(plan0);
+		marmot.createDataSet("tmp/weak_area/hospital3000", "the_geom", SRID, plan0, true);
 		System.out.println("완료: 서울시 종합병원 위치에서 3km 버퍼 영역 생성");
 
 		// 서울시 지도에서 종합병원 3km 이내 영역과 겹치지 않은 영역을 계산한다.
@@ -62,10 +57,7 @@ public class WeakFireDeathArea {
 								.differenceJoin("the_geom", "tmp/weak_area/hospital3000")
 								.store("tmp/weak_area/far_seoul")
 								.build();
-		
-		RecordSchema schema1 = marmot.getOutputRecordSchema(plan1);
-		marmot.createDataSet("tmp/weak_area/far_seoul", schema1, "the_geom", SRID, true);
-		marmot.execute(plan1);
+		marmot.createDataSet("tmp/weak_area/far_seoul", "the_geom", SRID, plan1, true);
 		System.out.println("완료: 종합병원 3km 밖의 서울시 영역 계산");
 
 		// 화재피해 영역 중에서 서울 읍면동과 겹치는 부분을 clip 하고, 각 피해 영역의 중심점을 구한다.
@@ -77,9 +69,7 @@ public class WeakFireDeathArea {
 								.clipJoin("the_geom", "tmp/weak_area/far_seoul")
 								.store("tmp/weak_area/result")
 								.build();
-		RecordSchema schema2 = marmot.getOutputRecordSchema(plan2);
-		DataSet result = marmot.createDataSet("tmp/weak_area/result", schema2, true);
-		marmot.execute(plan2);
+		DataSet result = marmot.createDataSet("tmp/weak_area/result", "the_geom", SRID, plan2, true);
 		System.out.println("완료: 종합병원 3km 밖의 서울시 영역과 화재피해 영역과 교차부분 검색");
 		
 		marmot.deleteDataSet("tmp/weak_area/hospital3000");

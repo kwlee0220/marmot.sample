@@ -7,9 +7,10 @@ import com.vividsolutions.jts.geom.Geometry;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.command.MarmotCommands;
+import marmot.remote.protobuf.PBMarmotClient;
+import utils.CommandLine;
+import utils.CommandLineParser;
 import utils.StopWatch;
 
 /**
@@ -24,25 +25,35 @@ public class FindPassingStation {
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect("localhost", 12985);
+		CommandLineParser parser = new CommandLineParser("mc_list_records ");
+		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
+		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
+		
+		CommandLine cl = parser.parseArgs(args);
+		if ( cl.hasOption("help") ) {
+			cl.exitWithUsage(0);
+		}
+
+		String host = MarmotCommands.getMarmotHost(cl);
+		int port = MarmotCommands.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
 		
+		// 원격 MarmotServer에 접속.
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
+//		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
+		
 		Geometry key = getSubwayStations(marmot, "사당역");
 		Plan plan = marmot.planBuilder("find_passing_station")
-								.load(TAXI_TRJ)
-								.filter("status == 3")
-								.expand("the_geom:line_string",
-											"the_geom = ST_TRLineString(trajectory)")
-								.withinDistance("the_geom", key, 100)
-								.project("*-{trajectory}")
-								.store(OUTPUT)
-								.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(OUTPUT, schema, "the_geom", SRID, true);
-		marmot.execute(plan);
+							.load(TAXI_TRJ)
+							.filter("status == 3")
+							.expand("the_geom:line_string",
+										"the_geom = ST_TRLineString(trajectory)")
+							.withinDistance("the_geom", key, 100, false)
+							.project("*-{trajectory}")
+							.store(OUTPUT)
+							.build();
+		DataSet result = marmot.createDataSet(OUTPUT, "the_geom", SRID, plan, true);
 		
 		SampleUtils.printPrefix(result, 5);
 		
@@ -51,14 +62,14 @@ public class FindPassingStation {
 	}
 
 	private static final String SUBWAY_STATIONS = "교통/지하철/서울역사";
-	private static Geometry getSubwayStations(MarmotClient marmot, String stationName)
+	private static Geometry getSubwayStations(PBMarmotClient marmot, String stationName)
 		throws Exception {
 		String predicate = String.format("kor_sub_nm == '%s'", stationName);
 		Plan plan = marmot.planBuilder("filter_subway_stations")
-								.load(SUBWAY_STATIONS)
-								.filter(predicate)
-								.project("the_geom")
-								.build();
+							.load(SUBWAY_STATIONS)
+							.filter(predicate)
+							.project("the_geom")
+							.build();
 		return marmot.executeLocally(plan)
 						.stream()
 						.map(rec -> rec.getGeometry(0))

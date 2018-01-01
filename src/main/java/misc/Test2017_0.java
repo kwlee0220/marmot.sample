@@ -9,10 +9,8 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -56,8 +54,7 @@ public class Test2017_0 {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		DataSet info = marmot.getDataSet(ADDR_BLD);
 		String srid = info.getSRID();
@@ -73,10 +70,7 @@ public class Test2017_0 {
 								.project("the_geom,건물관리번호")
 								.store(ADDR_BLD_UTILS)
 								.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(ADDR_BLD_UTILS, schema, "the_geom", srid, true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(ADDR_BLD_UTILS, "the_geom", srid, plan, true);
 		result.cluster();
 		watch.stop();
 		

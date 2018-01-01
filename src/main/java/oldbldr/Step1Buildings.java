@@ -7,12 +7,11 @@ import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
+import io.vavr.control.Option;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -44,8 +43,7 @@ public class Step1Buildings {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan;
 		DataSet emd = marmot.getDataSet(EMD);
@@ -63,7 +61,7 @@ public class Step1Buildings {
 		
 		plan = marmot.planBuilder("행정구역당 20년 이상된 건물 집계")
 					.load(BUILDINGS)
-					.expand(schemaStr, init, trans)
+					.expand(schemaStr, Option.some(init), trans, Option.none())
 					.spatialJoin("the_geom", EMD, INTERSECTS,
 								"원천도형ID,old,be5,param.{the_geom,emd_cd,emd_kor_nm as emd_nm}")
 					.groupBy("emd_cd")
@@ -74,10 +72,7 @@ public class Step1Buildings {
 					.expand("old_ratio:double", "old_ratio = (double)old_cnt/bld_cnt")
 					.store(RESULT)
 					.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(RESULT, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

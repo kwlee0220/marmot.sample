@@ -7,11 +7,9 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
 import marmot.optor.JoinOptions;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -44,8 +42,7 @@ public class Step2 {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet info = marmot.getDataSet(BIZ_GRID_SALES);
 		String geomCol = info.getGeometryColumn();
@@ -72,10 +69,7 @@ public class Step2 {
 											"*-{cell_pos},param.*-{the_geom,sgg_cd}")
 								.store(RESULT)
 								.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(RESULT, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

@@ -6,8 +6,7 @@ import common.SampleUtils;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.optor.geo.SpatialRelation;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -39,13 +38,12 @@ public class SampleLoadSpatialIndexJoin {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan = marmot.planBuilder("load_spatial_index_join")
 								.loadSpatialIndexJoin(OUTER, INNER, SpatialRelation.INTERSECTS,
 														"left.*,right.{the_geom as the_geom2}")
-								.intersection("the_geom", "the_geom2", "the_geom", 1)
+								.intersection("the_geom", "the_geom2", "the_geom")
 								.project("*-{the_geom2}")
 								.storeMarmotFile(RESULT)
 								.build();

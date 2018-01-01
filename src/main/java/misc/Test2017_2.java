@@ -7,11 +7,9 @@ import com.vividsolutions.jts.geom.Envelope;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
 import marmot.optor.AggregateFunction;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.DimensionDouble;
@@ -44,8 +42,7 @@ public class Test2017_2 {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		DataSet info = marmot.getDataSet(ADDR_BLD);
 		Envelope bounds = info.getBounds();
@@ -63,10 +60,7 @@ public class Test2017_2 {
 								.project("cell_geom as the_geom,*-{cell_geom}")
 								.store(GRID)
 								.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(GRID, schema, "the_geom", info.getSRID(), true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(GRID, "the_geom", info.getSRID(), plan, true);
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

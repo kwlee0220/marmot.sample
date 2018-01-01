@@ -7,11 +7,10 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -22,7 +21,7 @@ import utils.StopWatch;
  */
 public class FindLastestLandUsage {
 	private static final String SID = "구역/시도";
-	private static final String LAND_USAGE = "토지/토지이용계획";
+	private static final String LAND_USAGE = "토지/토지이용계획_누적";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
@@ -44,8 +43,7 @@ public class FindLastestLandUsage {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan;
 		DataSet result;
@@ -62,16 +60,14 @@ public class FindLastestLandUsage {
 					.sort("등록일자:D")
 					.store(RESULT)
 					.build();
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		result = marmot.createDataSet(RESULT, schema, true);
-		marmot.execute(plan);
+		result = marmot.createDataSet(RESULT, plan, true);
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);
 		System.out.println("elapsed: " + watch.getElapsedTimeString());
 	}
 	
-	private static Geometry getSeoulBoundary(MarmotClient marmot) {
+	private static Geometry getSeoulBoundary(MarmotRuntime marmot) {
 		Plan plan;
 		
 		DataSet sid = marmot.getDataSet(SID);

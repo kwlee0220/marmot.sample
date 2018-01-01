@@ -7,8 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -40,8 +39,7 @@ public class DiffLandCoversNL {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet cover1987 = marmot.getDataSet(LAND_COVER_1987);
 		String geomCol = cover1987.getGeometryColumn();

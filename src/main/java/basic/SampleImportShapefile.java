@@ -9,8 +9,7 @@ import marmot.DataSet;
 import marmot.command.MarmotCommands;
 import marmot.geo.geotools.ShapefileRecordSet;
 import marmot.geo.geotools.ShapefileRecordSetReader;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -41,16 +40,13 @@ public class SampleImportShapefile {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet ds;
 		ShapefileRecordSetReader reader = ShapefileRecordSetReader.from(INPUT)
 																.charset("euc-kr");
 		try ( ShapefileRecordSet rset = reader.read() ) {
-			ds = marmot.createDataSet(OUTPUT, rset.getRecordSchema(), "the_geom",
-										rset.getSRID(), true);
-			ds.append(rset);
+			ds = marmot.createDataSet(OUTPUT, "the_geom", rset.getSRID(), rset, true);
 		}
 		watch.stop();
 

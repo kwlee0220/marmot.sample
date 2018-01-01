@@ -1,6 +1,6 @@
 package carloc;
 
-import static marmot.optor.geo.SpatialRelation.WITHIN_DISTANCE;
+import static marmot.optor.AggregateFunction.COUNT;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,9 +12,7 @@ import common.SampleUtils;
 import marmot.Plan;
 import marmot.RecordSet;
 import marmot.command.MarmotCommands;
-import marmot.optor.AggregateFunction;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -48,8 +46,8 @@ public class FindBestRoadsForPickup {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
+//		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
 		
 		Plan plan;
 
@@ -57,18 +55,18 @@ public class FindBestRoadsForPickup {
 							.rank("count:D", "rank")
 							.build();
 		plan = marmot.planBuilder("match_and_rank_roads")
-						.load(TAXI_LOG)
-						.filter("status == 0")
-						.expand("hour:int", "hour=ts.substring(8,10)")
-						.knnJoin("the_geom", ROADS, 1, WITHIN_DISTANCE(10),
-								"hour,car_no,param.{LINK_ID,the_geom,ROAD_NAME,ROADNAME_A}")
-						.groupBy("hour,LINK_ID")
-								.taggedKeyColumns("the_geom,ROAD_NAME,ROADNAME_A")
-								.aggregate(AggregateFunction.COUNT())
-						.filter("count >= 50")
-						.groupBy("hour").run(rank)
-						.storeMarmotFile(RESULT)
-						.build();
+					.load(TAXI_LOG)
+					.filter("status == 0")
+					.expand("hour:int", "hour=ts.substring(8,10)")
+					.knnJoin("the_geom", ROADS, 1, 10,
+							"hour,car_no,param.{LINK_ID,the_geom,ROAD_NAME,ROADNAME_A}")
+					.groupBy("hour,LINK_ID")
+							.taggedKeyColumns("the_geom,ROAD_NAME,ROADNAME_A")
+							.aggregate(COUNT())
+					.filter("count >= 50")
+					.groupBy("hour").run(rank)
+					.storeMarmotFile(RESULT)
+					.build();
 
 		marmot.deleteFile(RESULT);
 		marmot.execute(plan);
@@ -77,13 +75,13 @@ public class FindBestRoadsForPickup {
 		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 5);
 	}
 	
-	private static void exportResult(MarmotClient marmot, String resultLayerName,
+	private static void exportResult(PBMarmotClient marmot, String resultLayerName,
 									String baseDirPath) throws IOException {
 		export(marmot, resultLayerName, 8, baseDirPath);
 		export(marmot, resultLayerName, 22, baseDirPath);
 	}
 	
-	private static void export(MarmotClient marmot, String resultLayerName, int hour,
+	private static void export(PBMarmotClient marmot, String resultLayerName, int hour,
 								String baseName) throws IOException {
 		Plan plan = marmot.planBuilder("export")
 								.load(resultLayerName)

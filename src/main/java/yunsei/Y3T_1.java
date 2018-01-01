@@ -6,12 +6,11 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
 import marmot.DataSet;
+import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
 import marmot.optor.geo.LISAWeight;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.DimensionDouble;
@@ -50,8 +49,7 @@ public class Y3T_1 {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan;
 		DataSet result;
@@ -69,9 +67,7 @@ public class Y3T_1 {
 					.project(geomCol + ",refl70,point_x,point_y")
 					.store(TEMP_POP)
 					.build();
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		result = marmot.createDataSet(TEMP_POP, schema, pop.getGeometryColumn(), pop.getSRID(), true);
-		marmot.execute(plan);
+		result = marmot.createDataSet(TEMP_POP, pop.getGeometryColumn(), pop.getSRID(), plan, true);
 		System.out.println("elapsed: " + watch.getElapsedTimeString());
 
 		plan = marmot.planBuilder("")
@@ -88,14 +84,12 @@ public class Y3T_1 {
 					.loadGetisOrdGi(TEMP_POP, "refl70", 500, LISAWeight.FIXED_DISTANCE_BAND)
 					.store(RESULT)
 					.build();
-		schema = marmot.getOutputRecordSchema(plan);
-		marmot.createDataSet(RESULT, schema, pop.getGeometryColumn(), pop.getSRID(), true);
-		marmot.execute(plan);
+		result = marmot.createDataSet(RESULT, pop.getGeometryColumn(), pop.getSRID(), plan, true);
 		
 		System.out.println("done, elapsed=" + watch.stopAndGetElpasedTimeString());
 	}
 	
-	private static DataSet findElderlyCares(MarmotClient marmot, String outputDsId) {
+	private static DataSet findElderlyCares(MarmotRuntime marmot, String outputDsId) {
 		Plan plan;
 		
 		DataSet ds = marmot.getDataSet(PUBLIC_CARE);
@@ -105,10 +99,8 @@ public class Y3T_1 {
 					.buffer(ds.getGeometryColumn(), ds.getGeometryColumn(), 500)
 					.store(outputDsId)
 					.build();
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(outputDsId, schema, ds.getGeometryColumn(),
-												ds.getSRID(), true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(outputDsId, ds.getGeometryColumn(), ds.getSRID(),
+												plan, true);
 		
 		return result;
 	}

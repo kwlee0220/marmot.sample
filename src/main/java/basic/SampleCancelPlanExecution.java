@@ -8,8 +8,7 @@ import marmot.Plan;
 import marmot.PlanExecution;
 import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 
@@ -34,8 +33,7 @@ public class SampleCancelPlanExecution {
 		int port = MarmotCommands.getMarmotPort(cl);
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		marmot.deleteDataSet("tmp/result");
 
@@ -57,8 +55,7 @@ public class SampleCancelPlanExecution {
 		PlanExecution exec = marmot.createPlanExecution(plan);
 		
 		// 4. Plan 실행객체를 통해 plan을 실행시킨다.
-		boolean ret = exec.start();
-		System.out.printf("started ret=%s (should be true)%n", ret);
+		exec.start();
 		exec.waitForStarted();
 		System.out.printf("is_stated=%s (should be true)%n", exec.isStarted());
 		
@@ -67,8 +64,7 @@ public class SampleCancelPlanExecution {
 		System.out.printf("done=%s (should be false)%n", done);
 		
 		// 6. 실행 중인 Plan을 취소시킨다.
-		ret = exec.cancel();
-		System.out.printf("cancelled ret=%s (should be true)%n", ret);
+		exec.cancel();
 		exec.waitForDone();
 		System.out.printf("isCancelled=%s (should be true)%n", exec.isCancelled());
 		

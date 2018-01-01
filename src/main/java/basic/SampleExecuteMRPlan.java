@@ -5,11 +5,9 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.RecordSet;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 
@@ -34,8 +32,7 @@ public class SampleExecuteMRPlan {
 		int port = MarmotCommands.getMarmotPort(cl);
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		marmot.deleteDataSet("tmp/result");
 		
@@ -56,18 +53,11 @@ public class SampleExecuteMRPlan {
 					.store("tmp/result")
 					.build();
 		
-		// 2. 결과가 기록될 빈 데이터세트 생성.
-		// 2.1 Plan실행 결과로 생성될 레코드세트의 스키마 계산
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
+		// 2. 결과가 기록될 빈 데이터세트 생성하고, Plan 수행으로 데이터세트에 추가
+		DataSet result = marmot.createDataSet("tmp/result", plan, true);
 		
-		// 2.2 계산된 스키마를 통한 데이터세트 생성.
-		ds = marmot.createDataSet("tmp/result", schema, true);
-		
-		// 3. Plan 실행
-		marmot.execute(plan);
-		
-		// 4. Plan 실행 결과 채워진 데이터세트 내용 접근 및 출력
-		SampleUtils.printPrefix(ds, 5);
+		// 3. Plan 실행 결과 채워진 데이터세트 내용 접근 및 출력
+		SampleUtils.printPrefix(result, 5);
 		
 		marmot.disconnect();
 	}

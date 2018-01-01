@@ -8,8 +8,7 @@ import marmot.Column;
 import marmot.DataSet;
 import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 
@@ -34,8 +33,8 @@ public class PrintCatalog {
 		int port = MarmotCommands.getMarmotPort(cl);
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
+//		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
 		
 		System.out.println(marmot.getSubDirAll("/", false));
 		

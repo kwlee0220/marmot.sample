@@ -11,14 +11,13 @@ import com.vividsolutions.jts.geom.Geometry;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.DataSetType;
+import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
 import marmot.optor.geo.SpatialRelation;
 import marmot.process.geo.DistanceDecayFunctions;
 import marmot.process.geo.E2SFCAParameters;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.DimensionDouble;
@@ -61,8 +60,7 @@ public class Y2S_1 {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan;
 		DataSet result;
@@ -108,10 +106,8 @@ public class Y2S_1 {
 								SUM("index_15").as("index_15"))
 					.store(RESULT)
 					.build();
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		result = marmot.createDataSet(RESULT, schema, busResult.getGeometryColumn(),
-										busResult.getSRID(), true);
-		marmot.execute(plan);
+		result = marmot.createDataSet(RESULT, busResult.getGeometryColumn(),
+										busResult.getSRID(), plan, true);
 		watch.stop();
 		
 		marmot.deleteDataSet(RESULT_CONCAT);
@@ -123,7 +119,7 @@ public class Y2S_1 {
 		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
 	}
 	
-	private static Geometry getGangnamGu(MarmotClient marmot) {
+	private static Geometry getGangnamGu(MarmotRuntime marmot) {
 		Plan plan;
 		plan = marmot.planBuilder("강남구 추출")
 					.load(SGG)
@@ -133,7 +129,7 @@ public class Y2S_1 {
 		return marmot.executeLocally(plan).toList().get(0).getGeometry("the_geom");
 	}
 	
-	private static void getGangnumGuFlowPop(MarmotClient marmot, String output) {
+	private static void getGangnumGuFlowPop(MarmotRuntime marmot, String output) {
 		Plan plan;
 
 		StopWatch watch = StopWatch.start();
@@ -148,10 +144,7 @@ public class Y2S_1 {
 						.project("the_geom,block_cd,avg_08tmst,avg_15tmst")
 						.store(output)
 						.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet result = marmot.createDataSet(output, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(output, geomCol, srid, plan, true);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

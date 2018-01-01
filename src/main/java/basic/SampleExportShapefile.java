@@ -7,8 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.DataSet;
 import marmot.command.MarmotCommands;
 import marmot.geo.geotools.ShapefileRecordSetWriter;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -39,8 +38,8 @@ public class SampleExportShapefile {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
+//		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
 		
 		DataSet ds = marmot.getDataSet(INPUT);
 		ShapefileRecordSetWriter writer = ShapefileRecordSetWriter.into(OUTPUT)

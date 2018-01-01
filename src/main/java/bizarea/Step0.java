@@ -11,11 +11,10 @@ import com.vividsolutions.jts.geom.Envelope;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
-import marmot.remote.RemoteMarmotConnector;
-import marmot.remote.robj.MarmotClient;
+import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.DimensionDouble;
@@ -52,8 +51,8 @@ public class Step0 {
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
-		RemoteMarmotConnector connector = new RemoteMarmotConnector();
-		MarmotClient marmot = connector.connect(host, port);
+		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
+//		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
 		
 		DataSet result;
 		
@@ -84,10 +83,7 @@ public class Step0 {
 											"*-{cell_pos},param.block_cd")
 								.store(BIZ_GRID)
 								.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		result = marmot.createDataSet(BIZ_GRID, schema, "the_geom", srid, true);
-		marmot.execute(plan);
+		result = marmot.createDataSet(BIZ_GRID, "the_geom", srid, plan, true);
 		
 		marmot.deleteDataSet(TEMP_BIG_CITIES);
 		marmot.deleteDataSet(TEMP_BIZ_AREA);
@@ -110,7 +106,7 @@ public class Step0 {
 								.collect(Collectors.joining(",", "[", "]"));
 	}
 
-	private static final DataSet filterBigCities(MarmotClient marmot, String result) {
+	private static final DataSet filterBigCities(MarmotRuntime marmot, String result) {
 		String initExpr = String.format("$sid_cd=%s; $sgg_cd=%s", SIDO_EXPR, SGG_EXPR);
 
 		DataSet political = marmot.getDataSet(POLITICAL);
@@ -126,15 +122,11 @@ public class Step0 {
 										"$sid_cd.contains(sid_cd) || $sgg_cd.contains(sgg_cd)")
 								.store(result)
 								.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet ds = marmot.createDataSet(result, schema, geomCol, srid, true);
-		marmot.execute(plan);
-		
+		DataSet ds = marmot.createDataSet(result, geomCol, srid, plan, true);
 		return ds;
 	}
 
-	private static final DataSet filterBigCities2(MarmotClient marmot, String result) {
+	private static final DataSet filterBigCities2(MarmotRuntime marmot, String result) {
 		String initExpr = String.format("$sid_cd=%s; $sgg_cd=%s", SIDO_EXPR, SGG_EXPR);
 
 		DataSet political = marmot.getDataSet(CADASTRAL);
@@ -151,18 +143,14 @@ public class Step0 {
 								.project("the_geom,pnu")
 								.store(result)
 								.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet ds = marmot.createDataSet(result, schema, geomCol, srid, true);
-		marmot.execute(plan);
+		DataSet ds = marmot.createDataSet(result, geomCol, srid, plan, true);
 		
 		return ds;
 	}
 
-	private static final DataSet filterBizArea(MarmotClient marmot, String result)
+	private static final DataSet filterBizArea(MarmotRuntime marmot, String result)
 		throws Exception {
-		String listExpr = Arrays.asList("일반상업지역","유통상업지역","근린상업지역",
-										"중심상업지역")
+		String listExpr = Arrays.asList("일반상업지역","유통상업지역","근린상업지역", "중심상업지역")
 								.stream()
 								.map(str -> "'" + str + "'")
 								.collect(Collectors.joining(",", "[", "]"));
@@ -173,16 +161,12 @@ public class Step0 {
 		String srid = info.getSRID();
 
 		Plan plan = marmot.planBuilder("상업지역 추출")
-								.load(LAND_USAGE)
-								.filter(initExpr, "$types.contains(dgm_nm)")
-								.project("the_geom")
-								.store(TEMP_BIZ_AREA)
-								.build();
-		
-		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		DataSet ds = marmot.createDataSet(result, schema, geomCol, srid, true);
-		marmot.execute(plan);
-		
+							.load(LAND_USAGE)
+							.filter(initExpr, "$types.contains(dgm_nm)")
+							.project("the_geom")
+							.store(TEMP_BIZ_AREA)
+							.build();
+		DataSet ds = marmot.createDataSet(result, geomCol, srid, plan, true);
 		return ds;
 	}
 }
