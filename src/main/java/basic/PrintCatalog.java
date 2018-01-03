@@ -1,8 +1,11 @@
 package basic;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.PropertyConfigurator;
+import org.geotools.data.DataStoreFactorySpi;
+import org.geotools.data.DataStoreFinder;
 
 import marmot.Column;
 import marmot.DataSet;

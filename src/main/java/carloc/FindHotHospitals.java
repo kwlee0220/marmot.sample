@@ -41,7 +41,6 @@ public class FindHotHospitals {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-//		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
 		
 		Plan plan = marmot.planBuilder("find_hot_hospitals")
 								.load(TAXI_LOG)
@@ -58,7 +57,7 @@ public class FindHotHospitals {
 								.build();
 
 		marmot.deleteFile(RESULT);
-		marmot.execute(plan, true);
+		marmot.execute(plan);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 5);

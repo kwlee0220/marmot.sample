@@ -7,7 +7,7 @@ def commonDir = file('../../../common')
 }
 
 def marmotDir = file('../..')
-['marmot.api', 'marmot.client'].each {
+['marmot.client'].each {
 	include ":$it"
 	project(":$it").projectDir = file("$marmotDir/$it")
 }
