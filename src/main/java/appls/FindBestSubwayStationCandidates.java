@@ -3,7 +3,7 @@ package appls;
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.SUM;
-import static marmot.optor.JoinType.OUTER_JOIN;
+import static marmot.optor.JoinType.FULL_OUTER_JOIN;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import java.util.stream.Collectors;
@@ -99,7 +99,7 @@ public class FindBestSubwayStationCandidates {
 							"the_geom,cell_id,portion,"
 							+ "param.{the_geom as param_geom,cell_id as param_cell_id,"
 							+ "portion as param_portion}",
-							new JoinOptions().joinType(OUTER_JOIN))
+							new JoinOptions().joinType(FULL_OUTER_JOIN))
 					.update(expr)
 					.project("the_geom,cell_id,portion as value")
 					.store(RESULT)
