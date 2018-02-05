@@ -26,7 +26,7 @@ import marmot.process.AttachPortionParameters;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.DimensionDouble;
+import utils.Size2d;
 import utils.StopWatch;
 
 /**
@@ -41,7 +41,7 @@ public class FindBestSubwayStationCandidates {
 	private static final String RESULT = "분석결과/최종결과";
 	private static final String GEOM_COL = "the_geom";
 	private static final String SRID = "EPSG:5186";
-	private static final DimensionDouble CELL_SIZE = new DimensionDouble(500, 500);
+	private static final Size2d CELL_SIZE = new Size2d(500, 500);
 	
 	private static final String TEMP_STATIONS = "분석결과/지하철역사_버퍼_그리드";
 	private static final String TEMP_SEOUL_TAXI_LOG = "분석결과/역사외_지역/택시로그/집계";

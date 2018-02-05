@@ -16,7 +16,7 @@ import marmot.geo.GeoClientUtils;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.DimensionDouble;
+import utils.Size2d;
 import utils.StopWatch;
 
 /**
@@ -53,7 +53,7 @@ public class CalcHeatMap {
 		Envelope envl = border.getBounds();
 		Polygon key = GeoClientUtils.toPolygon(envl);
 		
-		DimensionDouble cellSize = new DimensionDouble(envl.getWidth() / 50,
+		Size2d cellSize = new Size2d(envl.getWidth() / 50,
 														envl.getHeight() / 50);
 		
 		Plan plan = marmot.planBuilder("calc_heat_map")

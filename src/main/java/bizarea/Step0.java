@@ -17,7 +17,7 @@ import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.DimensionDouble;
+import utils.Size2d;
 import utils.StopWatch;
 
 /**
@@ -67,7 +67,7 @@ public class Step0 {
 		DataSet info = marmot.getDataSet(CADASTRAL);
 		String srid = info.getSRID();
 		Envelope bounds = info.getBounds();
-		DimensionDouble cellSize = new DimensionDouble(100, 100);
+		Size2d cellSize = new Size2d(100, 100);
 		
 		Plan plan = marmot.planBuilder("대도시 상업지역 100mX100m 그리드 구역 생성")
 								// 용도지구에 대한 100m 크기의 그리드를 생성 

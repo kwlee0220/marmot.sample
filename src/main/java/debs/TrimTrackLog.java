@@ -1,10 +1,13 @@
 package debs;
 
+import java.time.LocalDateTime;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 import common.SampleUtils;
+import io.vavr.control.Option;
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -12,6 +15,7 @@ import marmot.RecordSet;
 import marmot.command.MarmotCommands;
 import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
+import marmot.support.DateTimeFunctions;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.DimensionDouble;
@@ -21,7 +25,7 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class AssignSquareGridCellToShipTracks {
+public class TrimTrackLog {
 	private static final String INPUT = "debs/ship_tracks";
 	private static final int RESOLUTION_LAT = 256;
 	private static final int RESOLUTION_LON = 512;
@@ -53,17 +57,24 @@ public class AssignSquareGridCellToShipTracks {
 		DimensionDouble cellSize = new DimensionDouble(bounds.getWidth() / RESOLUTION_LON,
 														bounds.getHeight() / RESOLUTION_LAT);
 		
-		Plan plan = marmot.planBuilder("assign_fishnet_gridcell")
-								.load(INPUT)
-								.assignSquareGridCell("the_geom", bounds, cellSize)
-								.expand("count:int", "count = 1")
-								.groupBy("ship_id,departure_port_name, cell_id")
-									.taggedKeyColumns("cell_geom")
-									.workerCount(11)
-									.aggregate(AggregateFunction.SUM("count").as("count"))
-								.project("cell_geom as the_geom,ship_id,departure_port_name,count")
-								.store(RESULT)
-								.build();
+		String initExpr = "$pattern = ST_DTPattern('dd-MM-yy hh:mm:ss')";
+		String expr = "ts = ST_DTToMillis(ST_DTParseLE(timestamp, $pattern))";
+		
+		Plan plan = marmot.planBuilder("trim_log")
+							.load(INPUT)
+							.expand("ts:long", initExpr, expr)
+							.project("the_geom,ship_id,depart_port,ts")
+//							.groupBy("depart_port,ship_id")
+//								.reduce(reducer)
+//							
+//							.expand("count:int", "count = 1")
+//							.groupBy("ship_id,departure_port_name, cell_id")
+//								.taggedKeyColumns("cell_geom")
+//								.workerCount(11)
+//								.aggregate(AggregateFunction.SUM("count").as("count"))
+//							.project("cell_geom as the_geom,ship_id,departure_port_name,count")
+							.store(RESULT)
+							.build();
 		DataSet result = marmot.createDataSet(RESULT, ds.getGeometryColumn(),
 												ds.getSRID(), plan, true);
 		watch.stop();

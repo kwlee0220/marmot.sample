@@ -15,7 +15,7 @@ import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.DimensionDouble;
+import utils.Size2d;
 import utils.StopWatch;
 
 /**
@@ -30,7 +30,7 @@ public class Y2T_2 {
 	private static final String RESULT01 = "tmp/result_01";
 	private static final String RESULT03 = "tmp/result_03";
 	
-	private static final DimensionDouble CELL_SIZE = new DimensionDouble(1000,1000);
+	private static final Size2d CELL_SIZE = new Size2d(1000,1000);
 	private static final int NWORKERS = 25;
 	
 	public static final void main(String... args) throws Exception {

@@ -12,7 +12,7 @@ import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.DimensionDouble;
+import utils.Size2d;
 import utils.StopWatch;
 
 /**
@@ -46,7 +46,7 @@ public class SampleAssignSquareGridCell {
 		
 		DataSet border = marmot.getDataSet(BORDER);
 		Envelope envl = border.getBounds();
-		DimensionDouble cellSize = new DimensionDouble(envl.getWidth() / 100,
+		Size2d cellSize = new Size2d(envl.getWidth() / 100,
 														envl.getHeight() / 100);
 		
 		Plan plan = marmot.planBuilder("assign_fishnet_gridcell")

@@ -12,7 +12,7 @@ import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.DimensionDouble;
+import utils.Size2d;
 import utils.StopWatch;
 
 /**
@@ -46,7 +46,7 @@ public class Test2017_2 {
 
 		DataSet info = marmot.getDataSet(ADDR_BLD);
 		Envelope bounds = info.getBounds();
-		DimensionDouble cellSize = new DimensionDouble(30, 30);
+		Size2d cellSize = new Size2d(30, 30);
 		
 		Plan plan = marmot.planBuilder("get_biz_grid")
 								.load(ADDR_BLD_UTILS)

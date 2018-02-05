@@ -11,7 +11,7 @@ import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.DimensionDouble;
+import utils.Size2d;
 import utils.StopWatch;
 
 /**
@@ -46,7 +46,7 @@ public class SampleLoadSquareGridFile {
 		DataSet dataset = marmot.getDataSet(INPUT);
 		String srid = dataset.getSRID();
 		String geomCol = dataset.getGeometryColumn();
-		DimensionDouble dim = new DimensionDouble(SIDE_LEN, SIDE_LEN);
+		Size2d dim = new Size2d(SIDE_LEN, SIDE_LEN);
 
 		Plan plan = marmot.planBuilder("sample_load_squaregrid")
 								.loadSquareGridFile(INPUT, dim)
