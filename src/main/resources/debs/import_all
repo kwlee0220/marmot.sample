@@ -1,9 +1,0 @@
-hadoop fs -mkdir data/misc
-
-hadoop fs -mkdir data/misc/DEBS
-hadoop fs -copyFromLocal $MARMOT_DATA/기타/DEBS/2018/ship_tracks data/misc/DEBS/ship_tracks
-bind_dataset data/misc/DEBS/ship_tracks -dataset debs/ship_tracks -type text
-mc_export_shapefile tmp/debs/fishnet -f -output ~/tmp/debs_fishnet.shp
-
-hadoop fs -copyFromLocal $MARMOT_DATA/기타/DEBS/2018/ports data/misc/DEBS
-bind_dataset data/misc/DEBS/ports -dataset debs/ports -type text
