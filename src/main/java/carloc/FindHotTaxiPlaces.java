@@ -41,7 +41,6 @@ public class FindHotTaxiPlaces {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-//		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
 		
 		Plan rank = marmot.planBuilder("count")
 							.rank("count:D", "rank")
