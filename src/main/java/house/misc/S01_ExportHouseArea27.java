@@ -34,9 +34,7 @@ public class S01_ExportHouseArea27 {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		DataSet info = marmot.getDataSet(HOUSE_AREA);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
+		DataSet input = marmot.getDataSet(HOUSE_AREA);
 		
 		Plan plan;
 		plan = marmot.planBuilder("export01")
@@ -44,6 +42,6 @@ public class S01_ExportHouseArea27 {
 					.filter("signgu_se.startsWith('27')")
 					.store(HOUSE_AREA + "_27")
 					.build();
-		DataSet ds = marmot.createDataSet(HOUSE_AREA + "_27", geomCol, srid, plan, true);
+		DataSet ds = marmot.createDataSet(HOUSE_AREA + "_27", input.getGeometryColumnInfo(), plan, true);
 	}
 }

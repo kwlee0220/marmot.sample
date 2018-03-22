@@ -49,16 +49,15 @@ public class S04_FindHouseCandidates {
 		throws Exception {
 		StopWatch elapsed = StopWatch.start();
 		
-		DataSet info = marmot.getDataSet(houseCadastral);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
+		DataSet input = marmot.getDataSet(houseCadastral);
+		String geomCol = input.getGeometryColumn();
 
 		Plan plan = marmot.planBuilder("총괄표제부 건물영역 제외 주거지적 영역 추출")
 						.load(houseCadastral)
 						.differenceJoin(geomCol, registeredBuildings)
 						.store(result)
 						.build();
-		DataSet ds = marmot.createDataSet(result, geomCol, srid, plan, true);
+		DataSet ds = marmot.createDataSet(result, input.getGeometryColumnInfo(), plan, true);
 
 		elapsed.stop();
 		System.out.printf("총괄표제부 건물영역 제외 주거지적 영역 추출 완료, "

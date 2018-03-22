@@ -53,10 +53,11 @@ public class FindHotTaxiPlaces {
 										"car_no,status,ts,param.{the_geom, EMD_CD,EMD_KOR_NM}")
 							.expand("hour:int", "hour=ts.substring(8,10)")
 							.groupBy("hour,status,EMD_CD")
-									.taggedKeyColumns("EMD_KOR_NM,the_geom")
-									.aggregate(COUNT())
+								.taggedKeyColumns("EMD_KOR_NM,the_geom")
+								.aggregate(COUNT())
 							.filter("count > 50")
-							.groupBy("hour,status").run(rank)
+							.groupBy("hour,status")
+								.run(rank)
 							.storeMarmotFile(RESULT)
 							.build();
 

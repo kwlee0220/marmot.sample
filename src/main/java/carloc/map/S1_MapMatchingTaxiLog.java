@@ -41,8 +41,6 @@ public class S1_MapMatchingTaxiLog {
 		
 		DataSet input = marmot.getDataSet(INPUT);
 		String geomCol = input.getGeometryColumn();
-		String srid = input.getSRID();
-		
 		
 		String script = String.format("%s = ST_ClosestPointOnLine(%s, line)", geomCol, geomCol);
 		
@@ -54,7 +52,7 @@ public class S1_MapMatchingTaxiLog {
 					.update(script)
 					.store(RESULT)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

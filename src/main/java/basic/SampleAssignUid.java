@@ -40,16 +40,14 @@ public class SampleAssignUid {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet input = marmot.getDataSet(INPUT);
-		String geomCol = input.getGeometryColumn();
-		String srid = input.getSRID();
-
 		Plan plan = marmot.planBuilder("sample_assign_uid")
 							.load(INPUT)
 							.filter("(long)출입구일련번호 % 119999 == 3")
 							.assignUid("guid")
 							.project("the_geom,guid,출입구일련번호")
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(),
+												plan, true);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

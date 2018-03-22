@@ -40,9 +40,6 @@ public class SampleExpand {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet input = marmot.getDataSet(INPUT);
-		String geomCol = input.getGeometryColumn();
-		String srid = input.getSRID();
-
 		Plan plan = marmot.planBuilder("update")
 							.load(INPUT)
 							.expand("the_geom:point,area:double,sig_cd:int",
@@ -52,7 +49,7 @@ public class SampleExpand {
 										+ "kor_sub_nm='Station(' + kor_sub_nm + ')'")
 							.project("the_geom,area,sig_cd,kor_sub_nm")
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

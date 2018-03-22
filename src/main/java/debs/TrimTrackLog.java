@@ -75,8 +75,7 @@ public class TrimTrackLog {
 //							.project("cell_geom as the_geom,ship_id,departure_port_name,count")
 							.store(RESULT)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, ds.getGeometryColumn(),
-												ds.getSRID(), plan, true);
+		DataSet result = marmot.createDataSet(RESULT, ds.getGeometryColumnInfo(), plan, true);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

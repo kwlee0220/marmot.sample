@@ -49,16 +49,15 @@ public class S03_FindRegistreredBuildingsFixed {
 		throws Exception {
 		StopWatch elapsed = StopWatch.start();
 		
-		DataSet info = marmot.getDataSet(buildings);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
+		DataSet input = marmot.getDataSet(buildings);
+		String geomCol = input.getGeometryColumn();
 
 		Plan plan = marmot.planBuilder("총괄표제부 보유 건물 추출")
 						.load(registry, 8)
 						.knnJoin(geomCol, buildings, 1, 10, "param.*")
 						.store(result)
 						.build();
-		DataSet ds = marmot.createDataSet(result, geomCol, srid, plan, true);
+		DataSet ds = marmot.createDataSet(result, input.getGeometryColumnInfo(), plan, true);
 		ds.cluster();
 		elapsed.stop();
 		

@@ -45,8 +45,8 @@ public class SampleLoadHexagonGridFile {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet dataset = marmot.getDataSet(INPUT);
-		String srid = dataset.getSRID();
 		String geomCol = dataset.getGeometryColumn();
+		String srid = dataset.getGeometryColumnInfo().srid();
 		Envelope bounds = dataset.getBounds();
 		bounds.expandBy(2*SIDE_LEN, SIDE_LEN);
 
@@ -55,7 +55,7 @@ public class SampleLoadHexagonGridFile {
 							.spatialSemiJoin("the_geom", INPUT, INTERSECTS, false)
 							.store(RESULT)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, dataset.getGeometryColumnInfo(), plan, true);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

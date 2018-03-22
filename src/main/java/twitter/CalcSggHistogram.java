@@ -4,6 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.optor.geo.SpatialRelation;
@@ -52,7 +53,8 @@ public class CalcSggHistogram {
 								.build();
 		
 		// MarmotServer에 생성한 프로그램을 전송하여 수행시킨다.
-		DataSet result = marmot.createDataSet(OUTPUT_DATASET, "the_geom", "EPSG:5186", plan, true);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
+		DataSet result = marmot.createDataSet(OUTPUT_DATASET, gcInfo, plan, true);
 		watch.stop();
 
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

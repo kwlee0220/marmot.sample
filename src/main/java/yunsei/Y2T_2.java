@@ -10,6 +10,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -58,8 +59,8 @@ public class Y2T_2 {
 		DataSet result;
 		
 		DataSet input = marmot.getDataSet(TAXI_LOG);
+		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		String geomCol = input.getGeometryColumn();
-		String srid = input.getSRID();
 		
 		// 전국 시도 행정구역 데이터에서 서울특별시 영역만을 추출하고, 영역의 MBR를 구한다.
 		plan = marmot.planBuilder("get_seoul")
@@ -76,7 +77,7 @@ public class Y2T_2 {
 					.store(TEMP_TAXI)
 					.build();
 
-		result = marmot.createDataSet(TEMP_TAXI, geomCol, srid, plan, true);
+		result = marmot.createDataSet(TEMP_TAXI, gcInfo, plan, true);
 		System.out.println("done: 택시 승하차 로그 선택, elapsed=" + watch.getElapsedTimeString());
 		result.cluster();
 		System.out.println("done: 승하차 로그 클러스터링, elapsed=" + watch.getElapsedTimeString());
@@ -97,21 +98,21 @@ public class Y2T_2 {
 									SUM("demand").as("demand_count"))
 					.store(RESULT)
 					.build();
-		result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
+		result = marmot.createDataSet(RESULT, gcInfo, plan, true);
 		
 		plan = marmot.planBuilder("새벽_01시_데이터  선택")
 					.load(RESULT)
 					.filter("hour == 1")
 					.store(RESULT01)
 					.build();
-		result = marmot.createDataSet(RESULT01, geomCol, srid, plan, true);
+		result = marmot.createDataSet(RESULT01, gcInfo, plan, true);
 		
 		plan = marmot.planBuilder("새벽_03시_데이터  선택")
 					.load(RESULT)
 					.filter("hour == 3")
 					.store(RESULT03)
 					.build();
-		result = marmot.createDataSet(RESULT03, geomCol, srid, plan, true);
+		result = marmot.createDataSet(RESULT03, gcInfo, plan, true);
 		
 		System.out.println("done, elapsed=" + watch.stopAndGetElpasedTimeString());
 		

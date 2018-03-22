@@ -53,8 +53,8 @@ public class FilterInSeoul {
 		DataSet result;
 		
 		DataSet ds = marmot.getDataSet(LAND_USAGE);
-		String geomCol = ds.getGeometryColumn();
-		String srid = ds.getSRID();
+//		String geomCol = ds.getGeometryColumn();
+//		String srid = ds.getSRID();
 		
 		// 전국 시도 행정구역 데이터에서 서울특별시 영역만을 추출한다.
 		Geometry seoul = getSeoulBoundary(marmot);
@@ -83,15 +83,13 @@ public class FilterInSeoul {
 					.filter("ctprvn_cd == '11'")
 					.build();
 		return marmot.executeLocally(plan).toList().get(0)
-					.getGeometry(sid.getGeometryColumn());
+										.getGeometry(sid.getGeometryColumnInfo().name());
 	}
 	
 	private static void getSeoulCadastral(MarmotRuntime marmot, Geometry seoul, String output) {
 		Plan plan;
 		
 		DataSet taxi = marmot.getDataSet(CADASTRAL);
-		String geomCol = taxi.getGeometryColumn();
-		String srid = taxi.getSRID();
 		
 		plan = marmot.planBuilder("grid_taxi_logs")
 					// 택시 로그를  읽는다.
@@ -100,6 +98,6 @@ public class FilterInSeoul {
 					.filter("pnu.startsWith('11')")
 					.store(output)
 					.build();
-		marmot.createDataSet(output, geomCol, srid, plan, true);
+		marmot.createDataSet(output, taxi.getGeometryColumnInfo(), plan, true);
 	}
 }

@@ -34,16 +34,14 @@ public class S02_ExportHouseCadastral27 {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		DataSet info = marmot.getDataSet(HOUSE_CADASTRAL);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
-		
+		DataSet input = marmot.getDataSet(HOUSE_CADASTRAL);
 		Plan plan;
 		plan = marmot.planBuilder("export01")
 					.load(HOUSE_CADASTRAL)
 					.filter("pnu.startsWith('27')")
 					.store(HOUSE_CADASTRAL + "_27")
 					.build();
-		DataSet ds = marmot.createDataSet(HOUSE_CADASTRAL + "_27", geomCol, srid, plan, true);
+		DataSet ds = marmot.createDataSet(HOUSE_CADASTRAL + "_27", input.getGeometryColumnInfo(),
+											plan, true);
 	}
 }

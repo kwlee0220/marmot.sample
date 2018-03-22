@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSchema;
@@ -72,7 +73,8 @@ public class S02_BuildDiffDataSet27 {
 					.filter("Math.abs(ST_Area(the_geom) - area) < 1")
 					.store("tmp/diff_cadastral")
 					.build();
-		DataSet result = marmot.createDataSet("tmp/diff_cadastral", "the_geom", "EPSG:5186", plan, true);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
+		DataSet result = marmot.createDataSet("tmp/diff_cadastral", gcInfo, plan, true);
 		marmot.deleteDataSet(DIFF_ID_LIST);
 
 		Charset charset = Charset.forName("UTF-8");

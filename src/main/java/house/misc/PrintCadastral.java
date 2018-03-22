@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSchema;
@@ -73,7 +74,8 @@ public class PrintCadastral {
 					.join("bd_mgt_sn", "tmp/diff3", "id", "*", null)
 					.store("tmp/diff_buildings")
 					.build();
-		marmot.createDataSet("tmp/diff_buildings", "the_geom", "EPSG:5186", plan, true);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
+		marmot.createDataSet("tmp/diff_buildings", gcInfo, plan, true);
 		
 		marmot.disconnect();
 	}

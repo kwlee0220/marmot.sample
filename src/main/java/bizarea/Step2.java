@@ -44,9 +44,8 @@ public class Step2 {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		DataSet info = marmot.getDataSet(BIZ_GRID_SALES);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
+		DataSet ds = marmot.getDataSet(BIZ_GRID_SALES);
+		String geomCol = ds.getGeometryColumn();
 		
 		String script = "if ( std_ym == null ) {std_ym = param_std_ym;}"
 						+ "if ( cell_id == null ) {cell_id = param_cell_id;}"
@@ -69,7 +68,7 @@ public class Step2 {
 											"*-{cell_pos},param.*-{the_geom,sgg_cd}")
 								.store(RESULT)
 								.build();
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, ds.getGeometryColumnInfo(), plan, true);
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

@@ -55,9 +55,8 @@ public class Step1FlowPop {
 								.collect(Collectors.joining("+"));
 		avgExpr = String.format("flow_pop=(%s)/24", avgExpr);
 		
-		DataSet info = marmot.getDataSet(BIZ_GRID);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
+		DataSet ds = marmot.getDataSet(BIZ_GRID);
+		String geomCol = ds.getGeometryColumn();
 		
 		Plan plan = marmot.planBuilder("대도시 상업지역 구역별 유동인구수 집계")
 								.load(FLOW_POP)
@@ -79,7 +78,7 @@ public class Step1FlowPop {
 								.project(String.format("%s,*-{%s}", geomCol, geomCol))
 								.store(RESULT)
 								.build();
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, ds.getGeometryColumnInfo(), plan, true);
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

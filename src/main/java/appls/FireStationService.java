@@ -49,7 +49,6 @@ public class FireStationService {
 		
 		DataSet ds = marmot.getDataSet(LAND_USAGE);
 		String geomCol = ds.getGeometryColumn();
-		String srid = ds.getSRID();
 		
 		plan = marmot.planBuilder("combine")
 					.load(LAND_USAGE)
@@ -58,7 +57,7 @@ public class FireStationService {
 								"param.{the_geom as the_geom,인구수 as pop}")
 					.store(RESULT)
 					.build();
-		result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
+		result = marmot.createDataSet(RESULT, ds.getGeometryColumnInfo(), plan, true);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

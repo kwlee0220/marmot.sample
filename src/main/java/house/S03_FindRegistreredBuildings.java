@@ -47,26 +47,25 @@ public class S03_FindRegistreredBuildings {
 	}
 	
 	static final DataSet process(MarmotRuntime marmot, String buildings, String registry,
-									String result)
+									String resultId)
 		throws Exception {
 		StopWatch elapsed = StopWatch.start();
 		
-		DataSet info = marmot.getDataSet(buildings);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
+		DataSet ds = marmot.getDataSet(buildings);
+		String geomCol = ds.getGeometryColumn();
 
 		Plan plan = marmot.planBuilder("총괄표제부 보유 건물 추출")
 						.load(buildings)
 						.arcGisSpatialJoin(geomCol, registry, INTERSECTS, true)
-						.store(result)
+						.store(resultId)
 						.build();
-		DataSet ds = marmot.createDataSet(result, geomCol, srid, plan, true);
-		ds.cluster();
+		DataSet result = marmot.createDataSet(resultId, ds.getGeometryColumnInfo(), plan, true);
+		result.cluster();
 		elapsed.stop();
 		
 		System.out.printf("총괄표제부 보유 건물 추출 완료, count=%d, elapsed=%s%n",
-							ds.getRecordCount(), elapsed.getElapsedTimeString());
+							result.getRecordCount(), elapsed.getElapsedTimeString());
 		
-		return ds;
+		return result;
 	}
 }

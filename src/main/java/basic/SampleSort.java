@@ -38,18 +38,14 @@ public class SampleSort {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-//		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
 		
 		DataSet input = marmot.getDataSet(INPUT);
-		String geomCol = input.getGeometryColumn();
-		String srid = input.getSRID();
-
 		Plan plan = marmot.planBuilder("sample_aggreate")
 							.load(INPUT)
 							.sort("휘발유:D")
 							.store(RESULT)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

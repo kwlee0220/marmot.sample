@@ -2,16 +2,14 @@ package misc;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import com.vividsolutions.jts.geom.Envelope;
-
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.DimensionDouble;
 import utils.StopWatch;
 
 /**
@@ -43,8 +41,9 @@ public class Test {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
-		DataSet info = marmot.getDataSet("교통/지하철/출입구");
-		String m_inGeomCol = info.getGeometryColumn();
+		DataSet input = marmot.getDataSet("교통/지하철/출입구");
+		String m_inGeomCol = input.getGeometryColumn();
+		String srid = input.getGeometryColumnInfo().srid();
 		
 		String paramId = "교통/도로/네트워크_추진단";
 		DataSet m_paramDs = marmot.getDataSet(paramId);
@@ -67,7 +66,8 @@ public class Test {
 					.expand("remains:double", "remains = 1000 - length")
 					.store("tmp/result")
 					.build();
-		DataSet result = marmot.createDataSet("tmp/result", "the_geom", info.getSRID(), plan, true);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
+		DataSet result = marmot.createDataSet("tmp/result", gcInfo, plan, true);
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

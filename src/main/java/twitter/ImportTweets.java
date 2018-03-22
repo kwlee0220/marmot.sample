@@ -4,6 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -54,7 +55,8 @@ public class ImportTweets {
 							.build();
 
 		// MarmotServer에 생성한 프로그램을 전송하여 수행시킨다.
-		DataSet result = marmot.createDataSet(OUTPUT_DATASET, "the_geom", SRID, plan, true);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", SRID);
+		DataSet result = marmot.createDataSet(OUTPUT_DATASET, gcInfo, plan, true);
 		result.cluster();
 		watch.stop();
 		

@@ -56,9 +56,8 @@ public class Step1FlowPop {
 		avgExpr = String.format("avg = %s / 24;", avgExpr);
 		String script = avgExpr + "year=std_ym.substring(0,4);";
 		
-		DataSet info = marmot.getDataSet(EMD);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
+		DataSet input = marmot.getDataSet(EMD);
+		String geomCol = input.getGeometryColumn();
 		
 		Plan plan = marmot.planBuilder("읍면동별 2015년도 유동인구 집계")
 							.load(FLOW_POP)
@@ -74,7 +73,7 @@ public class Step1FlowPop {
 							.project(String.format("%s,*-{%s}", geomCol, geomCol))
 							.store(RESULT)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

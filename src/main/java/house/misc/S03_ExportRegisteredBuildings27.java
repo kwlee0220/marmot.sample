@@ -34,10 +34,7 @@ public class S03_ExportRegisteredBuildings27 {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		DataSet info = marmot.getDataSet(REG_BUILDINGS);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
-		
+		DataSet input = marmot.getDataSet(REG_BUILDINGS);
 		Plan plan;
 		plan = marmot.planBuilder("export01")
 					.load(REG_BUILDINGS)
@@ -45,6 +42,6 @@ public class S03_ExportRegisteredBuildings27 {
 					.project("the_geom,bd_mgt_sn")
 					.store(REG_BUILDINGS + "_27")
 					.build();
-		DataSet ds = marmot.createDataSet(REG_BUILDINGS + "_27", geomCol, srid, plan, true);
+		DataSet ds = marmot.createDataSet(REG_BUILDINGS + "_27", input.getGeometryColumnInfo(), plan, true);
 	}
 }

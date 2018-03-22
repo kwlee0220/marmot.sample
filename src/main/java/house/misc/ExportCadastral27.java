@@ -5,6 +5,7 @@ import java.io.File;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -46,7 +47,8 @@ public class ExportCadastral27 {
 					.project("the_geom,pnu")
 					.store(RESULT)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, "the_geom", "EPSG:5186", plan, true);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
+		DataSet result = marmot.createDataSet(RESULT, gcInfo, plan, true);
 
 //		Charset charset = Charset.forName("UTF-8");
 //		marmot.writeToShapefile(result, SHP_FILE, "main", charset, false, false).get();

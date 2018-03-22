@@ -51,9 +51,8 @@ public class Step1CardSales {
 								.collect(Collectors.joining("+"));
 		sumExpr = "daily_sales="+sumExpr;
 		
-		DataSet info = marmot.getDataSet(BIZ_GRID);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
+		DataSet ds = marmot.getDataSet(BIZ_GRID);
+		String geomCol = ds.getGeometryColumn();
 		
 		Plan plan = marmot.planBuilder("대도시 상업지역 구역별 카드 일매출 집계")
 								// 전국 카드매출액 파일을 읽는다.
@@ -75,7 +74,7 @@ public class Step1CardSales {
 								.project(String.format("%s,*-{%s}", geomCol, geomCol))
 								.store(RESULT)
 								.build();
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, ds.getGeometryColumnInfo(), plan, true);
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

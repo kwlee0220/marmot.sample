@@ -11,6 +11,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -64,9 +65,9 @@ public class Step0 {
 		result = filterBizArea(marmot, TEMP_BIZ_AREA);
 		System.out.println("용도지구에서 상업지역 추출 완료, elapsed=" + watch.getElapsedTimeString());
 
-		DataSet info = marmot.getDataSet(CADASTRAL);
-		String srid = info.getSRID();
-		Envelope bounds = info.getBounds();
+		DataSet ds = marmot.getDataSet(CADASTRAL);
+		String srid = ds.getGeometryColumnInfo().srid();
+		Envelope bounds = ds.getBounds();
 		Size2d cellSize = new Size2d(100, 100);
 		
 		Plan plan = marmot.planBuilder("대도시 상업지역 100mX100m 그리드 구역 생성")
@@ -83,7 +84,8 @@ public class Step0 {
 											"*-{cell_pos},param.block_cd")
 								.store(BIZ_GRID)
 								.build();
-		result = marmot.createDataSet(BIZ_GRID, "the_geom", srid, plan, true);
+		result = marmot.createDataSet(BIZ_GRID, new GeometryColumnInfo("the_geom", srid),
+										plan, true);
 		
 		marmot.deleteDataSet(TEMP_BIG_CITIES);
 		marmot.deleteDataSet(TEMP_BIZ_AREA);
@@ -110,9 +112,6 @@ public class Step0 {
 		String initExpr = String.format("$sid_cd=%s; $sgg_cd=%s", SIDO_EXPR, SGG_EXPR);
 
 		DataSet political = marmot.getDataSet(POLITICAL);
-		String geomCol = political.getGeometryColumn();
-		String srid = political.getSRID();
-		
 		Plan plan = marmot.planBuilder("대도시지역 추출")
 								.load(POLITICAL)
 								.expand("sid_cd:string,sgg_cd:string",
@@ -122,7 +121,7 @@ public class Step0 {
 										"$sid_cd.contains(sid_cd) || $sgg_cd.contains(sgg_cd)")
 								.store(result)
 								.build();
-		DataSet ds = marmot.createDataSet(result, geomCol, srid, plan, true);
+		DataSet ds = marmot.createDataSet(result, political.getGeometryColumnInfo(), plan, true);
 		return ds;
 	}
 
@@ -130,9 +129,6 @@ public class Step0 {
 		String initExpr = String.format("$sid_cd=%s; $sgg_cd=%s", SIDO_EXPR, SGG_EXPR);
 
 		DataSet political = marmot.getDataSet(CADASTRAL);
-		String geomCol = political.getGeometryColumn();
-		String srid = political.getSRID();
-		
 		Plan plan = marmot.planBuilder("filter_big_cities")
 								.load(CADASTRAL)
 								.expand("sid_cd:string,sgg_cd:string",
@@ -143,9 +139,7 @@ public class Step0 {
 								.project("the_geom,pnu")
 								.store(result)
 								.build();
-		DataSet ds = marmot.createDataSet(result, geomCol, srid, plan, true);
-		
-		return ds;
+		return marmot.createDataSet(result, political.getGeometryColumnInfo(), plan, true);
 	}
 
 	private static final DataSet filterBizArea(MarmotRuntime marmot, String result)
@@ -156,17 +150,13 @@ public class Step0 {
 								.collect(Collectors.joining(",", "[", "]"));
 		String initExpr = String.format("$types = %s", listExpr);
 		
-		DataSet info = marmot.getDataSet(LAND_USAGE);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
-
+		DataSet ds = marmot.getDataSet(LAND_USAGE);
 		Plan plan = marmot.planBuilder("상업지역 추출")
 							.load(LAND_USAGE)
 							.filter(initExpr, "$types.contains(dgm_nm)")
 							.project("the_geom")
 							.store(TEMP_BIZ_AREA)
 							.build();
-		DataSet ds = marmot.createDataSet(result, geomCol, srid, plan, true);
-		return ds;
+		return marmot.createDataSet(result, ds.getGeometryColumnInfo(), plan, true);
 	}
 }

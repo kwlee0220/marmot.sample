@@ -61,12 +61,11 @@ public class SummarizeByHighSchoolShort {
 		
 		RecordSchema schema;
 		String geomCol = school.getGeometryColumn();
-		String srid = school.getSRID();
 
 		Plan plan1 = countTradeTransaction(marmot);
 		Plan plan2 = countLeaseTransaction(marmot);
 
-		marmot.createDataSet(TEMP, geomCol, srid, plan1, true);
+		marmot.createDataSet(TEMP, school.getGeometryColumnInfo(), plan1, true);
 		marmot.execute(plan2);
 		System.out.println("done: 아파트 거래 정보 지오코딩, elapsed=" + watch.getElapsedTimeString());
 		
@@ -81,7 +80,7 @@ public class SummarizeByHighSchoolShort {
 						.sort("count:D")
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan1, true);
+		DataSet result = marmot.createDataSet(RESULT, school.getGeometryColumnInfo(), plan1, true);
 		watch.stop();
 		
 		marmot.deleteDataSet(TEMP);
@@ -156,15 +155,14 @@ public class SummarizeByHighSchoolShort {
 	
 	private static DataSet findHighSchool(MarmotRuntime marmot) {
 		DataSet ds = marmot.getDataSet(SCHOOLS);
-		String geomCol = ds.getGeometryColumn();
-		String srid = ds.getSRID();
 	
 		Plan plan = marmot.planBuilder("find_high_school")
 							.load(SCHOOLS)
 							.filter("type == '고등학교'")
 							.store(HIGH_SCHOOLS)
 							.build();
-		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, ds.getGeometryColumnInfo(),
+												plan, true);
 		
 		return result;
 	}

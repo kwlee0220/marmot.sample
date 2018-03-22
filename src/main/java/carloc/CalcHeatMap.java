@@ -10,6 +10,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.geo.GeoClientUtils;
@@ -49,12 +50,11 @@ public class CalcHeatMap {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet border = marmot.getDataSet(SEOUL);
-		String srid = border.getSRID();
+		String srid = border.getGeometryColumnInfo().srid();
 		Envelope envl = border.getBounds();
 		Polygon key = GeoClientUtils.toPolygon(envl);
 		
-		Size2d cellSize = new Size2d(envl.getWidth() / 50,
-														envl.getHeight() / 50);
+		Size2d cellSize = new Size2d(envl.getWidth() / 50, envl.getHeight() / 50);
 		
 		Plan plan = marmot.planBuilder("calc_heat_map")
 							.loadSquareGridFile(envl, cellSize, 32)
@@ -62,10 +62,10 @@ public class CalcHeatMap {
 							.groupBy("cell_id")
 								.taggedKeyColumns("the_geom")
 								.aggregate(COUNT())
-//							.aggregateJoin("the_geom", TAXI_LOG, INTERSECTS, COUNT())
 							.store(RESULT)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, "the_geom", srid, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, new GeometryColumnInfo("the_geom", srid),
+												plan, true);
 		
 		SampleUtils.printPrefix(result, 5);
 	}

@@ -48,7 +48,6 @@ public class Step1Buildings {
 		Plan plan;
 		DataSet emd = marmot.getDataSet(EMD);
 		String geomCol = emd.getGeometryColumn();
-		String srid = emd.getSRID();
 		
 		String schemaStr = "old:byte,be5:byte";
 		String init = "$now = ST_DateNow();";
@@ -72,7 +71,7 @@ public class Step1Buildings {
 					.expand("old_ratio:double", "old_ratio = (double)old_cnt/bld_cnt")
 					.store(RESULT)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, emd.getGeometryColumnInfo(), plan, true);
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

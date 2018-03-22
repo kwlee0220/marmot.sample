@@ -9,6 +9,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -46,8 +47,9 @@ public class Test2017_1 {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
-		DataSet info = marmot.getDataSet(ADDR_BLD);
-		Envelope bounds = info.getBounds();
+		DataSet input = marmot.getDataSet(ADDR_BLD);
+		String srid = input.getGeometryColumnInfo().srid();
+		Envelope bounds = input.getBounds();
 		Size2d cellSize = new Size2d(30, 30);
 		
 		Plan plan = marmot.planBuilder("get_biz_grid")
@@ -61,7 +63,8 @@ public class Test2017_1 {
 								.project("the_geom,cell_id,count")
 								.store(GRID)
 								.build();
-		DataSet result = marmot.createDataSet(GRID, "the_geom", info.getSRID(), plan, true);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
+		DataSet result = marmot.createDataSet(GRID, gcInfo, plan, true);
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

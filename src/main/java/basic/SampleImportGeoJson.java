@@ -6,6 +6,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.rset.GeoJsonRecordSet;
@@ -41,13 +42,13 @@ public class SampleImportGeoJson {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-//		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
 		
 		DataSet result;
 		GeoJsonRecordSetReader reader = GeoJsonRecordSetReader.from(INPUT)
 																.srid("EPSG:5186");
 		try ( GeoJsonRecordSet rset = reader.read() ) {
-			result = marmot.createDataSet(OUTPUT, "the_geom", rset.getSRID(), rset, true);
+			result = marmot.createDataSet(OUTPUT, new GeometryColumnInfo("the_geom", rset.getSRID()), 
+											rset, true);
 		}
 		watch.stop();
 

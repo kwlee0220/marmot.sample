@@ -5,6 +5,7 @@ import java.io.File;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.command.MarmotCommands;
 import marmot.geo.geotools.ShapefileRecordSetWriter;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -39,11 +40,11 @@ public class SampleExportShapefile {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-//		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
 		
 		DataSet ds = marmot.getDataSet(INPUT);
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		ShapefileRecordSetWriter writer = ShapefileRecordSetWriter.into(OUTPUT)
-																	.srid(ds.getSRID())
+																	.srid(gcInfo.srid())
 																	.charset("euc-kr");
 		long ncount = writer.write(ds);
 		watch.stop();

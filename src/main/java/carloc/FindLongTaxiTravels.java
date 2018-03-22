@@ -4,6 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -39,7 +40,6 @@ public class FindLongTaxiTravels {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-//		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
 
 		Plan plan = marmot.planBuilder("find_long_travels")
 								.load(TAXI_TRJ)
@@ -52,7 +52,8 @@ public class FindLongTaxiTravels {
 								.project("*-{trajectory}")
 								.store(RESULT)
 								.build();
-		DataSet result = marmot.createDataSet(RESULT, "the_geom", SRID, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, new GeometryColumnInfo("the_geom", SRID),
+												plan, true);
 		
 		SampleUtils.printPrefix(result, 5);
 	}

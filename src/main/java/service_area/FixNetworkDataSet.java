@@ -40,7 +40,6 @@ public class FixNetworkDataSet {
 		
 		DataSet input = marmot.getDataSet(INPUT);
 		String geomCol = input.getGeometryColumn();
-		String srid = input.getSRID();
 		
 		String updEXpr = String.format("%1$s=id.startsWith('D') ? %1$s.reverse() : %1$s", geomCol);
 		
@@ -50,7 +49,7 @@ public class FixNetworkDataSet {
 					.update(updEXpr)
 					.store(OUTPUT)
 					.build();
-		DataSet ds = marmot.createDataSet(OUTPUT, geomCol, srid, plan, true);
+		DataSet ds = marmot.createDataSet(OUTPUT, input.getGeometryColumnInfo(), plan, true);
 		ds.cluster();
 
 		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());

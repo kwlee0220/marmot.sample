@@ -6,6 +6,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -53,7 +54,8 @@ public class FindPassingStation {
 							.project("*-{trajectory}")
 							.store(OUTPUT)
 							.build();
-		DataSet result = marmot.createDataSet(OUTPUT, "the_geom", SRID, plan, true);
+		DataSet result = marmot.createDataSet(OUTPUT, new GeometryColumnInfo("the_geom", SRID),
+											plan, true);
 		
 		SampleUtils.printPrefix(result, 5);
 		

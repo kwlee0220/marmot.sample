@@ -42,7 +42,6 @@ public class S0_PrepareRoadData {
 		
 		DataSet input = marmot.getDataSet(Globals.ROADS);
 		String geomCol = input.getGeometryColumn();
-		String srid = input.getSRID();
 		
 		Plan plan;
 		plan = marmot.planBuilder("도로 경로 simplication")
@@ -51,7 +50,8 @@ public class S0_PrepareRoadData {
 					.breakLineString(geomCol)
 					.store(Globals.ROADS_IDX)
 					.build();
-		DataSet result = marmot.createDataSet(Globals.ROADS_IDX, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(Globals.ROADS_IDX, input.getGeometryColumnInfo(),
+												plan, true);
 		System.out.printf("elapsed=%s (simplification)%n", watch.getElapsedTimeString());
 		
 		result.cluster();

@@ -54,9 +54,8 @@ public class Step1CardSales {
 		sumExpr = "sale_amt = " + sumExpr;
 		
 		Plan plan;
-		DataSet info = marmot.getDataSet(EMD);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
+		DataSet input = marmot.getDataSet(EMD);
+		String geomCol = input.getGeometryColumn();
 		
 		plan = marmot.planBuilder("읍면동별 2015년도 카드매출 집계")
 					.load(CARD_SALES)
@@ -77,7 +76,7 @@ public class Step1CardSales {
 					.project(String.format("%s,*-{%s}", geomCol, geomCol))
 					.store(RESULT)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

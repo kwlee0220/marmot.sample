@@ -91,9 +91,6 @@ public class S02_FindHouseCadastral {
 		StopWatch elapsed = StopWatch.start();
 		
 		DataSet left = marmot.getDataSet(cadastral);
-		String leftGeomCol = left.getGeometryColumn();
-		String leftSrid = left.getSRID();
-		
 		DataSet right = marmot.getDataSet(houseAreaId);
 		String rightGeomCol = right.getGeometryColumn();
 		
@@ -109,7 +106,7 @@ public class S02_FindHouseCadastral {
 						.project(projectColsExpr)
 						.store(result)
 						.build();
-		DataSet ds = marmot.createDataSet(result, leftGeomCol, leftSrid, plan, true);
+		DataSet ds = marmot.createDataSet(result, left.getGeometryColumnInfo(), plan, true);
 
 		elapsed.stop();
 		System.out.printf("전국 지적도에서 주거지적 추출 완료, count=%d elapsed=%s%n",

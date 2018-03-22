@@ -6,6 +6,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.command.MarmotCommands;
 import marmot.geo.geotools.ShapefileRecordSet;
 import marmot.geo.geotools.ShapefileRecordSetReader;
@@ -46,7 +47,8 @@ public class SampleImportShapefile {
 		ShapefileRecordSetReader reader = ShapefileRecordSetReader.from(INPUT)
 																.charset("euc-kr");
 		try ( ShapefileRecordSet rset = reader.read() ) {
-			ds = marmot.createDataSet(OUTPUT, "the_geom", rset.getSRID(), rset, true);
+			GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", rset.getSRID());
+			ds = marmot.createDataSet(OUTPUT, gcInfo, rset, true);
 		}
 		watch.stop();
 

@@ -11,6 +11,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -57,7 +58,7 @@ public class SummarizeByHighSchoolLong {
 			highSchools = findHighSchool(marmot);
 		}
 		String geomCol = highSchools.getGeometryColumn();
-		String srid = highSchools.getSRID();
+		String srid = highSchools.getGeometryColumnInfo().srid();
 		
 		plan = marmot.planBuilder("summarize_by_school")
 						.load(APT_TRX)
@@ -102,7 +103,8 @@ public class SummarizeByHighSchoolLong {
 						
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, "the_geom", srid, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, new GeometryColumnInfo("the_geom", srid),
+											plan, true);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 3);
@@ -111,15 +113,13 @@ public class SummarizeByHighSchoolLong {
 	
 	private static DataSet findHighSchool(MarmotRuntime marmot) {
 		DataSet ds = marmot.getDataSet(SCHOOLS);
-		String geomCol = ds.getGeometryColumn();
-		String srid = ds.getSRID();
 	
 		Plan plan = marmot.planBuilder("find_high_school")
 							.load(SCHOOLS)
 							.filter("type == '고등학교'")
 							.store(HIGH_SCHOOLS)
 							.build();
-		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, ds.getGeometryColumnInfo(), plan, true);
 		return result;
 	}
 }

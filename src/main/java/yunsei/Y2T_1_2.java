@@ -15,6 +15,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.optor.AggregateFunction;
@@ -67,8 +68,8 @@ public class Y2T_1_2 {
 		DataSet result;
 		
 		DataSet input = marmot.getDataSet(SID);
+		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		String geomCol = input.getGeometryColumn();
-		String srid = input.getSRID();
 		
 		// 전국 시도 행정구역 데이터에서 서울특별시 영역만을 추출한다.
 		plan = marmot.planBuilder("get_seoul")
@@ -83,7 +84,7 @@ public class Y2T_1_2 {
 					.intersects(geomCol, seoul)
 					.store(TEMP_BUS_SEOUL)
 					.build();
-		result = marmot.createDataSet(TEMP_BUS_SEOUL, geomCol, srid, plan, true);
+		result = marmot.createDataSet(TEMP_BUS_SEOUL, gcInfo, plan, true);
 		watch.stop();
 		
 		DataSet buffereds = null;
@@ -103,7 +104,7 @@ public class Y2T_1_2 {
 						.store(MULTI_RINGS)
 						.build();
 			if ( buffereds == null ) {
-				buffereds = marmot.createDataSet(MULTI_RINGS, geomCol, srid, plan, true);
+				buffereds = marmot.createDataSet(MULTI_RINGS, gcInfo, plan, true);
 			}
 			else {
 				marmot.execute(plan);
@@ -140,7 +141,7 @@ public class Y2T_1_2 {
 					.expand("ratio:double", expr)
 					.store(TEMP_JOINED)
 					.build();
-		marmot.createDataSet(TEMP_JOINED, geomCol, srid, plan, true);
+		marmot.createDataSet(TEMP_JOINED, gcInfo, plan, true);
 		
 		plan = marmot.planBuilder("analysis")
 					.load(TEMP_JOINED)
@@ -150,7 +151,7 @@ public class Y2T_1_2 {
 					.project("param_geom as the_geom, *-{param_geom}")
 					.store(RESULT)
 					.build();
-		marmot.createDataSet(RESULT, geomCol, srid, plan, true);
+		marmot.createDataSet(RESULT, gcInfo, plan, true);
 		
 //		ClusterWithKMeansParameters params = new ClusterWithKMeansParameters();
 //		params.dataset(INPUT);

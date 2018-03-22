@@ -57,9 +57,7 @@ public class ConcatPoliticals {
 					   + "	bjd_nm = sig_kor_nm + ' ' + bjd_nm;"
 					   + "}";
 		
-		DataSet info = marmot.getDataSet(SGG);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
+		DataSet ds = marmot.getDataSet(SGG);
 
 		Plan plan;
 		plan = marmot.planBuilder("merge_politicals")
@@ -88,7 +86,7 @@ public class ConcatPoliticals {
 								+ "sgg_cd,sgg_nm,emd_cd,emd_nm,li_cd,li_nm")
 						.store(POLITICAL)
 						.build();
-		DataSet result = marmot.createDataSet(POLITICAL, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(POLITICAL, ds.getGeometryColumnInfo(), plan, true);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		result.cluster();

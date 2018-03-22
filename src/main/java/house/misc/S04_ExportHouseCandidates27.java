@@ -38,9 +38,7 @@ public class S04_ExportHouseCandidates27 {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		DataSet info = marmot.getDataSet(CANDIDATE_AREA);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
+		DataSet input = marmot.getDataSet(CANDIDATE_AREA);
 		
 		Plan plan;
 		plan = marmot.planBuilder("export01")
@@ -49,7 +47,7 @@ public class S04_ExportHouseCandidates27 {
 					.project("the_geom,pnu")
 					.store(CANDIDATE_AREA + "_27")
 					.build();
-		DataSet ds = marmot.createDataSet(CANDIDATE_AREA + "_27", geomCol, srid, plan, true);
+		DataSet ds = marmot.createDataSet(CANDIDATE_AREA + "_27", input.getGeometryColumnInfo(), plan, true);
 
 		Charset charset = Charset.forName("UTF-8");
 		marmot.writeToShapefile(ds, SHP_FILE, "main", charset, false, false).get();

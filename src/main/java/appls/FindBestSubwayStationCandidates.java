@@ -17,6 +17,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordSchema;
@@ -41,6 +42,7 @@ public class FindBestSubwayStationCandidates {
 	private static final String RESULT = "분석결과/최종결과";
 	private static final String GEOM_COL = "the_geom";
 	private static final String SRID = "EPSG:5186";
+	private static final GeometryColumnInfo GEOM_COL_INFO = new GeometryColumnInfo(GEOM_COL, SRID);
 	private static final Size2d CELL_SIZE = new Size2d(500, 500);
 	
 	private static final String TEMP_STATIONS = "분석결과/지하철역사_버퍼_그리드";
@@ -104,7 +106,7 @@ public class FindBestSubwayStationCandidates {
 					.project("the_geom,cell_id,portion as value")
 					.store(RESULT)
 					.build();
-		result = marmot.createDataSet(RESULT, GEOM_COL, SRID, plan, true);
+		result = marmot.createDataSet(RESULT, GEOM_COL_INFO, plan, true);
 		watch.stop();
 		
 		System.out.printf("종료: 그리드 셀단위 유동인구 비율과 택시 승하차 로그 비율 합계, output=%s, elapsed=%s%n",
@@ -137,7 +139,6 @@ public class FindBestSubwayStationCandidates {
 		// 서울지역 지하철 역사를 구하고 1km 버퍼를 구한다.
 		DataSet stations = marmot.getDataSet(STATIONS);
 		String geomCol = stations.getGeometryColumn();
-		String srid = stations.getSRID();
 		
 		plan = marmot.planBuilder("서울지역 지하철역사 1KM 버퍼")
 					.load(STATIONS)
@@ -145,7 +146,7 @@ public class FindBestSubwayStationCandidates {
 					.buffer(geomCol, geomCol, 1000)
 					.store(output)
 					.build();
-		DataSet result = marmot.createDataSet(output, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(output, stations.getGeometryColumnInfo(), plan, true);
 		
 		System.out.printf("종료: 서울지역 지하철역사 1KM 버퍼, output=%s, elapsed=%s%n",
 							output, watch.getElapsedTimeString());
@@ -159,7 +160,7 @@ public class FindBestSubwayStationCandidates {
 		
 		DataSet input = marmot.getDataSet(FLOW_POP_BYTIME);
 		String geomCol = input.getGeometryColumn();
-		String srid = input.getSRID();
+		String srid = input.getGeometryColumnInfo().srid();
 
 		Envelope bounds = seoul.getEnvelopeInternal();
 		String sumExpr = IntStream.range(0, 24)
@@ -190,7 +191,8 @@ public class FindBestSubwayStationCandidates {
 					.build();
 		
 		try {
-			DataSet result = marmot.createDataSet(TEMP_SEOUL_FLOW_POP_BLOCK, geomCol, srid, plan, true);
+			DataSet result = marmot.createDataSet(TEMP_SEOUL_FLOW_POP_BLOCK,
+												input.getGeometryColumnInfo(), plan, true);
 			
 			System.out.printf("종료: 소지역단위 유동인구 집계, output=%s, elapsed=%s%n",
 							TEMP_SEOUL_FLOW_POP_BLOCK, watch.getElapsedTimeString());
@@ -207,7 +209,8 @@ public class FindBestSubwayStationCandidates {
 							.aggregate(SUM("avg").as("avg"))
 						.store(TEMP_SEOUL_FLOW_POP_GRID)
 						.build();
-			marmot.createDataSet(TEMP_SEOUL_FLOW_POP_GRID, GEOM_COL, srid, plan, true);
+			marmot.createDataSet(TEMP_SEOUL_FLOW_POP_GRID,
+								new GeometryColumnInfo(GEOM_COL, srid), plan, true);
 			System.out.printf("종료: 그리드 셀단위 유동인구 집계, output=%s, elapsed=%s%n",
 								TEMP_SEOUL_FLOW_POP_GRID, watch.getElapsedTimeString());
 
@@ -233,7 +236,7 @@ public class FindBestSubwayStationCandidates {
 		
 		DataSet taxi = marmot.getDataSet(TAXI_LOG);
 		String geomCol = taxi.getGeometryColumn();
-		String srid = taxi.getSRID();
+		String srid = taxi.getGeometryColumnInfo().srid();
 		
 		StopWatch watch = StopWatch.start();
 		
@@ -250,7 +253,8 @@ public class FindBestSubwayStationCandidates {
 					.spatialSemiJoin("the_geom", TEMP_STATIONS, INTERSECTS, true)
 					.store(TEMP_SEOUL_TAXI_LOG)
 					.build();
-		DataSet result = marmot.createDataSet(TEMP_SEOUL_TAXI_LOG, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(TEMP_SEOUL_TAXI_LOG,
+												taxi.getGeometryColumnInfo(), plan, true);
 		System.out.println("종료: 택시승하차 로그 집계, elapsed=" + watch.getElapsedTimeString());
 					
 		watch = StopWatch.start();
@@ -267,7 +271,8 @@ public class FindBestSubwayStationCandidates {
 					.store(TEMP_SEOUL_TAXI_LOG_GRID)
 					.build();
 		try {
-			marmot.createDataSet(TEMP_SEOUL_TAXI_LOG_GRID, GEOM_COL, srid, plan, true);
+			marmot.createDataSet(TEMP_SEOUL_TAXI_LOG_GRID,
+								new GeometryColumnInfo(GEOM_COL, srid), plan, true);
 			System.out.printf("종료: 그리드 셀단위 택시승하차 로그 집계, output=%s, elapsed=%s%n",
 								TEMP_SEOUL_TAXI_LOG_GRID, watch.getElapsedTimeString());
 			

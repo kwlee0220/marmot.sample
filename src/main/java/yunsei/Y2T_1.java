@@ -15,6 +15,7 @@ import com.google.common.collect.Streams;
 import com.vividsolutions.jts.geom.Geometry;
 
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -82,8 +83,8 @@ public class Y2T_1 {
 		DataSet result;
 		
 		DataSet input = marmot.getDataSet(SID);
+		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		String geomCol = input.getGeometryColumn();
-		String srid = input.getSRID();
 		
 		// 전국 시도 행정구역 데이터에서 서울특별시 영역만을 추출한다.
 		plan = marmot.planBuilder("get_seoul")
@@ -100,7 +101,7 @@ public class Y2T_1 {
 					.store(TEMP_BUS_SEOUL)
 					.build();
 
-		result = marmot.createDataSet(TEMP_BUS_SEOUL, geomCol, srid, plan, true);
+		result = marmot.createDataSet(TEMP_BUS_SEOUL, gcInfo, plan, true);
 		System.out.println("done: crop bus_ot_dt with seoul");
 		
 		DataSet multiRings = doMultiRing(marmot, result, seoul, MULTI_RINGS);
@@ -125,7 +126,7 @@ public class Y2T_1 {
 					.store(TEMP_HISTOGRAM)
 					.build();
 
-		result = marmot.createDataSet(TEMP_HISTOGRAM, geomCol, srid, plan, true);
+		result = marmot.createDataSet(TEMP_HISTOGRAM, gcInfo, plan, true);
 		
 		marmot.deleteDataSet(MULTI_RINGS);
 		System.out.println("done: build_histogram, elapsed=" + watch.getElapsedTimeString());
@@ -160,7 +161,6 @@ public class Y2T_1 {
 	private static DataSet doMultiRing(MarmotRuntime marmot, DataSet bus, Geometry range,
 										String outputDs) {
 		final String geomCol = bus.getGeometryColumn();
-		final String srid = bus.getSRID();
 		
 		StringBuilder builder;
 		DataSet multiRings = null;
@@ -193,7 +193,7 @@ public class Y2T_1 {
 							.store(outputDs)
 							.build();
 			if ( multiRings == null ) {
-				multiRings = marmot.createDataSet(outputDs, geomCol, srid, plan, true);
+				multiRings = marmot.createDataSet(outputDs, bus.getGeometryColumnInfo(), plan, true);
 			}
 			else {
 				marmot.execute(plan);

@@ -49,7 +49,6 @@ public class SummarizeBySgg {
 		Plan plan;
 		DataSet emd = marmot.getDataSet(SGG);
 		String geomCol = emd.getGeometryColumn();
-		String srid = emd.getSRID();
 		
 		plan = marmot.planBuilder("summarize_by_station")
 						.load(APT_TRX)
@@ -71,7 +70,7 @@ public class SummarizeBySgg {
 						
 						.store(RESULT)
 						.build();
-		marmot.createDataSet(RESULT, geomCol, srid, plan, true);
+		marmot.createDataSet(RESULT, emd.getGeometryColumnInfo(), plan, true);
 		watch.stop();
 		
 		System.out.printf("elapsed: %s%n", watch.getElapsedTimeString());

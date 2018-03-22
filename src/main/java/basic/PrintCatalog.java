@@ -1,14 +1,12 @@
 package basic;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.PropertyConfigurator;
-import org.geotools.data.DataStoreFactorySpi;
-import org.geotools.data.DataStoreFinder;
 
 import marmot.Column;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -47,9 +45,14 @@ public class PrintCatalog {
 			System.out.println("DataSet name: " + ds.getId());
 			System.out.println("\tDir: " + ds.getDirName());
 			System.out.println("\tType: " + ds.getType());
-			System.out.println("\tSRID: " + ds.getSRID());
+			if ( ds.hasGeometryColumn() ) {
+				GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
+
+				System.out.println("\tGeometry column: " + gcInfo.name());
+				System.out.println("\tSRID: " + gcInfo.srid());
+			}
+			
 			System.out.println("\t# of records: " + ds.getRecordCount());
-			System.out.println("\tGeometry columns: " + ds.getGeometryColumn());
 
 			System.out.println("\tColumns: ");
 			RecordSchema schema = ds.getRecordSchema();

@@ -57,9 +57,8 @@ public class BuildJinBunPOI {
 		result = marmot.createDataSet(tempDs, plan, true);
 
 		try {
-			DataSet info = marmot.getDataSet(BUILD_POI);
-			String geomCol = info.getGeometryColumn();
-			String srid = info.getSRID();
+			DataSet ds = marmot.getDataSet(BUILD_POI);
+			String geomCol = ds.getGeometryColumn();
 			
 			plan = marmot.planBuilder("build_jibun_poi")
 							.load(BUILD_POI)
@@ -73,7 +72,7 @@ public class BuildJinBunPOI {
 							.distinct("건물관리번호,법정동코드,지번본번,지번부번,산여부")
 							.store(RESULT)
 							.build();
-			result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
+			result = marmot.createDataSet(RESULT, ds.getGeometryColumnInfo(), plan, true);
 			System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 			
 			SampleUtils.printPrefix(result, 5);

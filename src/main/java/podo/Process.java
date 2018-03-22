@@ -10,6 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -86,7 +87,8 @@ public class Process {
 						.project("the_geom,c1987,c2007")
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, "the_geom", "EPSG:5186", plan, true);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
+		DataSet result = marmot.createDataSet(RESULT, gcInfo, plan, true);
 		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
 		
 		return result;
@@ -116,7 +118,6 @@ public class Process {
 		
 		DataSet ds = marmot.getDataSet(inputDsId);
 		String geomCol = ds.getGeometryColumn();
-		String srid = ds.getSRID();
 		
 		Plan plan = marmot.planBuilder(inputDsId + "_분할")
 							.load(inputDsId, 16)
@@ -126,7 +127,7 @@ public class Process {
 							.drop(0)
 							.store(outputDsId)
 							.build();
-		DataSet result = marmot.createDataSet(outputDsId, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(outputDsId, ds.getGeometryColumnInfo(), plan, true);
 		
 		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
 	}

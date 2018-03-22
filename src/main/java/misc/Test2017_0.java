@@ -8,6 +8,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -56,8 +57,8 @@ public class Test2017_0 {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
-		DataSet info = marmot.getDataSet(ADDR_BLD);
-		String srid = info.getSRID();
+		DataSet input = marmot.getDataSet(ADDR_BLD);
+		String srid = input.getGeometryColumnInfo().srid();
 		
 		String initExpr = BLD_CODES.stream()
 									.map(cd -> "\"" + cd + "\"")
@@ -70,7 +71,8 @@ public class Test2017_0 {
 								.project("the_geom,건물관리번호")
 								.store(ADDR_BLD_UTILS)
 								.build();
-		DataSet result = marmot.createDataSet(ADDR_BLD_UTILS, "the_geom", srid, plan, true);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
+		DataSet result = marmot.createDataSet(ADDR_BLD_UTILS, gcInfo, plan, true);
 		result.cluster();
 		watch.stop();
 		

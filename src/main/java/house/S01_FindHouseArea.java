@@ -47,20 +47,18 @@ public class S01_FindHouseArea {
 		throws Exception {
 		StopWatch elapsed = StopWatch.start();
 		
-		DataSet info = marmot.getDataSet(landUsage);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
+		DataSet ds = marmot.getDataSet(landUsage);
 
 		Plan plan = marmot.planBuilder("주거지역 추출")
 						.load(landUsage)
 						.filter("lclas_cl == 'UQA100'")
 						.store(result)
 						.build();
-		DataSet ds = marmot.createDataSet(result, geomCol, srid, plan, true);
-		ds.cluster();
+		DataSet resDs = marmot.createDataSet(landUsage, ds.getGeometryColumnInfo(), plan, true);
+		resDs.cluster();
 		System.out.printf("용도지역지구에서 주거지역 추출 완료, count=%d, elapsed=%s%n",
-							ds.getRecordCount(), elapsed.getElapsedTimeString());
+							resDs.getRecordCount(), elapsed.getElapsedTimeString());
 		
-		return ds;
+		return resDs;
 	}
 }

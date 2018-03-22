@@ -53,7 +53,6 @@ public class SplitLandCover {
 	private static void split(PBMarmotClient marmot, String inputDsId, String outputDsId) {
 		DataSet ds = marmot.getDataSet(inputDsId);
 		String geomCol = ds.getGeometryColumn();
-		String srid = ds.getSRID();
 		
 		Plan plan = marmot.planBuilder(inputDsId + "_분할")
 							.load(inputDsId, 16)
@@ -64,7 +63,7 @@ public class SplitLandCover {
 							.build();
 
 		StopWatch watch = StopWatch.start();
-		marmot.createDataSet(outputDsId, geomCol, srid, plan, true);
+		marmot.createDataSet(outputDsId, ds.getGeometryColumnInfo(), plan, true);
 		watch.stop();
 		
 		System.out.printf("done: input=%s elapsed=%s%n", inputDsId, watch.getElapsedTimeString());

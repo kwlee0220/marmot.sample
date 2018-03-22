@@ -11,6 +11,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.DataSetType;
+import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -92,11 +93,11 @@ public class Y2S_1 {
 		marmot.executeProcess("e2sfca", params2.toMap());
 		
 		DataSet busResult = marmot.getDataSet(RESULT_BUS);
+		GeometryColumnInfo gcInfo = busResult.getGeometryColumnInfo();
 		String hdfsPath = busResult.getHdfsPath();
 		String parentPath = FilenameUtils.getFullPathNoEndSeparator(hdfsPath);
 		marmot.deleteDataSet(RESULT_CONCAT);
-		marmot.bindExternalDataSet(RESULT_CONCAT, parentPath, DataSetType.FILE,
-									busResult.getGeometryColumn(), busResult.getSRID());
+		marmot.bindExternalDataSet(RESULT_CONCAT, parentPath, DataSetType.FILE, gcInfo);
 		
 		plan = marmot.planBuilder("merge")
 					.load(RESULT_CONCAT)
@@ -106,8 +107,7 @@ public class Y2S_1 {
 								SUM("index_15").as("index_15"))
 					.store(RESULT)
 					.build();
-		result = marmot.createDataSet(RESULT, busResult.getGeometryColumn(),
-										busResult.getSRID(), plan, true);
+		result = marmot.createDataSet(RESULT, gcInfo, plan, true);
 		watch.stop();
 		
 		marmot.deleteDataSet(RESULT_CONCAT);
@@ -136,15 +136,12 @@ public class Y2S_1 {
 		Geometry gangnaum = getGangnamGu(marmot);
 		
 		DataSet flowPop = marmot.getDataSet(FLOW_POP);
-		String geomCol = flowPop.getGeometryColumn();
-		String srid = flowPop.getSRID();
-		
 		plan = marmot.planBuilder("강남구 영역 유동인구 정보 추출")
 						.load(FLOW_POP, SpatialRelation.INTERSECTS, gangnaum)
 						.project("the_geom,block_cd,avg_08tmst,avg_15tmst")
 						.store(output)
 						.build();
-		DataSet result = marmot.createDataSet(output, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(output, flowPop.getGeometryColumnInfo(), plan, true);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

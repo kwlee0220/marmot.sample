@@ -39,9 +39,7 @@ public class Step0 {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		DataSet info = marmot.getDataSet(FLOW_POP);
-		String geomCol = info.getGeometryColumn();
-		String srid = info.getSRID();
+		DataSet input = marmot.getDataSet(FLOW_POP);
 		
 		Plan plan;
 		plan = marmot.planBuilder("2015년도 소지역 점좌표 추출")
@@ -50,7 +48,7 @@ public class Step0 {
 					.distinct("block_cd")
 					.store(RESULT)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, geomCol, srid, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);
