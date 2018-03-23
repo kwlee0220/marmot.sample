@@ -16,7 +16,7 @@ import utils.StopWatch;
  */
 public class SampleDataSet {
 //	private static final String INPUT = "POI/주유소_가격";
-	private static final String INPUT = "구역/읍면동";
+	private static final String INPUT = "구역/시도";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
