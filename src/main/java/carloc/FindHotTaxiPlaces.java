@@ -42,10 +42,6 @@ public class FindHotTaxiPlaces {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		Plan rank = marmot.planBuilder("count")
-							.rank("count:D", "rank")
-							.build();
-		
 		Plan plan = marmot.planBuilder("find_hot_taxi_places")
 							.load(TAXI_LOG)
 							.filter("status==1 || status==2")
@@ -57,7 +53,8 @@ public class FindHotTaxiPlaces {
 								.aggregate(COUNT())
 							.filter("count > 50")
 							.groupBy("hour,status")
-								.run(rank)
+								.orderBy("count:D")
+								.list()
 							.storeMarmotFile(RESULT)
 							.build();
 
@@ -65,6 +62,6 @@ public class FindHotTaxiPlaces {
 		marmot.execute(plan);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
-		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 5);
+		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 50);
 	}
 }

@@ -52,22 +52,22 @@ public class Step2 {
 						+ "if ( sgg_cd == null ) {sgg_cd = param_sgg_cd;}";
 
 		Plan plan = marmot.planBuilder("대도시 상업지역 구역별 카드매출액 및 유동인구수 통합")
-								.load(BIZ_GRID_SALES)
-								.join("std_ym,cell_id,sgg_cd", BIZ_GRID_FLOW_POP,
-										"std_ym,cell_id,sgg_cd",
-										"*, param.{"
-											+ "the_geom as param_the_geom,"
-											+ "std_ym as param_std_ym,"
-											+ "cell_id as param_cell_id,"
-											+ "sgg_cd as param_sgg_cd,"
-											+ "flow_pop}", new JoinOptions().workerCount(16))
-								.update(script)
-								.project("*-{param_the_geom,param_std_ym,param_cell_id,param_sgg_cd}")
-								// 최종 결과에 행정도 코드를 부여한다.
-								.spatialJoin("the_geom", POLITICAL, INTERSECTS,
-											"*-{cell_pos},param.*-{the_geom,sgg_cd}")
-								.store(RESULT)
-								.build();
+							.load(BIZ_GRID_SALES)
+							.join("std_ym,cell_id,sgg_cd", BIZ_GRID_FLOW_POP,
+									"std_ym,cell_id,sgg_cd",
+									"*, param.{"
+										+ "the_geom as param_the_geom,"
+										+ "std_ym as param_std_ym,"
+										+ "cell_id as param_cell_id,"
+										+ "sgg_cd as param_sgg_cd,"
+										+ "flow_pop}", new JoinOptions().workerCount(16))
+							.update(script)
+							.project("*-{param_the_geom,param_std_ym,param_cell_id,param_sgg_cd}")
+							// 최종 결과에 행정도 코드를 부여한다.
+							.spatialJoin("the_geom", POLITICAL, INTERSECTS,
+										"*-{cell_pos},param.*-{the_geom,sgg_cd}")
+							.store(RESULT)
+							.build();
 		DataSet result = marmot.createDataSet(RESULT, ds.getGeometryColumnInfo(), plan, true);
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		

@@ -5,8 +5,8 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.optor.AggregateFunction;
-import marmot.optor.geo.SpatialRelation;
+import static marmot.optor.AggregateFunction.*;
+import static marmot.optor.geo.SpatialRelation.*;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -45,13 +45,12 @@ public class FindHotHospitals {
 		Plan plan = marmot.planBuilder("find_hot_hospitals")
 								.load(TAXI_LOG)
 								.filter("status==1 || status==2")
-								.spatialJoin("the_geom", HOSPITAL,
-											SpatialRelation.WITHIN_DISTANCE(50),
+								.spatialJoin("the_geom", HOSPITAL, WITHIN_DISTANCE(50),
 											"param.{the_geom,gid,bplc_nm,bz_stt_nm}")
 								.filter("bz_stt_nm=='운영중'")
 								.groupBy("gid")
 									.taggedKeyColumns("the_geom,bplc_nm")
-									.aggregate(AggregateFunction.COUNT())
+									.aggregate(COUNT())
 								.rank("count:D", "rank")
 								.storeMarmotFile(RESULT)
 								.build();
@@ -60,6 +59,6 @@ public class FindHotHospitals {
 		marmot.execute(plan);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
-		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 5);
+		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 50);
 	}
 }

@@ -71,25 +71,26 @@ public class Step0 {
 		Size2d cellSize = new Size2d(100, 100);
 		
 		Plan plan = marmot.planBuilder("대도시 상업지역 100mX100m 그리드 구역 생성")
-								// 용도지구에 대한 100m 크기의 그리드를 생성 
-								.loadSquareGridFile(bounds, cellSize)
-								// 상업지구에 겹치는 그리드 셀만 추출한다.
-								.spatialSemiJoin("the_geom", TEMP_BIZ_AREA, INTERSECTS, false)
-								// 상업지구 그리드 셀에 대해 대도시 영역만을 선택하고,
-								// 행정도 코드(sgg_cd)를 부여한다.
-								.spatialJoin("the_geom", TEMP_BIG_CITIES, INTERSECTS,
-											"*-{cell_pos},param.sgg_cd")
-								// 소지역 코드 (block_cd)를 부여한다.
-								.spatialJoin("the_geom", BLOCK_CENTERS, INTERSECTS,
-											"*-{cell_pos},param.block_cd")
-								.store(BIZ_GRID)
-								.build();
+							// 용도지구에 대한 100m 크기의 그리드를 생성 
+							.loadSquareGridFile(bounds, cellSize)
+							// 상업지구에 겹치는 그리드 셀만 추출한다.
+							.spatialSemiJoin("the_geom", TEMP_BIZ_AREA, INTERSECTS, false)
+							// 상업지구 그리드 셀에 대해 대도시 영역만을 선택하고,
+							// 행정도 코드(sgg_cd)를 부여한다.
+							.spatialJoin("the_geom", TEMP_BIG_CITIES, INTERSECTS,
+										"*-{cell_pos},param.sgg_cd")
+							// 소지역 코드 (block_cd)를 부여한다.
+							.spatialJoin("the_geom", BLOCK_CENTERS, INTERSECTS,
+										"*-{cell_pos},param.block_cd")
+							.store(BIZ_GRID)
+							.build();
 		result = marmot.createDataSet(BIZ_GRID, new GeometryColumnInfo("the_geom", srid),
 										plan, true);
 		
 		marmot.deleteDataSet(TEMP_BIG_CITIES);
 		marmot.deleteDataSet(TEMP_BIZ_AREA);
-		System.out.printf("상업지구 그리드 셀 구성 완료, elapsed: %s%n", watch.stopAndGetElpasedTimeString());
+		System.out.printf("상업지구 그리드 셀 구성 완료, elapsed: %s%n",
+							watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);
 	}

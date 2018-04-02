@@ -18,6 +18,7 @@ import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.Size2d;
+import utils.Size2i;
 import utils.StopWatch;
 
 /**
@@ -53,8 +54,9 @@ public class CalcHeatMap {
 		String srid = border.getGeometryColumnInfo().srid();
 		Envelope envl = border.getBounds();
 		Polygon key = GeoClientUtils.toPolygon(envl);
-		
-		Size2d cellSize = new Size2d(envl.getWidth() / 50, envl.getHeight() / 50);
+
+		Size2i resol = new Size2i(50, 50);
+		Size2d cellSize = GeoClientUtils.divide(envl, resol);
 		
 		Plan plan = marmot.planBuilder("calc_heat_map")
 							.loadSquareGridFile(envl, cellSize, 32)

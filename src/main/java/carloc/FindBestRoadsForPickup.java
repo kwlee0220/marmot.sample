@@ -49,10 +49,6 @@ public class FindBestRoadsForPickup {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan;
-
-		Plan rank = marmot.planBuilder("rank")
-							.rank("count:D", "rank")
-							.build();
 		plan = marmot.planBuilder("match_and_rank_roads")
 					.load(TAXI_LOG)
 					.filter("status == 0")
@@ -73,7 +69,7 @@ public class FindBestRoadsForPickup {
 		marmot.execute(plan);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
-		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 5);
+		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 100);
 	}
 	
 	private static void exportResult(PBMarmotClient marmot, String resultLayerName,
