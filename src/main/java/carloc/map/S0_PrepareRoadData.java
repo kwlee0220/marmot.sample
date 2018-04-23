@@ -3,7 +3,6 @@ package carloc.map;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
-import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -17,9 +16,6 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class S0_PrepareRoadData {
-	private static final String INPUT = Globals.TAXI_LOG;
-	private static final String RESULT = Globals.RESULT;
-	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
@@ -58,8 +54,5 @@ public class S0_PrepareRoadData {
 		
 		watch.stop();
 		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
-	}
-	
-	private static void simplifyRoads(MarmotRuntime marmot) throws Exception {
 	}
 }
