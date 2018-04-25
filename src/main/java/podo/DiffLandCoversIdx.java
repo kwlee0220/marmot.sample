@@ -58,7 +58,7 @@ public class DiffLandCoversIdx {
 							.workerCount(1)
 							.aggregate(SUM("area").as("total_area"))
 						.expand("total_area:long", "total_area = Math.round(total_area)")
-						.storeAsCsv(RESULT)
+						.storeAsCsv(RESULT, ',')
 						.build();
 		marmot.deleteFile(RESULT);
 		marmot.execute(plan);

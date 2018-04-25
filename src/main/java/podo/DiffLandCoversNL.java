@@ -54,7 +54,7 @@ public class DiffLandCoversNL {
 						.groupBy("t1987,t2007")
 							.workerCount(1)
 							.aggregate(SUM("area").as("total_area"))
-						.storeAsCsv(RESULT)
+						.storeAsCsv(RESULT, ',')
 						.build();
 		marmot.deleteFile(RESULT);
 		marmot.execute(plan);

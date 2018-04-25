@@ -45,7 +45,7 @@ public class GroupByWeekDay {
 								.expand("week_day:int", "week_day = ST_DTWeekDay(created_at)")
 								.groupBy("week_day").count()
 								.drop(0)
-								.storeAsCsv(RESULT)
+								.storeAsCsv(RESULT, ',')
 								.build();
 		marmot.execute(plan);
 		

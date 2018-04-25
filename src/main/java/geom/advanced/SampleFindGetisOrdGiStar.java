@@ -44,7 +44,7 @@ public class SampleFindGetisOrdGiStar {
 												LISAWeight.FIXED_DISTANCE_BAND)
 								.project("UID,gi_zscore,gi_pvalue")
 								.sort("UID")
-								.storeAsCsv(RESULT)
+								.storeAsCsv(RESULT, ',')
 								.build();
 		marmot.deleteFile(RESULT);
 		marmot.execute(plan);
