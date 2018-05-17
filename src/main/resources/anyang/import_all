@@ -1,0 +1,15 @@
+hadoop fs -mkdir data/misc
+hadoop fs -mkdir data/misc/anyang
+
+hadoop fs -mkdir data/misc/anyang/energe
+hadoop fs -mkdir data/misc/anyang/energe/gas
+hadoop fs -mkdir data/misc/anyang/energe/electro
+
+hadoop fs -rm -r -skipTrash data/misc/anyang/energe/gas/2017
+hadoop fs -copyFromLocal $MARMOT_DATA/기타/안양대제공/건물_에너지/가스/2017 data/misc/anyang/energe/gas
+bind_dataset data/misc/anyang/energe/gas -dataset anyang/energe/gas -type text
+
+hadoop fs -rm -r -skipTrash data/misc/anyang/energe/electro/2017
+hadoop fs -copyFromLocal $MARMOT_DATA/기타/안양대제공/건물_에너지/전기/_meta.json data/misc/anyang/energe/electro
+hadoop fs -copyFromLocal $MARMOT_DATA/기타/안양대제공/건물_에너지/전기/2017 data/misc/anyang/energe/electro
+bind_dataset data/misc/anyang/energe/electro -dataset anyang/energe/electro -type text

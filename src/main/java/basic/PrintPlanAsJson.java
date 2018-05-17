@@ -53,17 +53,9 @@ public class PrintPlanAsJson {
 		Plan plan;
 		plan = marmot.planBuilder("meta_data")
 					.add(OperatorProto.newBuilder().setLoadTextfile(load).build())
-					.transform(outSchemaExpr, Option.some(initExpr), transExpr, Option.none())
-					.expand("거래금액:int")
-					.update(Option.some("$money_formatter = new DecimalFormat('#,###,###')"),
-							"시군구 = 시군구.trim(); 번지 = 번지.trim();"
-							+ "거래금액 = $money_formatter.parse(거래금액.trim()).intValue();",
-							Option.none(), "java.text.DecimalFormat")
-//							.add(OperatorProto.newBuilder().setLoadTextfile(proto).build())
-//							.parseCsv(schema, "|", Option.some("\""), Option.none())
-//							.expand("the_geom:point", "the_geom = ST_Point(경도,위도)")
-//					.update("the_geom = ST_Point(x_coord,y_coord)")
-//					.transformCRS("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
+					.update("land_type = land_type + 1")
+					.expand("pnu:string", "pnu = sgg_cd + emdl_cd + land_type + bon_bun + bu_bun")
+					.project("date,pnu,usage")
 					.build();
 		
 		System.out.println(JsonFormat.printer().print(plan.toProto()));
