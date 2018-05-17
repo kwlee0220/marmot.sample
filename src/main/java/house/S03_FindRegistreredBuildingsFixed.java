@@ -54,7 +54,7 @@ public class S03_FindRegistreredBuildingsFixed {
 
 		Plan plan = marmot.planBuilder("총괄표제부 보유 건물 추출")
 						.load(registry, 8)
-						.knnJoin(geomCol, buildings, 1, 10, "param.*")
+						.knnJoin(geomCol, buildings, 10, 1, "param.*")
 						.store(result)
 						.build();
 		DataSet ds = marmot.createDataSet(result, input.getGeometryColumnInfo(), plan, true);

@@ -53,7 +53,7 @@ public class FindBestRoadsForPickup {
 					.load(TAXI_LOG)
 					.filter("status == 0")
 					.expand("hour:int", "hour=ts.substring(8,10)")
-					.knnJoin("the_geom", ROADS, 1, 10,
+					.knnJoin("the_geom", ROADS, 10, 1,
 							"hour,car_no,param.{LINK_ID,the_geom,ROAD_NAME,ROADNAME_A}")
 					.groupBy("hour,LINK_ID")
 						.taggedKeyColumns("the_geom,ROAD_NAME,ROADNAME_A")

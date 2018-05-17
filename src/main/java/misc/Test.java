@@ -57,7 +57,7 @@ public class Test {
 		Plan plan;
 		plan = marmot.planBuilder("find_closest_point_on_link")
 					.load("교통/지하철/출입구")
-					.knnJoin(m_inGeomCol, paramId, 2, 10, joinCols)
+					.knnJoin(m_inGeomCol, paramId, 10, 2, joinCols)
 					.expand("length:double", updateExpr)
 					.project("the_geom, id as link_id, length, "
 							+ "src_node as begin_node, src_geom as begin_geom, "
