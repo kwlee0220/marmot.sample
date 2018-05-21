@@ -1,29 +1,25 @@
-package anyang.energe.gas;
+package anyang.energe;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import com.vividsolutions.jts.geom.Envelope;
-
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import static marmot.optor.AggregateFunction.*;
+import marmot.optor.JoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.Size2d;
 import utils.StopWatch;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S03_GasFishnetAnalysis {
+public class ReduceGasUsage {
 	private static final String CADASTRAL = "구역/연속지적도_2017";
-	private static final String CADASTRAL_GAS_YEAR = "tmp/anyang/cadastral_gas";
-	private static final String OUTPUT = "tmp/anyang/grid_gas";
+	private static final String GAS = "anyang/energe/gas";
+	private static final String OUTPUT = "tmp/anyang/gas_small";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -45,32 +41,20 @@ public class S03_GasFishnetAnalysis {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		DataSet cadastral = marmot.getDataSet(CADASTRAL);
-		Envelope bounds = cadastral.getBounds();
-		Size2d cellSize = new Size2d(1000, 1000);
-
-		DataSet ds = marmot.getDataSet(CADASTRAL_GAS_YEAR);
+		DataSet ds = marmot.getDataSet(GAS);
+		JoinOptions jopts = JoinOptions.LEFT_OUTER_JOIN(17);
 
 		Plan plan;
-		plan = marmot.planBuilder("가스 사용량 격자 분석")
-					.load(CADASTRAL_GAS_YEAR)
-					.assignSquareGridCell("the_geom", bounds, cellSize)
-					.intersection("the_geom", "cell_geom", "overlap")
-					.expand("portion:double", "portion = ST_Area(overlap) /  ST_Area(the_geom)")
-					.update("usage = usage * portion")
-					.groupBy("cell_id")
-						.taggedKeyColumns("cell_geom,cell_pos")
-						.aggregate(SUM("usage").as("usage"))
-					.expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
-					.project("cell_geom as the_geom, x, y, usage")
+		plan = marmot.planBuilder("에너지 사용량 지적도 매칭")
+					.load(GAS)
+					.filter("pnu.startsWith('36')")
 					.store(OUTPUT)
 					.build();
-		GeometryColumnInfo info = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		DataSet result = marmot.createDataSet(OUTPUT, info, plan, true);
+		DataSet result = marmot.createDataSet(OUTPUT, plan, true);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 //		result.cluster();
-		SampleUtils.printPrefix(result, 20);
+		SampleUtils.printPrefix(result, 5);
 		
 		marmot.disconnect();
 	}

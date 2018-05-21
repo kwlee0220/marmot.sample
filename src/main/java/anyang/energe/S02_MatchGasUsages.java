@@ -1,4 +1,6 @@
-package anyang.energe.gas;
+package anyang.energe;
+
+import static marmot.optor.JoinOptions.INNER_JOIN;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -7,7 +9,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.optor.JoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -17,10 +18,10 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class T02_MatchGasUsages {
+public class S02_MatchGasUsages {
 	private static final String CADASTRAL = "구역/연속지적도_2017";
 	private static final String GAS = "tmp/anyang/gas_year";
-	private static final String OUTPUT = "tmp/anyang/gas_cadastral_centers";
+	private static final String OUTPUT = "tmp/anyang/cadastral_gas";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -44,21 +45,18 @@ public class T02_MatchGasUsages {
 		
 		DataSet ds = marmot.getDataSet(CADASTRAL);
 		GeometryColumnInfo info = ds.getGeometryColumnInfo();
-		JoinOptions jopts = JoinOptions.INNER_JOIN(17);
 
 		Plan plan;
 		plan = marmot.planBuilder("가스 사용량 연속지적도에 매칭")
 					.load(CADASTRAL)
-					.centroid("the_geom", "the_geom")
 					.project("*-{big_sq, big_fx}")
-					.join("pnu", GAS, "pnu", "the_geom, param.usage", jopts)
+					.join("pnu", GAS, "pnu", "*, param.usage", INNER_JOIN(17))
 					.store(OUTPUT)
 					.build();
 		DataSet result = marmot.createDataSet(OUTPUT, info, plan, true);
-		result.cluster();
-		
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
+//		result.cluster();
 		SampleUtils.printPrefix(result, 20);
 		
 		marmot.disconnect();

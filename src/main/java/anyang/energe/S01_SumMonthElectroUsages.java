@@ -1,13 +1,13 @@
-package anyang.energe.gas;
+package anyang.energe;
+
+import static marmot.optor.AggregateFunction.SUM;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.optor.JoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -17,10 +17,9 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S02_MatchElectroUsages {
-	private static final String CADASTRAL = "구역/연속지적도_2017";
-	private static final String ELECTRO = "tmp/anyang/electro_year";
-	private static final String OUTPUT = "tmp/anyang/cadastral_electro";
+public class S01_SumMonthElectroUsages {
+	private static final String ELECTRO = "anyang/energe/electro";
+	private static final String OUTPUT = "tmp/anyang/electro_year";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -41,22 +40,18 @@ public class S02_MatchElectroUsages {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-		
-		DataSet ds = marmot.getDataSet(CADASTRAL);
-		GeometryColumnInfo info = ds.getGeometryColumnInfo();
-		JoinOptions jopts = JoinOptions.INNER_JOIN(17);
 
 		Plan plan;
-		plan = marmot.planBuilder("전기 사용량 연속지적도에 매칭")
-					.load(CADASTRAL)
-					.project("*-{big_sq, big_fx}")
-					.join("pnu", ELECTRO, "pnu", "*, param.usage", jopts)
+		plan = marmot.planBuilder("연별 전기 사용량 합계")
+					.load(ELECTRO)
+					.expand("year:int", "year = date.substring(0, 4)")
+					.groupBy("pnu,year")
+						.aggregate(SUM("usage").as("usage"))
 					.store(OUTPUT)
 					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, info, plan, true);
+		DataSet result = marmot.createDataSet(OUTPUT, plan, true);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
-//		result.cluster();
 		SampleUtils.printPrefix(result, 20);
 		
 		marmot.disconnect();

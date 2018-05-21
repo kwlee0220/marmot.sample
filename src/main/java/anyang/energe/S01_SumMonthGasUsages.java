@@ -1,4 +1,6 @@
-package anyang.energe.gas;
+package anyang.energe;
+
+import static marmot.optor.AggregateFunction.SUM;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -15,9 +17,9 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class CountGasUsageCadastral {
+public class S01_SumMonthGasUsages {
 	private static final String GAS = "anyang/energe/gas";
-	private static final String OUTPUT = "tmp/result";
+	private static final String OUTPUT = "tmp/anyang/gas_year";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -40,9 +42,11 @@ public class CountGasUsageCadastral {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		Plan plan;
-		plan = marmot.planBuilder("연별 에너지 사용량 합계")
+		plan = marmot.planBuilder("연별 가스 사용량 합계")
 					.load(GAS)
-					.distinct("pnu")
+					.expand("year:int", "year = date.substring(0, 4)")
+					.groupBy("pnu,year")
+						.aggregate(SUM("usage").as("usage"))
 					.store(OUTPUT)
 					.build();
 		DataSet result = marmot.createDataSet(OUTPUT, plan, true);

@@ -1,26 +1,25 @@
-package anyang.energe.gas;
+package geom;
 
-import static marmot.optor.AggregateFunction.SUM;
+import static marmot.optor.geo.SpatialRelation.WITHIN_DISTANCE;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.StopWatch;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S01_SumMonthGasUsages {
-	private static final String GAS = "anyang/energe/gas";
-	private static final String OUTPUT = "tmp/anyang/gas_year";
-	
+public class SampleSpatialSemiJoin {
+	private static final String RESULT = "tmp/result";
+	private static final String INPUT = "POI/주유소_가격";
+	private static final String PARAMS = "교통/지하철/역사";
+
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
@@ -36,24 +35,18 @@ public class S01_SumMonthGasUsages {
 		String host = MarmotCommands.getMarmotHost(cl);
 		int port = MarmotCommands.getMarmotPort(cl);
 		
-		StopWatch watch = StopWatch.start();
-		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-
-		Plan plan;
-		plan = marmot.planBuilder("연별 에너지 사용량 합계")
-					.load(GAS)
-					.expand("year:int", "year = date.substring(0, 4)")
-					.groupBy("pnu,year")
-						.aggregate(SUM("usage").as("usage"))
-					.store(OUTPUT)
-					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, true);
-		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
-		SampleUtils.printPrefix(result, 20);
+		Plan plan = marmot.planBuilder("within_distance")
+								.load(INPUT)
+								.spatialSemiJoin("the_geom", PARAMS, WITHIN_DISTANCE(30), false)
+								.storeMarmotFile(RESULT)
+								.build();
+		marmot.deleteFile(RESULT);
+		marmot.execute(plan);
 		
-		marmot.disconnect();
+		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
+		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
 	}
 }

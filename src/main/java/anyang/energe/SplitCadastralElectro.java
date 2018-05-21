@@ -1,4 +1,4 @@
-package anyang.energe.gas;
+package anyang.energe;
 
 import java.io.File;
 import java.io.IOException;
