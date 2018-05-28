@@ -67,7 +67,7 @@ public class Step1FlowPop {
 							.spatialJoin("the_geom", EMD, INTERSECTS,
 									"*-{the_geom},param.{the_geom,emd_cd,emd_kor_nm as emd_nm}")
 							.groupBy("emd_cd")
-								.taggedKeyColumns(geomCol + ",year,emd_nm")
+								.tagWith(geomCol + ",year,emd_nm")
 								.workerCount(1)
 								.aggregate(AVG("avg").as("avg"))
 							.project(String.format("%s,*-{%s}", geomCol, geomCol))

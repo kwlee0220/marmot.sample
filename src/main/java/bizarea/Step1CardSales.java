@@ -68,7 +68,7 @@ public class Step1CardSales {
 							// 한 그리드 셀에 여러 소지역 매출액 정보가 존재하면,
 							// 해당 매출액은 모두 더한다. 
 							.groupBy("std_ym,cell_id")
-								.taggedKeyColumns(geomCol + ",sgg_cd")
+								.tagWith(geomCol + ",sgg_cd")
 								.workerCount(3)
 								.aggregate(SUM("daily_sales").as("daily_sales"))
 							.project(String.format("%s,*-{%s}", geomCol, geomCol))

@@ -58,7 +58,7 @@ public class Test2017_1 {
 //								.aggregateJoin("the_geom", ADDR_BLD_UTILS_CLTS,
 //										SpatialRelation.WITHIN_DISTANCE(2000), COUNT())
 								.buffer("the_geom", "center", 100, 16)
-								.aggregateJoin("center", ADDR_BLD_UTILS,
+								.spatialAggregateJoin("center", ADDR_BLD_UTILS,
 												INTERSECTS, COUNT())
 								.project("the_geom,cell_id,count")
 								.store(GRID)

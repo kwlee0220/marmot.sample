@@ -92,7 +92,7 @@ public class SummarizeByHighSchoolLong {
 						
 						// 고등학교를 기준으로 그룹핑하여 집계한다.
 						.groupBy("id")
-						.taggedKeyColumns("the_geom,name")
+						.tagWith("the_geom,name")
 						.aggregate(COUNT().as("거래건수"),
 									SUM("거래금액").as("총거래액"),
 									AVG("평당거래액").as("평당거래액"),

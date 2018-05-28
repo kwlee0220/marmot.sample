@@ -64,7 +64,7 @@ public class Step1Buildings {
 					.spatialJoin("the_geom", EMD, INTERSECTS,
 								"원천도형ID,old,be5,param.{the_geom,emd_cd,emd_kor_nm as emd_nm}")
 					.groupBy("emd_cd")
-						.taggedKeyColumns(geomCol + ",emd_nm")
+						.tagWith(geomCol + ",emd_nm")
 						.workerCount(1)
 						.aggregate(SUM("old").as("old_cnt"), SUM("be5").as("be5_cnt"),
 									COUNT().as("bld_cnt"))

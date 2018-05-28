@@ -62,7 +62,7 @@ public class CalcHeatMap {
 							.loadSquareGridFile(envl, cellSize, 32)
 							.spatialJoin("the_geom", TAXI_LOG, INTERSECTS, "*")
 							.groupBy("cell_id")
-								.taggedKeyColumns("the_geom")
+								.tagWith("the_geom")
 								.aggregate(COUNT())
 							.store(RESULT)
 							.build();

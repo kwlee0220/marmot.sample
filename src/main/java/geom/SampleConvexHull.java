@@ -1,6 +1,6 @@
 package geom;
 
-import static marmot.optor.AggregateFunction.ConvexHull;
+import static marmot.optor.AggregateFunction.CONVEX_HULL;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -45,7 +45,7 @@ public class SampleConvexHull {
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		Plan plan = marmot.planBuilder("convex_hull")
 								.load(INPUT)
-								.aggregate(ConvexHull("the_geom").as("the_geom"))
+								.aggregate(CONVEX_HULL("the_geom").as("the_geom"))
 								.store(RESULT)
 								.build();
 		DataSet result = marmot.createDataSet(RESULT, gcInfo, plan, true);

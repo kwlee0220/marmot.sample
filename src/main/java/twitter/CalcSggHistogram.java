@@ -47,7 +47,7 @@ public class CalcSggHistogram {
 											SpatialRelation.INTERSECTS,
 											"left.{id},right.{the_geom,SIG_CD,SIG_KOR_NM}")
 								.groupBy("SIG_CD")
-									.taggedKeyColumns("the_geom,SIG_KOR_NM")
+									.tagWith("the_geom,SIG_KOR_NM")
 									.count()
 								.store(OUTPUT_DATASET)
 								.build();

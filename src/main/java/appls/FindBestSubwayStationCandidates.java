@@ -185,7 +185,7 @@ public class FindBestSubwayStationCandidates {
 					.project("the_geom,std_ym,block_cd,avg")
 					// 각 달의 소지역의 평균 유동인구를 계산한다.
 					.groupBy("block_cd")
-						.taggedKeyColumns(geomCol)
+						.tagWith(geomCol)
 						.aggregate(AVG("avg"))
 					.store(TEMP_SEOUL_FLOW_POP_BLOCK)
 					.build();
@@ -205,7 +205,7 @@ public class FindBestSubwayStationCandidates {
 						.project("cell_geom as the_geom, cell_id, cell_pos, avg")
 						// 사각 그리드 셀 단위로 그룹핑하고, 각 그룹에 속한 유동인구를 모두 더한다.
 						.groupBy("cell_id")
-							.taggedKeyColumns("the_geom")
+							.tagWith("the_geom")
 							.aggregate(SUM("avg").as("avg"))
 						.store(TEMP_SEOUL_FLOW_POP_GRID)
 						.build();
@@ -265,7 +265,7 @@ public class FindBestSubwayStationCandidates {
 					.project("cell_geom as the_geom, cell_id, cell_pos")
 					// 사각 그리드 셀 단위로 그룹핑하고, 각 그룹에 속한 레코드 수를 계산한다.
 					.groupBy("cell_id")
-						.taggedKeyColumns("the_geom")
+						.tagWith("the_geom")
 						.aggregate(COUNT())
 						
 					.store(TEMP_SEOUL_TAXI_LOG_GRID)

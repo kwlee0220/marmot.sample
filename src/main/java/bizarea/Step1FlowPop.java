@@ -72,7 +72,7 @@ public class Step1FlowPop {
 							// 한 그리드 셀에 여러 소지역 유동인구 정보가 존재하면,
 							// 해당 유동인구들의 평균을 구한다.
 							.groupBy("std_ym,cell_id")
-								.taggedKeyColumns(geomCol + ",sgg_cd")
+								.tagWith(geomCol + ",sgg_cd")
 								.workerCount(3)
 								.aggregate(AVG("flow_pop").as("flow_pop"))
 							.project(String.format("%s,*-{%s}", geomCol, geomCol))

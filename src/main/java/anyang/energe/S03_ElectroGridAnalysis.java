@@ -58,7 +58,7 @@ public class S03_ElectroGridAnalysis {
 					.intersection("the_geom", "cell_geom", "overlap")
 					.update("usage *= (ST_Area(overlap) /  ST_Area(the_geom))")
 					.groupBy("cell_id")
-						.taggedKeyColumns("cell_geom,cell_pos")
+						.tagWith("cell_geom,cell_pos")
 						.aggregate(SUM("usage").as("usage"))
 					.expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
 					.project("cell_geom as the_geom, x, y, usage")

@@ -49,7 +49,7 @@ public class FindHotHospitals {
 											"param.{the_geom,gid,bplc_nm,bz_stt_nm}")
 								.filter("bz_stt_nm=='운영중'")
 								.groupBy("gid")
-									.taggedKeyColumns("the_geom,bplc_nm")
+									.tagWith("the_geom,bplc_nm")
 									.aggregate(COUNT())
 								.rank("count:D", "rank")
 								.storeMarmotFile(RESULT)

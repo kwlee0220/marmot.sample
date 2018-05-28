@@ -58,7 +58,7 @@ public class BuildDtgGridCellHistogram {
 							.load(DTG)
 							.assignSquareGridCell("the_geom", bounds, CELL_SIZE)
 							.groupBy("cell_id")
-								.taggedKeyColumns("cell_geom,cell_pos")
+								.tagWith("cell_geom,cell_pos")
 								.aggregate(COUNT().as("count"))
 							.project("cell_geom as the_geom,cell_id,cell_pos,count")
 							.centroid("the_geom", "the_geom")

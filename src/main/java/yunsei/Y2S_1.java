@@ -102,7 +102,7 @@ public class Y2S_1 {
 		plan = marmot.planBuilder("merge")
 					.load(RESULT_CONCAT)
 					.groupBy("block_cd")
-						.taggedKeyColumns("the_geom")
+						.tagWith("the_geom")
 						.aggregate(SUM("index_08").as("index_08"),
 								SUM("index_15").as("index_15"))
 					.store(RESULT)

@@ -54,7 +54,7 @@ public class SampleAssignSquareGridCell {
 								.assignSquareGridCell("the_geom", envl, cellSize)
 								.expand("count:int", "count = 1")
 								.groupBy("cell_id")
-									.taggedKeyColumns("cell_geom,cell_pos")
+									.tagWith("cell_geom,cell_pos")
 									.workerCount(11)
 									.aggregate(AggregateFunction.SUM("count").as("count"))
 								.expand("x:int,y:int", "x = cell_pos.x; y = cell_pos.y")

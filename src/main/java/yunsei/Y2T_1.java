@@ -106,7 +106,7 @@ public class Y2T_1 {
 		
 		DataSet multiRings = doMultiRing(marmot, result, seoul, MULTI_RINGS);
 		System.out.println("done: ring_buffer, elapsed=" + watch.getElapsedTimeString());
-		multiRings.cluster();
+//		multiRings.cluster();
 		System.out.println("done: cluster ring_buffer, elapsed=" + watch.getElapsedTimeString());
 		marmot.deleteDataSet(TEMP_BUS_SEOUL);
 
@@ -122,7 +122,7 @@ public class Y2T_1 {
 					.load(COLLECT)
 					// 서울시 영역만 추출한다.
 					.filter("행정코드.startsWith('11')")
-					.buildSpatialHistogram(geomCol, MULTI_RINGS, valueColNames)
+//					.buildSpatialHistogram(geomCol, MULTI_RINGS, valueColNames)
 					.store(TEMP_HISTOGRAM)
 					.build();
 
@@ -187,7 +187,7 @@ public class Y2T_1 {
 							.buffer(geomCol, geomCol, radius)
 							.expand("area:double", expr1)
 							// 버퍼링 영역 중에서 서울 영역만을 추출한다
-							.intersection(geomCol, geomCol, range)
+							.intersection(geomCol, range, geomCol)
 							.expand("ratio:double", expr2)
 							.project("*-{area,ratio}")
 							.store(outputDs)

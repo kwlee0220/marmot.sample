@@ -57,7 +57,7 @@ public class Test2017_2 {
 								.centroid("cell_geom", "cell_geom")
 								.intersects("cell_geom", "the_geom")
 								.groupBy("cell_id")
-									.taggedKeyColumns("cell_geom")
+									.tagWith("cell_geom")
 									.aggregate(AggregateFunction.COUNT())
 								.project("cell_geom as the_geom,*-{cell_geom}")
 								.store(GRID)

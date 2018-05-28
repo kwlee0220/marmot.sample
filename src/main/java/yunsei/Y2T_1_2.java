@@ -136,7 +136,8 @@ public class Y2T_1_2 {
 											.collect(Collectors.toList());
 		plan = marmot.planBuilder("analysis")
 					.load(COLLECT)
-					.buildSpatialHistogram(geomCol, MULTI_RINGS, valueColNames)
+					
+//					.buildSpatialHistogram(geomCol, MULTI_RINGS, valueColNames)
 					.intersectionJoin(geomCol, COLLECT, "*,param.tot_oa_cd,param.the_geom as param_geom")
 					.expand("ratio:double", expr)
 					.store(TEMP_JOINED)
@@ -146,7 +147,7 @@ public class Y2T_1_2 {
 		plan = marmot.planBuilder("analysis")
 					.load(TEMP_JOINED)
 					.groupBy("tot_oa_cd")
-						.taggedKeyColumns("param_geom")
+						.tagWith("param_geom")
 						.aggregate(aggrFuncList)
 					.project("param_geom as the_geom, *-{param_geom}")
 					.store(RESULT)
