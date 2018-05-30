@@ -81,6 +81,7 @@ public class BuildTenMinutePolicy {
 						.load(CADASTRAL)
 						.spatialSemiJoin(info.name(), ELDERLY_CARE_BUFFER, INTERSECTS, true)	// (3) 교차반전
 						.clipJoin(info.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석
+						.shard(1)
 						.store(RESULT)
 						.build();
 		output = marmot.createDataSet(RESULT, info, plan, true);

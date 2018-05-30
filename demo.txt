@@ -1,0 +1,18 @@
+# 연속지적도 적재
+import_shapefile $MARMOT_DATA/사업단자료/연속지적도_2017 -dataset 구역/연속지적도_2017 -f -charset utf-8 -srid EPSG:5186
+cluster_dataset 구역/연속지적도_2017 -workers 19
+
+# 인구밀도 적재
+import_shapefile $MARMOT_DATA/사업단자료/인구밀도_2000 -dataset 주민/인구밀도_2000 -f -srid EPSG:5186 -charset utf-8
+
+# 노인복지시설 적재
+import_shapefile $MARMOT_DATA/사업단자료/노인복지시설_통합 -dataset POI/노인복지시설 -f -srid EPSG:5186 -charset utf-8
+
+bin/linux/run_sample demo.policy.Step01
+bin/linux/run_sample demo.policy.Step02
+bin/linux/run_sample demo.policy.Step03
+bin/linux/run_sample demo.policy.Step04
+bin/linux/run_sample demo.policy.Step05
+bin/linux/run_sample demo.policy.Step06
+bin/linux/run_sample demo.policy.Step07
+

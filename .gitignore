@@ -31,3 +31,5 @@ hs_err_pid*
 /build/
 /result.gjson
 /data/
+
+*.swp

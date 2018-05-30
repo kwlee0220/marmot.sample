@@ -6,11 +6,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.google.protobuf.util.JsonFormat;
 
-import io.vavr.control.Option;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.proto.optor.LoadTextFileProto;
-import marmot.proto.optor.OperatorProto;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -37,13 +34,6 @@ public class PrintPlanAsJson {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-
-		LoadTextFileProto load = LoadTextFileProto.newBuilder()
-													.addAllPaths(Arrays.asList("."))
-													.setCharset("UTF-8")
-													.setCommentPrefix("#")
-													.setSplitCountPerBlock(1)
-													.build();
 		
 		String outSchemaExpr = "the_geom:point,id:string,user_id:string,created_at:string,"
 							+ "coordinates:point,text:string";
@@ -52,7 +42,7 @@ public class PrintPlanAsJson {
 
 		Plan plan;
 		plan = marmot.planBuilder("meta_data")
-					.add(OperatorProto.newBuilder().setLoadTextfile(load).build())
+					.loadTextFile(Arrays.asList("PATH"), "#")
 					.update("land_type = land_type + 1")
 					.expand("pnu:string", "pnu = sgg_cd + emdl_cd + land_type + bon_bun + bu_bun")
 					.project("date,pnu,usage")

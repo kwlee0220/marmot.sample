@@ -24,7 +24,7 @@ public class Step07 {
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
+		CommandLineParser parser = new CommandLineParser("step07 ");
 		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
 		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
 		
@@ -47,6 +47,7 @@ public class Step07 {
 		Plan plan = marmot.planBuilder("경로당필요지역추출")
 						.load(INPUT)
 						.clipJoin(info.name(), PARAM)				// (7) 클립분석
+						.shard(1)
 						.store(RESULT)
 						.build();
 		DataSet result = marmot.createDataSet(RESULT, info, plan, true);
