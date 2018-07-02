@@ -50,6 +50,6 @@ public class GroupByWeekDay {
 		marmot.execute(plan);
 		
 		watch.stop();
-		System.out.printf("elapsed time=%s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());
 	}
 }

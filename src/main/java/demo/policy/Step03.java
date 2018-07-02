@@ -1,5 +1,7 @@
 package demo.policy;
 
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -7,7 +9,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.optor.geo.SpatialRelation;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -47,14 +48,14 @@ public class Step03 {
 
 		Plan plan = marmot.planBuilder("노인복지시설필요지역추출")
 						.load(INPUT)
-						.spatialSemiJoin(info.name(), PARAM, SpatialRelation.INTERSECTS, true) // (3) 교차반전
+						.spatialSemiJoin(info.name(), PARAM, INTERSECTS, true) // (3) 교차반전
 						.store(RESULT)
 						.build();
 		DataSet result = marmot.createDataSet(RESULT, info, plan, true);
 		result.cluster();
 		
 		watch.stop();
-		System.out.printf("elapsed time=%s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(result, 5);

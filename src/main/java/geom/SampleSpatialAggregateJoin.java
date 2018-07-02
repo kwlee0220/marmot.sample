@@ -1,13 +1,15 @@
-package anyang.energe;
+package geom;
 
-import static marmot.optor.AggregateFunction.SUM;
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
+import static marmot.optor.AggregateFunction.*;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -17,10 +19,11 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S01_SumMonthElectroUsages {
-	private static final String ELECTRO = "anyang/energe/electro";
-	private static final String OUTPUT = "tmp/anyang/electro_year";
-	
+public class SampleSpatialAggregateJoin {
+	private static final String GAS_STATIONS = "POI/주유소_가격";
+	private static final String EMD = "구역/읍면동";
+	private static final String RESULT = "tmp/result";
+
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
@@ -40,20 +43,19 @@ public class S01_SumMonthElectroUsages {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-
-		Plan plan;
-		plan = marmot.planBuilder("연별 전기 사용량 합계")
-					.load(ELECTRO)
-					.expand("year:int", "year = date.substring(0, 4)")
-					.groupBy("pnu,year")
-						.aggregate(SUM("usage").as("usage"))
-					.store(OUTPUT)
-					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, true);
-		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
-		SampleUtils.printPrefix(result, 20);
+		Plan plan = marmot.planBuilder("spatial_join")
+								.load(EMD)
+								.spatialAggregateJoin("the_geom", GAS_STATIONS, INTERSECTS,
+													COUNT(), MAX("휘발유"))
+								.store(RESULT)
+								.build();
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
+		DataSet result = marmot.createDataSet(RESULT, gcInfo, plan, true);
+		watch.stop();
 		
-		marmot.disconnect();
+		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
+		SampleUtils.printPrefix(result, 5);
+		System.out.println("elapsed: " + watch.getElapsedMillisString());
 	}
 }

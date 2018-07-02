@@ -50,6 +50,6 @@ public class S04_ExportHouseCandidates27 {
 		DataSet ds = marmot.createDataSet(CANDIDATE_AREA + "_27", input.getGeometryColumnInfo(), plan, true);
 
 		Charset charset = Charset.forName("UTF-8");
-		marmot.writeToShapefile(ds, SHP_FILE, "main", charset, false, false).get();
+		marmot.writeToShapefile(ds, SHP_FILE, charset).get();
 	}
 }

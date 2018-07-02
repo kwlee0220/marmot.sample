@@ -2,6 +2,7 @@ package carloc.map;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import carloc.Globals;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
@@ -52,6 +53,6 @@ public class S3_FindMatchingTaxiLog {
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);
-		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

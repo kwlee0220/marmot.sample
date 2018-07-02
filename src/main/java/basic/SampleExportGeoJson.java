@@ -47,6 +47,6 @@ public class SampleExportGeoJson {
 		watch.stop();
 		
 		System.out.printf("written %d records into %s, elapsed=%s%n",
-							ncount, OUTPUT, watch.getElapsedTimeString());
+							ncount, OUTPUT, watch.getElapsedMillisString());
 	}
 }

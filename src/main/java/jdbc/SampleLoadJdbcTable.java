@@ -64,6 +64,6 @@ public class SampleLoadJdbcTable {
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 1000);
-		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

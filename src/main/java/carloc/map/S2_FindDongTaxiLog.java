@@ -4,6 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+import carloc.Globals;
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -56,7 +57,7 @@ public class S2_FindDongTaxiLog {
 		watch.stop();
 
 		System.out.printf("count=%d elapsed=%s%n", result.getRecordCount(),
-													watch.getElapsedTimeString());
+													watch.getElapsedMillisString());
 	}
 	
 	private static Geometry getDongBoundary(MarmotRuntime marmot, String dongName)

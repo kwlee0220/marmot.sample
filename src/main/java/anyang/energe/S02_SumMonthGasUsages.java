@@ -1,13 +1,13 @@
 package anyang.energe;
 
+import static marmot.optor.AggregateFunction.SUM;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.optor.JoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -17,15 +17,14 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class T02_MatchGasUsages {
-	private static final String CADASTRAL = "구역/연속지적도_2017";
-	private static final String GAS = "tmp/anyang/gas_year";
-	private static final String OUTPUT = "tmp/anyang/gas_cadastral_centers";
+public class S02_SumMonthGasUsages {
+	private static final String GAS = "기타/건물에너지/가스사용량";
+	private static final String OUTPUT = "tmp/anyang/gas_year";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
+		CommandLineParser parser = new CommandLineParser("sum_gas_usages ");
 		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
 		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
 		
@@ -41,25 +40,21 @@ public class T02_MatchGasUsages {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-		
-		DataSet ds = marmot.getDataSet(CADASTRAL);
-		GeometryColumnInfo info = ds.getGeometryColumnInfo();
-		JoinOptions jopts = JoinOptions.INNER_JOIN(17);
 
 		Plan plan;
-		plan = marmot.planBuilder("가스 사용량 연속지적도에 매칭")
-					.load(CADASTRAL)
-					.centroid("the_geom", "the_geom")
-					.project("*-{big_sq, big_fx}")
-					.join("pnu", GAS, "pnu", "the_geom, param.usage", jopts)
+		plan = marmot.planBuilder("연별 가스 사용량 합계")
+					.load(GAS)
+					.expand("year:short", "year = 사용년월.substring(0, 4)")
+					.update("사용량 = Math.max(사용량, 0)")
+					.groupBy("고유번호,year")
+						.aggregate(SUM("사용량").as("usage"))
+					.project("고유번호 as pnu, year,  usage")
 					.store(OUTPUT)
 					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, info, plan, true);
-		result.cluster();
-		
+		DataSet result = marmot.createDataSet(OUTPUT, plan, true);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
-		SampleUtils.printPrefix(result, 20);
+		SampleUtils.printPrefix(result, 10);
 		
 		marmot.disconnect();
 	}

@@ -60,7 +60,7 @@ public class FindPassingStation {
 		SampleUtils.printPrefix(result, 5);
 		
 		watch.stop();
-		System.out.printf("elapsed time=%s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());
 	}
 
 	private static final String SUBWAY_STATIONS = "교통/지하철/서울역사";

@@ -20,7 +20,7 @@ import utils.StopWatch;
  */
 public class SampleSpatialJoin {
 	private static final String RESULT = "tmp/result";
-	private static final String BUS_STOPS = "POI/주유소_가격";
+	private static final String GAS_STATIONS = "POI/주유소_가격";
 	private static final String EMD = "구역/읍면동";
 
 	public static final void main(String... args) throws Exception {
@@ -44,7 +44,7 @@ public class SampleSpatialJoin {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan = marmot.planBuilder("spatial_join")
-								.load(BUS_STOPS)
+								.load(GAS_STATIONS)
 								.spatialJoin("the_geom", EMD, INTERSECTS,
 											"*,param.emd_kor_nm as emd_name")
 								.store(RESULT)
@@ -55,6 +55,6 @@ public class SampleSpatialJoin {
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(result, 5);
-		System.out.println("elapsed: " + watch.getElapsedTimeString());
+		System.out.println("elapsed: " + watch.getElapsedMillisString());
 	}
 }

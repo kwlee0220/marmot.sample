@@ -61,6 +61,6 @@ public class ImportTweets {
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);
-		System.out.printf("elapsed time=%s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());
 	}
 }

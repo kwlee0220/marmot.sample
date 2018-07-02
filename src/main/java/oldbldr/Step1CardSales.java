@@ -80,6 +80,6 @@ public class Step1CardSales {
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);
-		System.out.println("elapsed: " + watch.getElapsedTimeString());
+		System.out.println("elapsed: " + watch.getElapsedMillisString());
 	}
 }

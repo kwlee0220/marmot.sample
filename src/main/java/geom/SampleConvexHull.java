@@ -53,6 +53,6 @@ public class SampleConvexHull {
 
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(result, 5);
-		System.out.println("elapsed: " + watch.getElapsedTimeString());
+		System.out.println("elapsed: " + watch.getElapsedMillisString());
 	}
 }

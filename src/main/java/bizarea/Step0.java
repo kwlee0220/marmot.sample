@@ -58,11 +58,11 @@ public class Step0 {
 		
 		//  연속지적도에서 대도시 영역을 추출한다.
 		result = filterBigCities(marmot, TEMP_BIG_CITIES);
-		System.out.println("대도시 영역 추출 완료, elapsed=" + watch.getElapsedTimeString());
+		System.out.println("대도시 영역 추출 완료, elapsed=" + watch.getElapsedMillisString());
 		
 		// 용도지구에서 상업지역 추출
 		result = filterBizArea(marmot, TEMP_BIZ_AREA);
-		System.out.println("용도지구에서 상업지역 추출 완료, elapsed=" + watch.getElapsedTimeString());
+		System.out.println("용도지구에서 상업지역 추출 완료, elapsed=" + watch.getElapsedMillisString());
 
 		DataSet ds = marmot.getDataSet(CADASTRAL);
 		String srid = ds.getGeometryColumnInfo().srid();

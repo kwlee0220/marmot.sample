@@ -1,6 +1,7 @@
-package anyang.energe;
+package demo.policy;
 
-import static marmot.optor.JoinOptions.INNER_JOIN;
+import static marmot.optor.AggregateFunction.COUNT;
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -18,15 +19,15 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S02_MatchGasUsages {
-	private static final String CADASTRAL = "구역/연속지적도_2017";
-	private static final String GAS = "tmp/anyang/gas_year";
-	private static final String OUTPUT = "tmp/anyang/cadastral_gas";
+public class CountCadastral2 {
+	private static final String INPUT = "구역/행정동코드";
+	private static final String PARAM = "구역/연속지적도_2017";
+	private static final String RESULT = "tmp/count_cadastral";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
+		CommandLineParser parser = new CommandLineParser("step07 ");
 		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
 		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
 		
@@ -43,22 +44,25 @@ public class S02_MatchGasUsages {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		DataSet ds = marmot.getDataSet(CADASTRAL);
+		DataSet ds = marmot.getDataSet(INPUT);
 		GeometryColumnInfo info = ds.getGeometryColumnInfo();
 
-		Plan plan;
-		plan = marmot.planBuilder("가스 사용량 연속지적도에 매칭")
-					.load(CADASTRAL)
-					.project("*-{big_sq, big_fx}")
-					.join("pnu", GAS, "pnu", "*, param.usage", INNER_JOIN(17))
-					.store(OUTPUT)
-					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, info, plan, true);
-		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
+		Plan plan = marmot.planBuilder("행정도별 필지수 계산")
+//						.load(INPUT, 251)
+						.load(INPUT)
+						.filter("hcode.startsWith('5011025')")
+						.spatialAggregateJoin("the_geom", PARAM, INTERSECTS, COUNT())
+						.update("count = (count == null) ? 0 : count")
+						.shard(1)
+						.store(RESULT)
+						.build();
+		DataSet result = marmot.createDataSet(RESULT, info, plan, true);
+		result.cluster();
 		
-//		result.cluster();
-		SampleUtils.printPrefix(result, 20);
+		watch.stop();
+		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());
 		
-		marmot.disconnect();
+		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
+		SampleUtils.printPrefix(result, 50);
 	}
 }

@@ -2,8 +2,10 @@ package carloc.map;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import carloc.Globals;
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -17,12 +19,12 @@ import utils.StopWatch;
  */
 public class S1_MapMatchingTaxiLog {
 	private static final String INPUT = Globals.TAXI_LOG;
-	private static final String RESULT = Globals.RESULT;
+	private static final String RESULT = Globals.TAXI_LOG_MAP;
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
+		CommandLineParser parser = new CommandLineParser("map_matching_taxi_log ");
 		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
 		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
 		
@@ -40,7 +42,8 @@ public class S1_MapMatchingTaxiLog {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet input = marmot.getDataSet(INPUT);
-		String geomCol = input.getGeometryColumn();
+		GeometryColumnInfo info = input.getGeometryColumnInfo();
+		String geomCol = info.name();
 		
 		String script = String.format("%s = ST_ClosestPointOnLine(%s, line)", geomCol, geomCol);
 		
@@ -48,14 +51,14 @@ public class S1_MapMatchingTaxiLog {
 		plan = marmot.planBuilder("택시로그_맵_매핑")
 					.load(INPUT)
 					.knnJoin(geomCol, Globals.ROADS_IDX, Globals.DISTANCE, 1,
-							"*,param.{the_geom as line, link_id}")
-					.update(script)
+							"*,param.{the_geom as link_geom, link_id, sub_link_no}")
+//					.update(script)
 					.store(RESULT)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);
+		DataSet result = marmot.createDataSet(RESULT, info, plan, true);
 		watch.stop();
 
-		SampleUtils.printPrefix(result, 5);
-		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
+		SampleUtils.printPrefix(result, 10);
+		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

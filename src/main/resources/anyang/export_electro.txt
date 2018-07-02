@@ -1,0 +1,14 @@
+
+for i in 11 26 27 28 29 30 31 36 41 42 43 44 45 46 47 48 50
+do
+	echo "exporting cadastral_electro_$i......"
+	mc_copy tmp/anyang/cadastral_electro tmp/cadastral_electro_$i -filter "pnu.startsWith(\"$i\")"
+	mc_dump_shapefile tmp/cadastral_electro_$i ~/tmp/cadastral_electro -shp cadastral_electro_$i
+	mc_delete tmp/cadastral_electro_$i
+done
+
+mkdir ~/tmp/grid_electro
+for i in 2011 2012 2013 2014 2015 2016 2017
+do
+	mc_export_shapefile tmp/anyang/grid_electro_$i -output ~/tmp/grid_electro/grid_electro_$i.shp
+done

@@ -61,14 +61,14 @@ public class Process {
 		export(marmot, result, new File("result.gjson"));
 		
 		System.out.println("완료: 토지피복도 변화량 분석");
-		System.out.printf("elapsed time=%s%n", s_watch.getElapsedTimeString());
+		System.out.printf("elapsed time=%s%n", s_watch.getElapsedMillisString());
 	}
 	
 	private static void export(PBMarmotClient marmot, DataSet ds, File file) throws IOException {
 		StopWatch watch = StopWatch.start();
 		System.out.printf("결과파일 생성: %s...", file.getAbsolutePath());
 		GeoJsonRecordSetWriter.into(file.getAbsolutePath()).write(ds);
-		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 	
 	private static DataSet analysis(PBMarmotClient marmot) {
@@ -89,7 +89,7 @@ public class Process {
 						.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		DataSet result = marmot.createDataSet(RESULT, gcInfo, plan, true);
-		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 		
 		return result;
 	}
@@ -99,7 +99,7 @@ public class Process {
 		System.out.printf("토지피복도 인덱싱: %s...", dsId);
 		DataSet ds = marmot.getDataSet(dsId);
 		ds.cluster();
-		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 	
 	private static void splitCovers(PBMarmotClient marmot) throws InterruptedException {
@@ -129,6 +129,6 @@ public class Process {
 							.build();
 		DataSet result = marmot.createDataSet(outputDsId, ds.getGeometryColumnInfo(), plan, true);
 		
-		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

@@ -91,7 +91,7 @@ public class BuildTenMinutePolicy {
 		
 		watch.stop();
 		System.out.printf("count=%d, total elapsed time=%s%n",
-							output.getRecordCount(), watch.getElapsedTimeString());
+							output.getRecordCount(), watch.getElapsedMillisString());
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(output, 5);

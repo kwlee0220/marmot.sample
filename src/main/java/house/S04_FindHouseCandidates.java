@@ -62,7 +62,7 @@ public class S04_FindHouseCandidates {
 		elapsed.stop();
 		System.out.printf("총괄표제부 건물영역 제외 주거지적 영역 추출 완료, "
 							+ "count=%d, elapsed=%s%n", ds.getRecordCount(),
-							elapsed.getElapsedTimeString());
+							elapsed.getElapsedMillisString());
 		
 		return ds;
 	}

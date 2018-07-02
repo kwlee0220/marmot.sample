@@ -51,7 +51,7 @@ public class ExporBuildings27 {
 		DataSet result = marmot.createDataSet(RESULT, gcInfo, plan, true);
 
 		Charset charset = Charset.forName("UTF-8");
-		marmot.writeToShapefile(result, SHP_FILE, "main", charset, false, false).get();
+		marmot.writeToShapefile(result, SHP_FILE, charset).get();
 		
 		marmot.disconnect();
 	}

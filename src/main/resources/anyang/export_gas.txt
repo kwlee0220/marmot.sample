@@ -1,0 +1,20 @@
+
+for i in 11 26 27 28 29 30 31 36 41 42 43 44 45 46 47 48 50
+do
+	echo "exporting cadastral_gas_$i......"
+	mc_copy tmp/anyang/cadastral_gas tmp/cadastral_gas_$i -filter "pnu.startsWith(\"$i\")"
+	mc_dump_shapefile tmp/cadastral_gas_$i ~/tmp/cadastral_gas -shp cadastral_gas_$i
+	mc_delete tmp/cadastral_gas_$i
+done
+
+mkdir ~/tmp/grid_gas
+for i in 2011 2012 2013 2014 2015 2016 2017
+do
+	mc_export_shapefile tmp/anyang/grid_gas_$i -output ~/tmp/grid_gas/grid_gas_$i.shp
+done
+
+mc_grid_analysis tmp/anyang/cadastral_gas tmp/anyang/grid_gas -cell_size 1000x1000 -values 'gas_2011,gas_2012,gas_2013,gas_2014,gas_2015,gas_2016,gas_2017' -f
+for i in 2011 2012 2013 2014 2015 2016 2017
+do
+	mc_copy tmp/anyang/grid_gas tmp/anyang/grid_gas_$i -project "the_geom,x,y,gas_$i" -shard 1 -f
+done

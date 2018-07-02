@@ -110,7 +110,7 @@ public class S02_FindHouseCadastral {
 
 		elapsed.stop();
 		System.out.printf("전국 지적도에서 주거지적 추출 완료, count=%d elapsed=%s%n",
-							ds.getRecordCount(), elapsed.getElapsedTimeString());
+							ds.getRecordCount(), elapsed.getElapsedMillisString());
 		
 		return ds;
 	}

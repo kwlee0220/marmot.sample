@@ -7,6 +7,7 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
+import marmot.optor.geo.SpatialRelation;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -41,36 +42,37 @@ public class Test {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
-		DataSet input = marmot.getDataSet("교통/지하철/출입구");
-		String m_inGeomCol = input.getGeometryColumn();
-		String srid = input.getGeometryColumnInfo().srid();
-		
-		String paramId = "교통/도로/네트워크_추진단";
-		DataSet m_paramDs = marmot.getDataSet(paramId);
-		String joinCols = String.format("the_geom,param.the_geom as the_geom2,param.*-{%s}",
-										m_paramDs.getGeometryColumn());
-		
-		String updateExpr = "the_geom = ST_GetPerpendicularFoot(the_geom, the_geom2);\n"
-							+ "src_geom = the_geom;\n"
-							+ "length = ST_Distance(src_geom, dst_geom);";
-
 		Plan plan;
+		DataSet result;
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
+		
+		plan = marmot.planBuilder("xx")
+					.load("tmp/hcode")
+					.update("the_geom = ST_GeomFromEnvelope(ST_AsEnvelope(the_geom))")
+					.store("tmp/hcode2")
+					.build();
+		marmot.createDataSet("tmp/hcode2", gcInfo, plan, true);
+		
+		plan = marmot.planBuilder("yy")
+					.load("tmp/cada")
+					.update("the_geom = ST_GeomFromEnvelope(ST_AsEnvelope(the_geom))")
+					.store("tmp/cada2")
+					.build();
+		marmot.createDataSet("tmp/cada2", gcInfo, plan, true);
+
+		GeometryColumnInfo gcInfo2 = new GeometryColumnInfo("the_geom", "EPSG:4326");
 		plan = marmot.planBuilder("find_closest_point_on_link")
-					.load("교통/지하철/출입구")
-					.knnJoin(m_inGeomCol, paramId, 10, 2, joinCols)
-					.expand("length:double", updateExpr)
-					.project("the_geom, id as link_id, length, "
-							+ "src_node as begin_node, src_geom as begin_geom, "
-							+ "dst_node as end_node, dst_geom as end_geom")
-					
-					.expand("remains:double", "remains = 1000 - length")
+					.load("tmp/cada2")
+					.spatialJoin("the_geom", "tmp/hcode2", SpatialRelation.INTERSECTS,
+								"the_geom,pnu,param.the_geom as the_geom2, param.hcode")
+					.expand("the_geom:point", "the_geom = ST_Centroid(the_geom.intersection(the_geom2))")
+					.transformCRS("the_geom", "EPSG:5186", "the_geom", "EPSG:4326")
 					.store("tmp/result")
 					.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
-		DataSet result = marmot.createDataSet("tmp/result", gcInfo, plan, true);
+		result = marmot.createDataSet("tmp/result", gcInfo2, plan, true);
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);
-		System.out.println("elapsed: " + watch.getElapsedTimeString());
+		System.out.println("elapsed: " + watch.getElapsedMillisString());
 	}
 }

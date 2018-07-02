@@ -43,9 +43,9 @@ public class PrintPlanAsJson {
 		Plan plan;
 		plan = marmot.planBuilder("meta_data")
 					.loadTextFile(Arrays.asList("PATH"), "#")
-					.update("land_type = land_type + 1")
-					.expand("pnu:string", "pnu = sgg_cd + emdl_cd + land_type + bon_bun + bu_bun")
-					.project("date,pnu,usage")
+					.update("기준년도=(기준년도.length() > 0) ? 기준년도 : '2017'; 기준월=(기준월.length() > 0) ? 기준월 : '01'")
+					.expand("기준년도:short,기준월:short", "기준년도=기준년도; 기준월=기준월;")
+					.project("*-{공시일자}")
 					.build();
 		
 		System.out.println(JsonFormat.printer().print(plan.toProto()));

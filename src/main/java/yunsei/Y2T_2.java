@@ -78,9 +78,9 @@ public class Y2T_2 {
 					.build();
 
 		result = marmot.createDataSet(TEMP_TAXI, gcInfo, plan, true);
-		System.out.println("done: 택시 승하차 로그 선택, elapsed=" + watch.getElapsedTimeString());
+		System.out.println("done: 택시 승하차 로그 선택, elapsed=" + watch.getElapsedMillisString());
 		result.cluster();
-		System.out.println("done: 승하차 로그 클러스터링, elapsed=" + watch.getElapsedTimeString());
+		System.out.println("done: 승하차 로그 클러스터링, elapsed=" + watch.getElapsedMillisString());
 		
 		String expr = "if ( status == null ) { supply = 0; demand = 0; }" 
 					+ "else if ( status == 2 ) { supply = 1; demand = 0; }"

@@ -73,6 +73,6 @@ public class SummarizeBySgg {
 		marmot.createDataSet(RESULT, emd.getGeometryColumnInfo(), plan, true);
 		watch.stop();
 		
-		System.out.printf("elapsed: %s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed: %s%n", watch.getElapsedMillisString());
 	}
 }

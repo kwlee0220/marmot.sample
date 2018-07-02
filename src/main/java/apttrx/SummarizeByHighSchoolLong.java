@@ -108,7 +108,7 @@ public class SummarizeByHighSchoolLong {
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 3);
-		System.out.printf("elapsed: %s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed: %s%n", watch.getElapsedMillisString());
 	}
 	
 	private static DataSet findHighSchool(MarmotRuntime marmot) {

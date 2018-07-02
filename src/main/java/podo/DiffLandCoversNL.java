@@ -61,6 +61,6 @@ public class DiffLandCoversNL {
 		
 		watch.stop();
 		System.out.println("완료: 토지피복도 교차조인");
-		System.out.printf("elapsed time=%s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());
 	}
 }

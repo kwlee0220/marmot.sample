@@ -57,7 +57,7 @@ public class SummarizeByHighSchoolShort {
 		if ( school == null ) {
 			school = findHighSchool(marmot);
 		}
-		System.out.println("done: 고등학교 위치 추출, elapsed=" + watch.getElapsedTimeString());
+		System.out.println("done: 고등학교 위치 추출, elapsed=" + watch.getElapsedMillisString());
 		
 		RecordSchema schema;
 		String geomCol = school.getGeometryColumn();
@@ -67,7 +67,7 @@ public class SummarizeByHighSchoolShort {
 
 		marmot.createDataSet(TEMP, school.getGeometryColumnInfo(), plan1, true);
 		marmot.execute(plan2);
-		System.out.println("done: 아파트 거래 정보 지오코딩, elapsed=" + watch.getElapsedTimeString());
+		System.out.println("done: 아파트 거래 정보 지오코딩, elapsed=" + watch.getElapsedMillisString());
 		
 		plan = marmot.planBuilder("고등학교_주변_거래_집계")
 						.load(TEMP)
@@ -86,7 +86,7 @@ public class SummarizeByHighSchoolShort {
 		marmot.deleteDataSet(TEMP);
 		
 		SampleUtils.printPrefix(result, 3);
-		System.out.printf("elapsed: %s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed: %s%n", watch.getElapsedMillisString());
 	}
 	
 	private static final Plan countTradeTransaction(MarmotRuntime marmot) {

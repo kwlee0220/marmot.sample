@@ -41,6 +41,6 @@ public class SampleDataSet {
 		
 		DataSet input = marmot.getDataSet(INPUT);
 		SampleUtils.printPrefix(input, 50);
-		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

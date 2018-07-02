@@ -43,7 +43,7 @@ public class SampleUtils {
 	public static void writeAsShapefile(PBMarmotClient marmot, DataSet ds, String path)
 		throws IOException {
 		File file = new File(TEMP_DIR, path);
-		marmot.writeToShapefile(ds, file, "main", Charset.forName("euc-kr"), false, false);
+		marmot.writeToShapefile(ds, file, Charset.forName("euc-kr"));
 	}
 	
 	public static void printPrefix(DataSet dataset, int count) {
@@ -61,8 +61,8 @@ public class SampleUtils {
 		RecordSchema schema = rset.getRecordSchema();
 		Record record = DefaultRecord.of(schema);
 		int[] colIdxs = schema.getColumnAll().stream()
-							.filter(c -> !c.getType().isGeometryType())
-							.mapToInt(c -> c.getOrdinal())
+							.filter(c -> !c.type().isGeometryType())
+							.mapToInt(c -> c.ordinal())
 							.toArray();
 		
 		int i = 0;
@@ -70,7 +70,7 @@ public class SampleUtils {
 			while ( ++i <= count && rset.next(record) ) {
 				Map<String,Object> values = Maps.newLinkedHashMap();
 				for ( int j =0; j < colIdxs.length; ++j ) {
-					String name = schema.getColumnAt(colIdxs[j]).getName();
+					String name = schema.getColumnAt(colIdxs[j]).name();
 					Object value = record.get(colIdxs[j]);
 					values.put(name, value);
 				}

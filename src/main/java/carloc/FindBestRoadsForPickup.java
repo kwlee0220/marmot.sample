@@ -9,6 +9,8 @@ import java.nio.charset.Charset;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
+import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSet;
 import marmot.command.MarmotCommands;
@@ -22,11 +24,9 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class FindBestRoadsForPickup {
-	private static final String TAXI_LOG = "로그/나비콜/택시로그";
-	private static final String ROADS = "교통/도로/링크";
+	private static final String INPUT = Globals.TAXI_LOG_MAP;
 	private static final String RESULT = "tmp/result";
 	private static final String SRID = "EPSG:5186";
-	private static final double DISTANCE = 5;
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -48,28 +48,30 @@ public class FindBestRoadsForPickup {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
+		DataSet ds = marmot.getDataSet(INPUT);
+		GeometryColumnInfo info = ds.getGeometryColumnInfo();
+		
 		Plan plan;
 		plan = marmot.planBuilder("match_and_rank_roads")
-					.load(TAXI_LOG)
+					.load(INPUT)
 					.filter("status == 0")
 					.expand("hour:int", "hour=ts.substring(8,10)")
-					.knnJoin("the_geom", ROADS, 10, 1,
-							"hour,car_no,param.{LINK_ID,the_geom,ROAD_NAME,ROADNAME_A}")
-					.groupBy("hour,LINK_ID")
-						.tagWith("the_geom,ROAD_NAME,ROADNAME_A")
+					.groupBy("hour,link_id,sub_link_no")
+						.tagWith("link_geom")
 						.aggregate(COUNT())
+					.project("link_geom as the_geom,*-{link_geom}")
 					.filter("count >= 50")
 					.groupBy("hour")
+						.tagWith("the_geom")
 						.orderBy("count:D")
 						.list()
-					.storeMarmotFile(RESULT)
+					.store(RESULT)
 					.build();
 
-		marmot.deleteFile(RESULT);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(RESULT, info, plan, true);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
-		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 100);
+		SampleUtils.printPrefix(result, 10);
 	}
 	
 	private static void exportResult(PBMarmotClient marmot, String resultLayerName,
@@ -88,6 +90,6 @@ public class FindBestRoadsForPickup {
 
 		String file = String.format("/home/kwlee/tmp/%s_%02d.shp", baseName, hour);
 		marmot.writeToShapefile(rset, new File(file), "best_roads", SRID,
-								Charset.forName("euc-kr"), false, false);
+								Charset.forName("euc-kr"), -1, false, false);
 	}
 }

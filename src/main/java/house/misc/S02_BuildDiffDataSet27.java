@@ -78,7 +78,7 @@ public class S02_BuildDiffDataSet27 {
 		marmot.deleteDataSet(DIFF_ID_LIST);
 
 		Charset charset = Charset.forName("UTF-8");
-		marmot.writeToShapefile(result, SHP_FILE, "main", charset, false, false).get();
+		marmot.writeToShapefile(result, SHP_FILE, charset).get();
 		
 		
 		marmot.disconnect();

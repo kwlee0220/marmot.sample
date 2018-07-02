@@ -47,7 +47,7 @@ public class SplitLandCover {
 		future.join();
 		
 		System.out.println("완료: 토지피복도 분할");
-		System.out.printf("elapsed time=%s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());
 	}
 	
 	private static void split(PBMarmotClient marmot, String inputDsId, String outputDsId) {
@@ -66,6 +66,6 @@ public class SplitLandCover {
 		marmot.createDataSet(outputDsId, ds.getGeometryColumnInfo(), plan, true);
 		watch.stop();
 		
-		System.out.printf("done: input=%s elapsed=%s%n", inputDsId, watch.getElapsedTimeString());
+		System.out.printf("done: input=%s elapsed=%s%n", inputDsId, watch.getElapsedMillisString());
 	}
 }

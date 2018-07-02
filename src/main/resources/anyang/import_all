@@ -13,3 +13,30 @@ hadoop fs -rm -r -skipTrash data/misc/anyang/energe/electro/2017
 hadoop fs -copyFromLocal $MARMOT_DATA/기타/안양대제공/건물_에너지/전기/_meta.json data/misc/anyang/energe/electro
 hadoop fs -copyFromLocal $MARMOT_DATA/기타/안양대제공/건물_에너지/전기/2017 data/misc/anyang/energe/electro
 bind_dataset data/misc/anyang/energe/electro -dataset anyang/energe/electro -type text
+
+#
+# 공용 데이터세트 생성 작업
+#
+mc_copy 토지/개별공시지가_2017 tmp/anyang/cadastral -project 'the_geom,고유번호 as pnu' -shard 1
+mc_copy tmp/anyang/cadastral tmp/anyang/pnu -project 'pnu' -shard 1
+
+#
+# 가스 사용량 관련 작업
+#
+run_sample anyang.energe.S02_SumMonthGasUsages
+run_sample anyang.energe.S03_MatchGasUsages
+run_sample anyang.energe.S04_GasGridAnalysis
+
+#
+# 전기 사용량 관련 작업
+#
+run_sample anyang.energe.S05_SumMonthElectroUsages
+run_sample anyang.energe.S06_MatchElectroUsages
+run_sample anyang.energe.S07_ElectroGridAnalysis
+
+#
+# 개별공시지가 관련 작업
+#
+run_sample anyang.energe.S08_MatchLandPrices
+run_sample anyang.energe.S09_LandGridAnalysis
+

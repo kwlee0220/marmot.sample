@@ -62,7 +62,7 @@ public class S03_FindRegistreredBuildingsFixed {
 		elapsed.stop();
 		
 		System.out.printf("총괄표제부 보유 건물 추출 완료, count=%d, elapsed=%s%n",
-							ds.getRecordCount(), elapsed.getElapsedTimeString());
+							ds.getRecordCount(), elapsed.getElapsedMillisString());
 		
 		return ds;
 	}

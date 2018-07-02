@@ -57,7 +57,7 @@ public class S01_FindHouseArea {
 		DataSet resDs = marmot.createDataSet(landUsage, ds.getGeometryColumnInfo(), plan, true);
 		resDs.cluster();
 		System.out.printf("용도지역지구에서 주거지역 추출 완료, count=%d, elapsed=%s%n",
-							resDs.getRecordCount(), elapsed.getElapsedTimeString());
+							resDs.getRecordCount(), elapsed.getElapsedMillisString());
 		
 		return resDs;
 	}

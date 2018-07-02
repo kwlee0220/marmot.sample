@@ -56,7 +56,7 @@ public class Y3T_1 {
 		DataSet result;
 		
 		findElderlyCares(marmot, TEMP_ELDERLY_CARES);
-		System.out.println("elapsed: " + watch.getElapsedTimeString());
+		System.out.println("elapsed: " + watch.getElapsedMillisString());
 		
 		DataSet pop = marmot.getDataSet(POPULATION);
 		GeometryColumnInfo gcInfo = pop.getGeometryColumnInfo();
@@ -70,7 +70,7 @@ public class Y3T_1 {
 					.store(TEMP_POP)
 					.build();
 		result = marmot.createDataSet(TEMP_POP, gcInfo, plan, true);
-		System.out.println("elapsed: " + watch.getElapsedTimeString());
+		System.out.println("elapsed: " + watch.getElapsedMillisString());
 
 		plan = marmot.planBuilder("")
 					.load(POPULATION)
@@ -80,7 +80,7 @@ public class Y3T_1 {
 					.build();
 		marmot.execute(plan);
 		result.cluster();
-		System.out.println("elapsed: " + watch.getElapsedTimeString());
+		System.out.println("elapsed: " + watch.getElapsedMillisString());
 		
 		plan = marmot.planBuilder("핫 스팟 분석")
 					.loadGetisOrdGi(TEMP_POP, "refl70", 500, LISAWeight.FIXED_DISTANCE_BAND)

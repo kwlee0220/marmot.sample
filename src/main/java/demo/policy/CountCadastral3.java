@@ -1,4 +1,7 @@
-package anyang.energe;
+package demo.policy;
+
+import static marmot.optor.AggregateFunction.COUNT;
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -7,7 +10,7 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.optor.JoinOptions;
+import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -17,14 +20,16 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S04_CalcElectroCadastralCenters {
-	private static final String INPUT = "tmp/anyang/cadastral_electro";
-	private static final String OUTPUT = "tmp/anyang/electro_cadastral_centers";
+public class CountCadastral3 {
+	private static final String PARAM = "구역/행정동코드";
+	private static final String INPUT = "구역/연속지적도_2017";
+//	private static final String RESULT = "tmp/count_cadastral";
+	private static final String RESULT = "tmp/result02";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
+		CommandLineParser parser = new CommandLineParser("step07 ");
 		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
 		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
 		
@@ -44,19 +49,20 @@ public class S04_CalcElectroCadastralCenters {
 		DataSet ds = marmot.getDataSet(INPUT);
 		GeometryColumnInfo info = ds.getGeometryColumnInfo();
 
-		Plan plan;
-		plan = marmot.planBuilder("가스 사용량 연속지적도에 매칭")
-					.load(INPUT)
-					.centroid("the_geom", "the_geom")
-					.store(OUTPUT)
-					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, info, plan, true);
-		result.cluster();
+		Plan plan = marmot.planBuilder("행정도별 필지수 계산")
+						.loadSpatialIndexJoin(INPUT, PARAM, INTERSECTS, "left.pnu,right.hcode")
+//						.filter("hcode == '4376034000'")
+						.groupBy("hcode")
+							.aggregate(COUNT())
+						.store(RESULT)
+						.build();
+		DataSet result = marmot.createDataSet(RESULT, plan, true);
+//		result.cluster();
 		
-		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
+		watch.stop();
+		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());
 		
-		SampleUtils.printPrefix(result, 20);
-		
-		marmot.disconnect();
+		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
+		SampleUtils.printPrefix(result, 5);
 	}
 }

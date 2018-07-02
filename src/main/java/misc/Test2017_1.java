@@ -59,7 +59,7 @@ public class Test2017_1 {
 //										SpatialRelation.WITHIN_DISTANCE(2000), COUNT())
 								.buffer("the_geom", "center", 100, 16)
 								.spatialAggregateJoin("center", ADDR_BLD_UTILS,
-												INTERSECTS, COUNT())
+													INTERSECTS, COUNT())
 								.project("the_geom,cell_id,count")
 								.store(GRID)
 								.build();
@@ -68,6 +68,6 @@ public class Test2017_1 {
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);
-		System.out.println("elapsed: " + watch.getElapsedTimeString());
+		System.out.println("elapsed: " + watch.getElapsedMillisString());
 	}
 }

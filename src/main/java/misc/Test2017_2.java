@@ -67,6 +67,6 @@ public class Test2017_2 {
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);
-		System.out.println("elapsed: " + watch.getElapsedTimeString());
+		System.out.println("elapsed: " + watch.getElapsedMillisString());
 	}
 }

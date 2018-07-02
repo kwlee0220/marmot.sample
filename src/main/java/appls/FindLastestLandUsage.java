@@ -64,7 +64,7 @@ public class FindLastestLandUsage {
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);
-		System.out.println("elapsed: " + watch.getElapsedTimeString());
+		System.out.println("elapsed: " + watch.getElapsedMillisString());
 	}
 	
 	private static Geometry getSeoulBoundary(MarmotRuntime marmot) {

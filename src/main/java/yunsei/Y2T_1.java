@@ -105,9 +105,9 @@ public class Y2T_1 {
 		System.out.println("done: crop bus_ot_dt with seoul");
 		
 		DataSet multiRings = doMultiRing(marmot, result, seoul, MULTI_RINGS);
-		System.out.println("done: ring_buffer, elapsed=" + watch.getElapsedTimeString());
+		System.out.println("done: ring_buffer, elapsed=" + watch.getElapsedMillisString());
 //		multiRings.cluster();
-		System.out.println("done: cluster ring_buffer, elapsed=" + watch.getElapsedTimeString());
+		System.out.println("done: cluster ring_buffer, elapsed=" + watch.getElapsedMillisString());
 		marmot.deleteDataSet(TEMP_BUS_SEOUL);
 
 		List<String> valueColNames = IntStream.rangeClosed(1, 25)
@@ -129,7 +129,7 @@ public class Y2T_1 {
 		result = marmot.createDataSet(TEMP_HISTOGRAM, gcInfo, plan, true);
 		
 		marmot.deleteDataSet(MULTI_RINGS);
-		System.out.println("done: build_histogram, elapsed=" + watch.getElapsedTimeString());
+		System.out.println("done: build_histogram, elapsed=" + watch.getElapsedMillisString());
 		
 		kmeans(marmot, TEMP_HISTOGRAM, RESULT);
 		marmot.deleteDataSet(TEMP_HISTOGRAM);

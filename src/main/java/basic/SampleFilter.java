@@ -50,6 +50,6 @@ public class SampleFilter {
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);
-		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

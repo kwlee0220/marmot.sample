@@ -68,6 +68,6 @@ public class SampleAssignSquareGridCell {
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 5);
-		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

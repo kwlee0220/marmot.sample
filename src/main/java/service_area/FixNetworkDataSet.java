@@ -52,7 +52,7 @@ public class FixNetworkDataSet {
 		DataSet ds = marmot.createDataSet(OUTPUT, input.getGeometryColumnInfo(), plan, true);
 		ds.cluster();
 
-		System.out.printf("elapsed=%s%n", watch.getElapsedTimeString());
+		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 		marmot.disconnect();
 	}
 }
