@@ -48,9 +48,9 @@ public class CountCadastral2 {
 		GeometryColumnInfo info = ds.getGeometryColumnInfo();
 
 		Plan plan = marmot.planBuilder("행정도별 필지수 계산")
-//						.load(INPUT, 251)
-						.load(INPUT)
-						.filter("hcode.startsWith('5011025')")
+						.load(INPUT, 131)
+//						.load(INPUT)
+//						.filter("hcode.startsWith('5011025')")
 						.spatialAggregateJoin("the_geom", PARAM, INTERSECTS, COUNT())
 						.update("count = (count == null) ? 0 : count")
 						.shard(1)
@@ -63,6 +63,6 @@ public class CountCadastral2 {
 		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		SampleUtils.printPrefix(result, 50);
+		SampleUtils.printPrefix(result, 5);
 	}
 }

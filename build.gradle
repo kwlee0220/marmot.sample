@@ -1,6 +1,66 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 
+/*
+plugins {
+	id "com.jfrog.bintray" version "1.+"
+}
+bintry {
+	user = 'kwlee0220'
+	key = 'b0a6c2b1b1f5952a78bb8f6bd3bcf1ebfc38f936'
+	pkg {
+		repo = 'marmot'
+		name = 'marmot.sample'
+		userOrg = 'ETRI'
+		licenses = ['Apache-2.0']
+		vcsUrl = "https://github.com/kwlee0220/marmot.sample.git"
+		version {
+			name = '1.0-Final'
+		}
+	}
+	publications = ['MyPublication']
+}
+def pomConfig = {
+	licenses {
+		license {
+			name "The Apache Software License, Version 2.0"
+			url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+			distribution "repo"
+		}
+	}
+	developers {
+		developer {
+			id "kwlee"
+			name "Kang-Woo Lee"
+			email "kwlee.etri.re.kr"
+		}
+	}
+	
+	scm {
+	   url "https://github.com/yourgithubaccount/example"
+	}
+}
+publishing {
+	publications {
+		MyPublication(MavenPublication) {
+			from components.java
+			artifact sourcesJar
+			artifact javadocJar
+			groupId 'marmot'
+			artifactId 'marmot.sample'
+			version '1.1'
+			pom.withXml {
+				def root = asNode()
+				root.appendNode('description', 'Marmot Sample programs')
+				root.appendNode('name', 'marmot.sample')
+				root.appendNode('url', 'https://site_for_lib.tld')
+				root.children().last() + pomConfig
+			}
+		}
+	}
+}
+*/
+
 group = 'etri'
  version = '2.1.1'
 
