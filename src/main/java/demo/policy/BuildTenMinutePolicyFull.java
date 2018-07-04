@@ -48,11 +48,12 @@ public class BuildTenMinutePolicyFull {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-		
+
+		StopWatch watch2 = StopWatch.start();
 		DataSet output;
 		
+/*
 		// '노인복지시설_경로당_추출_버퍼' 추출
-		StopWatch watch2 = StopWatch.start();
 		output = bufferElderlyCareFacilities(marmot);
 		output.cluster();
 		System.out.println("완료: '노인복지시설_경로당_추출_버퍼' 추출, elapsed="
@@ -71,6 +72,7 @@ public class BuildTenMinutePolicyFull {
 		output.cluster();
 		System.out.println("완료: '인구밀도_10000이상_행정동' 추출, elapsed="
 							+ watch2.stopAndGetElpasedTimeString());
+*/
 
 		watch2 = StopWatch.start();
 		DataSet ds = marmot.getDataSet(CADASTRAL);
@@ -80,12 +82,12 @@ public class BuildTenMinutePolicyFull {
 						.load(CADASTRAL)
 						.project("the_geom,pnu")
 						.spatialSemiJoin(info.name(), ELDERLY_CARE_BUFFER, INTERSECTS, true)	// (3) 교차반전
-						.clipJoin(info.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석
-						.shard(1)
+//						.clipJoin(info.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석
+//						.shard(1)
 						.store(RESULT)
 						.build();
 		output = marmot.createDataSet(RESULT, info, plan, true);
-		output.cluster();
+//		output.cluster();
 		System.out.println("완료: '경로당필요지역' 추출, elapsed="
 							+ watch2.stopAndGetElpasedTimeString());
 		
