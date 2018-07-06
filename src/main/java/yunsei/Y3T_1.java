@@ -64,7 +64,7 @@ public class Y3T_1 {
 		
 		plan = marmot.planBuilder("")
 					.load(POPULATION)
-					.spatialSemiJoin(pop.getGeometryColumn(), TEMP_ELDERLY_CARES, INTERSECTS, false)
+					.spatialSemiJoin(pop.getGeometryColumn(), TEMP_ELDERLY_CARES, INTERSECTS)
 					.update("refl70 = 0")
 					.project(geomCol + ",refl70,point_x,point_y")
 					.store(TEMP_POP)
@@ -74,7 +74,8 @@ public class Y3T_1 {
 
 		plan = marmot.planBuilder("")
 					.load(POPULATION)
-					.spatialSemiJoin(pop.getGeometryColumn(), TEMP_ELDERLY_CARES, INTERSECTS, true)
+					.spatialSemiJoin(pop.getGeometryColumn(), TEMP_ELDERLY_CARES,
+									INTERSECTS, true, true)
 					.project(geomCol + ",refl70,point_x,point_y")
 					.store(TEMP_POP)
 					.build();

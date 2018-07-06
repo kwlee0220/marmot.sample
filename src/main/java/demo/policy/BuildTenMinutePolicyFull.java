@@ -81,8 +81,9 @@ public class BuildTenMinutePolicyFull {
 		Plan plan = marmot.planBuilder("경로당필요지역추출")
 						.load(CADASTRAL)
 						.project("the_geom,pnu")
-						.spatialSemiJoin(info.name(), ELDERLY_CARE_BUFFER, INTERSECTS, true)	// (3) 교차반전
-//						.clipJoin(info.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석
+						.spatialSemiJoin(info.name(), ELDERLY_CARE_BUFFER, INTERSECTS,
+										true, true)	// (3) 교차반전
+						.clipJoin(info.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석
 //						.shard(1)
 						.store(RESULT)
 						.build();
@@ -137,7 +138,7 @@ public class BuildTenMinutePolicyFull {
 		plan = marmot.planBuilder("인구밀도_10000이상_행정동추출")
 					.load(HDONG)
 					.project("the_geom")
-					.spatialSemiJoin("the_geom", HIGH_DENSITY_CENTER, INTERSECTS, false)	// (6) 교차분석
+					.spatialSemiJoin("the_geom", HIGH_DENSITY_CENTER, INTERSECTS)	// (6) 교차분석
 					.project("the_geom")
 					.store(HIGH_DENSITY_HDONG)
 					.build();

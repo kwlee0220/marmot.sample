@@ -73,7 +73,7 @@ public class Step0 {
 							// 용도지구에 대한 100m 크기의 그리드를 생성 
 							.loadSquareGridFile(bounds, cellSize)
 							// 상업지구에 겹치는 그리드 셀만 추출한다.
-							.spatialSemiJoin("the_geom", TEMP_BIZ_AREA, INTERSECTS, false)
+							.spatialSemiJoin("the_geom", TEMP_BIZ_AREA, INTERSECTS)
 							// 상업지구 그리드 셀에 대해 대도시 영역만을 선택하고,
 							// 행정도 코드(sgg_cd)를 부여한다.
 							.spatialJoin("the_geom", TEMP_BIG_CITIES, INTERSECTS,

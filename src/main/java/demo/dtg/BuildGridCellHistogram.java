@@ -1,8 +1,11 @@
-package demo.policy;
+package demo.dtg;
 
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
+import static marmot.optor.AggregateFunction.COUNT;
 
 import org.apache.log4j.PropertyConfigurator;
+
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
 import marmot.DataSet;
@@ -12,21 +15,23 @@ import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
+import utils.Size2d;
 import utils.StopWatch;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class Step03 {
-	static final String INPUT = "구역/연속지적도_2017";
-	private static final String PARAM = Step02.RESULT;
-	static final String RESULT = "tmp/10min/step03";
+public class BuildGridCellHistogram {
+	private static final String TAGGED = "tmp/dtg/taggeds";
+	private static final String RESULT = "tmp/dtg/histogram_grid";
+	
+	private static final int WORKER_COUNT = 5;
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		CommandLineParser parser = new CommandLineParser("step03 ");
+		CommandLineParser parser = new CommandLineParser("mc_list_records ");
 		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
 		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
 		
@@ -43,21 +48,25 @@ public class Step03 {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		DataSet ds = marmot.getDataSet(INPUT);
-		GeometryColumnInfo info = ds.getGeometryColumnInfo();
+		DataSet output;
+		GeometryColumnInfo info = new GeometryColumnInfo("the_geom", "EPSG:5186");
 
-		Plan plan = marmot.planBuilder("노인복지시설필요지역추출")
-						.load(INPUT)
-						.spatialSemiJoin(info.name(), PARAM, INTERSECTS, true, true) // (3) 교차반전
-						.store(RESULT)
-						.build();
-		DataSet result = marmot.createDataSet(RESULT, info, plan, true);
-		result.cluster();
+		Plan plan;
+		plan = marmot.planBuilder("build_histogram_grid")
+					.load(TAGGED)
+					.groupBy("cell_id")
+						.tagWith("cell_geom")
+						.workerCount(WORKER_COUNT)
+						.aggregate(COUNT())
+					.store(RESULT)
+					.build();
+		output = marmot.createDataSet(RESULT, info, plan, true);
 		
 		watch.stop();
-		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());
+		System.out.printf("count=%d, total elapsed time=%s%n",
+							output.getRecordCount(), watch.getElapsedMillisString());
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		SampleUtils.printPrefix(result, 5);
+		SampleUtils.printPrefix(output, 5);
 	}
 }

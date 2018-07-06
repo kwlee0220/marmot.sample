@@ -40,7 +40,7 @@ public class SampleSpatialSemiJoin {
 		
 		Plan plan = marmot.planBuilder("within_distance")
 								.load(INPUT)
-								.spatialSemiJoin("the_geom", PARAMS, WITHIN_DISTANCE(30), false)
+								.spatialSemiJoin("the_geom", PARAMS, WITHIN_DISTANCE(30))
 								.storeMarmotFile(RESULT)
 								.build();
 		marmot.deleteFile(RESULT);

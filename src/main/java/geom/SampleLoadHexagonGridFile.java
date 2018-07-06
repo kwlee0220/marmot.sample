@@ -52,7 +52,7 @@ public class SampleLoadHexagonGridFile {
 
 		Plan plan = marmot.planBuilder("load_hexagon_grid")
 							.loadHexagonGridFile(bounds, srid, SIDE_LEN, 8)
-							.spatialSemiJoin("the_geom", INPUT, INTERSECTS, false)
+							.spatialSemiJoin("the_geom", INPUT, INTERSECTS)
 							.store(RESULT)
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, dataset.getGeometryColumnInfo(), plan, true);
