@@ -1,6 +1,7 @@
 package demo.dtg;
 
 import static marmot.optor.AggregateFunction.COUNT;
+import static marmot.optor.JoinOptions.*;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -17,15 +18,20 @@ import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.Size2d;
 import utils.StopWatch;
+import utils.UnitUtils;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class BuildGridCellHistogram {
-	private static final String TAGGED = "tmp/dtg/taggeds";
+public class TagDtgWithGrid {
+	private static final String POLITICAL = "구역/시도";
+	private static final String DTG = "교통/dtg";
+	private static final String DTG_COMPANY = "교통/dtg_companies";
+	private static final String TEMP_CARGOS = "tmp/dtg/cargos";
 	private static final String RESULT = "tmp/dtg/histogram_grid";
 	
+	private static final Size2d CELL_SIZE = new Size2d(100, 100);
 	private static final int WORKER_COUNT = 5;
 	
 	public static final void main(String... args) throws Exception {
@@ -48,17 +54,39 @@ public class BuildGridCellHistogram {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
+		Geometry kyounggiGeom = getGyoungGiDo(marmot);
+		Envelope bounds = kyounggiGeom.getEnvelopeInternal();
+		
+		filterCargo(marmot, TEMP_CARGOS);
+		
+		DataSet ds = marmot.getDataSet(DTG);
+		int nworkers = (int)(ds.length() / UnitUtils.parseByteSize("20gb"));
+		
 		DataSet output;
 		GeometryColumnInfo info = new GeometryColumnInfo("the_geom", "EPSG:5186");
 
 		Plan plan;
-		plan = marmot.planBuilder("build_histogram_grid")
-					.load(TAGGED)
+		plan = marmot.planBuilder("calc_histogram_road_links")
+					.load(DTG)
+					
+					.filter("x좌표 != 0 && y좌표 != 0")
+					.toPoint("x좌표", "y좌표", "the_geom")
+					.project("the_geom,운송사코드")
+					
+					.join("운송사코드", TEMP_CARGOS, "회사코드", "the_geom", SEMI_JOIN(nworkers))
+					
+					.transformCRS("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
+					.assignSquareGridCell("the_geom", bounds, CELL_SIZE)
+					.centroid("cell_geom", "the_geom")
+					
 					.groupBy("cell_id")
-						.tagWith("grid")
+						.tagWith("the_geom,cell_pos")
 						.workerCount(WORKER_COUNT)
 						.aggregate(COUNT())
-					.project("grid as the_geom,count")
+						
+					.expand("grid_x:int,grid_y:int", "grid_x = cell_pos.x; grid_y = cell_pos.y")
+					.project("the_geom,grid_x,grid_y,count")
+					
 					.store(RESULT)
 					.build();
 		output = marmot.createDataSet(RESULT, info, plan, true);
@@ -69,5 +97,27 @@ public class BuildGridCellHistogram {
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(output, 5);
+	}
+	
+	private static Geometry getGyoungGiDo(PBMarmotClient marmot) {
+		Plan plan;
+		plan = marmot.planBuilder("find gyounggi")
+					.load(POLITICAL)
+					.filter("ctprvn_cd == 41")
+					.project("the_geom")
+					.build();
+		
+		return marmot.executeLocally(plan).getFirst().map(r -> r.getGeometry(0)).get();
+	}
+	
+	private static DataSet filterCargo(PBMarmotClient marmot, String output) {
+		Plan plan;
+		plan = marmot.planBuilder("find cargos")
+					.load(DTG_COMPANY)
+					.filter("업종코드 == 31 || 업종코드 == 32")
+					.store(output)
+					.build();
+
+		return marmot.createDataSet(output, plan, true);
 	}
 }

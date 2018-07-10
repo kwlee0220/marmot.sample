@@ -87,7 +87,7 @@ public class TrimTrackLog {
 		Plan plan;
 		plan = marmot.planBuilder("find_mbr")
 						.load(INPUT)
-						.aggregate(AggregateFunction.MBR("the_geom").as("the_geom"))
+						.aggregate(AggregateFunction.ENVELOPE("the_geom").as("the_geom"))
 						.store("tmp/ship_tracks_mbr")
 						.build();
 		DataSet result = marmot.createDataSet("tmp/ship_tracks_mbr", plan, true);

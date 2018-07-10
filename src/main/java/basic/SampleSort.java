@@ -16,7 +16,8 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleSort {
-	private static final String INPUT = "POI/주유소_가격";
+//	private static final String INPUT = "POI/주유소_가격";
+	private static final String INPUT = "POI/전국cctv";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
@@ -42,7 +43,8 @@ public class SampleSort {
 		DataSet input = marmot.getDataSet(INPUT);
 		Plan plan = marmot.planBuilder("sample_aggreate")
 							.load(INPUT)
-							.sort("휘발유:D")
+							.sort("보관일수:A,카메라대수:D")
+							.project("the_geom,보관일수,카메라대수")
 							.store(RESULT)
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);

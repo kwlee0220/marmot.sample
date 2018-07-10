@@ -1,10 +1,10 @@
 package demo.dtg;
 
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
+import static marmot.optor.AggregateFunction.COUNT;
+import static marmot.optor.JoinOptions.SEMI_JOIN;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
@@ -15,20 +15,23 @@ import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.Size2d;
 import utils.StopWatch;
+import utils.UnitUtils;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class TagDtgWithGridAndRoadLink {
+public class TagDtgWithRoad {
 	private static final String POLITICAL = "구역/시도";
-	private static final String DTG = "교통/dtg_s";
-	private static final String ROAD_BUFFERED = "tmp/dtg/road_buffered";
-	private static final String RESULT = "tmp/dtg/taggeds";
+	private static final String DTG = "교통/dtg";
+	private static final String DTG_COMPANY = "교통/dtg_companies";
+	private static final String ROAD = "교통/도로/링크";
+	private static final String TEMP_CARGOS = "tmp/dtg/cargos";
+	private static final String RESULT = "tmp/dtg/histogram_road";
 	
-	private static final Size2d CELL_SIZE = new Size2d(100, 100);
+	private static final double DIST = 15d;
+	private static final int WORKER_COUNT = 5;
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -50,22 +53,34 @@ public class TagDtgWithGridAndRoadLink {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		Geometry sidoGeom = getGyoungGiDo(marmot);
-		Envelope bounds = sidoGeom.getEnvelopeInternal();
+		Geometry kyounggiGeom = getGyoungGiDo(marmot);
+		
+		filterCargo(marmot, TEMP_CARGOS);
+		
+		DataSet ds = marmot.getDataSet(DTG);
+		int nworkers = (int)(ds.length() / UnitUtils.parseByteSize("20gb"));
 		
 		DataSet output;
 		GeometryColumnInfo info = new GeometryColumnInfo("the_geom", "EPSG:5186");
 
 		Plan plan;
-		plan = marmot.planBuilder("tag grid_cell and road_link")
+		plan = marmot.planBuilder("calc_histogram_road_links")
 					.load(DTG)
 					.filter("x좌표 != 0 && y좌표 != 0")
 					.expand("the_geom:point", "the_geom = ST_Point(x좌표,y좌표)")
+					.project("the_geom")
+					
+					.join("운송사코드", TEMP_CARGOS, "회사코드", "*", SEMI_JOIN(nworkers))
+					
 					.transformCRS("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
-					.assignSquareGridCell("the_geom", bounds, CELL_SIZE)
-					.centroid("cell_geom", "grid")
-					.spatialJoin("the_geom", ROAD_BUFFERED, INTERSECTS,
-								"*,param.link_id")
+					.intersects("the_geom", kyounggiGeom)
+					.knnJoin("the_geom", ROAD, DIST, 1, "param.{the_geom, link_id}")
+					
+					.groupBy("link_id")
+						.tagWith("the_geom")
+						.workerCount(WORKER_COUNT)
+						.aggregate(COUNT())
+					
 					.store(RESULT)
 					.build();
 		output = marmot.createDataSet(RESULT, info, plan, true);
@@ -87,5 +102,17 @@ public class TagDtgWithGridAndRoadLink {
 					.build();
 		
 		return marmot.executeLocally(plan).getFirst().map(r -> r.getGeometry(0)).get();
+	}
+	
+	private static DataSet filterCargo(PBMarmotClient marmot, String output) {
+		Plan plan;
+		plan = marmot.planBuilder("find cargos")
+					.load(DTG_COMPANY)
+					.filter("업종코드 == 31 || 업종코드 == 32")
+					.project("the_geom")
+					.store(output)
+					.build();
+
+		return marmot.createDataSet(output, plan, true);
 	}
 }

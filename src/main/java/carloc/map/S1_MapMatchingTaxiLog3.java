@@ -17,9 +17,8 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S1_MapMatchingTaxiLog {
+public class S1_MapMatchingTaxiLog3 {
 	private static final String INPUT = Globals.TAXI_LOG;
-	private static final String PARAM = Globals.ROADS;
 	private static final String RESULT = Globals.TAXI_LOG_MAP;
 	
 	public static final void main(String... args) throws Exception {
@@ -49,10 +48,10 @@ public class S1_MapMatchingTaxiLog {
 		String script = String.format("%s = ST_ClosestPointOnLine(%s, line)", geomCol, geomCol);
 		
 		Plan plan;
-		plan = marmot.planBuilder("택시로그_맵_매핑_org_road")
+		plan = marmot.planBuilder("택시로그_맵_매핑")
 					.load(INPUT)
-					.knnJoin(geomCol, PARAM, Globals.DISTANCE, 1,
-							"*,param.{the_geom as link_geom, link_id}")
+					.knnJoin(geomCol, Globals.ROADS_IDX, Globals.DISTANCE, 1,
+							"*,param.{the_geom as link_geom, link_id, sub_link_no}")
 //					.update(script)
 					.store(RESULT)
 					.build();
