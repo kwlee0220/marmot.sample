@@ -248,7 +248,7 @@ public class FindBestSubwayStationCandidates {
 					// 승하차 로그만 선택한다.
 					.filter("status == 1 || status == 2")
 					// 서울특별시 영역만의 로그만 선택한다.
-					.intersects(geomCol, seoul)
+					.intersects(geomCol, seoul, false)
 					// 모든 지하철 역사로부터 1km 이상 떨어진 로그 데이터만 선택한다.
 					.spatialSemiJoin("the_geom", TEMP_STATIONS, INTERSECTS, true, true)
 					.store(TEMP_SEOUL_TAXI_LOG)

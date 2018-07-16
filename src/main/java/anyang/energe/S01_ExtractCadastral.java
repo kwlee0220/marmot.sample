@@ -19,8 +19,8 @@ import utils.UnitUtils;
  * @author Kang-Woo Lee (ETRI)
  */
 public class S01_ExtractCadastral {
-	private static final String BASE = "토지/개별공시지가_2017";
-	private static final String OUTPUT = "tmp/anyang/cadastral";
+	private static final String INPUT = Globals.LAND_PRICES_2017;
+	private static final String OUTPUT = Globals.CADASTRAL;
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -42,13 +42,13 @@ public class S01_ExtractCadastral {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
-		DataSet ds = marmot.getDataSet(BASE);
+		DataSet ds = marmot.getDataSet(INPUT);
 		GeometryColumnInfo info = ds.getGeometryColumnInfo();
 		long blockSize = UnitUtils.parseByteSize("128mb");
 
 		Plan plan;
 		plan = marmot.planBuilder("연속지적도 추출")
-					.load(BASE)
+					.load(INPUT)
 					.project("the_geom, 고유번호 as pnu")
 					.shard(1)
 					.store(OUTPUT, Option.some(blockSize))

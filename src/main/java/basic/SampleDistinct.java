@@ -1,6 +1,4 @@
-package anyang.energe;
-
-import static marmot.optor.AggregateFunction.SUM;
+package basic;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -17,14 +15,14 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S02_SumMonthGasUsages {
-	private static final String INPUT = Globals.GAS;
-	private static final String OUTPUT = "tmp/anyang/gas_year";
+public class SampleDistinct {
+	private static final String INPUT = "교통/지하철/서울역사";
+	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		CommandLineParser parser = new CommandLineParser("sum_gas_usages ");
+		CommandLineParser parser = new CommandLineParser("mc_list_records ");
 		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
 		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
 		
@@ -40,22 +38,16 @@ public class S02_SumMonthGasUsages {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
+		
+		DataSet input = marmot.getDataSet(INPUT);
+		Plan plan = marmot.planBuilder("test_distinct")
+							.load(INPUT)
+							.distinct("sig_cd")
+							.build();
+		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);
+		watch.stop();
 
-		Plan plan;
-		plan = marmot.planBuilder("연별 가스 사용량 합계")
-					.load(INPUT)
-					.expand("year:short", "year = 사용년월.substring(0, 4)")
-					.update("사용량 = Math.max(사용량, 0)")
-					.groupBy("고유번호,year")
-						.aggregate(SUM("사용량").as("usage"))
-					.project("고유번호 as pnu, year,  usage")
-					.store(OUTPUT)
-					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, true);
-		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
-		
-		SampleUtils.printPrefix(result, 10);
-		
-		marmot.disconnect();
+		SampleUtils.printPrefix(result, 5);
+		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

@@ -7,7 +7,6 @@ import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import io.vavr.control.Option;
 import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -60,7 +59,7 @@ public class Step1Buildings {
 		
 		plan = marmot.planBuilder("행정구역당 20년 이상된 건물 집계")
 					.load(BUILDINGS)
-					.expand(schemaStr, Option.some(init), trans, Option.none())
+					.expand(schemaStr, init, trans)
 					.spatialJoin("the_geom", EMD, INTERSECTS,
 								"원천도형ID,old,be5,param.{the_geom,emd_cd,emd_kor_nm as emd_nm}")
 					.groupBy("emd_cd")

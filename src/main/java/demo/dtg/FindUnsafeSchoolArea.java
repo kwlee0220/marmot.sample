@@ -1,12 +1,10 @@
 package demo.dtg;
 
-import static marmot.optor.AggregateFunction.COUNT;
-import static marmot.optor.JoinOptions.SEMI_JOIN;
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 
 import common.SampleUtils;
@@ -17,27 +15,22 @@ import marmot.command.MarmotCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
 import marmot.geo.command.ClusterDataSetOptions;
-import marmot.optor.geo.SpatialRelation;
+import static marmot.optor.AggregateFunction.*;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
-import utils.UnitUtils;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class TagDtgWithRoad {
-	private static final String POLITICAL = "구역/시도";
+public class FindUnsafeSchoolArea {
+	private static final String SCHOOLS = "POI/전국초중등학교";
+	private static final String TEMP_SCHOOLS = "tmp/dtg/temp_schools";
 	private static final String DTG = "교통/dtg";
-	private static final String DTG_COMPANY = "교통/dtg_companies";
-	private static final String ROAD = "교통/도로/링크";
-	private static final String TEMP_ROAD = "tmp/dtg/road2";
-	private static final String TEMP_CARGOS = "tmp/dtg/cargos";
-	private static final String RESULT = "tmp/dtg/histogram_road";
+	private static final String RESULT = "tmp/dtg/unsafe_zone";
 	
-	private static final double DIST = 15d;
 	private static final int WORKER_COUNT = 5;
 	
 	public static final void main(String... args) throws Exception {
@@ -59,35 +52,29 @@ public class TagDtgWithRoad {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-		
-		Polygon key = getValidWgsBounds(marmot);
-		
-		excludeHighway(marmot, TEMP_ROAD);
-		filterCargo(marmot, TEMP_CARGOS);
-		
-		DataSet ds = marmot.getDataSet(DTG);
-		int nworkers = (int)(ds.length() / UnitUtils.parseByteSize("20gb"));
+
+		DataSet schools = findElementarySchoolBuffer(marmot, TEMP_SCHOOLS);
+//		DataSet schools = marmot.getDataSet(TEMP_SCHOOLS);
+		Polygon key = getValidWgsBounds(schools.getBounds());
 		
 		DataSet output;
-		GeometryColumnInfo info = new GeometryColumnInfo("the_geom", "EPSG:5186");
+		GeometryColumnInfo info = marmot.getDataSet(SCHOOLS).getGeometryColumnInfo();
 
 		Plan plan;
-		plan = marmot.planBuilder("calc_histogram_road_links")
+		plan = marmot.planBuilder("find average speed around primary schools")
 					.load(DTG)
 
+					.filter("운행속도 > 1")
 					.toPoint("x좌표", "y좌표", "the_geom")
 					.intersects("the_geom", key)
-					
-					.project("the_geom,운송사코드")
-					.join("운송사코드", TEMP_CARGOS, "회사코드", "the_geom", SEMI_JOIN(nworkers))
-					
 					.transformCRS("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
-					.knnJoin("the_geom", TEMP_ROAD, DIST, 1, "param.{the_geom, link_id, road_name}")
 					
-					.groupBy("link_id")
-						.tagWith("the_geom")
+					.spatialJoin("the_geom", TEMP_SCHOOLS, INTERSECTS, "param.*,운행속도")
+					
+					.groupBy("학교id")
+						.tagWith("the_geom,학교명")
 						.workerCount(WORKER_COUNT)
-						.aggregate(COUNT())
+						.aggregate(AVG("운행속도"))
 					
 					.store(RESULT)
 					.build();
@@ -101,8 +88,8 @@ public class TagDtgWithRoad {
 		SampleUtils.printPrefix(output, 5);
 	}
 	
-	private static Polygon getValidWgsBounds(PBMarmotClient marmot) {
-		Envelope bounds = marmot.getDataSet(POLITICAL).getBounds();
+	private static Polygon getValidWgsBounds(Envelope envl) {
+		Envelope bounds = new Envelope(envl);
 		bounds.expandBy(1);
 		
 		CoordinateTransform trans = CoordinateTransform.get("EPSG:5186", "EPSG:4326");
@@ -111,32 +98,22 @@ public class TagDtgWithRoad {
 		return GeoClientUtils.toPolygon(wgs84Bounds);
 	}
 	
-	private static void excludeHighway(PBMarmotClient marmot, String outDsId) {
-		GeometryColumnInfo info = marmot.getDataSet(ROAD).getGeometryColumnInfo();
+	private static DataSet findElementarySchoolBuffer(PBMarmotClient marmot, String outDsId) {
+		GeometryColumnInfo info = new GeometryColumnInfo("area", "EPSG:5186");
 		
 		Plan plan;
-		plan = marmot.planBuilder("exclude highway")
-					.load(ROAD)
-					.filter("road_rank != '101'")
-					.filter("road_type == '000' || road_type == '003'")
-					.filter("road_use == '0'")
-					.project("the_geom,link_id,road_name")
+		plan = marmot.planBuilder("find elementary schools")
+					.load(SCHOOLS)
+					.filter("학교급구분 == '초등학교'")
+					.buffer("the_geom", "area", 200)
+					.project("the_geom,학교id,학교명,area")
 					.store(outDsId)
 					.build();
 		DataSet output = marmot.createDataSet(outDsId, info, plan, true);
 		
 		ClusterDataSetOptions opts = ClusterDataSetOptions.create().workerCount(1);
 		output.cluster(opts);
-	}
-	
-	private static DataSet filterCargo(PBMarmotClient marmot, String output) {
-		Plan plan;
-		plan = marmot.planBuilder("find cargos")
-					.load(DTG_COMPANY)
-					.filter("업종코드 == 31 || 업종코드 == 32")
-					.store(output)
-					.build();
-
-		return marmot.createDataSet(output, plan, true);
+		
+		return output;
 	}
 }

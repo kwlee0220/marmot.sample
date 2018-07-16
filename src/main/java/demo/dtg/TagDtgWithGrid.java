@@ -7,12 +7,15 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Polygon;
 
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
+import marmot.geo.CoordinateTransform;
+import marmot.geo.GeoClientUtils;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -56,6 +59,7 @@ public class TagDtgWithGrid {
 		
 		Geometry kyounggiGeom = getGyoungGiDo(marmot);
 		Envelope bounds = kyounggiGeom.getEnvelopeInternal();
+		Polygon key = getValidWgsBounds(bounds);
 		
 		filterCargo(marmot, TEMP_CARGOS);
 		
@@ -68,16 +72,17 @@ public class TagDtgWithGrid {
 		Plan plan;
 		plan = marmot.planBuilder("calc_histogram_road_links")
 					.load(DTG)
-					
-					.filter("x좌표 != 0 && y좌표 != 0")
+
 					.toPoint("x좌표", "y좌표", "the_geom")
-					.project("the_geom,운송사코드")
+					.intersects("the_geom", key)
 					
+					.project("the_geom,운송사코드")
 					.join("운송사코드", TEMP_CARGOS, "회사코드", "the_geom", SEMI_JOIN(nworkers))
 					
 					.transformCRS("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
 					.assignSquareGridCell("the_geom", bounds, CELL_SIZE)
 					.centroid("cell_geom", "the_geom")
+					.intersects("the_geom", kyounggiGeom)
 					
 					.groupBy("cell_id")
 						.tagWith("the_geom,cell_pos")
@@ -108,6 +113,16 @@ public class TagDtgWithGrid {
 					.build();
 		
 		return marmot.executeLocally(plan).getFirst().map(r -> r.getGeometry(0)).get();
+	}
+	
+	private static Polygon getValidWgsBounds(Envelope bounds) {
+		Envelope bounds2 = new Envelope(bounds);
+		bounds2.expandBy(1);
+		
+		CoordinateTransform trans = CoordinateTransform.get("EPSG:5186", "EPSG:4326");
+		Envelope wgs84Bounds = trans.transform(bounds2);
+		
+		return GeoClientUtils.toPolygon(wgs84Bounds);
 	}
 	
 	private static DataSet filterCargo(PBMarmotClient marmot, String output) {
