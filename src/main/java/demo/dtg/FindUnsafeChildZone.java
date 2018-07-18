@@ -25,12 +25,13 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class FindUnsafeSchoolArea {
-	private static final String SCHOOLS = "POI/전국초중등학교";
-	private static final String TEMP_SCHOOLS = "tmp/dtg/temp_schools";
+public class FindUnsafeChildZone {
+	private static final String CHILD_ZONE = "POI/어린이보호구역";
+	private static final String TEMP_ZONE = "tmp/dtg/temp_child_zone";
 	private static final String DTG = "교통/dtg";
 	private static final String RESULT = "tmp/dtg/unsafe_zone";
 	
+	private static final int DISTANCE = 200;
 	private static final int WORKER_COUNT = 5;
 	
 	public static final void main(String... args) throws Exception {
@@ -53,12 +54,11 @@ public class FindUnsafeSchoolArea {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
-		DataSet schools = findElementarySchoolBuffer(marmot, TEMP_SCHOOLS);
-//		DataSet schools = marmot.getDataSet(TEMP_SCHOOLS);
+		DataSet schools = bufferChildZone(marmot, TEMP_ZONE);
 		Polygon key = getValidWgsBounds(schools.getBounds());
 		
 		DataSet output;
-		GeometryColumnInfo info = marmot.getDataSet(SCHOOLS).getGeometryColumnInfo();
+		GeometryColumnInfo info = marmot.getDataSet(CHILD_ZONE).getGeometryColumnInfo();
 
 		Plan plan;
 		plan = marmot.planBuilder("find average speed around primary schools")
@@ -69,12 +69,16 @@ public class FindUnsafeSchoolArea {
 					.intersects("the_geom", key)
 					.transformCRS("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
 					
-					.spatialJoin("the_geom", TEMP_SCHOOLS, INTERSECTS, "param.*,운행속도")
+					.spatialJoin("the_geom", TEMP_ZONE, INTERSECTS, "param.*,운행속도")
 					
-					.groupBy("학교id")
-						.tagWith("the_geom,학교명")
+					.groupBy("id")
+						.tagWith("the_geom,대상시설명")
 						.workerCount(WORKER_COUNT)
-						.aggregate(AVG("운행속도"))
+						.aggregate(AVG("운행속도"), COUNT())
+					.filter("count > 10000")	
+						
+					.expand("speed:int", "speed = avg")
+					.project("the_geom,id,대상시설명 as name,speed,count")
 					
 					.store(RESULT)
 					.build();
@@ -98,15 +102,14 @@ public class FindUnsafeSchoolArea {
 		return GeoClientUtils.toPolygon(wgs84Bounds);
 	}
 	
-	private static DataSet findElementarySchoolBuffer(PBMarmotClient marmot, String outDsId) {
+	private static DataSet bufferChildZone(PBMarmotClient marmot, String outDsId) {
 		GeometryColumnInfo info = new GeometryColumnInfo("area", "EPSG:5186");
 		
 		Plan plan;
-		plan = marmot.planBuilder("find elementary schools")
-					.load(SCHOOLS)
-					.filter("학교급구분 == '초등학교'")
-					.buffer("the_geom", "area", 200)
-					.project("the_geom,학교id,학교명,area")
+		plan = marmot.planBuilder("buffer child zones")
+					.load(CHILD_ZONE)
+					.buffer("the_geom", "area", DISTANCE)
+					.project("the_geom,id,대상시설명,area")
 					.store(outDsId)
 					.build();
 		DataSet output = marmot.createDataSet(outDsId, info, plan, true);

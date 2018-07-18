@@ -18,7 +18,7 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class S03_SumMonthElectroUsages {
-	private static final String INPUT = "기타/건물에너지/전기사용량";
+	private static final String INPUT = Globals.ELECTRO;
 	private static final String OUTPUT = "tmp/anyang/electro_year";
 	
 	public static final void main(String... args) throws Exception {

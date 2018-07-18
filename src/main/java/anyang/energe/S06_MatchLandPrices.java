@@ -27,9 +27,9 @@ import utils.stream.FStream;
  * @author Kang-Woo Lee (ETRI)
  */
 public class S06_MatchLandPrices {
-	private static final String INPUT = "토지/개별공시지가_2011_2016";
+	private static final String INPUT = Globals.LAND_PRICES;
 	private static final String INTERM = "tmp/anyang/pnu_land";
-	private static final String BASE = "토지/개별공시지가_2017";
+	private static final String BASE = Globals.LAND_PRICES_2017;
 	private static final String TEMP = "tmp/anyang/temp";
 	private static final String OUTPUT = "tmp/anyang/cadastral_land";
 	private static final String PATTERN = "if (land_%d == null) {land_%d = 0}";

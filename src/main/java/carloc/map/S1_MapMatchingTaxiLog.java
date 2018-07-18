@@ -36,7 +36,7 @@ public class S1_MapMatchingTaxiLog {
 
 		String host = MarmotCommands.getMarmotHost(cl);
 		int port = MarmotCommands.getMarmotPort(cl);
-		
+	
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
@@ -52,7 +52,7 @@ public class S1_MapMatchingTaxiLog {
 		plan = marmot.planBuilder("택시로그_맵_매핑_org_road")
 					.load(INPUT)
 					.knnJoin(geomCol, PARAM, Globals.DISTANCE, 1,
-							"*,param.{the_geom as link_geom, link_id}")
+							"*,param.{the_geom as link_geom, link_id}", true)
 //					.update(script)
 					.store(RESULT)
 					.build();

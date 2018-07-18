@@ -46,7 +46,7 @@ public class Step04 {
 
 		Plan plan = marmot.planBuilder("인구밀도_2017_중심점추출")
 							.load(INPUT)
-							.centroid(info.name(), info.name())				// (4) 중심점 추출
+							.centroid(info.name(), info.name())		// (4) 중심점 추출
 							.store(RESULT)
 							.build();
 		CreateDataSetParameters params = CreateDataSetParameters.builder()
@@ -56,6 +56,8 @@ public class Step04 {
 																.force(true)
 																.build();
 		DataSet result = marmot.createDataSet(params);
+		System.out.printf("elapsed time=%s (processing)%n", watch.getElapsedMillisString());
+		
 		result.cluster();
 		
 		watch.stop();
