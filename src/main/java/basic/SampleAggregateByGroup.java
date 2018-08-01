@@ -1,6 +1,11 @@
 package basic;
 
-import static marmot.optor.AggregateFunction.*;
+import static marmot.optor.AggregateFunction.AVG;
+import static marmot.optor.AggregateFunction.COUNT;
+import static marmot.optor.AggregateFunction.MAX;
+import static marmot.optor.AggregateFunction.MIN;
+import static marmot.optor.AggregateFunction.STDDEV;
+import static marmot.optor.AggregateFunction.SUM;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -46,22 +51,23 @@ public class SampleAggregateByGroup {
 
 		Plan plan = marmot.planBuilder("group_by")
 							.load(INPUT)
+							.filter("sig_cd.startsWith('11')")
 							.groupBy("sig_cd")
 								.aggregate(COUNT(), MAX("sub_sta_sn"), MIN("sub_sta_sn"),
 											SUM("sub_sta_sn"), AVG("sub_sta_sn"),
 											STDDEV("sub_sta_sn"))
 							.store(RESULT)
 							.build();
-		
+
 		CreateDataSetParameters params = CreateDataSetParameters.builder()
 																.datasetId(RESULT)
-																.initializer(plan, true)
+																.initializer(plan, false)
 																.force(true)
 																.build();
 		DataSet result = marmot.createDataSet(params);
 		watch.stop();
 
-		SampleUtils.printPrefix(result, 5);
+		SampleUtils.printPrefix(result, 20);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

@@ -1,11 +1,11 @@
-package carloc.map;
+package anyang.energe;
+
+import static marmot.optor.AggregateFunction.SUM;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import carloc.Globals;
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -17,15 +17,14 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S1_MapMatchingTaxiLog {
-	private static final String INPUT = Globals.TAXI_LOG;
-	private static final String PARAM = Globals.ROADS;
-	private static final String RESULT = Globals.TAXI_LOG_MAP;
+public class T01_SumMonthGasUsages2017 {
+	private static final String INPUT = Globals.GAS;
+	private static final String OUTPUT = "tmp/anyang/gas2017";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		CommandLineParser parser = new CommandLineParser("map_matching_taxi_log ");
+		CommandLineParser parser = new CommandLineParser("sum_gas_usages ");
 		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
 		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
 		
@@ -36,30 +35,30 @@ public class S1_MapMatchingTaxiLog {
 
 		String host = MarmotCommands.getMarmotHost(cl);
 		int port = MarmotCommands.getMarmotPort(cl);
-	
+		
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-		
-		DataSet input = marmot.getDataSet(INPUT);
-		GeometryColumnInfo info = input.getGeometryColumnInfo();
-		String geomCol = info.name();
-		
-		String script = String.format("%s = ST_ClosestPointOnLine(%s, line)", geomCol, geomCol);
-		
-		Plan plan;
-		plan = marmot.planBuilder("택시로그_맵_매핑_org_road")
-					.load(INPUT)
-					.knnJoin(geomCol, PARAM, Globals.DISTANCE, 1,
-							"*,param.{the_geom as link_geom, link_id}", false)
-//					.update(script)
-					.store(RESULT)
-					.build();
-		DataSet result = marmot.createDataSet(RESULT, info, plan, true);
-		watch.stop();
 
+		Plan plan;
+		plan = marmot.planBuilder("2017년 월별 가스 사용량 합계")
+					.load(INPUT)
+					.expand("year:short", "year = 사용년월.substring(0, 4)")
+					.filter("year == 2017")
+					.expand("month:short", "month = 사용년월.substring(4, 6)")
+					.update("사용량 = Math.max(사용량, 0)")
+					.groupBy("고유번호,month")
+						.workerCount(1)
+						.aggregate(SUM("사용량").as("usage"))
+					.project("고유번호 as pnu, month,  usage")
+					.store(OUTPUT)
+					.build();
+		DataSet result = marmot.createDataSet(OUTPUT, plan, true);
+		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
+		
 		SampleUtils.printPrefix(result, 10);
-		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
+		
+		marmot.disconnect();
 	}
 }

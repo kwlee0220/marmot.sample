@@ -1,11 +1,12 @@
-package carloc.map;
+package basic;
+
+import static marmot.optor.AggregateFunction.*;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import carloc.Globals;
 import common.SampleUtils;
+import marmot.CreateDataSetParameters;
 import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -17,15 +18,14 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S1_MapMatchingTaxiLog {
-	private static final String INPUT = Globals.TAXI_LOG;
-	private static final String PARAM = Globals.ROADS;
-	private static final String RESULT = Globals.TAXI_LOG_MAP;
+public class SampleAggregateByGroupMR {
+	private static final String INPUT = "POI/주유소_가격";
+	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		CommandLineParser parser = new CommandLineParser("map_matching_taxi_log ");
+		CommandLineParser parser = new CommandLineParser("mc_list_records ");
 		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
 		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
 		
@@ -36,30 +36,33 @@ public class S1_MapMatchingTaxiLog {
 
 		String host = MarmotCommands.getMarmotHost(cl);
 		int port = MarmotCommands.getMarmotPort(cl);
-	
+		
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet input = marmot.getDataSet(INPUT);
-		GeometryColumnInfo info = input.getGeometryColumnInfo();
-		String geomCol = info.name();
+
+		Plan plan = marmot.planBuilder("group_by")
+							.load(INPUT)
+							.groupBy("지역")
+								.workerCount(2)
+								.aggregate(COUNT(), MAX("휘발유"), MIN("휘발유"),
+											SUM("휘발유"), AVG("휘발유"),
+											STDDEV("휘발유"))
+							.store(RESULT)
+							.build();
 		
-		String script = String.format("%s = ST_ClosestPointOnLine(%s, line)", geomCol, geomCol);
-		
-		Plan plan;
-		plan = marmot.planBuilder("택시로그_맵_매핑_org_road")
-					.load(INPUT)
-					.knnJoin(geomCol, PARAM, Globals.DISTANCE, 1,
-							"*,param.{the_geom as link_geom, link_id}", false)
-//					.update(script)
-					.store(RESULT)
-					.build();
-		DataSet result = marmot.createDataSet(RESULT, info, plan, true);
+		CreateDataSetParameters params = CreateDataSetParameters.builder()
+																.datasetId(RESULT)
+																.initializer(plan, true)
+																.force(true)
+																.build();
+		DataSet result = marmot.createDataSet(params);
 		watch.stop();
 
-		SampleUtils.printPrefix(result, 10);
+		SampleUtils.printPrefix(result, 5);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

@@ -1,11 +1,8 @@
-package carloc.map;
+package basic;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import carloc.Globals;
-import common.SampleUtils;
 import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -17,15 +14,14 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S1_MapMatchingTaxiLog {
-	private static final String INPUT = Globals.TAXI_LOG;
-	private static final String PARAM = Globals.ROADS;
-	private static final String RESULT = Globals.TAXI_LOG_MAP;
+public class SampleStoreKeyedDataSet {
+	private static final String INPUT = "교통/지하철/서울역사";
+	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		CommandLineParser parser = new CommandLineParser("map_matching_taxi_log ");
+		CommandLineParser parser = new CommandLineParser("mc_list_records ");
 		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
 		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
 		
@@ -36,30 +32,23 @@ public class S1_MapMatchingTaxiLog {
 
 		String host = MarmotCommands.getMarmotHost(cl);
 		int port = MarmotCommands.getMarmotPort(cl);
-	
+		
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet input = marmot.getDataSet(INPUT);
-		GeometryColumnInfo info = input.getGeometryColumnInfo();
-		String geomCol = info.name();
+		Plan plan = marmot.planBuilder("test StoreKeyedDataSet")
+							.load(INPUT)
+							.groupBy("sig_cd")
+								.storeEachGroup(RESULT, input.getGeometryColumnInfo())
+							.build();
 		
-		String script = String.format("%s = ST_ClosestPointOnLine(%s, line)", geomCol, geomCol);
-		
-		Plan plan;
-		plan = marmot.planBuilder("택시로그_맵_매핑_org_road")
-					.load(INPUT)
-					.knnJoin(geomCol, PARAM, Globals.DISTANCE, 1,
-							"*,param.{the_geom as link_geom, link_id}", false)
-//					.update(script)
-					.store(RESULT)
-					.build();
-		DataSet result = marmot.createDataSet(RESULT, info, plan, true);
+		marmot.deleteDir(RESULT);
+		marmot.execute(plan);
 		watch.stop();
 
-		SampleUtils.printPrefix(result, 10);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

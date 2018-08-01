@@ -1,8 +1,9 @@
-package carloc.map;
+package anyang.energe;
+
+import static marmot.optor.JoinOptions.LEFT_OUTER_JOIN;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import carloc.Globals;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
@@ -17,15 +18,15 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S1_MapMatchingTaxiLog {
-	private static final String INPUT = Globals.TAXI_LOG;
-	private static final String PARAM = Globals.ROADS;
-	private static final String RESULT = Globals.TAXI_LOG_MAP;
+public class T03_MatchGas2017Usages {
+	private static final String CADASTRAL = Globals.CADASTRAL;
+	private static final String GAS2017 = "tmp/anyang/gas2017";
+	private static final String OUTPUT = "tmp/anyang/cadastral_gas2017";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		CommandLineParser parser = new CommandLineParser("map_matching_taxi_log ");
+		CommandLineParser parser = new CommandLineParser("mc_list_records ");
 		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
 		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
 		
@@ -36,30 +37,26 @@ public class S1_MapMatchingTaxiLog {
 
 		String host = MarmotCommands.getMarmotHost(cl);
 		int port = MarmotCommands.getMarmotPort(cl);
-	
+		
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		DataSet input = marmot.getDataSet(INPUT);
-		GeometryColumnInfo info = input.getGeometryColumnInfo();
-		String geomCol = info.name();
+		DataSet ds = marmot.getDataSet(CADASTRAL);
+		GeometryColumnInfo info = ds.getGeometryColumnInfo();
 		
-		String script = String.format("%s = ST_ClosestPointOnLine(%s, line)", geomCol, geomCol);
-		
-		Plan plan;
-		plan = marmot.planBuilder("택시로그_맵_매핑_org_road")
-					.load(INPUT)
-					.knnJoin(geomCol, PARAM, Globals.DISTANCE, 1,
-							"*,param.{the_geom as link_geom, link_id}", false)
-//					.update(script)
-					.store(RESULT)
-					.build();
-		DataSet result = marmot.createDataSet(RESULT, info, plan, true);
-		watch.stop();
+		Plan plan = marmot.planBuilder("2017 가스사용량 연속지적도 매칭")
+						.loadEquiJoin(CADASTRAL, "pnu", GAS2017, "pnu",
+										"left.*,right.{month,usage}", LEFT_OUTER_JOIN(7))
+						.update("if (usage == null) {month = 0; usage = 0}")
+						.store(OUTPUT)
+						.build();
+		DataSet result = marmot.createDataSet(OUTPUT, info, plan, true);
 
+		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		SampleUtils.printPrefix(result, 10);
-		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
+		
+		marmot.disconnect();
 	}
 }

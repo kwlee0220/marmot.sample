@@ -82,7 +82,7 @@ public class BuildTenMinutePolicyFull {
 						.load(CADASTRAL)
 						.project("the_geom,pnu")
 						.spatialSemiJoin(info.name(), ELDERLY_CARE_BUFFER, INTERSECTS,
-										true, true)	// (3) 교차반전
+										true, false)	// (3) 교차반전
 						.clipJoin(info.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석
 //						.shard(1)
 						.store(RESULT)
