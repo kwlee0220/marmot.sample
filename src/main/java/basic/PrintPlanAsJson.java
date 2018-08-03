@@ -45,14 +45,14 @@ public class PrintPlanAsJson {
 
 		Plan plan;
 		plan = marmot.planBuilder("meta_data")
-					.loadTextFile(Arrays.asList("PATH"), "#")
-					.assignUid("id")
-					.parseCsv(schema, ',', '\\', Option.none(), true)
-					.toPoint("xpos", "ypos", "the_geom")
-					.update("if (경도 < 88 && 위도 > 88) {_xx = 경도; 경도 = 위도; 위도 = _xx; }")
-					.update("기준년도=(기준년도.length() > 0) ? 기준년도 : '2017'; 기준월=(기준월.length() > 0) ? 기준월 : '01'")
-					.expand("기준년도:short,기준월:short", "기준년도=기준년도; 기준월=기준월;")
-					.project("*-{공시일자}")
+					.transformCRS("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
+//					.assignUid("id")
+//					.parseCsv(schema, ',', '\\', Option.none(), true)
+//					.toPoint("xpos", "ypos", "the_geom")
+//					.update("if (경도 < 88 && 위도 > 88) {_xx = 경도; 경도 = 위도; 위도 = _xx; }")
+//					.update("기준년도=(기준년도.length() > 0) ? 기준년도 : '2017'; 기준월=(기준월.length() > 0) ? 기준월 : '01'")
+//					.expand("기준년도:short,기준월:short", "기준년도=기준년도; 기준월=기준월;")
+					.project("the_geom,*-{the_geom}")
 					.build();
 		
 		System.out.println(JsonFormat.printer().print(plan.toProto()));

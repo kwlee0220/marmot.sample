@@ -2,6 +2,8 @@ package anyang.energe;
 
 import static marmot.optor.AggregateFunction.SUM;
 
+import java.util.List;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -10,19 +12,25 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
+import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.Size2d;
 import utils.StopWatch;
+import utils.stream.FStream;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class T05_2017ElectroGridAnalysis {
-	private static final String INPUT = "tmp/anyang/cadastral_electro2017";
-	private static final String OUTPUT = "tmp/anyang/grid_electro2017";
+public class T06_GasGridAnalysis2017 {
+	private static final String INPUT = "tmp/anyang/cadastral_gas2017";
+	private static final String OUTPUT = "tmp/anyang/grid_gas";
+	
+	private static final List<String> COL_NAMES = FStream.rangeClosed(1, 12)
+														.map(i -> "month_" + i)
+														.toList();
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -48,17 +56,24 @@ public class T05_2017ElectroGridAnalysis {
 		Envelope bounds = cadastral.getBounds();
 		Size2d cellSize = new Size2d(1000, 1000);
 		
+		String updateExpr = FStream.of(COL_NAMES)
+									.map(c -> String.format("%s *= ratio", c))
+									.join("; ");
+		List<AggregateFunction> aggrs = FStream.of(COL_NAMES)
+												.map(c -> SUM(c).as(c))
+												.toList();
+		
 		Plan plan;
-		plan = marmot.planBuilder("2017 전기 사용량 격자 분석")
+		plan = marmot.planBuilder("2017 가스 사용량 격자 분석")
 					.load(INPUT)
 					.assignSquareGridCell("the_geom", bounds, cellSize)
 					.intersection("the_geom", "cell_geom", "overlap")
 					.expand("ratio:double", "ratio = (ST_Area(overlap) /  ST_Area(the_geom))")
-					.update("usage  *= ratio")
+					.update(updateExpr)
 					.groupBy("cell_id")
 						.tagWith("cell_geom,cell_pos")
-						.workerCount(3)
-						.aggregate(SUM("usage"))
+						.workerCount(17)
+						.aggregate(aggrs)
 					.expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
 					.project("cell_geom as the_geom, x, y, *-{cell_geom,x,y}")
 					.store(OUTPUT)
@@ -66,6 +81,28 @@ public class T05_2017ElectroGridAnalysis {
 		GeometryColumnInfo info = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		marmot.createDataSet(OUTPUT, info, plan, true);
 		
+		for ( int month = 1; month <= 12; ++month ) {
+			extractToMonth(marmot, month);
+		}
+//		marmot.deleteDataSet(OUTPUT);
+		marmot.disconnect();
+		
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
+	}
+	
+	private static void extractToMonth(PBMarmotClient marmot, int month) {
+		String output = OUTPUT + "_" + month;
+		String projectExpr = String.format("the_geom,x,y,month_%d as value", month);
+		
+		DataSet ds = marmot.getDataSet(OUTPUT);
+		GeometryColumnInfo info = ds.getGeometryColumnInfo();
+		
+		Plan plan;
+		plan = marmot.planBuilder("월별 격자 분석 추출")
+					.load(OUTPUT)
+					.project(projectExpr)
+					.store(output)
+					.build();
+		marmot.createDataSet(output, info, plan, true);
 	}
 }
