@@ -24,9 +24,9 @@ import utils.stream.FStream;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class T06_GasGridAnalysis2017 {
-	private static final String INPUT = "tmp/anyang/cadastral_gas2017";
-	private static final String OUTPUT = "tmp/anyang/grid_gas";
+public class T07_GridAnalysisElectro2017 {
+	private static final String INPUT = "tmp/anyang/map_electro2017";
+	private static final String OUTPUT = "tmp/anyang/grid_electro2017";
 	
 	private static final List<String> COL_NAMES = FStream.rangeClosed(1, 12)
 														.map(i -> "month_" + i)
@@ -64,7 +64,7 @@ public class T06_GasGridAnalysis2017 {
 												.toList();
 		
 		Plan plan;
-		plan = marmot.planBuilder("2017 가스 사용량 격자 분석")
+		plan = marmot.planBuilder("2017 전기 사용량 격자 분석")
 					.load(INPUT)
 					.assignSquareGridCell("the_geom", bounds, cellSize)
 					.intersection("the_geom", "cell_geom", "overlap")
@@ -72,7 +72,7 @@ public class T06_GasGridAnalysis2017 {
 					.update(updateExpr)
 					.groupBy("cell_id")
 						.tagWith("cell_geom,cell_pos")
-						.workerCount(17)
+						.workerCount(7)
 						.aggregate(aggrs)
 					.expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
 					.project("cell_geom as the_geom, x, y, *-{cell_geom,x,y}")
@@ -84,14 +84,14 @@ public class T06_GasGridAnalysis2017 {
 		for ( int month = 1; month <= 12; ++month ) {
 			extractToMonth(marmot, month);
 		}
-//		marmot.deleteDataSet(OUTPUT);
+		marmot.deleteDataSet(OUTPUT);
 		marmot.disconnect();
 		
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 	}
 	
 	private static void extractToMonth(PBMarmotClient marmot, int month) {
-		String output = OUTPUT + "_" + month;
+		String output = String.format("%s_splits/%d", OUTPUT, month);
 		String projectExpr = String.format("the_geom,x,y,month_%d as value", month);
 		
 		DataSet ds = marmot.getDataSet(OUTPUT);

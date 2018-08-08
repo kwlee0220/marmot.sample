@@ -17,9 +17,9 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class T02_SumMonthGasUsages2017 {
-	private static final String INPUT = Globals.GAS;
-	private static final String OUTPUT = "tmp/anyang/gas2017";
+public class T03_SumMonthElectro2017 {
+	private static final String INPUT = Globals.ELECTRO;
+	private static final String OUTPUT = "tmp/anyang/electro2017";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -42,7 +42,7 @@ public class T02_SumMonthGasUsages2017 {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		Plan plan;
-		plan = marmot.planBuilder("2017년 월별 가스 사용량 합계")
+		plan = marmot.planBuilder("2017년 월별 전기 사용량 합계")
 					.load(INPUT)
 					.expand("year:short", "year = 사용년월.substring(0, 4)")
 					.filter("year == 2017")

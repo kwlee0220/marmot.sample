@@ -23,11 +23,11 @@ import utils.stream.FStream;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class T05_MatchElectro2017Usages {
+public class T05_MatchElectro2017 {
 	private static final String CADASTRAL = Globals.CADASTRAL;
 	private static final String INPUT = "tmp/anyang/electro2017";
 	private static final String INTERM = "tmp/anyang/pnu_electro";
-	private static final String OUTPUT = "tmp/anyang/cadastral_electro2017";
+	private static final String OUTPUT = "tmp/anyang/map_electro2017";
 
 	private static final List<String> COL_NAMES = FStream.rangeClosed(1, 12)
 													.map(i -> "month_" + i)
