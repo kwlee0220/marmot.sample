@@ -44,17 +44,17 @@ public class SampleSpatialJoin {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan = marmot.planBuilder("spatial_join")
-								.load(GAS_STATIONS)
-								.spatialJoin("the_geom", EMD, INTERSECTS,
-											"*,param.emd_kor_nm as emd_name")
-								.store(RESULT)
-								.build();
+							.load(GAS_STATIONS)
+							.spatialJoin("the_geom", EMD, INTERSECTS,
+										"*,param.emd_kor_nm as emd_name")
+							.store(RESULT)
+							.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		DataSet result = marmot.createDataSet(RESULT, gcInfo, plan, true);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		SampleUtils.printPrefix(result, 5);
+		SampleUtils.printPrefix(result, 10);
 		System.out.println("elapsed: " + watch.getElapsedMillisString());
 	}
 }

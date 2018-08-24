@@ -1,15 +1,12 @@
 package basic;
 
-import java.io.File;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
+import io.vavr.control.Option;
 import marmot.DataSet;
-import marmot.GeometryColumnInfo;
+import marmot.RecordSet;
 import marmot.command.MarmotCommands;
-import marmot.geo.geotools.ShapefileRecordSet;
-import marmot.geo.geotools.ShapefileRecordSetReader;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -19,9 +16,10 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleImportShapefile {
-	private static final File INPUT = new File("data/test.shp");
-	private static final String OUTPUT = "tmp/result";
+public class SampleQuery {
+	private static final String INPUT = "교통/지하철/서울역사";
+//	private static final String INPUT = "POI/주유소_가격";
+	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -43,20 +41,13 @@ public class SampleImportShapefile {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		DataSet ds;
-		ShapefileRecordSetReader reader = ShapefileRecordSetReader.from(INPUT)
-																.charset("euc-kr");
-		try ( ShapefileRecordSet rset = reader.read() ) {
-			GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", rset.getSRID());
-			ds = marmot.createDataSet(OUTPUT, gcInfo, rset, true);
+		DataSet ds = marmot.getDataSet(INPUT);
+		try ( RecordSet rset = ds.query(Option.none(), Option.some("trnsit_yn = '1' and sig_cd like '1156%'")) ) {
+//		try ( RecordSet rset = ds.queryCql("휘발유 > 1500") ) {
+			SampleUtils.printPrefix(rset, 20);
 		}
 		watch.stop();
-
-		SampleUtils.printPrefix(ds, 5);
-		System.out.printf("import records from %s into %s, elapsed=%s%n",
-							INPUT.getAbsolutePath(), ds.getId(),
-							watch.stopAndGetElpasedTimeString());
 		
-		marmot.disconnect();
+		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

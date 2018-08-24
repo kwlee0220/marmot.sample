@@ -1,12 +1,9 @@
 package basic;
 
-import java.util.Arrays;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import com.google.protobuf.util.JsonFormat;
 
-import io.vavr.control.Option;
 import marmot.Plan;
 import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
@@ -44,15 +41,17 @@ public class PrintPlanAsJson {
 		String transExpr = "local:_meta.mvel";
 
 		Plan plan;
-		plan = marmot.planBuilder("meta_data")
-					.transformCRS("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
+		plan = marmot.planBuilder("import_plan")
+					.expand("지하여부:byte,건물군여부:byte")
+					.toPoint("xpos", "ypos", "the_geom")
+					.transformCRS("the_geom", "EPSG:5179", "the_geom", "EPSG:5186")
+					.project("the_geom,*-{the_geom,xpos,ypos}")
 //					.assignUid("id")
 //					.parseCsv(schema, ',', '\\', Option.none(), true)
 //					.toPoint("xpos", "ypos", "the_geom")
 //					.update("if (경도 < 88 && 위도 > 88) {_xx = 경도; 경도 = 위도; 위도 = _xx; }")
 //					.update("기준년도=(기준년도.length() > 0) ? 기준년도 : '2017'; 기준월=(기준월.length() > 0) ? 기준월 : '01'")
 //					.expand("기준년도:short,기준월:short", "기준년도=기준년도; 기준월=기준월;")
-					.project("the_geom,*-{the_geom}")
 					.build();
 		
 		System.out.println(JsonFormat.printer().print(plan.toProto()));

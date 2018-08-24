@@ -43,14 +43,15 @@ public class SampleSort {
 		DataSet input = marmot.getDataSet(INPUT);
 		Plan plan = marmot.planBuilder("sample_aggreate")
 							.load(INPUT)
-							.sort("보관일수:A,카메라대수:D")
-							.project("the_geom,보관일수,카메라대수")
+							.filter("보관일수 > 0")
+							.sort("보관일수:A:L,카메라대수:A")
+							.project("the_geom,관리기관명,보관일수,카메라대수")
 							.store(RESULT)
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);
 		watch.stop();
 
-		SampleUtils.printPrefix(result, 5);
+		SampleUtils.printPrefix(result, 50);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }
