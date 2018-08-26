@@ -3,6 +3,7 @@ package basic;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
+import marmot.CreateDataSetParameters;
 import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -43,12 +44,18 @@ public class SampleSort {
 		DataSet input = marmot.getDataSet(INPUT);
 		Plan plan = marmot.planBuilder("sample_aggreate")
 							.load(INPUT)
-							.filter("보관일수 > 0")
-							.sort("보관일수:A:L,카메라대수:A")
+//							.filter("보관일수 > 0")
+							.sort("보관일수:A:F,카메라대수:A")
 							.project("the_geom,관리기관명,보관일수,카메라대수")
 							.store(RESULT)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);
+		CreateDataSetParameters params = CreateDataSetParameters.builder()
+												.datasetId(RESULT)
+												.initializer(plan, true)
+												.geometryColumnInfo(input.getGeometryColumnInfo())
+												.force(true)
+												.build();
+		DataSet result = marmot.createDataSet(params);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 50);
