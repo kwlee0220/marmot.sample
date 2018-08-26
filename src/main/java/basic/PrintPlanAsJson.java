@@ -42,7 +42,7 @@ public class PrintPlanAsJson {
 
 		Plan plan;
 		plan = marmot.planBuilder("import_plan")
-					.expand("지하여부:byte,건물군여부:byte")
+					.expand("휘발유:int,경유:int")
 					.toPoint("xpos", "ypos", "the_geom")
 					.transformCRS("the_geom", "EPSG:5179", "the_geom", "EPSG:5186")
 					.project("the_geom,*-{the_geom,xpos,ypos}")
