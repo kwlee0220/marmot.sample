@@ -13,8 +13,8 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
+import marmot.externio.geojson.GeoJsonRecordSetWriter;
 import marmot.remote.protobuf.PBMarmotClient;
-import marmot.rset.GeoJsonRecordSetWriter;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -67,7 +67,7 @@ public class Process {
 	private static void export(PBMarmotClient marmot, DataSet ds, File file) throws IOException {
 		StopWatch watch = StopWatch.start();
 		System.out.printf("결과파일 생성: %s...", file.getAbsolutePath());
-		GeoJsonRecordSetWriter.into(file.getAbsolutePath()).write(ds);
+		GeoJsonRecordSetWriter.get(file).write(ds);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 	

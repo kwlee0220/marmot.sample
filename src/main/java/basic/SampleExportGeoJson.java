@@ -1,11 +1,14 @@
 package basic;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.command.MarmotCommands;
+import marmot.externio.geojson.GeoJsonRecordSetWriter;
 import marmot.remote.protobuf.PBMarmotClient;
-import marmot.rset.GeoJsonRecordSetWriter;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -41,12 +44,14 @@ public class SampleExportGeoJson {
 //		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
 		
 		DataSet ds = marmot.getDataSet(INPUT);
-		long ncount = GeoJsonRecordSetWriter.into(OUTPUT)
-											.prettyPrinter(true)
-											.write(ds);
-		watch.stop();
-		
-		System.out.printf("written %d records into %s, elapsed=%s%n",
-							ncount, OUTPUT, watch.getElapsedMillisString());
+		try ( GeoJsonRecordSetWriter writer = GeoJsonRecordSetWriter.get(new File(OUTPUT),
+																		StandardCharsets.UTF_8)
+																	.prettyPrinter(true) ) {
+			long ncount = writer.write(ds);
+			watch.stop();
+			
+			System.out.printf("written %d records into %s, elapsed=%s%n",
+								ncount, OUTPUT, watch.getElapsedMillisString());
+		}
 	}
 }
