@@ -67,7 +67,7 @@ public class FindUnsafeChildZone {
 					.filter("운행속도 > 1")
 					.toPoint("x좌표", "y좌표", "the_geom")
 					.intersects("the_geom", key)
-					.transformCRS("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
+					.transformCrs("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
 					
 					.spatialJoin("the_geom", TEMP_ZONE, INTERSECTS, "param.*,운행속도")
 					

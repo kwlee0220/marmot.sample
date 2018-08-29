@@ -66,7 +66,7 @@ public class Test {
 					.spatialJoin("the_geom", "tmp/hcode2", SpatialRelation.INTERSECTS,
 								"the_geom,pnu,param.the_geom as the_geom2, param.hcode")
 					.expand("the_geom:point", "the_geom = ST_Centroid(the_geom.intersection(the_geom2))")
-					.transformCRS("the_geom", "EPSG:5186", "the_geom", "EPSG:4326")
+					.transformCrs("the_geom", "EPSG:5186", "the_geom", "EPSG:4326")
 					.store("tmp/result")
 					.build();
 		result = marmot.createDataSet("tmp/result", gcInfo2, plan, true);

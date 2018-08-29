@@ -81,7 +81,7 @@ public class TagDtgWithRoad {
 					.project("the_geom,운송사코드")
 					.join("운송사코드", TEMP_CARGOS, "회사코드", "the_geom", SEMI_JOIN(nworkers))
 					
-					.transformCRS("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
+					.transformCrs("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
 					.knnJoin("the_geom", TEMP_ROAD, DIST, 1,
 							"param.{the_geom, link_id, road_name}", true)
 					

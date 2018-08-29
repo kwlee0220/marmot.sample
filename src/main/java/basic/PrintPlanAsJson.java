@@ -44,7 +44,7 @@ public class PrintPlanAsJson {
 		plan = marmot.planBuilder("import_plan")
 					.expand("휘발유:int,경유:int")
 					.toPoint("xpos", "ypos", "the_geom")
-					.transformCRS("the_geom", "EPSG:5179", "the_geom", "EPSG:5186")
+					.transformCrs("the_geom", "EPSG:5179", "the_geom", "EPSG:5186")
 					.project("the_geom,*-{the_geom,xpos,ypos}")
 //					.assignUid("id")
 //					.parseCsv(schema, ',', '\\', Option.none(), true)

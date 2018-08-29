@@ -87,7 +87,7 @@ public class TagDtgFully {
 					.toPoint("x좌표", "y좌표", "the_geom")
 					.update(Option.none(),
 							"if ( !bounds.contains(the_geom) ) { the_geom = null; }", arguments)
-					.transformCRS("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
+					.transformCrs("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
 					.knnOuterJoin("the_geom", ROAD, DIST, 1, "*-{x좌표,y좌표},param.{link_id}",
 									false, true)
 					
