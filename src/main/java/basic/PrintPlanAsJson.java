@@ -42,10 +42,8 @@ public class PrintPlanAsJson {
 
 		Plan plan;
 		plan = marmot.planBuilder("import_plan")
-					.expand("휘발유:int,경유:int")
-					.toPoint("xpos", "ypos", "the_geom")
-					.transformCrs("the_geom", "EPSG:5179", "the_geom", "EPSG:5186")
-					.project("the_geom,*-{the_geom,xpos,ypos}")
+					.expand("카메라대수:int,카메라화소수:int,보관일수:int")
+					.project("*-{데이터기준일자}")
 //					.assignUid("id")
 //					.parseCsv(schema, ',', '\\', Option.none(), true)
 //					.toPoint("xpos", "ypos", "the_geom")

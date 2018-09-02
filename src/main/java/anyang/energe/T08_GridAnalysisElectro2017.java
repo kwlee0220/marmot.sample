@@ -24,9 +24,9 @@ import utils.stream.FStream;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class T06_GridAnalysisGas2017 {
-	private static final String INPUT = "tmp/anyang/map_gas2017";
-	private static final String OUTPUT = "tmp/anyang/grid_gas2017";
+public class T08_GridAnalysisElectro2017 {
+	private static final String INPUT = "tmp/anyang/map_electro2017";
+	private static final String OUTPUT = "tmp/anyang/grid_electro2017";
 	
 	private static final List<String> COL_NAMES = FStream.rangeClosed(1, 12)
 														.map(i -> "month_" + i)
@@ -64,7 +64,7 @@ public class T06_GridAnalysisGas2017 {
 												.toList();
 		
 		Plan plan;
-		plan = marmot.planBuilder("2017 가스 사용량 격자 분석")
+		plan = marmot.planBuilder("2017 전기 사용량 격자 분석")
 					.load(INPUT)
 					.assignSquareGridCell("the_geom", bounds, cellSize)
 					.intersection("the_geom", "cell_geom", "overlap")

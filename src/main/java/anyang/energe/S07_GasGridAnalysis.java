@@ -27,8 +27,8 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class S07_GasGridAnalysis {
-	private static final String INPUT = "tmp/anyang/cadastral_gas";
-	private static final String OUTPUT = "tmp/anyang/grid_gas";
+	private static final String INPUT = "tmp/anyang/gas/map_gas";
+	private static final String OUTPUT = "tmp/anyang/gas/grid_gas";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");

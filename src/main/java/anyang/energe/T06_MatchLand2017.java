@@ -23,11 +23,11 @@ import utils.stream.FStream;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class T05_MatchElectro2017 {
+public class T06_MatchLand2017 {
 	private static final String CADASTRAL = Globals.CADASTRAL;
-	private static final String INPUT = "tmp/anyang/electro2017";
-	private static final String INTERM = "tmp/anyang/pnu_electro";
-	private static final String OUTPUT = "tmp/anyang/map_electro2017";
+	private static final String INPUT = Globals.LAND_PRICES_2017;
+	private static final String INTERM = "tmp/anyang/pnu_land";
+	private static final String OUTPUT = "tmp/anyang/map_land2017";
 
 	private static final List<String> COL_NAMES = FStream.rangeClosed(1, 12)
 													.map(i -> "month_" + i)
@@ -56,25 +56,25 @@ public class T05_MatchElectro2017 {
 
 		putSideBySide(marmot, INTERM);
 		
-		String rightCols = FStream.of(COL_NAMES).join(",", "right.{", "}");
-		String updateExpr = FStream.of(COL_NAMES)
-									.map(c -> String.format(PATTERN, c, c))
-									.join(" ");
-		
-		DataSet ds = marmot.getDataSet(CADASTRAL);
-		GeometryColumnInfo info = ds.getGeometryColumnInfo();
-		
-		Plan plan = marmot.planBuilder("2017 전기사용량 연속지적도 매칭")
-						.loadEquiJoin(CADASTRAL, "pnu", INTERM, "pnu",
-									"left.*," + rightCols, LEFT_OUTER_JOIN(17))
-						.update(updateExpr)
-						.store(OUTPUT)
-						.build();
-		DataSet result = marmot.createDataSet(OUTPUT, info, plan, true);
-		marmot.deleteDataSet(INTERM);
-
-		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
-		SampleUtils.printPrefix(result, 10);
+//		String rightCols = FStream.of(COL_NAMES).join(",", "right.{", "}");
+//		String updateExpr = FStream.of(COL_NAMES)
+//									.map(c -> String.format(PATTERN, c, c))
+//									.join(" ");
+//		
+//		DataSet ds = marmot.getDataSet(CADASTRAL);
+//		GeometryColumnInfo info = ds.getGeometryColumnInfo();
+//		
+//		Plan plan = marmot.planBuilder("2017 전기사용량 연속지적도 매칭")
+//						.loadEquiJoin(CADASTRAL, "pnu", INTERM, "pnu",
+//									"left.*," + rightCols, LEFT_OUTER_JOIN(17))
+//						.update(updateExpr)
+//						.store(OUTPUT)
+//						.build();
+//		DataSet result = marmot.createDataSet(OUTPUT, info, plan, true);
+//		marmot.deleteDataSet(INTERM);
+//
+//		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
+//		SampleUtils.printPrefix(result, 10);
 		
 		marmot.disconnect();
 	}
@@ -85,11 +85,11 @@ public class T05_MatchElectro2017 {
 												(b,cn) -> b.addColumn(cn, DataType.LONG))
 										.build();
 		
-		Plan plan = marmot.planBuilder("put_side_by_side_electro")
+		Plan plan = marmot.planBuilder("put_side_by_side_land")
 						.load(INPUT)
-						.expand("tag:string", "tag = 'month_' + month")
-						.groupBy("pnu")
-							.putSideBySide(outSchema, "usage", "tag")
+						.expand("tag:string", "tag = 'month_' + 기준월")
+						.groupBy("고유번호")
+							.putSideBySide(outSchema, "개별공시지가", "tag")
 						.store(outDsId)
 						.build();
 		marmot.createDataSet(outDsId, plan, true);

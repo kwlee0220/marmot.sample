@@ -27,8 +27,8 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class S09_LandGridAnalysis {
-	private static final String INPUT = "tmp/anyang/cadastral_land";
-	private static final String OUTPUT = "tmp/anyang/grid_land";
+	private static final String INPUT = "tmp/anyang/land/map_land";
+	private static final String OUTPUT = "tmp/anyang/land/grid_land";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");

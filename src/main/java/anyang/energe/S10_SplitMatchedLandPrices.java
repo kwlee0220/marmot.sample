@@ -1,11 +1,8 @@
 package anyang.energe;
 
-import static marmot.optor.AggregateFunction.SUM;
-
 import org.apache.log4j.PropertyConfigurator;
 
-import common.SampleUtils;
-import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -17,14 +14,14 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S03_SumMonthElectroUsages {
-	private static final String INPUT = Globals.ELECTRO;
-	private static final String OUTPUT = "tmp/anyang/electro/by_year";
+public class S10_SplitMatchedLandPrices {
+	private static final String INPUT = "tmp/anyang/land/map_land";
+	private static final String OUTPUT = "tmp/anyang/land/map_land_splits";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		CommandLineParser parser = new CommandLineParser("sum_electro_usages ");
+		CommandLineParser parser = new CommandLineParser("mc_list_records ");
 		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
 		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
 		
@@ -40,21 +37,21 @@ public class S03_SumMonthElectroUsages {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-
-		Plan plan;
-		plan = marmot.planBuilder("연별 전기 사용량 합계")
-					.load(INPUT)
-					.expand("year:short", "year = 사용년월.substring(0, 4)")
-					.update("사용량 = Math.max(사용량, 0)")
-					.groupBy("고유번호,year")
-						.aggregate(SUM("사용량").as("usage"))
-					.project("고유번호 as pnu, year, usage")
-					.store(OUTPUT)
-					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, true);
-		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
-		SampleUtils.printPrefix(result, 10);
+		GeometryColumnInfo info = marmot.getDataSet(INPUT).getGeometryColumnInfo();
+		
+		Plan plan = marmot.planBuilder("2012-2017년도 개별공시지가 연속지적도 매칭 분할")
+						.load(INPUT)
+						.expand("sido:string", "sido = pnu.substring(0, 2)")
+						.groupBy("sido")
+							.storeEachGroup(OUTPUT, info)
+						.build();
+		
+		marmot.deleteDir(OUTPUT);
+		marmot.execute(plan);
+		watch.stop();
+
+		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		marmot.disconnect();
 	}

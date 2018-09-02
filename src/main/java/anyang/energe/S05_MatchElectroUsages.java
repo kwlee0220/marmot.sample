@@ -27,10 +27,10 @@ import utils.stream.FStream;
  * @author Kang-Woo Lee (ETRI)
  */
 public class S05_MatchElectroUsages {
-	private static final String INPUT = "tmp/anyang/electro_year";
-	private static final String INTERM = "tmp/anyang/pnu_electro";
-	private static final String CADASTRAL = "tmp/anyang/cadastral";
-	private static final String OUTPUT = "tmp/anyang/cadastral_electro";
+	private static final String CADASTRAL = Globals.CADASTRAL;
+	private static final String INPUT = "tmp/anyang/electro/by_year";
+	private static final String INTERM = "tmp/anyang/electro/side_by_side";
+	private static final String OUTPUT = "tmp/anyang/electro/map_gas";
 	private static final String PATTERN = "if (electro_%d == null) {electro_%d = 0}";
 	private static final Option<Long> BLOCK_SIZE = Option.some(UnitUtils.parseByteSize("128mb"));
 	

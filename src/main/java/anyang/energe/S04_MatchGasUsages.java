@@ -27,9 +27,9 @@ import utils.stream.FStream;
  */
 public class S04_MatchGasUsages {
 	private static final String CADASTRAL = Globals.CADASTRAL;
-	private static final String INPUT = "tmp/anyang/gas_year";
-	private static final String INTERM = "tmp/anyang/pnu_gas";
-	private static final String OUTPUT = "tmp/anyang/cadastral_gas";
+	private static final String INPUT = "tmp/anyang/gas/by_year";
+	private static final String INTERM = "tmp/anyang/gas/side_by_side";
+	private static final String OUTPUT = "tmp/anyang/gas/map_gas";
 	private static final String PATTERN = "if (gas_%d == null) {gas_%d = 0}";
 	private static final int[] YEARS = {2011, 2012, 2013, 2014, 2015, 2016, 2017};
 	private static final List<String> COL_NAMES = FStream.of(YEARS).map(i -> "gas_" + i).toList();

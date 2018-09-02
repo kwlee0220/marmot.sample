@@ -14,9 +14,9 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class T09_SplitMatchedElectro2017 {
-	private static final String INPUT = "tmp/anyang/map_electro2017";
-	private static final String OUTPUT = "tmp/anyang/map_electro2017_splits";
+public class T09_SplitMatchedGas2017 {
+	private static final String INPUT = "tmp/anyang/map_gas2017";
+	private static final String OUTPUT = "tmp/anyang/map_gas2017_splits";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -40,7 +40,7 @@ public class T09_SplitMatchedElectro2017 {
 		
 		GeometryColumnInfo info = marmot.getDataSet(INPUT).getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder("2017 전기사용량 연속지적도 매칭 분할")
+		Plan plan = marmot.planBuilder("2017 가스사용량 연속지적도 매칭 분할")
 						.load(INPUT)
 						.expand("sido:string", "sido = pnu.substring(0, 2)")
 						.groupBy("sido")

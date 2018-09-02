@@ -19,7 +19,7 @@ import utils.StopWatch;
  */
 public class S02_SumMonthGasUsages {
 	private static final String INPUT = Globals.GAS;
-	private static final String OUTPUT = "tmp/anyang/gas_year";
+	private static final String OUTPUT = "tmp/anyang/gas/by_year";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");

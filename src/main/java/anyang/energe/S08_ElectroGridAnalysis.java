@@ -27,8 +27,8 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class S08_ElectroGridAnalysis {
-	private static final String INPUT = "tmp/anyang/cadastral_electro";
-	private static final String OUTPUT = "tmp/anyang/grid_electro";
+	private static final String INPUT = "tmp/anyang/electro/map_electro";
+	private static final String OUTPUT = "tmp/anyang/electro/grid_electro";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");

@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'maven'
 
 group = 'etri'
- version = '2.1.1'
+ version = '2.1.2'
 
 sourceCompatibility = JavaVersion.VERSION_1_8;
 [compileJava,compileTestJava]*.options*.encoding = 'UTF-8'

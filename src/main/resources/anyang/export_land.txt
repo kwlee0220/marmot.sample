@@ -1,15 +1,12 @@
 
 for i in 11 26 27 28 29 30 31 36 41 42 43 44 45 46 47 48 50
-#for i in 44
+#for i in 30
 do
-	echo "exporting cadastral_land_$i......"
-	mc_copy tmp/anyang/cadastral_land tmp/cadastral_land_$i -filter "pnu.startsWith(\"$i\")"
-	mc_dump_shapefile tmp/cadastral_land_$i ~/tmp/cadastral_land -shp cadastral_land_$i
-	mc_delete tmp/cadastral_land_$i
+echo "exporting map_land_$i......"
+mc_export_shapefile tmp/anyang/land/map_land_splits/$i -output ~/tmp/land/map_land/$i.shp -split_size 768mb
 done
 
-mkdir ~/tmp/grid_land
 for i in 2012 2013 2014 2015 2016 2017
 do
-	mc_export_shapefile tmp/anyang/grid_land_$i -output ~/tmp/grid_land/grid_land_$i.shp
+mc_export_shapefile tmp/anyang/land/grid_land_$i -output ~/tmp/land/grid_land/grid_land_$i.shp -split_size 768mb
 done

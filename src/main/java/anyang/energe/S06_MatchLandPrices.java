@@ -28,11 +28,11 @@ import utils.stream.FStream;
  */
 public class S06_MatchLandPrices {
 	private static final String INPUT = Globals.LAND_PRICES;
-	private static final String INTERM = "tmp/anyang/pnu_land";
 	private static final String BASE = Globals.LAND_PRICES_2017;
-	private static final String TEMP = "tmp/anyang/temp";
-	private static final String OUTPUT = "tmp/anyang/cadastral_land";
+	private static final String INTERM = "tmp/anyang/land/side_by_side";
+	private static final String OUTPUT = "tmp/anyang/land/map_land";
 	private static final String PATTERN = "if (land_%d == null) {land_%d = 0}";
+	private static final String PATTERN2 = "land_%d *= area;";
 	private static final Option<Long> BLOCK_SIZE = Option.some(UnitUtils.parseByteSize("128mb"));
 	
 	public static final void main(String... args) throws Exception {
@@ -70,12 +70,23 @@ public class S06_MatchLandPrices {
 		String updateExpr = FStream.of(years)
 									.map(year -> String.format(PATTERN, year, year))
 									.join(" ");
+		
+		int[] fullYears = { 2012, 2013, 2014, 2015, 2016, 2017 };
+		String updatePriceExpr = FStream.of(fullYears)
+										.map(year -> String.format(PATTERN2, year))
+										.join(" ");
 
 		Plan plan;
 		plan = marmot.planBuilder("개별공시지가 매핑")
 						.loadEquiJoin(BASE, "고유번호", INTERM, "pnu", outCols,
 										LEFT_OUTER_JOIN(25))
 						.update(updateExpr)
+
+						// 공시지가는 평망미터당 지가이므로, 평당액수에 면적을 곱한다.
+						.expand("area:double", "area = ST_Area(the_geom)")
+						.update(updatePriceExpr)
+						.project("*-{area}")
+						
 						.store(OUTPUT)
 						.build();
 		DataSet result = marmot.createDataSet(OUTPUT, info, plan, true);
@@ -102,49 +113,5 @@ public class S06_MatchLandPrices {
 						.store(INTERM)
 						.build();
 		marmot.createDataSet(INTERM, plan, true);
-	}
-	
-	private static DataSet match(PBMarmotClient marmot, int year) {
-		extractToYear(marmot, year);
-		
-		String output = INTERM + "_next";
-		DataSet result = match(marmot, INTERM, output, year);
-		
-		marmot.deleteDataSet(TEMP);
-		marmot.deleteDataSet(INTERM);
-		marmot.renameDataSet(result.getId(), INTERM);
-		
-		return marmot.getDataSet(INTERM);
-	}
-	
-	private static void extractToYear(PBMarmotClient marmot, int year) {
-		Plan plan;
-		String planName = String.format("%s년도 개별공시지가 추출", year);
-		String filter = String.format("기준년도 == '%s'", year);
-		
-		plan = marmot.planBuilder(planName)
-					.load(INPUT)
-					.filter(filter)
-					.project("고유번호 as pnu, 개별공시지가 as price")
-					.shard(1)
-					.store(TEMP)
-					.build();
-		marmot.createDataSet(TEMP, plan, true);
-	}
-	
-	private static DataSet match(PBMarmotClient marmot, String input, String output,
-								int year) {
-		String planName = String.format("%s년도 개별공시지가 매핑", year);
-		String paramCol = String.format("land_%s", year);
-		String outCols = String.format("left.*, right.{price as %s}", paramCol);
-		String updateExpr = String.format("if (%s == null) { %s = 0; }", paramCol, paramCol, paramCol);
-		
-		Plan plan;
-		plan = marmot.planBuilder(planName)
-					.loadEquiJoin(input, "pnu", TEMP, "pnu", outCols, LEFT_OUTER_JOIN(11))
-					.update(updateExpr)
-					.store(output)
-					.build();
-		return marmot.createDataSet(output, plan, true);
 	}
 }
