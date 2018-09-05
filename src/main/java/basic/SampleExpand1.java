@@ -43,9 +43,9 @@ public class SampleExpand1 {
 		DataSet input = marmot.getDataSet(INPUT);
 		Plan plan = marmot.planBuilder("update")
 							.load(INPUT)
-							.expand1("area", DataType.DOUBLE, "area = ST_Area(the_geom);")
-							.expand1("the_geom", DataType.POINT, "the_geom = ST_Centroid(the_geom)")
-							.expand1("sig_cd", DataType.INT, "sig_cd=Integer.parseInt(sig_cd)")
+							.expand1("area", DataType.DOUBLE, "ST_Area(the_geom);")
+							.expand1("the_geom", DataType.POINT, "ST_Centroid(the_geom)")
+							.expand1("sig_cd", DataType.INT, "Integer.parseInt(sig_cd)")
 							.project("the_geom,area,sig_cd")
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);
