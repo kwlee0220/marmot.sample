@@ -10,6 +10,7 @@ import marmot.Plan;
 import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
+import marmot.type.DataType;
 import utils.CSV;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -51,9 +52,11 @@ public class PrintPlanAsJson {
 //					.parse("date,owner,car_no,time,mileage,mileage_accum,velo,rpm,brake,xpos,ypos,heading,xacc,yacc")
 //					.parse("번호,사업자명,소재지전체주소,도로명주소,인허가일자,형태,경도,위도")
 //					.parse("시군구코드,출입구일련번호,법정동코드,시도명,시군구명,읍면동명,도로명코드,도로명,지하여부,건물본번,건물부번,건물명,우편번호,건물용도분류,건물군여부,관할행정동,xpos,ypos")
-					.parse("시군구,번지,본번,부번,단지명,전용면적,계약년월,계약일,거래금액,층,건축년도,도로명")
+//					.parse("시군구,번지,본번,부번,단지명,전용면적,계약년월,계약일,거래금액,층,건축년도,도로명")
+					.parse("시군구,번지,본번,부번,단지명,전월세구분,전용면적,계약년월,계약일,보증금,월세,층,건축년도,도로명")
 					.toArray(new String[0]);
 		
+
 
 		Plan plan;
 		plan = marmot.planBuilder("import_plan")
@@ -61,15 +64,19 @@ public class PrintPlanAsJson {
 //					.project("*-{데이터기준일자}")
 //					.assignUid("id")
 					.parseCsv(header, '|')
+						.trimField(true)
 //					.toPoint("xpos", "ypos", "the_geom")
 //					.transformCrs("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
-					.expand("거래금액:int")
-//					.project("the_geom,*-{xpos,ypos,the_geom}")
-					.update("시군구 = 시군구.trim(); "
-							+ "번지 = 번지.trim();"
-							+ "거래금액 = $money_formatter.parse(거래금액.trim()).intValue();")
-						.initializer("$money_formatter = new DecimalFormat('#,###,###')")
+//					.update("시군구 = 시군구.trim(); 번지 = 번지.trim();")
+					.expand1("보증금", DataType.INT)
+						.initializer("$money_formatter = new DecimalFormat('#,###,###')",
+									"$money_formatter.parse(보증금).intValue();")
 						.addImportedClass(DecimalFormat.class)
+					.expand1("월세", DataType.INT)
+						.initializer("$money_formatter = new DecimalFormat('#,###,###')",
+									"$money_formatter.parse(월세).intValue();")
+						.addImportedClass(DecimalFormat.class)
+//					.project("the_geom,*-{xpos,ypos,the_geom}")
 //					.update("기준년도=(기준년도.length() > 0) ? 기준년도 : '2017'; 기준월=(기준월.length() > 0) ? 기준월 : '01'")
 //					.expand("기준년도:short,기준월:short", "기준년도=기준년도; 기준월=기준월;")
 					.build();
