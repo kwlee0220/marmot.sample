@@ -54,7 +54,7 @@ public class CountInvalidGeoms {
 		plan = marmot.planBuilder("count invalid geometry records")
 					.load(DTG)
 					.toPoint("x좌표", "y좌표", "the_geom")
-					.intersects("the_geom", bounds, true)
+					.intersects("the_geom", bounds).negate(true)
 					.aggregate(COUNT())
 					.store(RESULT)
 					.build();

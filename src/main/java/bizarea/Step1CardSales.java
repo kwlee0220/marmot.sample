@@ -58,7 +58,7 @@ public class Step1CardSales {
 							// 전국 카드매출액 파일을 읽는다.
 							.load(CARD_SALES)
 							// 시간대 단위의 매출액은 모두 합쳐 하루 매출액을 계산한다. 
-							.expand("daily_sales:double", sumExpr)
+							.expand("daily_sales:double").initializer(sumExpr)
 							.project("std_ym,block_cd,daily_sales")
 							// BIZ_GRID와 소지역 코드를 이용하여 조인하여, 대도시 상업지역과 겹치는
 							// 매출액 구역을 뽑는다.

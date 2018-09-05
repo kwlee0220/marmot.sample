@@ -3,7 +3,6 @@ package anyang.energe;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import io.vavr.control.Option;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
@@ -51,7 +50,7 @@ public class S01_ExtractCadastral {
 					.load(INPUT)
 					.project("the_geom, 고유번호 as pnu")
 					.shard(1)
-					.store(OUTPUT, Option.some(blockSize))
+					.store(OUTPUT).blockSize(blockSize)
 					.build();
 		DataSet result = marmot.createDataSet(OUTPUT, info, plan, true);
 		

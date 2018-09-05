@@ -51,13 +51,13 @@ public class DiffLandCoversIdx {
 												+ "right.{the_geom as the_geom2,분류구 as t2007,"
 												+ "재분류 as t2007_2}")
 						.intersection("the_geom", "the_geom2", "the_geom")
-						.expand("area:double", "area = ST_Area(the_geom);"
+						.expand("area:double").initializer("area = ST_Area(the_geom);"
 								+ "t2007 = (t2007.length() > 0) ? t2007 : t2007_2")
 						.project("*-{the_geom,t2007_2}")
 						.groupBy("t1987,t2007")
 							.workerCount(1)
 							.aggregate(SUM("area").as("total_area"))
-						.expand("total_area:long", "total_area = Math.round(total_area)")
+						.expand("total_area:long").initializer("total_area = Math.round(total_area)")
 						.storeAsCsv(RESULT, ',')
 						.build();
 		marmot.deleteFile(RESULT);

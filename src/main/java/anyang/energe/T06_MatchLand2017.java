@@ -1,14 +1,9 @@
 package anyang.energe;
 
-import static marmot.optor.JoinOptions.LEFT_OUTER_JOIN;
-
 import java.util.List;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import common.SampleUtils;
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
@@ -87,7 +82,7 @@ public class T06_MatchLand2017 {
 		
 		Plan plan = marmot.planBuilder("put_side_by_side_land")
 						.load(INPUT)
-						.expand("tag:string", "tag = 'month_' + 기준월")
+						.expand("tag:string").initializer("tag = 'month_' + 기준월")
 						.groupBy("고유번호")
 							.putSideBySide(outSchema, "개별공시지가", "tag")
 						.store(outDsId)

@@ -55,7 +55,7 @@ public class FindBestRoadsForPickup {
 		plan = marmot.planBuilder("match_and_rank_roads")
 					.load(INPUT)
 					.filter("status == 0")
-					.expand("hour:int", "hour=ts.substring(8,10)")
+					.expand("hour:int").initializer("hour=ts.substring(8,10)")
 					.groupBy("hour,link_id,sub_link_no")
 						.tagWith("link_geom")
 						.aggregate(COUNT())

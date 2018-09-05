@@ -42,7 +42,7 @@ public class T10_SplitMatchedElectro2017 {
 		
 		Plan plan = marmot.planBuilder("2017 전기사용량 연속지적도 매칭 분할")
 						.load(INPUT)
-						.expand("sido:string", "sido = pnu.substring(0, 2)")
+						.expand("sido:string").initializer("sido = pnu.substring(0, 2)")
 						.groupBy("sido")
 							.storeEachGroup(OUTPUT, info)
 						.build();

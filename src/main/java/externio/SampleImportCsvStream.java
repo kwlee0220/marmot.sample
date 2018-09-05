@@ -49,7 +49,7 @@ public class SampleImportCsvStream {
 											.delimiter('|')
 											.headerFirst(true)
 											.pointColumn("경도|위도")
-											.wgs84(true);
+											.csvSrid("EPSG:4326");
 		ImportParameters importParams = ImportParameters.create()
 													.dataset("tmp/result")
 													.geometryColumnInfo("the_geom", "EPSG:5186")

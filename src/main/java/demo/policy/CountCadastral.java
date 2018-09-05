@@ -48,7 +48,7 @@ public class CountCadastral {
 		GeometryColumnInfo info = ds.getGeometryColumnInfo();
 
 		Plan plan = marmot.planBuilder("행정도별 필지수 계산")
-						.load(INPUT, 131)
+						.load(INPUT).splitCountPerBlock(131)
 //						.load(INPUT)
 //						.filter("hcode.startsWith('4375035')")
 						.arcGisSpatialJoin("the_geom", PARAM, INTERSECTS, false)

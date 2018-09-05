@@ -45,11 +45,11 @@ public class DiffLandCoversNL {
 		String geomCol = cover1987.getGeometryColumn();
 
 		Plan plan = marmot.planBuilder("토지피복_변화량")
-						.load(LAND_COVER_2007, 2)
+						.load(LAND_COVER_2007).splitCountPerBlock(2)
 						.update("분류구 = (분류구.length() > 0) ? 분류구 : 재분류")
 						.intersectionJoin(geomCol, LAND_COVER_1987,
 											"the_geom,param.분류구 as t1987,분류구 as t2007")
-						.expand("area:double", "area = ST_Area(the_geom);")
+						.expand("area:double").initializer("area = ST_Area(the_geom);")
 						.project("*-{the_geom}")
 						.groupBy("t1987,t2007")
 							.workerCount(1)

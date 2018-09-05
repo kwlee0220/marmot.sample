@@ -1,13 +1,10 @@
 package debs;
 
-import java.time.LocalDateTime;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 import common.SampleUtils;
-import io.vavr.control.Option;
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -15,7 +12,6 @@ import marmot.RecordSet;
 import marmot.command.MarmotCommands;
 import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
-import marmot.support.DateTimeFunctions;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.DimensionDouble;
@@ -62,7 +58,7 @@ public class TrimTrackLog {
 		
 		Plan plan = marmot.planBuilder("trim_log")
 							.load(INPUT)
-							.expand("ts:long", initExpr, expr)
+							.expand("ts:long").initializer(initExpr, expr)
 							.project("the_geom,ship_id,depart_port,ts")
 //							.groupBy("depart_port,ship_id")
 //								.reduce(reducer)

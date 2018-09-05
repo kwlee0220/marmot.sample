@@ -1,7 +1,7 @@
 package demo.dtg;
 
 import static marmot.optor.AggregateFunction.COUNT;
-import static marmot.optor.JoinOptions.*;
+import static marmot.optor.JoinOptions.SEMI_JOIN;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -89,7 +89,8 @@ public class TagDtgWithGrid {
 						.workerCount(WORKER_COUNT)
 						.aggregate(COUNT())
 						
-					.expand("grid_x:int,grid_y:int", "grid_x = cell_pos.x; grid_y = cell_pos.y")
+					.expand("grid_x:int,grid_y:int")
+						.initializer("grid_x = cell_pos.x; grid_y = cell_pos.y")
 					.project("the_geom,grid_x,grid_y,count")
 					
 					.store(RESULT)

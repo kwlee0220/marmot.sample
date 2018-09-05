@@ -83,7 +83,7 @@ public class S06_MatchLandPrices {
 						.update(updateExpr)
 
 						// 공시지가는 평망미터당 지가이므로, 평당액수에 면적을 곱한다.
-						.expand("area:double", "area = ST_Area(the_geom)")
+						.expand("area:double").initializer("area = ST_Area(the_geom)")
 						.update(updatePriceExpr)
 						.project("*-{area}")
 						
@@ -107,7 +107,7 @@ public class S06_MatchLandPrices {
 		Plan plan = marmot.planBuilder("put_side_by_size_land")
 						.load(INPUT)
 						.project("고유번호 as pnu, 기준년도 as year, 개별공시지가 as usage")
-						.expand("tag:string", "tag = 'land_' + year")
+						.expand("tag:string").initializer("tag = 'land_' + year")
 						.groupBy("pnu")
 							.putSideBySide(outSchema, "usage", "tag")
 						.store(INTERM)

@@ -50,7 +50,7 @@ public class S2_FindDongTaxiLog {
 		Plan plan;
 		plan = marmot.planBuilder("동내_로그_추출")
 					.load(INPUT)
-					.intersects(geomCol, guBoundary, false)
+					.intersects(geomCol, guBoundary)
 					.store(RESULT)
 					.build();
 		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);

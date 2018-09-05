@@ -48,8 +48,9 @@ public class SampleLoadJdbcTable {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		Plan plan = marmot.planBuilder("test")
-							.loadJdbcTable(JDBC_URL, USER, PASSWD, DRIVER_CLASS, TABLE_NAME,
-											"ST_AsBinary(the_geom) as the_geom", 7)
+							.loadJdbcTable(JDBC_URL, USER, PASSWD, DRIVER_CLASS, TABLE_NAME)
+								.columnExpr("ST_AsBinary(the_geom) as the_geom")
+								.mapperCount(7)
 //							.expand("the_geom:multi_polygon",
 //									"the_geom = ST_GeomFromWKB(the_geom)")
 							.aggregate(AggregateFunction.COUNT())

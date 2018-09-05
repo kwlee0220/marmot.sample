@@ -93,7 +93,7 @@ public class FilterInSeoul {
 		
 		plan = marmot.planBuilder("grid_taxi_logs")
 					// 택시 로그를  읽는다.
-					.load(CADASTRAL, INTERSECTS, seoul)
+					.query(CADASTRAL, INTERSECTS, seoul)
 					// 승하차 로그만 선택한다.
 					.filter("pnu.startsWith('11')")
 					.store(output)

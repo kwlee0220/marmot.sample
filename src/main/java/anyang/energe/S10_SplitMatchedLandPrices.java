@@ -42,7 +42,7 @@ public class S10_SplitMatchedLandPrices {
 		
 		Plan plan = marmot.planBuilder("2012-2017년도 개별공시지가 연속지적도 매칭 분할")
 						.load(INPUT)
-						.expand("sido:string", "sido = pnu.substring(0, 2)")
+						.expand("sido:string").initializer("sido = pnu.substring(0, 2)")
 						.groupBy("sido")
 							.storeEachGroup(OUTPUT, info)
 						.build();

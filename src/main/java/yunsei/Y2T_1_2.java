@@ -100,7 +100,7 @@ public class Y2T_1_2 {
 			plan = marmot.planBuilder("spread")
 						.load(TEMP_BUS_SEOUL)
 						.buffer(geomCol, geomCol, radius)
-						.expand("area:double", expr)
+						.expand("area:double").initializer(expr)
 						.store(MULTI_RINGS)
 						.build();
 			if ( buffereds == null ) {
@@ -139,7 +139,7 @@ public class Y2T_1_2 {
 					
 //					.buildSpatialHistogram(geomCol, MULTI_RINGS, valueColNames)
 					.intersectionJoin(geomCol, COLLECT, "*,param.tot_oa_cd,param.the_geom as param_geom")
-					.expand("ratio:double", expr)
+					.expand("ratio:double").initializer(expr)
 					.store(TEMP_JOINED)
 					.build();
 		marmot.createDataSet(TEMP_JOINED, gcInfo, plan, true);

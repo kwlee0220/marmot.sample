@@ -114,9 +114,9 @@ public class Step0 {
 		DataSet political = marmot.getDataSet(POLITICAL);
 		Plan plan = marmot.planBuilder("대도시지역 추출")
 								.load(POLITICAL)
-								.expand("sid_cd:string,sgg_cd:string",
-										"sid_cd = bjd_cd.substring(0,2);"
-										+ "sgg_cd = bjd_cd.substring(0,5);")
+								.expand("sid_cd:string,sgg_cd:string")
+									.initializer("sid_cd = bjd_cd.substring(0,2);"
+												+ "sgg_cd = bjd_cd.substring(0,5);")
 								.filter(initExpr,
 										"$sid_cd.contains(sid_cd) || $sgg_cd.contains(sgg_cd)")
 								.store(result)
@@ -131,9 +131,9 @@ public class Step0 {
 		DataSet political = marmot.getDataSet(CADASTRAL);
 		Plan plan = marmot.planBuilder("filter_big_cities")
 								.load(CADASTRAL)
-								.expand("sid_cd:string,sgg_cd:string",
-										"sid_cd = pnu.substring(0,2);"
-										+ "sgg_cd = pnu.substring(0,5);")
+								.expand("sid_cd:string,sgg_cd:string")
+									.initializer("sid_cd = pnu.substring(0,2);"
+												+ "sgg_cd = pnu.substring(0,5);")
 								.filter(initExpr,
 										"$sid_cd.contains(sid_cd) || $sgg_cd.contains(sgg_cd)")
 								.project("the_geom,pnu")

@@ -42,8 +42,8 @@ public class SampleExpand {
 		DataSet input = marmot.getDataSet(INPUT);
 		Plan plan = marmot.planBuilder("update")
 							.load(INPUT)
-							.expand("the_geom:point,area:double,sig_cd:int",
-										"area = ST_Area(the_geom);"
+							.expand("the_geom:point,area:double,sig_cd:int")
+								.initializer("area = ST_Area(the_geom);"
 										+ "the_geom = ST_Centroid(the_geom);"
 										+ "sig_cd=Integer.parseInt(sig_cd);"
 										+ "kor_sub_nm='Station(' + kor_sub_nm + ')'")

@@ -62,7 +62,7 @@ public class Step1FlowPop {
 		Plan plan = marmot.planBuilder("읍면동별 2015년도 유동인구 집계")
 							.load(FLOW_POP)
 							.update(handleNull)
-							.expand("avg:double, year:int", script)
+							.expand("avg:double, year:int").initializer(script)
 							.project("the_geom,block_cd,year,avg")
 							.spatialJoin("the_geom", EMD, INTERSECTS,
 									"*-{the_geom},param.{the_geom,emd_cd,emd_kor_nm as emd_nm}")

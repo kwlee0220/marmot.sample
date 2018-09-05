@@ -54,7 +54,7 @@ public class SampleGetStream {
 		
 		
 		plan = marmot.planBuilder("test SampleGetStream")
-							.load(INPUT, SpatialRelation.INTERSECTS, key)
+							.query(INPUT, SpatialRelation.INTERSECTS, key)
 							.build();
 		watch = StopWatch.start();
 		RecordSet rset = marmot.getStream("test", plan);
@@ -68,7 +68,7 @@ public class SampleGetStream {
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 		
 		plan = marmot.planBuilder("xxx")
-					.load(INPUT, SpatialRelation.INTERSECTS, key)
+					.query(INPUT, SpatialRelation.INTERSECTS, key)
 					.store(RESULT)
 					.build();
 		watch = StopWatch.start();

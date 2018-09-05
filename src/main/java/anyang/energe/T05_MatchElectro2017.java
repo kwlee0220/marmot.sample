@@ -87,7 +87,7 @@ public class T05_MatchElectro2017 {
 		
 		Plan plan = marmot.planBuilder("put_side_by_side_electro")
 						.load(INPUT)
-						.expand("tag:string", "tag = 'month_' + month")
+						.expand("tag:string").initializer("tag = 'month_' + month")
 						.groupBy("pnu")
 							.putSideBySide(outSchema, "usage", "tag")
 						.store(outDsId)

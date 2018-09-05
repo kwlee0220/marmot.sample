@@ -185,10 +185,10 @@ public class Y2T_1 {
 			Plan plan = marmot.planBuilder("버스_승하차수_링버퍼_배분_반경_" + radius)
 							.load(bus.getId())
 							.buffer(geomCol, geomCol, radius)
-							.expand("area:double", expr1)
+							.expand("area:double").initializer(expr1)
 							// 버퍼링 영역 중에서 서울 영역만을 추출한다
 							.intersection(geomCol, range, geomCol)
-							.expand("ratio:double", expr2)
+							.expand("ratio:double").initializer(expr2)
 							.project("*-{area,ratio}")
 							.store(outputDs)
 							.build();

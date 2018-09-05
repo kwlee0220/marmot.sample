@@ -10,7 +10,6 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
@@ -68,13 +67,15 @@ public class S07_GasGridAnalysis {
 					.load(INPUT)
 					.assignSquareGridCell("the_geom", bounds, cellSize)
 					.intersection("the_geom", "cell_geom", "overlap")
-					.expand("ratio:double", "ratio = (ST_Area(overlap) /  ST_Area(the_geom))")
+					.expand("ratio:double")
+						.initializer("ratio = (ST_Area(overlap) /  ST_Area(the_geom))")
 					.update(updateExpr)
 					.groupBy("cell_id")
 						.tagWith("cell_geom,cell_pos")
 						.workerCount(17)
 						.aggregate(aggrs)
-					.expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
+					.expand("x:long,y:long")
+						.initializer("x = cell_pos.getX(); y = cell_pos.getY()")
 					.project("cell_geom as the_geom, x, y, *-{cell_geom,x,y}")
 					.store(OUTPUT)
 					.build();

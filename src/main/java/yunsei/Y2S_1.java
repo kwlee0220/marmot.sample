@@ -137,7 +137,7 @@ public class Y2S_1 {
 		
 		DataSet flowPop = marmot.getDataSet(FLOW_POP);
 		plan = marmot.planBuilder("강남구 영역 유동인구 정보 추출")
-						.load(FLOW_POP, SpatialRelation.INTERSECTS, gangnaum)
+						.query(FLOW_POP, SpatialRelation.INTERSECTS, gangnaum)
 						.project("the_geom,block_cd,avg_08tmst,avg_15tmst")
 						.store(output)
 						.build();

@@ -52,7 +52,7 @@ public class SampleIndexedRangeQuery {
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		Plan plan = marmot.planBuilder("sample_indexed_rangequery")
-								.load(BUILDINGS, SpatialRelation.INTERSECTS, key)
+								.query(BUILDINGS, SpatialRelation.INTERSECTS, key)
 								.project("the_geom,시군구코드,건물명")
 								.store(RESULT)
 								.build();

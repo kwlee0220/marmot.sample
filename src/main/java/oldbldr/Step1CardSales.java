@@ -59,8 +59,8 @@ public class Step1CardSales {
 		
 		plan = marmot.planBuilder("읍면동별 2015년도 카드매출 집계")
 					.load(CARD_SALES)
-					.expand("sale_amt:double", sumExpr)
-					.expand("year:int", "year=std_ym.substring(0,4);")
+					.expand("sale_amt:double").initializer(sumExpr)
+					.expand("year:int").initializer("year=std_ym.substring(0,4);")
 					.project("block_cd,year,sale_amt")
 					.groupBy("block_cd")
 						.tagWith("year")
