@@ -52,7 +52,10 @@ public class Test2017_2 {
 		
 		Plan plan = marmot.planBuilder("get_biz_grid")
 								.load(ADDR_BLD_UTILS)
-								.buffer("the_geom", "buffer", 100, 16, true)
+								.buffer("the_geom", 100)
+									.output("buffer")
+									.segmentCount(16)
+									.dropFailedRecord(true)
 								.assignSquareGridCell("buffer", bounds, cellSize)
 								.centroid("cell_geom", "cell_geom")
 								.intersects("cell_geom", "the_geom")

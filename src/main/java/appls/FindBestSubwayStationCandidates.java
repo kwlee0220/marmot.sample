@@ -143,7 +143,7 @@ public class FindBestSubwayStationCandidates {
 		plan = marmot.planBuilder("서울지역 지하철역사 1KM 버퍼")
 					.load(STATIONS)
 					.filter("sig_cd.substring(0,2) == '11'")
-					.buffer(geomCol, geomCol, 1000)
+					.buffer(geomCol, 1000)
 					.store(output)
 					.build();
 		DataSet result = marmot.createDataSet(output, stations.getGeometryColumnInfo(), plan, true);

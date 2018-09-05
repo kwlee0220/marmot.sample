@@ -99,7 +99,7 @@ public class Y3T_1 {
 		plan = marmot.planBuilder("노인복지시설 검색 후 500m 버퍼")
 					.load(PUBLIC_CARE)
 					.filter("시설종류코드=='5040200000000'")
-					.buffer(ds.getGeometryColumn(), ds.getGeometryColumn(), 500)
+					.buffer(ds.getGeometryColumn(), 500)
 					.store(outputDsId)
 					.build();
 		DataSet result = marmot.createDataSet(outputDsId, ds.getGeometryColumnInfo(), plan, true);

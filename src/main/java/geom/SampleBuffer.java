@@ -43,7 +43,7 @@ public class SampleBuffer {
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		Plan plan = marmot.planBuilder("buffer")
 						.load(INPUT)
-						.buffer("the_geom", "the_geom", 50)
+						.buffer("the_geom", 50)
 						.store(RESULT)
 						.build();
 		DataSet result = marmot.createDataSet(RESULT, gcInfo, plan, true);

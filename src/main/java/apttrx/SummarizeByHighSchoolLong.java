@@ -81,7 +81,7 @@ public class SummarizeByHighSchoolLong {
 						
 						// 고등학교 주변 1km 내의 아파트 검색.
 						.centroid("the_geom", "the_geom")
-						.buffer("the_geom", "circle", 1000)
+						.buffer("the_geom", 1000).output("circle")
 						.spatialJoin("circle", HIGH_SCHOOLS, INTERSECTS,
 									String.format("*-{the_geom},param.{%s,id,name}",geomCol))
 						

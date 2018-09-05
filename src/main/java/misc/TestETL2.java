@@ -76,7 +76,7 @@ public class TestETL2 {
 		GeometryColumnInfo info = marmot.getDataSet(STATIONS).getGeometryColumnInfo();
 		Plan plan = marmot.planBuilder("buffer")
 						.load(STATIONS)
-						.buffer("the_geom", "the_geom", 100)
+						.buffer("the_geom", 100)
 						.store(PARAM)
 						.build();
 		DataSet result = marmot.createDataSet(PARAM, info, plan, true);

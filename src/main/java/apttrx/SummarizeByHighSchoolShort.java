@@ -101,7 +101,7 @@ public class SummarizeByHighSchoolShort {
 					
 					// 고등학교 주변 1km 내의 아파트 검색.
 					.centroid(locGeomCol, locGeomCol)
-					.buffer(locGeomCol, "circle", 1000)
+					.buffer(locGeomCol, 1000).output("circle")
 					.spatialJoin("circle", HIGH_SCHOOLS, INTERSECTS,
 								String.format("*-{%s},param.{%s,id,name}",
 											locGeomCol, schoolGeomCol))
@@ -133,7 +133,7 @@ public class SummarizeByHighSchoolShort {
 					
 					// 고등학교 주변 1km 내의 아파트 검색.
 					.centroid(locGeomCol, locGeomCol)
-					.buffer(locGeomCol, "circle", 1000)
+					.buffer(locGeomCol, 1000).output("circle")
 					.spatialJoin("circle", HIGH_SCHOOLS, INTERSECTS,
 								String.format("*-{%s},param.{%s,id,name}",
 											locGeomCol, schoolGeomCol))

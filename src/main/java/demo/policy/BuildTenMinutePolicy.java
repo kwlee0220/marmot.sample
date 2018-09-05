@@ -105,7 +105,7 @@ public class BuildTenMinutePolicy {
 		plan = marmot.planBuilder("노인복지시설_경로당_추출_버퍼")
 					.load(ELDERLY_CARE)
 					.filter("induty_nm == '경로당'")			// (1) 영역분석
-					.buffer(info.name(), info.name(), 400)	// (2) 버퍼추정
+					.buffer(info.name(), 400)	// (2) 버퍼추정
 					.store(ELDERLY_CARE_BUFFER)
 					.build();
 		return marmot.createDataSet(ELDERLY_CARE_BUFFER, info, plan, true);

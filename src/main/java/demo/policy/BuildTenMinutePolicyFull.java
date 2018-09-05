@@ -109,7 +109,7 @@ public class BuildTenMinutePolicyFull {
 					.load(ELDERLY_CARE)
 					.filter("induty_nm == '경로당'")			// (1) 영역분석
 					.project("the_geom")
-					.buffer("the_geom", "the_geom", 400)	// (2) 버퍼추정
+					.buffer("the_geom", 400)	// (2) 버퍼추정
 					.store(ELDERLY_CARE_BUFFER)
 					.build();
 		return marmot.createDataSet(ELDERLY_CARE_BUFFER, info, plan, true);

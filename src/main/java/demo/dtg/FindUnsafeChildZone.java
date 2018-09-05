@@ -1,5 +1,7 @@
 package demo.dtg;
 
+import static marmot.optor.AggregateFunction.AVG;
+import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -15,7 +17,6 @@ import marmot.command.MarmotCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
 import marmot.geo.command.ClusterDataSetOptions;
-import static marmot.optor.AggregateFunction.*;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -108,7 +109,7 @@ public class FindUnsafeChildZone {
 		Plan plan;
 		plan = marmot.planBuilder("buffer child zones")
 					.load(CHILD_ZONE)
-					.buffer("the_geom", "area", DISTANCE)
+					.buffer("the_geom", DISTANCE).output("area")
 					.project("the_geom,id,대상시설명,area")
 					.store(outDsId)
 					.build();

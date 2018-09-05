@@ -99,7 +99,7 @@ public class Y2T_1_2 {
 			
 			plan = marmot.planBuilder("spread")
 						.load(TEMP_BUS_SEOUL)
-						.buffer(geomCol, geomCol, radius)
+						.buffer(geomCol, radius)
 						.expand("area:double").initializer(expr)
 						.store(MULTI_RINGS)
 						.build();

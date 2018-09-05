@@ -46,7 +46,7 @@ public class Step02 {
 
 		Plan plan = marmot.planBuilder("노인복지시설_경로당_추출_버퍼")
 						.load(INPUT)
-						.buffer(info.name(), info.name(), 400)	// (2) 버퍼추정
+						.buffer(info.name(), 400)	// (2) 버퍼추정
 						.store(RESULT)
 						.build();
 		CreateDataSetParameters params = CreateDataSetParameters.builder()

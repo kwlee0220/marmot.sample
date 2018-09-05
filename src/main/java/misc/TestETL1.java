@@ -54,7 +54,7 @@ public class TestETL1 {
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		Plan plan = marmot.planBuilder("test_dtg1")
 						.load(INPUT)
-						.buffer("the_geom", "the_geom", 50)
+						.buffer("the_geom", 50)
 						.aggregate(AggregateFunction.ENVELOPE("the_geom"))
 //						.expand("the_geom:polygon", "the_geom = ST_GeomFromEnvelope(mbr)")
 						.store(RESULT)

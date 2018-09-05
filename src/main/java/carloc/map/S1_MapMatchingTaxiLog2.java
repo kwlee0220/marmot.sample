@@ -70,7 +70,7 @@ public class S1_MapMatchingTaxiLog2 {
 		Plan plan;
 		plan = marmot.planBuilder("택시로그_맵_매핑")
 					.load(INPUT)
-					.buffer(geomCol, "buffer", Globals.DISTANCE)
+					.buffer(geomCol, Globals.DISTANCE).output("buffer")
 					.attachQuadKey("buffer", "EPSG:5186", quadKeys, true, true)
 					.project("*-{buffer,__quad_key,__mbr}, __quad_key as quad_key")
 					.groupBy("quad_key")
