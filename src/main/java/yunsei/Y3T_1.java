@@ -1,7 +1,5 @@
 package yunsei;
 
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
@@ -64,7 +62,7 @@ public class Y3T_1 {
 		
 		plan = marmot.planBuilder("")
 					.load(POPULATION)
-					.spatialSemiJoin(pop.getGeometryColumn(), TEMP_ELDERLY_CARES, INTERSECTS)
+					.spatialSemiJoin(pop.getGeometryColumn(), TEMP_ELDERLY_CARES)
 					.update("refl70 = 0")
 					.project(geomCol + ",refl70,point_x,point_y")
 					.store(TEMP_POP)
@@ -74,8 +72,8 @@ public class Y3T_1 {
 
 		plan = marmot.planBuilder("")
 					.load(POPULATION)
-					.spatialSemiJoin(pop.getGeometryColumn(), TEMP_ELDERLY_CARES,
-									INTERSECTS, true, true)
+					.spatialSemiJoin(pop.getGeometryColumn(), TEMP_ELDERLY_CARES)
+						.negated()
 					.project(geomCol + ",refl70,point_x,point_y")
 					.store(TEMP_POP)
 					.build();

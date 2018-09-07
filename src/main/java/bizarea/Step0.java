@@ -73,7 +73,7 @@ public class Step0 {
 							// 용도지구에 대한 100m 크기의 그리드를 생성 
 							.loadSquareGridFile(bounds, cellSize)
 							// 상업지구에 겹치는 그리드 셀만 추출한다.
-							.spatialSemiJoin("the_geom", TEMP_BIZ_AREA, INTERSECTS)
+							.spatialSemiJoin("the_geom", TEMP_BIZ_AREA)
 							// 상업지구 그리드 셀에 대해 대도시 영역만을 선택하고,
 							// 행정도 코드(sgg_cd)를 부여한다.
 							.spatialJoin("the_geom", TEMP_BIG_CITIES, INTERSECTS,
@@ -115,7 +115,7 @@ public class Step0 {
 		Plan plan = marmot.planBuilder("대도시지역 추출")
 								.load(POLITICAL)
 								.expand("sid_cd:string,sgg_cd:string")
-									.initializer("sid_cd = bjd_cd.substring(0,2);"
+									.set("sid_cd = bjd_cd.substring(0,2);"
 												+ "sgg_cd = bjd_cd.substring(0,5);")
 								.filter(initExpr,
 										"$sid_cd.contains(sid_cd) || $sgg_cd.contains(sgg_cd)")
@@ -132,7 +132,7 @@ public class Step0 {
 		Plan plan = marmot.planBuilder("filter_big_cities")
 								.load(CADASTRAL)
 								.expand("sid_cd:string,sgg_cd:string")
-									.initializer("sid_cd = pnu.substring(0,2);"
+									.set("sid_cd = pnu.substring(0,2);"
 												+ "sgg_cd = pnu.substring(0,5);")
 								.filter(initExpr,
 										"$sid_cd.contains(sid_cd) || $sgg_cd.contains(sgg_cd)")

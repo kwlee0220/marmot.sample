@@ -9,6 +9,7 @@ import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.optor.JoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
+import marmot.type.DataType;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -47,8 +48,8 @@ public class FindChungBukGas {
 					.load(INPUT)
 					.filter("고유번호.startsWith('43')")
 					.filter("사용량 > 0")
-					.expand("sido:string").initializer("sido = 고유번호.substring(0,2)")
-					.expand("year:int").initializer("year = 사용년월.substring(0,4)")
+					.expand1("sido", DataType.STRING).set("고유번호.substring(0,2)")
+					.expand1("year", DataType.INT).set("사용년월.substring(0,4)")
 					.join("고유번호", Globals.CADASTRAL, "pnu", "*,param.the_geom",
 							JoinOptions.LEFT_OUTER_JOIN())
 					.filter("the_geom == null")

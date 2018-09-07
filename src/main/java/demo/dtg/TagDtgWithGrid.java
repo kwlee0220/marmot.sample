@@ -90,7 +90,7 @@ public class TagDtgWithGrid {
 						.aggregate(COUNT())
 						
 					.expand("grid_x:int,grid_y:int")
-						.initializer("grid_x = cell_pos.x; grid_y = cell_pos.y")
+						.set("grid_x = cell_pos.x; grid_y = cell_pos.y")
 					.project("the_geom,grid_x,grid_y,count")
 					
 					.store(RESULT)

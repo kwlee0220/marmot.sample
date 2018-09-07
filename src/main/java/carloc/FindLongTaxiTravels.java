@@ -45,10 +45,10 @@ public class FindLongTaxiTravels {
 								.load(TAXI_TRJ)
 								.filter("status == 3")
 								.expand("length:double")
-									.initializer("length = ST_TRLength(trajectory)")
+									.set("length = ST_TRLength(trajectory)")
 								.pickTopK("length:D", 10)
 								.expand("the_geom:line_string")
-									.initializer("the_geom = ST_TRLineString(trajectory)")
+									.set("the_geom = ST_TRLineString(trajectory)")
 								.project("*-{trajectory}")
 								.store(RESULT)
 								.build();

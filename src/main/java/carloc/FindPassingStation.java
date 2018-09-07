@@ -49,7 +49,7 @@ public class FindPassingStation {
 							.load(TAXI_TRJ)
 							.filter("status == 3")
 							.expand("the_geom:line_string")
-								.initializer("the_geom = ST_TRLineString(trajectory)")
+								.set("the_geom = ST_TRLineString(trajectory)")
 							.withinDistance("the_geom", key, 100, false)
 							.project("*-{trajectory}")
 							.store(OUTPUT)

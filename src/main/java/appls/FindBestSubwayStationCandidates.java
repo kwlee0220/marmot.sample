@@ -177,11 +177,12 @@ public class FindBestSubwayStationCandidates {
 					// 서울시 영역만 추출한다.
 					.query(FLOW_POP_BYTIME, INTERSECTS, seoul)
 					// 모든 지하철 역사로부터 1km 이상 떨어진 로그 데이터만 선택한다.
-					.spatialSemiJoin("the_geom", TEMP_STATIONS, INTERSECTS, true, true)
+					.spatialSemiJoin("the_geom", TEMP_STATIONS)
+						.negated()
 					// 일부 시간대 유동인구가 null인 경우 0으로 치환한다.
 					.update(expr)
 					// 각 시간대의 유동인구를 모두 더해 하루동안의 유동인구를 계산
-					.expand("avg:double").initializer(sumExpr)
+					.expand("avg:double").set(sumExpr)
 					.project("the_geom,std_ym,block_cd,avg")
 					// 각 달의 소지역의 평균 유동인구를 계산한다.
 					.groupBy("block_cd")
@@ -250,7 +251,7 @@ public class FindBestSubwayStationCandidates {
 					// 서울특별시 영역만의 로그만 선택한다.
 					.intersects(geomCol, seoul)
 					// 모든 지하철 역사로부터 1km 이상 떨어진 로그 데이터만 선택한다.
-					.spatialSemiJoin("the_geom", TEMP_STATIONS, INTERSECTS, true, true)
+					.spatialSemiJoin("the_geom", TEMP_STATIONS).negated()
 					.store(TEMP_SEOUL_TAXI_LOG)
 					.build();
 		DataSet result = marmot.createDataSet(TEMP_SEOUL_TAXI_LOG,

@@ -1,7 +1,5 @@
 package geom;
 
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -52,7 +50,7 @@ public class SampleLoadHexagonGridFile {
 
 		Plan plan = marmot.planBuilder("load_hexagon_grid")
 							.loadHexagonGridFile(bounds, srid, SIDE_LEN, 8)
-							.spatialSemiJoin("the_geom", INPUT, INTERSECTS)
+							.spatialSemiJoin("the_geom", INPUT)
 							.store(RESULT)
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, dataset.getGeometryColumnInfo(), plan, true);

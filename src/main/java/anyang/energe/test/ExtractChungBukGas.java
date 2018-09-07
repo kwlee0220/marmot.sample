@@ -44,7 +44,7 @@ public class ExtractChungBukGas {
 		Plan plan;
 		plan = marmot.planBuilder("test")
 					.load(INPUT)
-					.expand("year:int").initializer("사용년월.substring(0,4)")
+					.expand("year:int").set("사용년월.substring(0,4)")
 					.filter("year == 2017")
 					.project("the_geom,")
 					.store(OUTPUT)

@@ -78,7 +78,7 @@ public class FindUnsafeChildZone {
 						.aggregate(AVG("운행속도"), COUNT())
 					.filter("count > 10000")	
 						
-					.expand("speed:int").initializer("speed = avg")
+					.expand("speed:int").set("speed = avg")
 					.project("the_geom,id,대상시설명 as name,speed,count")
 					
 					.store(RESULT)

@@ -1,7 +1,5 @@
 package demo.policy;
 
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -78,8 +76,9 @@ public class BuildTenMinutePolicy {
 
 		Plan plan = marmot.planBuilder("경로당필요지역추출")
 						.load(CADASTRAL)
-						.spatialSemiJoin(info.name(), ELDERLY_CARE_BUFFER, INTERSECTS,
-										true, true)	// (3) 교차반전
+						.spatialSemiJoin(info.name(), ELDERLY_CARE_BUFFER)	// (3) 교차반전
+							.negated()
+							.clusterOuterRecords()
 						.clipJoin(info.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석
 						.shard(1)
 						.store(RESULT)
@@ -132,7 +131,7 @@ public class BuildTenMinutePolicy {
 		Plan plan;
 		plan = marmot.planBuilder("인구밀도_10000이상_행정동추출")
 					.load(HDONG)
-					.spatialSemiJoin(info.name(), HIGH_DENSITY_CENTER, INTERSECTS)	// (6) 교차분석
+					.spatialSemiJoin(info.name(), HIGH_DENSITY_CENTER)	// (6) 교차분석
 					.store(HIGH_DENSITY_HDONG)
 					.build();
 		return marmot.createDataSet(HIGH_DENSITY_HDONG, info, plan, true);

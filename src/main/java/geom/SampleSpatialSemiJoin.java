@@ -1,7 +1,5 @@
 package geom;
 
-import static marmot.optor.geo.SpatialRelation.WITHIN_DISTANCE;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -40,7 +38,8 @@ public class SampleSpatialSemiJoin {
 		
 		Plan plan = marmot.planBuilder("within_distance")
 								.load(INPUT)
-								.spatialSemiJoin("the_geom", PARAMS, WITHIN_DISTANCE(30))
+								.spatialSemiJoin("the_geom", PARAMS)
+									.withinDistance(30)
 								.storeMarmotFile(RESULT)
 								.build();
 		marmot.deleteFile(RESULT);

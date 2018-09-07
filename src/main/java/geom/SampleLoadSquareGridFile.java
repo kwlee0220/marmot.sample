@@ -1,7 +1,5 @@
 package geom;
 
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -48,7 +46,7 @@ public class SampleLoadSquareGridFile {
 
 		Plan plan = marmot.planBuilder("sample_load_squaregrid")
 								.loadSquareGridFile(INPUT, dim)
-								.spatialSemiJoin("the_geom", INPUT, INTERSECTS)
+								.spatialSemiJoin("the_geom", INPUT)
 								.store(RESULT)
 								.build();
 		DataSet result = marmot.createDataSet(RESULT, dataset.getGeometryColumnInfo(), plan, true);

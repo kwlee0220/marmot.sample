@@ -65,20 +65,20 @@ public class ConcatPoliticals {
 		Plan plan;
 		plan = marmot.planBuilder("merge_politicals")
 						.load(LI)
-						.expand("emd_cd2:string").initializer("emd_cd2 = li_cd.substring(0,8)")
+						.expand("emd_cd2:string").set("emd_cd2 = li_cd.substring(0,8)")
 						.join("emd_cd2", EMD, "emd_cd",
 							"*, param.the_geom as emd_the_geom,param.*-{the_geom}", outerJoinOpts)
-						.expand("bjd_nm:string,bjd_cd:string").initializer(merge)
+						.expand("bjd_nm:string,bjd_cd:string").set(merge)
 						.project("the_geom,bjd_cd,bjd_nm,"
 								+ "emd_cd,emd_kor_nm as emd_nm,"
 								+ "li_cd,li_kor_nm as li_nm")
-						.expand("sig_cd2:string").initializer("sig_cd2 = bjd_cd.substring(0,5)")
+						.expand("sig_cd2:string").set("sig_cd2 = bjd_cd.substring(0,5)")
 						.join("sig_cd2", SGG, "sig_cd", "*,param.sig_kor_nm", jopts)
 						.update(script1)
 						.project("the_geom,bjd_cd,bjd_nm,"
 								+ "sig_cd2 as sgg_cd,sig_kor_nm as sgg_nm,"
 								+ "emd_cd,emd_nm,li_cd,li_nm")
-						.expand("sid_cd2:string").initializer("sid_cd2 = bjd_cd.substring(0,2)")
+						.expand("sid_cd2:string").set("sid_cd2 = bjd_cd.substring(0,2)")
 						.join("sid_cd2", SID, "ctprvn_cd", "*,param.{ctp_kor_nm,ctprvn_cd}", jopts)
 						.update("bjd_nm = ctp_kor_nm + ' ' + bjd_nm")
 						.project("the_geom,bjd_cd,bjd_nm,"

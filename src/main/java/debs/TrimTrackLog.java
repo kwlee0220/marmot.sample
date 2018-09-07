@@ -58,7 +58,7 @@ public class TrimTrackLog {
 		
 		Plan plan = marmot.planBuilder("trim_log")
 							.load(INPUT)
-							.expand("ts:long").initializer(initExpr, expr)
+							.expand("ts:long").set(initExpr, expr)
 							.project("the_geom,ship_id,depart_port,ts")
 //							.groupBy("depart_port,ship_id")
 //								.reduce(reducer)

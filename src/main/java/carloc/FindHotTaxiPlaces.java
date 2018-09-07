@@ -47,7 +47,7 @@ public class FindHotTaxiPlaces {
 							.filter("status==1 || status==2")
 							.spatialJoin("the_geom", EMD, INTERSECTS,
 										"car_no,status,ts,param.{the_geom, EMD_CD,EMD_KOR_NM}")
-							.expand("hour:int").initializer("hour=ts.substring(8,10)")
+							.expand("hour:int").set("hour=ts.substring(8,10)")
 							.groupBy("hour,status,EMD_CD")
 								.tagWith("EMD_KOR_NM,the_geom")
 								.aggregate(COUNT())

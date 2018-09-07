@@ -44,7 +44,7 @@ public class S03_SumMonthElectroUsages {
 		Plan plan;
 		plan = marmot.planBuilder("연별 전기 사용량 합계")
 					.load(INPUT)
-					.expand("year:short").initializer("year = 사용년월.substring(0, 4)")
+					.expand("year:short").set("year = 사용년월.substring(0, 4)")
 					.update("사용량 = Math.max(사용량, 0)")
 					.groupBy("고유번호,year")
 						.aggregate(SUM("사용량").as("usage"))

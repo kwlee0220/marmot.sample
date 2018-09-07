@@ -1,7 +1,5 @@
 package demo.policy;
 
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -48,7 +46,8 @@ public class Step03 {
 
 		Plan plan = marmot.planBuilder("노인복지시설필요지역추출")
 						.load(INPUT)
-						.spatialSemiJoin(info.name(), PARAM, INTERSECTS, true, true) // (3) 교차반전
+						.spatialSemiJoin(info.name(), PARAM)
+							.negated()	// (3) 교차반전
 						.store(RESULT)
 						.build();
 		DataSet result = marmot.createDataSet(RESULT, info, plan, true);

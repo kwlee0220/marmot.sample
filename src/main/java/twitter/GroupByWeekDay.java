@@ -43,7 +43,7 @@ public class GroupByWeekDay {
 								.load(TWEETS)
 								.project("id,created_at")
 								.expand("week_day:int")
-									.initializer("week_day = ST_DTWeekDay(created_at)")
+									.set("week_day = ST_DTWeekDay(created_at)")
 								.groupBy("week_day").count()
 								.drop(0)
 								.storeAsCsv(RESULT, ',')

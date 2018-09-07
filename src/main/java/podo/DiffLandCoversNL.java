@@ -49,7 +49,7 @@ public class DiffLandCoversNL {
 						.update("분류구 = (분류구.length() > 0) ? 분류구 : 재분류")
 						.intersectionJoin(geomCol, LAND_COVER_1987,
 											"the_geom,param.분류구 as t1987,분류구 as t2007")
-						.expand("area:double").initializer("area = ST_Area(the_geom);")
+						.expand("area:double").set("area = ST_Area(the_geom);")
 						.project("*-{the_geom}")
 						.groupBy("t1987,t2007")
 							.workerCount(1)
