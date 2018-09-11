@@ -1,7 +1,5 @@
 package appls;
 
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
@@ -53,8 +51,7 @@ public class FireStationService {
 		plan = marmot.planBuilder("combine")
 					.load(LAND_USAGE)
 					.filter("lclas_cl=='UQA100'")
-					.spatialJoin(geomCol, POP, INTERSECTS,
-								"param.{the_geom as the_geom,인구수 as pop}")
+					.spatialJoin(geomCol, POP, "param.{the_geom as the_geom,인구수 as pop}")
 					.store(RESULT)
 					.build();
 		result = marmot.createDataSet(RESULT, ds.getGeometryColumnInfo(), plan, true);

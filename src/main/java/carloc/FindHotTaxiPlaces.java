@@ -1,7 +1,6 @@
 package carloc;
 
 import static marmot.optor.AggregateFunction.COUNT;
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -45,9 +44,9 @@ public class FindHotTaxiPlaces {
 		Plan plan = marmot.planBuilder("find_hot_taxi_places")
 							.load(TAXI_LOG)
 							.filter("status==1 || status==2")
-							.spatialJoin("the_geom", EMD, INTERSECTS,
+							.spatialJoin("the_geom", EMD,
 										"car_no,status,ts,param.{the_geom, EMD_CD,EMD_KOR_NM}")
-							.expand("hour:int").set("hour=ts.substring(8,10)")
+							.expand1("hour:int", "ts.substring(8,10)")
 							.groupBy("hour,status,EMD_CD")
 								.tagWith("EMD_KOR_NM,the_geom")
 								.aggregate(COUNT())

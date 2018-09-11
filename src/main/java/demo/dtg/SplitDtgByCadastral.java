@@ -1,7 +1,5 @@
 package demo.dtg;
 
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Polygon;
@@ -62,8 +60,7 @@ public class SplitDtgByCadastral {
 					.toPoint("x좌표", "y좌표", "the_geom")
 					.intersects("the_geom", validBounds)
 					
-					.spatialJoin("the_geom", TEMP_POLITICAL, INTERSECTS,
-								"*-{the_geom},param.sig_cd")
+					.spatialJoin("the_geom", TEMP_POLITICAL, "*-{the_geom},param.sig_cd")
 					
 					.groupBy("sig_cd")
 						.workerCount(nworkers)

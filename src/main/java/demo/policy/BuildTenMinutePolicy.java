@@ -1,5 +1,8 @@
 package demo.policy;
 
+import static marmot.plan.SpatialJoinOption.CLUSTER_OUT_RECORDS;
+import static marmot.plan.SpatialJoinOption.NEGATED;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -76,9 +79,8 @@ public class BuildTenMinutePolicy {
 
 		Plan plan = marmot.planBuilder("경로당필요지역추출")
 						.load(CADASTRAL)
-						.spatialSemiJoin(info.name(), ELDERLY_CARE_BUFFER)	// (3) 교차반전
-							.negated()
-							.clusterOuterRecords()
+						.spatialSemiJoin(info.name(), ELDERLY_CARE_BUFFER,	// (3) 교차반전
+										NEGATED, CLUSTER_OUT_RECORDS)
 						.clipJoin(info.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석
 						.shard(1)
 						.store(RESULT)
@@ -117,7 +119,7 @@ public class BuildTenMinutePolicy {
 		Plan plan;
 		plan = marmot.planBuilder("인구밀도_2017_중심점추출_10000이상")
 					.load(POP_DENSITY)
-					.centroid(info.name(), info.name())						// (4) 중심점 추출
+					.centroid(info.name())						// (4) 중심점 추출
 					.filter("value >= 10000")								// (5) 영역분석
 					.store(HIGH_DENSITY_CENTER)
 					.build();

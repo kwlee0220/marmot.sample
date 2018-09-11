@@ -8,6 +8,7 @@ import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
+import marmot.type.DataType;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -44,7 +45,7 @@ public class ExtractChungBukGas {
 		Plan plan;
 		plan = marmot.planBuilder("test")
 					.load(INPUT)
-					.expand("year:int").set("사용년월.substring(0,4)")
+					.expand1("year", DataType.INT, "사용년월.substring(0,4)")
 					.filter("year == 2017")
 					.project("the_geom,")
 					.store(OUTPUT)

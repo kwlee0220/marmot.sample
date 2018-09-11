@@ -1,7 +1,6 @@
 package demo.policy;
 
 import static marmot.optor.AggregateFunction.COUNT;
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -49,7 +48,7 @@ public class CountCadastral1 {
 
 		Plan plan = marmot.planBuilder("행정도별 필지수 계산")
 						.load(INPUT)
-						.spatialJoin("the_geom", PARAM, INTERSECTS, "pnu,param.hcode")
+						.spatialJoin("the_geom", PARAM, "pnu,param.hcode")
 						.groupBy("hcode")
 //							.workerCount(17)
 							.aggregate(COUNT())

@@ -1,5 +1,8 @@
 package jdbc;
 
+import static marmot.plan.LoadJdbcTableOption.MAPPER_COUNT;
+import static marmot.plan.LoadJdbcTableOption.SELECT;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -48,9 +51,9 @@ public class SampleLoadJdbcTable {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		Plan plan = marmot.planBuilder("test")
-							.loadJdbcTable(JDBC_URL, USER, PASSWD, DRIVER_CLASS, TABLE_NAME)
-								.columnExpr("ST_AsBinary(the_geom) as the_geom")
-								.mapperCount(7)
+							.loadJdbcTable(JDBC_URL, USER, PASSWD, DRIVER_CLASS, TABLE_NAME,
+											SELECT("ST_AsBinary(the_geom) as the_geom"),
+											MAPPER_COUNT(7))
 //							.expand("the_geom:multi_polygon",
 //									"the_geom = ST_GeomFromWKB(the_geom)")
 							.aggregate(AggregateFunction.COUNT())

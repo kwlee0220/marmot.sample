@@ -1,7 +1,6 @@
 package oldbldr;
 
 import static marmot.optor.AggregateFunction.AVG;
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -62,9 +61,9 @@ public class Step1FlowPop {
 		Plan plan = marmot.planBuilder("읍면동별 2015년도 유동인구 집계")
 							.load(FLOW_POP)
 							.update(handleNull)
-							.expand("avg:double, year:int").set(script)
+							.expand("avg:double, year:int", script)
 							.project("the_geom,block_cd,year,avg")
-							.spatialJoin("the_geom", EMD, INTERSECTS,
+							.spatialJoin("the_geom", EMD,
 									"*-{the_geom},param.{the_geom,emd_cd,emd_kor_nm as emd_nm}")
 							.groupBy("emd_cd")
 								.tagWith(geomCol + ",year,emd_nm")

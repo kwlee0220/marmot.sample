@@ -1,5 +1,7 @@
 package yunsei;
 
+import static marmot.plan.SpatialJoinOption.NEGATED;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
@@ -72,8 +74,7 @@ public class Y3T_1 {
 
 		plan = marmot.planBuilder("")
 					.load(POPULATION)
-					.spatialSemiJoin(pop.getGeometryColumn(), TEMP_ELDERLY_CARES)
-						.negated()
+					.spatialSemiJoin(pop.getGeometryColumn(), TEMP_ELDERLY_CARES, NEGATED)
 					.project(geomCol + ",refl70,point_x,point_y")
 					.store(TEMP_POP)
 					.build();

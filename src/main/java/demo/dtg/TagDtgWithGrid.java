@@ -81,7 +81,7 @@ public class TagDtgWithGrid {
 					
 					.transformCrs("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
 					.assignSquareGridCell("the_geom", bounds, CELL_SIZE)
-					.centroid("cell_geom", "the_geom")
+					.centroid("cell_geom")
 					.intersects("the_geom", kyounggiGeom)
 					
 					.groupBy("cell_id")
@@ -89,8 +89,7 @@ public class TagDtgWithGrid {
 						.workerCount(WORKER_COUNT)
 						.aggregate(COUNT())
 						
-					.expand("grid_x:int,grid_y:int")
-						.set("grid_x = cell_pos.x; grid_y = cell_pos.y")
+					.expand("grid_x:int,grid_y:int", "grid_x = cell_pos.x; grid_y = cell_pos.y")
 					.project("the_geom,grid_x,grid_y,count")
 					
 					.store(RESULT)

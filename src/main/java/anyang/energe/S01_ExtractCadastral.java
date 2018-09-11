@@ -7,6 +7,7 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
+import marmot.plan.StoreOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -50,7 +51,7 @@ public class S01_ExtractCadastral {
 					.load(INPUT)
 					.project("the_geom, 고유번호 as pnu")
 					.shard(1)
-					.store(OUTPUT).blockSize(blockSize)
+					.store(OUTPUT, StoreOption.BLOCK_SIZE(blockSize))
 					.build();
 		DataSet result = marmot.createDataSet(OUTPUT, info, plan, true);
 		

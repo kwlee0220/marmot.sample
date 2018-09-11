@@ -1,7 +1,6 @@
 package demo.policy;
 
 import static marmot.optor.AggregateFunction.COUNT;
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -51,7 +50,7 @@ public class CountCadastral2 {
 						.load(INPUT).splitCountPerBlock(131)
 //						.load(INPUT)
 //						.filter("hcode.startsWith('5011025')")
-						.spatialAggregateJoin("the_geom", PARAM, INTERSECTS, COUNT())
+						.spatialAggregateJoin("the_geom", PARAM, COUNT())
 						.update("count = (count == null) ? 0 : count")
 						.shard(1)
 						.store(RESULT)

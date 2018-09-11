@@ -1,26 +1,23 @@
 package geom;
 
-import static marmot.plan.SpatialJoinOption.WITHIN_DISTANCE;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
+import utils.StopWatch;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleSpatialSemiJoin {
+public class SampleIntersectionJoin {
 	private static final String RESULT = "tmp/result";
-	private static final String INPUT = "POI/주유소_가격";
-	private static final String PARAMS = "교통/지하철/역사";
+	private static final String OUTER = "POI/주유소_가격";
+	private static final String INNER = "시연/서울특별시";
 
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -37,18 +34,23 @@ public class SampleSpatialSemiJoin {
 		String host = MarmotCommands.getMarmotHost(cl);
 		int port = MarmotCommands.getMarmotPort(cl);
 		
+		StopWatch watch = StopWatch.start();
+		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		GeometryColumnInfo info = marmot.getDataSet(INPUT).getGeometryColumnInfo();
-		Plan plan = marmot.planBuilder("within_distance")
-								.load(INPUT)
-								.spatialSemiJoin("the_geom", PARAMS, WITHIN_DISTANCE(30))
-								.store(RESULT)
+		Plan plan = marmot.planBuilder("sample_intersection_join")
+								.load(OUTER)
+								.buffer("the_geom", 50)
+								.intersectionJoin("the_geom", INNER)
+								.storeMarmotFile(RESULT)
 								.build();
-		DataSet result = marmot.createDataSet(RESULT, info, plan, true);
+
+		marmot.deleteFile(RESULT);
+		marmot.execute(plan);
+		System.out.println("elapsed time=" + watch.stopAndGetElpasedTimeString());
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		SampleUtils.printPrefix(result, 10);
+		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 5);
 	}
 }

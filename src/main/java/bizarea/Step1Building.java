@@ -2,7 +2,6 @@ package bizarea;
 
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.SUM;
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -59,8 +58,7 @@ public class Step1Building {
 							.load(BUILDINGS)
 							// BIZ_GRID와 소지역 코드를 이용하여 조인하여,
 							// 대도시 상업지역과 겹치는 건축물 구역을 뽑는다. 
-							.spatialJoin("the_geom", BIZ_GRID, INTERSECTS,
-										"건축물용도코드,대지면적,param.*")
+							.spatialJoin("the_geom", BIZ_GRID, "건축물용도코드,대지면적,param.*")
 							// 그리드 셀, 건축물 용도별로 건물 수와 총 면점을 집계한다. 
 							.groupBy("cell_id,block_cd,건축물용도코드")
 								.tagWith(geomCol + ",sgg_cd")

@@ -1,7 +1,6 @@
 package oldbldr;
 
 import static marmot.optor.AggregateFunction.SUM;
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -51,7 +50,6 @@ public class Step1CardSales {
 		String sumExpr = IntStream.range(0, 24)
 								.mapToObj(idx -> String.format("sale_amt_%02dtmst", idx))
 								.collect(Collectors.joining("+"));
-		sumExpr = "sale_amt = " + sumExpr;
 		
 		Plan plan;
 		DataSet input = marmot.getDataSet(EMD);
@@ -59,15 +57,15 @@ public class Step1CardSales {
 		
 		plan = marmot.planBuilder("읍면동별 2015년도 카드매출 집계")
 					.load(CARD_SALES)
-					.expand("sale_amt:double").set(sumExpr)
-					.expand("year:int").set("year=std_ym.substring(0,4);")
+					.expand1("sale_amt:double", sumExpr)
+					.expand1("year:int", "std_ym.substring(0,4);")
 					.project("block_cd,year,sale_amt")
 					.groupBy("block_cd")
 						.tagWith("year")
 						.aggregate(SUM("sale_amt").as("sale_amt"))
 					.join("block_cd", BLOCKS, "block_cd", "*,param.{the_geom}",
 							new JoinOptions().workerCount(64))
-					.spatialJoin("the_geom", EMD, INTERSECTS,
+					.spatialJoin("the_geom", EMD,
 							"*-{the_geom},param.{the_geom,emd_cd,emd_kor_nm as emd_nm}")
 					.groupBy("emd_cd")
 						.tagWith(geomCol + ",year,emd_nm")

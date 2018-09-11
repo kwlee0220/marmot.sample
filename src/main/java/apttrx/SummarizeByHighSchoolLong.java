@@ -5,7 +5,6 @@ import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.MAX;
 import static marmot.optor.AggregateFunction.MIN;
 import static marmot.optor.AggregateFunction.SUM;
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -15,6 +14,7 @@ import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
+import marmot.plan.GeomOpOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -64,8 +64,7 @@ public class SummarizeByHighSchoolLong {
 						.load(APT_TRX)
 
 						// 지오코딩을 위해 대상 아파트의 지번주소 구성
-						.expand("addr:string")
-							.set("addr = 시군구 + ' ' + 번지 + ' ' + 단지명")
+						.expand("addr:string", "addr = 시군구 + ' ' + 번지 + ' ' + 단지명")
 						// 지오코딩과 관련없는 컬럼 제거
 						.project("addr,시군구,번지,단지명")
 						// 중복된 아파트 주소를 제거
@@ -76,21 +75,20 @@ public class SummarizeByHighSchoolLong {
 						.distinct("addr", 37)
 						// 지오코딩을 통해 아파트 좌표 계산
 						.lookupPostalAddress("addr", "info")
-						.expand("the_geom:multi_polygon")
-							.set("the_geom = info.?geometry")
+						.expand("the_geom:multi_polygon", "the_geom = info.?geometry")
 						
 						// 고등학교 주변 1km 내의 아파트 검색.
-						.centroid("the_geom", "the_geom")
-						.buffer("the_geom", 1000).output("circle")
-						.spatialJoin("circle", HIGH_SCHOOLS, INTERSECTS,
+						.centroid("the_geom")
+						.buffer("the_geom", 1000, GeomOpOption.OUTPUT("circle"))
+						.spatialJoin("circle", HIGH_SCHOOLS,
 									String.format("*-{the_geom},param.{%s,id,name}",geomCol))
 						
 						// 고등학교 1km내 위치에 해당하는 아파트 거래 정보를 검색.
 						.join("시군구,번지,단지명", APT_TRX, "시군구,번지,단지명",
 								"the_geom,id,name,param.*", null)
 						// 평당 거래액 계산.
-						.expand("평당거래액:int")
-							.set("평당거래액 = (int)Math.round((거래금액*3.3) / 전용면적)")
+						.expand("평당거래액:int",
+								"평당거래액 = (int)Math.round((거래금액*3.3) / 전용면적)")
 						
 						// 고등학교를 기준으로 그룹핑하여 집계한다.
 						.groupBy("id")
@@ -100,7 +98,7 @@ public class SummarizeByHighSchoolLong {
 									AVG("평당거래액").as("평당거래액"),
 									MAX("거래금액").as("최대거래액"),
 									MIN("거래금액").as("최소거래액"))
-						.expand("평당거래액:int").set("평당거래액=평당거래액")
+						.expand1("평당거래액:int")
 						.sort("평당거래액:D")
 						
 						.store(RESULT)

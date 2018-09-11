@@ -1,7 +1,6 @@
 package yunsei;
 
 import static marmot.optor.AggregateFunction.SUM;
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -73,7 +72,7 @@ public class Y2T_2 {
 		plan = marmot.planBuilder("택시_승하차_로그_선택")
 					.load(TAXI_LOG)
 					.filter("status == 1 || status == 2")
-					.expand("hour:int").set("hour=ts.substring(8,10)")
+					.expand("hour:int", "hour=ts.substring(8,10)")
 					.store(TEMP_TAXI)
 					.build();
 
@@ -90,8 +89,8 @@ public class Y2T_2 {
 		// 버스 승하차 정보에서 서울 구역부분만 추출한다.
 		plan = marmot.planBuilder("그리드_생성_후_셀별_승하차_횟수_집계")
 					.loadSquareGridFile(bounds, CELL_SIZE, NWORKERS)
-					.spatialOuterJoin("the_geom", TEMP_TAXI, INTERSECTS, "*,param.{hour,status}")
-					.expand("supply:int, demand:int").set(expr)
+					.spatialOuterJoin("the_geom", TEMP_TAXI, "*,param.{hour,status}")
+					.expand("supply:int, demand:int", expr)
 					.groupBy("cell_id,hour")
 						.tagWith("the_geom")
 						.aggregate(SUM("supply").as("supply_count"),

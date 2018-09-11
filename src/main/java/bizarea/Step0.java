@@ -1,7 +1,5 @@
 package bizarea;
 
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
-
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -76,11 +74,9 @@ public class Step0 {
 							.spatialSemiJoin("the_geom", TEMP_BIZ_AREA)
 							// 상업지구 그리드 셀에 대해 대도시 영역만을 선택하고,
 							// 행정도 코드(sgg_cd)를 부여한다.
-							.spatialJoin("the_geom", TEMP_BIG_CITIES, INTERSECTS,
-										"*-{cell_pos},param.sgg_cd")
+							.spatialJoin("the_geom", TEMP_BIG_CITIES, "*-{cell_pos},param.sgg_cd")
 							// 소지역 코드 (block_cd)를 부여한다.
-							.spatialJoin("the_geom", BLOCK_CENTERS, INTERSECTS,
-										"*-{cell_pos},param.block_cd")
+							.spatialJoin("the_geom", BLOCK_CENTERS, "*-{cell_pos},param.block_cd")
 							.store(BIZ_GRID)
 							.build();
 		result = marmot.createDataSet(BIZ_GRID, new GeometryColumnInfo("the_geom", srid),
@@ -114,9 +110,9 @@ public class Step0 {
 		DataSet political = marmot.getDataSet(POLITICAL);
 		Plan plan = marmot.planBuilder("대도시지역 추출")
 								.load(POLITICAL)
-								.expand("sid_cd:string,sgg_cd:string")
-									.set("sid_cd = bjd_cd.substring(0,2);"
-												+ "sgg_cd = bjd_cd.substring(0,5);")
+								.expand("sid_cd:string,sgg_cd:string",
+										"sid_cd = bjd_cd.substring(0,2);"
+										+ "sgg_cd = bjd_cd.substring(0,5);")
 								.filter(initExpr,
 										"$sid_cd.contains(sid_cd) || $sgg_cd.contains(sgg_cd)")
 								.store(result)
@@ -131,9 +127,9 @@ public class Step0 {
 		DataSet political = marmot.getDataSet(CADASTRAL);
 		Plan plan = marmot.planBuilder("filter_big_cities")
 								.load(CADASTRAL)
-								.expand("sid_cd:string,sgg_cd:string")
-									.set("sid_cd = pnu.substring(0,2);"
-												+ "sgg_cd = pnu.substring(0,5);")
+								.expand("sid_cd:string,sgg_cd:string",
+										"sid_cd = pnu.substring(0,2);"
+										+ "sgg_cd = pnu.substring(0,5);")
 								.filter(initExpr,
 										"$sid_cd.contains(sid_cd) || $sgg_cd.contains(sgg_cd)")
 								.project("the_geom,pnu")

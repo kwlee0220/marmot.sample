@@ -1,7 +1,5 @@
 package demo.policy;
 
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -51,7 +49,7 @@ public class CountCadastral {
 						.load(INPUT).splitCountPerBlock(131)
 //						.load(INPUT)
 //						.filter("hcode.startsWith('4375035')")
-						.arcGisSpatialJoin("the_geom", PARAM, INTERSECTS, false)
+						.arcGisSpatialJoin("the_geom", PARAM, false)
 						.shard(1)
 						.store(RESULT)
 						.build();

@@ -1,7 +1,5 @@
 package bizarea;
 
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -64,8 +62,7 @@ public class Step2 {
 							.update(script)
 							.project("*-{param_the_geom,param_std_ym,param_cell_id,param_sgg_cd}")
 							// 최종 결과에 행정도 코드를 부여한다.
-							.spatialJoin("the_geom", POLITICAL, INTERSECTS,
-										"*-{cell_pos},param.*-{the_geom,sgg_cd}")
+							.spatialJoin("the_geom", POLITICAL, "*-{cell_pos},param.*-{the_geom,sgg_cd}")
 							.store(RESULT)
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, ds.getGeometryColumnInfo(), plan, true);

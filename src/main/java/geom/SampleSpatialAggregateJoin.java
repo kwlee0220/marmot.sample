@@ -1,6 +1,7 @@
 package geom;
 
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
+import static marmot.optor.AggregateFunction.COUNT;
+import static marmot.optor.AggregateFunction.MAX;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -9,7 +10,7 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import static marmot.optor.AggregateFunction.*;
+import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -46,8 +47,8 @@ public class SampleSpatialAggregateJoin {
 		
 		Plan plan = marmot.planBuilder("spatial_join")
 								.load(EMD)
-								.spatialAggregateJoin("the_geom", GAS_STATIONS, INTERSECTS,
-													COUNT(), MAX("휘발유"))
+								.spatialAggregateJoin("the_geom", GAS_STATIONS,
+													new AggregateFunction[] {COUNT(), MAX("휘발유")})
 								.store(RESULT)
 								.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");

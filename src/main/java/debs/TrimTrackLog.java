@@ -11,6 +11,7 @@ import marmot.Plan;
 import marmot.RecordSet;
 import marmot.command.MarmotCommands;
 import marmot.optor.AggregateFunction;
+import marmot.plan.RecordScript;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -58,7 +59,7 @@ public class TrimTrackLog {
 		
 		Plan plan = marmot.planBuilder("trim_log")
 							.load(INPUT)
-							.expand("ts:long").set(initExpr, expr)
+							.expand("ts:long", RecordScript.of(initExpr, expr))
 							.project("the_geom,ship_id,depart_port,ts")
 //							.groupBy("depart_port,ship_id")
 //								.reduce(reducer)

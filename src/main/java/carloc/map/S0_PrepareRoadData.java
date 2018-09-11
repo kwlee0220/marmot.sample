@@ -3,12 +3,10 @@ package carloc.map;
 import org.apache.log4j.PropertyConfigurator;
 
 import carloc.Globals;
-import io.vavr.control.Option;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.geo.command.ClusterDataSetOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.type.DataType;
 import utils.CommandLine;

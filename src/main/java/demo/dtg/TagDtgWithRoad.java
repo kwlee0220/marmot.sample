@@ -6,7 +6,6 @@ import static marmot.optor.JoinOptions.SEMI_JOIN;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 
 import common.SampleUtils;
@@ -17,7 +16,6 @@ import marmot.command.MarmotCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
 import marmot.geo.command.ClusterDataSetOptions;
-import marmot.optor.geo.SpatialRelation;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -82,8 +80,7 @@ public class TagDtgWithRoad {
 					.join("운송사코드", TEMP_CARGOS, "회사코드", "the_geom", SEMI_JOIN(nworkers))
 					
 					.transformCrs("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
-					.knnJoin("the_geom", TEMP_ROAD, DIST, 1,
-							"param.{the_geom, link_id, road_name}", true)
+					.knnJoin("the_geom", TEMP_ROAD, 1, DIST, "param.{the_geom, link_id, road_name}")
 					
 					.groupBy("link_id")
 						.tagWith("the_geom")

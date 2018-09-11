@@ -46,7 +46,7 @@ public class S3_FindMatchingTaxiLog {
 		Plan plan;
 		plan = marmot.planBuilder("맵_매핑_택시로그_검색")
 					.load(INPUT)
-					.knnJoin(geomCol, Globals.ROADS, Globals.DISTANCE, 1, "*")
+					.knnJoin(geomCol, Globals.ROADS, 1, Globals.DISTANCE, "*")
 					.store(RESULT)
 					.build();
 		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);

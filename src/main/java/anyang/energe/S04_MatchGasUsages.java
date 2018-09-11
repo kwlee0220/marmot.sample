@@ -88,7 +88,7 @@ public class S04_MatchGasUsages {
 		
 		Plan plan = marmot.planBuilder("put_side_by_size_gas")
 						.load(INPUT)
-						.expand("tag:string").set("tag = 'gas_' + year")
+						.expand("tag:string", "tag = 'gas_' + year")
 						.groupBy("pnu")
 							.putSideBySide(outSchema, "usage", "tag")
 						.store(INTERM)

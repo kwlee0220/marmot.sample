@@ -2,7 +2,6 @@ package demo.dtg;
 
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.AggregateFunction.COUNT;
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -17,6 +16,7 @@ import marmot.command.MarmotCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
 import marmot.geo.command.ClusterDataSetOptions;
+import marmot.plan.GeomOpOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -70,7 +70,7 @@ public class FindUnsafeChildZone {
 					.intersects("the_geom", key)
 					.transformCrs("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
 					
-					.spatialJoin("the_geom", TEMP_ZONE, INTERSECTS, "param.*,운행속도")
+					.spatialJoin("the_geom", TEMP_ZONE, "param.*,운행속도")
 					
 					.groupBy("id")
 						.tagWith("the_geom,대상시설명")
@@ -78,7 +78,7 @@ public class FindUnsafeChildZone {
 						.aggregate(AVG("운행속도"), COUNT())
 					.filter("count > 10000")	
 						
-					.expand("speed:int").set("speed = avg")
+					.expand1("speed:int", "avg")
 					.project("the_geom,id,대상시설명 as name,speed,count")
 					
 					.store(RESULT)
@@ -109,7 +109,7 @@ public class FindUnsafeChildZone {
 		Plan plan;
 		plan = marmot.planBuilder("buffer child zones")
 					.load(CHILD_ZONE)
-					.buffer("the_geom", DISTANCE).output("area")
+					.buffer("the_geom", DISTANCE, GeomOpOption.OUTPUT("area"))
 					.project("the_geom,id,대상시설명,area")
 					.store(outDsId)
 					.build();

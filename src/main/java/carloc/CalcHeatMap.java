@@ -1,7 +1,6 @@
 package carloc;
 
 import static marmot.optor.AggregateFunction.COUNT;
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -60,7 +59,7 @@ public class CalcHeatMap {
 		
 		Plan plan = marmot.planBuilder("calc_heat_map")
 							.loadSquareGridFile(envl, cellSize, 32)
-							.spatialJoin("the_geom", TAXI_LOG, INTERSECTS, "*")
+							.spatialJoin("the_geom", TAXI_LOG, "*")
 							.groupBy("cell_id")
 								.tagWith("the_geom")
 								.aggregate(COUNT())

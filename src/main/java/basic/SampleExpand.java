@@ -42,11 +42,12 @@ public class SampleExpand {
 		DataSet input = marmot.getDataSet(INPUT);
 		Plan plan = marmot.planBuilder("update")
 							.load(INPUT)
-							.expand("the_geom:point,area:double,sig_cd:int")
-								.set("area = ST_Area(the_geom);"
+							.expand("the_geom:point,area:double",
+									"area = ST_Area(the_geom);"
 										+ "the_geom = ST_Centroid(the_geom);"
-										+ "sig_cd=Integer.parseInt(sig_cd);"
-										+ "kor_sub_nm='Station(' + kor_sub_nm + ')'")
+										+ "kor_sub_nm = 'Station(' + kor_sub_nm + ')';"
+										+ "eng_sub_nm = kor_sub_nm + '_ENG'")
+							.expand("sig_cd:int")
 							.project("the_geom,area,sig_cd,kor_sub_nm")
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);

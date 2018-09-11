@@ -67,7 +67,7 @@ public class WeakFireDeathArea {
 								.load(LAYER_FIRE)
 								.filter("sd_nm == '서울특별시'")
 								.clipJoin("the_geom", LAYER_SEOUL)
-								.centroid("the_geom", "the_geom")
+								.centroid("the_geom")
 								.clipJoin("the_geom", "tmp/weak_area/far_seoul")
 								.store("tmp/weak_area/result")
 								.build();

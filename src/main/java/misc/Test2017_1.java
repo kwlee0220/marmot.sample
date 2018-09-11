@@ -1,7 +1,6 @@
 package misc;
 
 import static marmot.optor.AggregateFunction.COUNT;
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -12,6 +11,7 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
+import marmot.plan.GeomOpOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -54,15 +54,11 @@ public class Test2017_1 {
 		
 		Plan plan = marmot.planBuilder("get_biz_grid")
 								.loadSquareGridFile(ADDR_BLD, cellSize)
-								.centroid("the_geom", "the_geom")
+								.centroid("the_geom")
 //								.aggregateJoin("the_geom", ADDR_BLD_UTILS_CLTS,
 //										SpatialRelation.WITHIN_DISTANCE(2000), COUNT())
-								.buffer("the_geom", 100)
-									.output("center")
-									.segmentCount(16)
-									.dropFailedRecord(true)
-								.spatialAggregateJoin("center", ADDR_BLD_UTILS,
-													INTERSECTS, COUNT())
+								.buffer("the_geom", 100, GeomOpOption.OUTPUT("center"))
+								.spatialAggregateJoin("center", ADDR_BLD_UTILS, COUNT())
 								.project("the_geom,cell_id,count")
 								.store(GRID)
 								.build();

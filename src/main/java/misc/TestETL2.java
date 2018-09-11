@@ -1,7 +1,5 @@
 package misc;
 
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -59,7 +57,7 @@ public class TestETL2 {
 		
 		Plan plan = marmot.planBuilder("test_dtg")
 						.load(INPUT)
-						.spatialJoin("the_geom", PARAM, INTERSECTS, "the_geom,param.sub_sta_sn")
+						.spatialJoin("the_geom", PARAM, "the_geom,param.sub_sta_sn")
 						.groupBy("sub_sta_sn")
 							.aggregate(AggregateFunction.COUNT())
 						.store(RESULT)

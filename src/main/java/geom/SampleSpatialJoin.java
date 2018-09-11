@@ -1,7 +1,5 @@
 package geom;
 
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -45,8 +43,8 @@ public class SampleSpatialJoin {
 		
 		Plan plan = marmot.planBuilder("spatial_join")
 							.load(GAS_STATIONS)
-							.spatialJoin("the_geom", EMD, INTERSECTS,
-										"*,param.emd_kor_nm as emd_name")
+//							.spatialJoin("the_geom", EMD, "*,param.emd_kor_nm as emd_name")
+							.spatialJoin("the_geom", EMD)
 							.store(RESULT)
 							.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");

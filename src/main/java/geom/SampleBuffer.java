@@ -7,6 +7,7 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
+import marmot.plan.GeomOpOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -43,7 +44,7 @@ public class SampleBuffer {
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		Plan plan = marmot.planBuilder("buffer")
 						.load(INPUT)
-						.buffer("the_geom", 50)
+						.buffer("the_geom", 50, GeomOpOption.OUTPUT("buffered"))
 						.store(RESULT)
 						.build();
 		DataSet result = marmot.createDataSet(RESULT, gcInfo, plan, true);

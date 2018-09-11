@@ -7,7 +7,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.optor.geo.SpatialRelation;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -63,10 +62,10 @@ public class Test {
 		GeometryColumnInfo gcInfo2 = new GeometryColumnInfo("the_geom", "EPSG:4326");
 		plan = marmot.planBuilder("find_closest_point_on_link")
 					.load("tmp/cada2")
-					.spatialJoin("the_geom", "tmp/hcode2", SpatialRelation.INTERSECTS,
+					.spatialJoin("the_geom", "tmp/hcode2",
 								"the_geom,pnu,param.the_geom as the_geom2, param.hcode")
-					.expand("the_geom:point")
-						.set("the_geom = ST_Centroid(the_geom.intersection(the_geom2))")
+					.expand1("the_geom:point",
+							"ST_Centroid(the_geom.intersection(the_geom2))")
 					.transformCrs("the_geom", "EPSG:5186", "the_geom", "EPSG:4326")
 					.store("tmp/result")
 					.build();

@@ -90,7 +90,7 @@ public class S05_MatchElectroUsages {
 		
 		Plan plan = marmot.planBuilder("put_side_by_size_electro")
 						.load(INPUT)
-						.expand("tag:string").set("tag = 'electro_' + year")
+						.expand("tag:string", "tag = 'electro_' + year")
 						.groupBy("pnu")
 							.putSideBySide(outSchema, "usage", "tag")
 						.store(INTERM)

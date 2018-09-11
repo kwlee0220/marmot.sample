@@ -82,7 +82,7 @@ public class T06_MatchLand2017 {
 		
 		Plan plan = marmot.planBuilder("put_side_by_side_land")
 						.load(INPUT)
-						.expand("tag:string").set("tag = 'month_' + 기준월")
+						.expand("tag:string", "tag = 'month_' + 기준월")
 						.groupBy("고유번호")
 							.putSideBySide(outSchema, "개별공시지가", "tag")
 						.store(outDsId)

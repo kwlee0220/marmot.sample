@@ -2,7 +2,6 @@ package apttrx;
 
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.SUM;
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -12,6 +11,7 @@ import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
+import marmot.plan.GeomOpOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -76,7 +76,7 @@ public class SummarizeByHighSchoolShort {
 							.tagWith(geomCol + ",name")
 							.aggregate(SUM("trade_count").as("trade_count"),
 										SUM("lease_count").as("lease_count"))
-						.expand("count:long").set("count=trade_count+lease_count")
+						.expand1("count:long", "trade_count+lease_count")
 						.sort("count:D")
 						.store(RESULT)
 						.build();
@@ -100,9 +100,9 @@ public class SummarizeByHighSchoolShort {
 					.load(APT_LOC)
 					
 					// 고등학교 주변 1km 내의 아파트 검색.
-					.centroid(locGeomCol, locGeomCol)
-					.buffer(locGeomCol, 1000).output("circle")
-					.spatialJoin("circle", HIGH_SCHOOLS, INTERSECTS,
+					.centroid(locGeomCol)
+					.buffer(locGeomCol, 1000, GeomOpOption.OUTPUT("circle"))
+					.spatialJoin("circle", HIGH_SCHOOLS,
 								String.format("*-{%s},param.{%s,id,name}",
 											locGeomCol, schoolGeomCol))
 					
@@ -114,7 +114,7 @@ public class SummarizeByHighSchoolShort {
 					.groupBy("id")
 						.tagWith(schoolGeomCol + ",name")
 						.aggregate(COUNT().as("trade_count"))
-					.expand("lease_count:long").set("lease_count = 0")
+					.expand1("lease_count:long", "0")
 					.project("the_geom,id,name,trade_count,lease_count")
 					
 					.store(TEMP)
@@ -132,9 +132,9 @@ public class SummarizeByHighSchoolShort {
 					.load(APT_LOC)
 					
 					// 고등학교 주변 1km 내의 아파트 검색.
-					.centroid(locGeomCol, locGeomCol)
-					.buffer(locGeomCol, 1000).output("circle")
-					.spatialJoin("circle", HIGH_SCHOOLS, INTERSECTS,
+					.centroid(locGeomCol)
+					.buffer(locGeomCol, 1000, GeomOpOption.OUTPUT("circle"))
+					.spatialJoin("circle", HIGH_SCHOOLS,
 								String.format("*-{%s},param.{%s,id,name}",
 											locGeomCol, schoolGeomCol))
 					
@@ -146,7 +146,7 @@ public class SummarizeByHighSchoolShort {
 					.groupBy("id")
 						.tagWith(schoolGeomCol + ",name")
 						.aggregate(COUNT().as("lease_count"))
-					.expand("trade_count:long").set("trade_count = 0")
+					.expand1("trade_count:long", "0")
 					.project("the_geom,id,name,trade_count,lease_count")
 					
 					.store(TEMP)

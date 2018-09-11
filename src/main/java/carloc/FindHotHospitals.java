@@ -1,12 +1,13 @@
 package carloc;
 
+import static marmot.optor.AggregateFunction.COUNT;
+import static marmot.plan.SpatialJoinOption.WITHIN_DISTANCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import static marmot.optor.AggregateFunction.*;
-import static marmot.optor.geo.SpatialRelation.*;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -45,8 +46,9 @@ public class FindHotHospitals {
 		Plan plan = marmot.planBuilder("find_hot_hospitals")
 								.load(TAXI_LOG)
 								.filter("status==1 || status==2")
-								.spatialJoin("the_geom", HOSPITAL, WITHIN_DISTANCE(50),
-											"param.{the_geom,gid,bplc_nm,bz_stt_nm}")
+								.spatialJoin("the_geom", HOSPITAL,
+											"param.{the_geom,gid,bplc_nm,bz_stt_nm}",
+											WITHIN_DISTANCE(50))
 								.filter("bz_stt_nm=='운영중'")
 								.groupBy("gid")
 									.tagWith("the_geom,bplc_nm")

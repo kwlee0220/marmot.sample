@@ -2,12 +2,13 @@ package basic;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import com.google.protobuf.util.JsonFormat;
+
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
-import marmot.type.DataType;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
@@ -43,11 +44,13 @@ public class SampleExpand1 {
 		DataSet input = marmot.getDataSet(INPUT);
 		Plan plan = marmot.planBuilder("update")
 							.load(INPUT)
-							.expand1("area", DataType.DOUBLE, "ST_Area(the_geom);")
-							.expand1("the_geom", DataType.POINT, "ST_Centroid(the_geom)")
-							.expand1("sig_cd", DataType.INT, "Integer.parseInt(sig_cd)")
+							.expand1("area:double", "ST_Area(the_geom);")
+							.expand1("the_geom:point", "ST_Centroid(the_geom)")
+							.expand1("sig_cd:int")
 							.project("the_geom,area,sig_cd")
 							.build();
+
+		System.out.println(JsonFormat.printer().print(plan.toProto()));
 		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);
 		watch.stop();
 

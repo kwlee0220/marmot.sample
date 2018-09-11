@@ -72,7 +72,7 @@ public class SampleKMeans {
 								.sample(ratio)
 								.take(ncentroids)
 								.project("the_geom")
-								.centroid("the_geom", "the_geom")
+								.centroid("the_geom")
 								.build();
 		return marmot.executeLocally(plan).stream()
 					.map(r -> (Point)r.getGeometry(0))

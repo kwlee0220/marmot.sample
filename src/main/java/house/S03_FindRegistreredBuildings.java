@@ -1,7 +1,5 @@
 package house;
 
-import static marmot.optor.geo.SpatialRelation.INTERSECTS;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
@@ -56,7 +54,7 @@ public class S03_FindRegistreredBuildings {
 
 		Plan plan = marmot.planBuilder("총괄표제부 보유 건물 추출")
 						.load(buildings)
-						.arcGisSpatialJoin(geomCol, registry, INTERSECTS, true)
+						.arcGisSpatialJoin(geomCol, registry, true)
 						.store(resultId)
 						.build();
 		DataSet result = marmot.createDataSet(resultId, ds.getGeometryColumnInfo(), plan, true);

@@ -11,13 +11,14 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
-import io.vavr.control.Option;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
+import marmot.plan.GeomOpOption;
+import marmot.plan.RecordScript;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -85,14 +86,13 @@ public class TagDtgFully {
 							LEFT_OUTER_JOIN(joinWorkers))
 
 					.toPoint("x좌표", "y좌표", "the_geom")
-					.update(Option.none(),
-							"if ( !bounds.contains(the_geom) ) { the_geom = null; }", arguments)
+					.update(RecordScript.of("if ( !bounds.contains(the_geom) ) { the_geom = null; }")
+								.addArgumentAll(arguments))
 					.transformCrs("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
-					.knnOuterJoin("the_geom", ROAD, DIST, 1, "*-{x좌표,y좌표},param.{link_id}",
-									false, true)
+					.knnOuterJoin("the_geom", ROAD, 1, DIST, "*-{x좌표,y좌표},param.{link_id}")
 					
 					.assignSquareGridCell("the_geom", bounds, CELL_SIZE, false)
-					.centroid("cell_geom", "grid")
+					.centroid("cell_geom", GeomOpOption.OUTPUT("grid"))
 					
 					.store(RESULT)
 					.build();
