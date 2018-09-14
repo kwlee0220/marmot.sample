@@ -81,18 +81,18 @@ public class SummarizeByHighSchoolLong {
 						.centroid("the_geom")
 						.buffer("the_geom", 1000, GeomOpOption.OUTPUT("circle"))
 						.spatialJoin("circle", HIGH_SCHOOLS,
-									String.format("*-{the_geom},param.{%s,id,name}",geomCol))
+									String.format("*-{the_geom},param.{%s,학교id,학교명}",geomCol))
 						
 						// 고등학교 1km내 위치에 해당하는 아파트 거래 정보를 검색.
 						.join("시군구,번지,단지명", APT_TRX, "시군구,번지,단지명",
-								"the_geom,id,name,param.*", null)
+								"the_geom,학교id,학교명,param.*", null)
 						// 평당 거래액 계산.
 						.expand("평당거래액:int",
 								"평당거래액 = (int)Math.round((거래금액*3.3) / 전용면적)")
 						
 						// 고등학교를 기준으로 그룹핑하여 집계한다.
-						.groupBy("id")
-						.tagWith("the_geom,name")
+						.groupBy("학교id")
+						.tagWith("the_geom,학교명")
 						.aggregate(COUNT().as("거래건수"),
 									SUM("거래금액").as("총거래액"),
 									AVG("평당거래액").as("평당거래액"),
@@ -116,7 +116,7 @@ public class SummarizeByHighSchoolLong {
 	
 		Plan plan = marmot.planBuilder("find_high_school")
 							.load(SCHOOLS)
-							.filter("type == '고등학교'")
+							.filter("학교급구분 == '고등학교'")
 							.store(HIGH_SCHOOLS)
 							.build();
 		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, ds.getGeometryColumnInfo(), plan, true);

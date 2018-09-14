@@ -10,8 +10,8 @@ import marmot.Plan;
 import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
 import static marmot.plan.ParseCsvOption.*;
+import marmot.plan.RecordScript;
 import marmot.remote.protobuf.PBMarmotClient;
-import marmot.type.DataType;
 import utils.CSV;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -52,17 +52,21 @@ public class PrintPlanAsJson {
 		header = CSV.get()
 //					.parse("date,owner,car_no,time,mileage,mileage_accum,velo,rpm,brake,xpos,ypos,heading,xacc,yacc")
 //					.parse("car_no,ts,month,sid_cd,besselX,besselY,status,company,driver_id,xpos,ypos")
-//					.parse("번호,사업자명,소재지전체주소,도로명주소,인허가일자,형태,경도,위도")
+					.parse("번호,사업자명,소재지전체주소,도로명주소,인허가일자,형태,경도,위도")
 //					.parse("시군구코드,출입구일련번호,법정동코드,시도명,시군구명,읍면동명,도로명코드,도로명,지하여부,건물본번,건물부번,건물명,우편번호,건물용도분류,건물군여부,관할행정동,xpos,ypos")
 //					.parse("시군구,번지,본번,부번,단지명,전용면적,계약년월,계약일,거래금액,층,건축년도,도로명")
 //					.parse("시군구,번지,본번,부번,단지명,전월세구분,전용면적,계약년월,계약일,보증금,월세,층,건축년도,도로명")
 //					.parse("STD_YM,BLOCK_CD,X_COORD,Y_COORD,AVG_00TMST,AVG_01TMST,AVG_02TMST,AVG_03TMST,AVG_04TMST,AVG_05TMST,AVG_06TMST,AVG_07TMST,AVG_08TMST,AVG_09TMST,AVG_10TMST,AVG_11TMST,AVG_12TMST,AVG_13TMST,AVG_14TMST,AVG_15TMST,AVG_16TMST,AVG_17TMST,AVG_18TMST,AVG_19TMST,AVG_20TMST,AVG_21TMST,AVG_22TMST,AVG_23TMST")
-					.parse("도로명코드,도로명,도로명로마자,읍면동_일련번호,시도명,시도명로마자,시군구명,시군구명로마자,읍면동명,읍면동명로마자,읍면동구분,읍면동코드,사용여부,변경사유,변경이력,고시일자,말소일자")
+//					.parse("도로명코드,도로명,도로명로마자,읍면동_일련번호,시도명,시도명로마자,시군구명,시군구명로마자,읍면동명,읍면동명로마자,읍면동구분,읍면동코드,사용여부,변경사유,변경이력,고시일자,말소일자")
 					.toArray(new String[0]);
 		
 		String colDecls = FStream.range(0, 24)
 							.map(idx -> String.format("AVG_%02dTMST:float", idx))
 							.join(",");
+		
+		RecordScript script = RecordScript.of("$money_formatter = new DecimalFormat('#,###,###')",
+												"$money_formatter.parse(거래금액).intValue();")
+											.importClass(DecimalFormat.class);
 
 
 		Plan plan;
@@ -70,17 +74,17 @@ public class PrintPlanAsJson {
 //					.expand("카메라대수:int,카메라화소수:int,보관일수:int")
 //					.project("*-{데이터기준일자}")
 //					.assignUid("id")
+//					.parseCsv(',', HEADER(header))
 //					.parseCsv(',', HEADER(header), COMMENT('#'))
 //					.parseCsv('|', HEADER(header), NULL_STRING(""))
-					.expand("읍면동구분:byte,사용여부:byte,변경사유:byte")
+					.parseCsv('|', HEADER(header), QUOTE('\\'), NULL_STRING(""))
+//					.expand("읍면동구분:byte,사용여부:byte,변경사유:byte")
 //					.toPoint("xpos", "ypos", "the_geom")
 //					.transformCrs("the_geom", "EPSG:5179", "EPSG:5186")
+//					.transformCrs("the_geom", "EPSG:5179", "aaa", "EPSG:5186")
 //					.project("the_geom,*-{the_geom,xpos,ypos,besselX,besselY,month,sid_cd}")
 //					.update("시군구 = 시군구.trim(); 번지 = 번지.trim();")
-//					.expand1("보증금", DataType.INT)
-//						.set("$money_formatter = new DecimalFormat('#,###,###')",
-//									"$money_formatter.parse(보증금).intValue();")
-//						.importClass(DecimalFormat.class)
+//					.expand1("거래금액:int",script)
 //					.expand1("월세", DataType.INT)
 //						.set("$money_formatter = new DecimalFormat('#,###,###')",
 //									"$money_formatter.parse(월세).intValue();")
