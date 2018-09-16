@@ -59,11 +59,8 @@ public class SampleAggregateByGroup {
 							.store(RESULT)
 							.build();
 
-		CreateDataSetParameters params = CreateDataSetParameters.builder()
-																.datasetId(RESULT)
-																.initializer(plan, false)
-																.force(true)
-																.build();
+		CreateDataSetParameters params = new CreateDataSetParameters(RESULT, plan, false)
+																.setForce();
 		DataSet result = marmot.createDataSet(params);
 		watch.stop();
 

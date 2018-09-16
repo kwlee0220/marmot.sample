@@ -10,6 +10,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSet;
@@ -68,7 +69,7 @@ public class FindBestRoadsForPickup {
 					.store(RESULT)
 					.build();
 
-		DataSet result = marmot.createDataSet(RESULT, info, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, info, plan, DataSetOption.FORCE);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 10);

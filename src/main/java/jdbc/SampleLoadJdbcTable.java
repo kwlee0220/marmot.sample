@@ -59,11 +59,8 @@ public class SampleLoadJdbcTable {
 							.aggregate(AggregateFunction.COUNT())
 							.store(RESULT)
 							.build();
-		CreateDataSetParameters params = CreateDataSetParameters.builder()
-																.datasetId(RESULT)
-																.initializer(plan, true)
-																.force(true)
-																.build();
+		CreateDataSetParameters params = new CreateDataSetParameters(RESULT, plan, true)
+																.setForce();
 		DataSet result = marmot.createDataSet(params);
 		watch.stop();
 		

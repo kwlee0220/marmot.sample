@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
@@ -54,7 +55,7 @@ public class BuildJinBunPOI {
 					.distinct("건물관리번호", 11) 
 					.store(tempDs)
 					.build();
-		result = marmot.createDataSet(tempDs, plan, true);
+		result = marmot.createDataSet(tempDs, plan, DataSetOption.FORCE);
 
 		try {
 			DataSet ds = marmot.getDataSet(BUILD_POI);
@@ -72,7 +73,7 @@ public class BuildJinBunPOI {
 							.distinct("건물관리번호,법정동코드,지번본번,지번부번,산여부")
 							.store(RESULT)
 							.build();
-			result = marmot.createDataSet(RESULT, ds.getGeometryColumnInfo(), plan, true);
+			result = marmot.createDataSet(RESULT, ds.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 			System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 			
 			SampleUtils.printPrefix(result, 5);

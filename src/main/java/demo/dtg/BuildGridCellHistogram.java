@@ -4,18 +4,15 @@ import static marmot.optor.AggregateFunction.COUNT;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.Size2d;
 import utils.StopWatch;
 
 /**
@@ -61,7 +58,7 @@ public class BuildGridCellHistogram {
 					.project("grid as the_geom,count")
 					.store(RESULT)
 					.build();
-		output = marmot.createDataSet(RESULT, info, plan, true);
+		output = marmot.createDataSet(RESULT, info, plan, DataSetOption.FORCE);
 		
 		watch.stop();
 		System.out.printf("count=%d, total elapsed time=%s%n",

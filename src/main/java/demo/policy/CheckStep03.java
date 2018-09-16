@@ -1,12 +1,9 @@
 package demo.policy;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -52,6 +49,6 @@ public class CheckStep03 {
 									+ "|| pnu == '2911010800101610002'")
 							.store(RESULT)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, info, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, info, plan, DataSetOption.FORCE);
 	}
 }

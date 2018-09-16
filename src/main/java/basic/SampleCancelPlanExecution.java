@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.PlanExecution;
 import marmot.RecordSchema;
@@ -48,7 +49,7 @@ public class SampleCancelPlanExecution {
 		// 2. Plan실행 결과로 생성될 레코드세트의 스키마 계산하고
 		//		해당 스키마를 갖는 데이터세트를 생성한다.
 		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		marmot.createDataSet("tmp/result", schema, true);
+		marmot.createDataSet("tmp/result", schema, DataSetOption.FORCE);
 		
 		// 3. 주어진 Plan을 실행하는 실행 객체를 생성한다.
 		//		(이때까지도 아직 Plan을 실행되지 않음)

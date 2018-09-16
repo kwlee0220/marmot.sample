@@ -8,6 +8,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -62,7 +63,7 @@ public class FindByTopKUsers {
 								.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom",
 															info.getGeometryColumnInfo().srid());
-		DataSet result = marmot.createDataSet(RESULT, gcInfo, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, gcInfo, plan, DataSetOption.FORCE);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

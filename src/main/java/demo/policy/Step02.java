@@ -49,12 +49,9 @@ public class Step02 {
 						.buffer(info.name(), 400)	// (2) 버퍼추정
 						.store(RESULT)
 						.build();
-		CreateDataSetParameters params = CreateDataSetParameters.builder()
-																.datasetId(RESULT)
-																.geometryColumnInfo(info)
-																.initializer(plan, false)
-																.force(true)
-																.build();
+		CreateDataSetParameters params = new CreateDataSetParameters(RESULT, plan)
+																.setGeometryColumnInfo(info)
+																.setForce();
 		DataSet result = marmot.createDataSet(params);
 		result.cluster();
 		

@@ -49,12 +49,9 @@ public class Step04 {
 							.centroid(info.name())		// (4) 중심점 추출
 							.store(RESULT)
 							.build();
-		CreateDataSetParameters params = CreateDataSetParameters.builder()
-																.datasetId(RESULT)
-																.geometryColumnInfo(info)
-																.initializer(plan, true)
-																.force(true)
-																.build();
+		CreateDataSetParameters params = new CreateDataSetParameters(RESULT, plan, true)
+																.setGeometryColumnInfo(info)
+																.setForce();
 		DataSet result = marmot.createDataSet(params);
 		System.out.printf("elapsed time=%s (processing)%n", watch.getElapsedMillisString());
 		

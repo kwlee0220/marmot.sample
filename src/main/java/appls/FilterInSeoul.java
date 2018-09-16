@@ -9,6 +9,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -67,7 +68,7 @@ public class FilterInSeoul {
 					.project("the_geom, 고유번호 as pnu, 용도지역지구코드 as code, 용도지역지구명 as name")
 					.store(RESULT)
 					.build();
-		result = marmot.createDataSet(RESULT, plan, true);
+		result = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);
@@ -98,6 +99,6 @@ public class FilterInSeoul {
 					.filter("pnu.startsWith('11')")
 					.store(output)
 					.build();
-		marmot.createDataSet(output, taxi.getGeometryColumnInfo(), plan, true);
+		marmot.createDataSet(output, taxi.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 	}
 }

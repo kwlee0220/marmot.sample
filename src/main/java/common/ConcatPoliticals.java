@@ -3,6 +3,7 @@ package common;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.optor.JoinOptions;
@@ -86,7 +87,7 @@ public class ConcatPoliticals {
 								+ "sgg_cd,sgg_nm,emd_cd,emd_nm,li_cd,li_nm")
 						.store(POLITICAL)
 						.build();
-		DataSet result = marmot.createDataSet(POLITICAL, ds.getGeometryColumnInfo(), plan, true);
+		DataSet result = marmot.createDataSet(POLITICAL, ds.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 //		result.cluster();

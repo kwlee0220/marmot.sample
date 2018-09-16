@@ -1,6 +1,11 @@
 package basic;
 
-import static marmot.optor.AggregateFunction.*;
+import static marmot.optor.AggregateFunction.AVG;
+import static marmot.optor.AggregateFunction.COUNT;
+import static marmot.optor.AggregateFunction.MAX;
+import static marmot.optor.AggregateFunction.MIN;
+import static marmot.optor.AggregateFunction.STDDEV;
+import static marmot.optor.AggregateFunction.SUM;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -54,11 +59,8 @@ public class SampleAggregateByGroupMR {
 							.store(RESULT)
 							.build();
 		
-		CreateDataSetParameters params = CreateDataSetParameters.builder()
-																.datasetId(RESULT)
-																.initializer(plan, true)
-																.force(true)
-																.build();
+		CreateDataSetParameters params = new CreateDataSetParameters(RESULT, plan, true)
+																.setForce();
 		DataSet result = marmot.createDataSet(params);
 		watch.stop();
 

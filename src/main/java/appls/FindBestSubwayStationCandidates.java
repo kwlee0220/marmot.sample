@@ -18,6 +18,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -137,7 +138,7 @@ public class FindBestSubwayStationCandidates {
 					.buffer(geomCol, 1000)
 					.store(output)
 					.build();
-		DataSet result = marmot.createDataSet(output, stations.getGeometryColumnInfo(), plan, true);
+		DataSet result = marmot.createDataSet(output, stations.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 		
 		System.out.printf("%s(%d건), 소요시간=%s%n",
 							output, result.getRecordCount(), watch.getElapsedMillisString());
@@ -197,7 +198,7 @@ public class FindBestSubwayStationCandidates {
 		
 		try {
 			DataSet result = marmot.createDataSet(TEMP_SEOUL_FLOW_POP_GRID,
-										new GeometryColumnInfo(GEOM_COL, srid), plan, true);
+										new GeometryColumnInfo(GEOM_COL, srid), plan, DataSetOption.FORCE);
 			System.out.printf("%s(%d건), 소요시간=%s%n",
 								TEMP_SEOUL_FLOW_POP_GRID, result.getRecordCount(),
 								watch.getElapsedMillisString());
@@ -264,7 +265,7 @@ public class FindBestSubwayStationCandidates {
 					.build();
 		try {
 			DataSet result = marmot.createDataSet(TEMP_SEOUL_TAXI_LOG_GRID,
-											new GeometryColumnInfo(GEOM_COL, srid), plan, true);
+											new GeometryColumnInfo(GEOM_COL, srid), plan, DataSetOption.FORCE);
 			System.out.printf("%s(%d건), 소요시간=%s%n", TEMP_SEOUL_TAXI_LOG_GRID,
 								result.getRecordCount(), watch.getElapsedMillisString());
 
@@ -316,7 +317,7 @@ public class FindBestSubwayStationCandidates {
 					.project("the_geom,cell_id,normalized as value")
 					.store(output)
 					.build();
-		DataSet result = marmot.createDataSet(output, GEOM_COL_INFO, plan, true);
+		DataSet result = marmot.createDataSet(output, GEOM_COL_INFO, plan, DataSetOption.FORCE);
 		System.out.printf("%s(%d건), 소요시간=%s%n",
 							output, result.getRecordCount(), watch.getElapsedMillisString());
 		
@@ -331,7 +332,7 @@ public class FindBestSubwayStationCandidates {
 		record.set(0, geom);
 		RecordSet rset = RecordSets.of(record);
 		
-		marmot.createDataSet("분석결과/서울지역", new GeometryColumnInfo("the_geom", "EPSG:5186"),
-							rset, true);
+		marmot.uploadDataSet("분석결과/서울지역", new GeometryColumnInfo("the_geom", "EPSG:5186"),
+							rset, DataSetOption.FORCE);
 	}
 }

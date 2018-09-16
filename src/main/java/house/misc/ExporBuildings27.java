@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -48,7 +49,7 @@ public class ExporBuildings27 {
 					.store(RESULT)
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		DataSet result = marmot.createDataSet(RESULT, gcInfo, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, gcInfo, plan, DataSetOption.FORCE);
 
 		Charset charset = Charset.forName("UTF-8");
 		marmot.writeToShapefile(result, SHP_FILE, charset).get();

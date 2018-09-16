@@ -9,6 +9,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -66,7 +67,7 @@ public class CalcHeatMap {
 							.store(RESULT)
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, new GeometryColumnInfo("the_geom", srid),
-												plan, true);
+												plan, DataSetOption.FORCE);
 		
 		SampleUtils.printPrefix(result, 5);
 	}

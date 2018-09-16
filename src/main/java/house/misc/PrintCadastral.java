@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.Record;
@@ -66,7 +67,7 @@ public class PrintCadastral {
 									.collect(Collectors.toList());
 		RecordSet rset = RecordSets.from(idList);
 
-		marmot.createDataSet("tmp/diff3", rset, true);
+		marmot.uploadDataSet("tmp/diff3", rset, DataSetOption.FORCE);
 		
 		Plan plan;
 		plan = marmot.planBuilder("test")

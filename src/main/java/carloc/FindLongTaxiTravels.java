@@ -4,6 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -51,7 +52,7 @@ public class FindLongTaxiTravels {
 								.store(RESULT)
 								.build();
 		DataSet result = marmot.createDataSet(RESULT, new GeometryColumnInfo("the_geom", SRID),
-												plan, true);
+												plan, DataSetOption.FORCE);
 		
 		SampleUtils.printPrefix(result, 5);
 	}

@@ -3,6 +3,7 @@ package demo.policy;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -44,6 +45,6 @@ public class FilterStep03Output {
 						.filter("pnu.startsWith('30')")
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, info, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, info, plan, DataSetOption.FORCE);
 	}
 }

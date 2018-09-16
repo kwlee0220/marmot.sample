@@ -49,12 +49,9 @@ public class SampleSort {
 							.project("the_geom,관리기관명,보관일수,카메라대수")
 							.store(RESULT)
 							.build();
-		CreateDataSetParameters params = CreateDataSetParameters.builder()
-												.datasetId(RESULT)
-												.initializer(plan, true)
-												.geometryColumnInfo(input.getGeometryColumnInfo())
-												.force(true)
-												.build();
+		CreateDataSetParameters params = new CreateDataSetParameters(RESULT, plan, true)
+												.setGeometryColumnInfo(input.getGeometryColumnInfo())
+												.setForce();
 		DataSet result = marmot.createDataSet(params);
 		watch.stop();
 

@@ -49,12 +49,9 @@ public class Step05 {
 							.filter("value >= 10000")							// (5) 영역분석
 							.store(RESULT)
 							.build();
-		CreateDataSetParameters params = CreateDataSetParameters.builder()
-																.datasetId(RESULT)
-																.geometryColumnInfo(info)
-																.initializer(plan, false)
-																.force(true)
-																.build();
+		CreateDataSetParameters params = new CreateDataSetParameters(RESULT, plan)
+																.setGeometryColumnInfo(info)
+																.setForce();
 		DataSet result = marmot.createDataSet(params);
 		result.cluster();
 		
