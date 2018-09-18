@@ -2,7 +2,8 @@ package anyang.energe;
 
 import static marmot.optor.JoinOptions.LEFT_OUTER_JOIN;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -25,14 +26,13 @@ import utils.stream.FStream;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class A03_MatchGasUsages {
-	private static final String CADASTRAL = Globals.CADASTRAL;
-	private static final String INPUT = "tmp/anyang/gas_by_year";
-	private static final String INTERM = "tmp/anyang/gas_side_by_side";
-	private static final String OUTPUT = "tmp/anyang/map_gas";
-	private static final String PATTERN = "if (gas_%d == null) {gas_%d = 0}";
-	private static final int[] YEARS = {2011, 2012, 2013, 2014, 2015, 2016, 2017};
-	private static final List<String> COL_NAMES = FStream.of(YEARS).map(i -> "gas_" + i).toList();
+public class A05_MapMatchingLand {
+	private static final String INPUT = Globals.LAND_PRICES;
+	private static final String BASE = Globals.LAND_PRICES_2017;
+	private static final String INTERM = "tmp/anyang/land_side_by_side";
+	private static final String OUTPUT = "tmp/anyang/map_land";
+	private static final String PATTERN = "if (land_%d == null) {land_%d = 0}";
+	private static final String PATTERN2 = "land_%d *= area;";
 	private static final Option<Long> BLOCK_SIZE = Option.some(UnitUtils.parseByteSize("128mb"));
 	
 	public static final void main(String... args) throws Exception {
@@ -56,19 +56,37 @@ public class A03_MatchGasUsages {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		putSideBySide(marmot);
+
+		int[] years = { 2012, 2013, 2014, 2015, 2016 };
 		
-		String rightCols = FStream.of(COL_NAMES).join(",", "right.{", "}");
-		String updateExpr = FStream.of(YEARS)
+		DataSet base = marmot.getDataSet(BASE);
+		GeometryColumnInfo info = base.getGeometryColumnInfo();
+		
+		String rightCols = Arrays.stream(years)
+								.mapToObj(i -> "land_" + i)
+								.collect(Collectors.joining(",", "right.{", "}"));
+		String outCols = "left.{the_geom, pnu}," + rightCols
+						+ ",left.{개별공시지가 as land_2017}";
+		String updateExpr = FStream.of(years)
 									.map(year -> String.format(PATTERN, year, year))
 									.join(" ");
 		
-		DataSet ds = marmot.getDataSet(CADASTRAL);
-		GeometryColumnInfo info = ds.getGeometryColumnInfo();
-		
-		Plan plan = marmot.planBuilder("연속지적도 매칭")
-						.loadEquiJoin(CADASTRAL, "pnu", INTERM, "pnu",
-										"left.*," + rightCols, LEFT_OUTER_JOIN(17))
+		int[] fullYears = { 2012, 2013, 2014, 2015, 2016, 2017 };
+		String updatePriceExpr = FStream.of(fullYears)
+										.map(year -> String.format(PATTERN2, year))
+										.join(" ");
+
+		Plan plan;
+		plan = marmot.planBuilder("개별공시지가 매핑")
+						.loadEquiJoin(BASE, "pnu", INTERM, "pnu", outCols,
+										LEFT_OUTER_JOIN(25))
 						.update(updateExpr)
+
+						// 공시지가는 평망미터당 지가이므로, 평당액수에 면적을 곱한다.
+						.expand1("area:double", "ST_Area(the_geom)")
+						.update(updatePriceExpr)
+						.project("*-{area}")
+						
 						.store(OUTPUT)
 						.build();
 		DataSet result = marmot.createDataSet(OUTPUT, info, plan, true);
@@ -81,14 +99,15 @@ public class A03_MatchGasUsages {
 	}
 	
 	private static void putSideBySide(PBMarmotClient marmot) {
-		RecordSchema outSchema = FStream.of(COL_NAMES)
+		RecordSchema outSchema = FStream.of(2012, 2013, 2014, 2015, 2016, 2017)
 										.foldLeft(RecordSchema.builder(),
-												(b,cn) -> b.addColumn(cn, DataType.LONG))
+												(b,y) -> b.addColumn("land_"+y, DataType.LONG))
 										.build();
 		
-		Plan plan = marmot.planBuilder("put_side_by_size_gas")
+		Plan plan = marmot.planBuilder("put_side_by_size_land")
 						.load(INPUT)
-						.expand("tag:string", "tag = 'gas_' + year")
+						.project("pnu, 기준년도 as year, 개별공시지가 as usage")
+						.expand("tag:string", "tag = 'land_' + year")
 						.groupBy("pnu")
 							.putSideBySide(outSchema, "usage", "tag")
 						.store(INTERM)

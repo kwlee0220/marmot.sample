@@ -3,20 +3,12 @@
 run_sample anyang.energe.A00_ExtractCadastral
 run_sample anyang.energe.A01_SumMonthGasUsages
 run_sample anyang.energe.A02_SumMonthElectroUsages
-run_sample anyang.energe.A03_MatchGasUsages
-run_sample anyang.energe.A04_MatchElectroUsages
-run_sample anyang.energe.A05_MatchLandPrices
+run_sample anyang.energe.A03_MapMatchingGas
+run_sample anyang.energe.A04_MapMatchingElectro
+run_sample anyang.energe.A05_MapMatchingLand
 run_sample anyang.energe.A06_GridAnalysisGas
 run_sample anyang.energe.A07_GridAnalysisElectro
-run_sample anyang.energe.A08_LandGridAnalysis
-run_sample anyang.energe.A09_SplitMatchedLandPrices
-
-run_sample anyang.energe.B01_SumMonthGas2017
-run_sample anyang.energe.B02_SumMonthElectro2017
-run_sample anyang.energe.B03_MatchGas2017
-run_sample anyang.energe.B04_MatchElectro2017
-run_sample anyang.energe.B06_GridAnalysisGas2017
-run_sample anyang.energe.B07_GridAnalysisElectro2017
-run_sample anyang.energe.B07_GridAnalysisElectro2017
-run_sample anyang.energe.B08_SplitMatchedGas2017
-run_sample anyang.energe.B09_SplitMatchedElectro2017
+run_sample anyang.energe.A08_GridAnalysisLand
+run_sample anyang.energe.A09_SplitGasMap
+run_sample anyang.energe.A10_SplitElectroMap
+run_sample anyang.energe.A11_SplitMap

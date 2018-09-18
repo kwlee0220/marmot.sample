@@ -14,9 +14,9 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class A09_SplitMatchedLandPrices {
-	private static final String INPUT = "tmp/anyang/land/map_land";
-	private static final String OUTPUT = "tmp/anyang/land/map_land_splits";
+public class A09_SplitGasMap {
+	private static final String INPUT = "tmp/anyang/map_gas";
+	private static final String OUTPUT = "tmp/anyang/map_gas_splits";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -40,7 +40,7 @@ public class A09_SplitMatchedLandPrices {
 		
 		GeometryColumnInfo info = marmot.getDataSet(INPUT).getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder("2012-2017년도 개별공시지가 연속지적도 매칭 분할")
+		Plan plan = marmot.planBuilder("2017 가스사용량 연속지적도 매칭 분할")
 						.load(INPUT)
 						.expand1("sido:string", "pnu.substring(0, 2)")
 						.groupBy("sido")

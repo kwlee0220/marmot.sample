@@ -25,7 +25,7 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class A08_LandGridAnalysis {
+public class A08_GridAnalysisLand {
 	private static final String INPUT = "tmp/anyang/map_land";
 	private static final String OUTPUT = "tmp/anyang/grid_land";
 	

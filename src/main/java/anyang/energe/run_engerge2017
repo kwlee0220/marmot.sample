@@ -1,0 +1,14 @@
+#!	/bin/bash
+
+run_sample anyang.energe.A00_ExtractCadastral
+run_sample anyang.energe.B01_SumMonthGasUsages2017
+run_sample anyang.energe.B02_SumMonthElectroUsages2017
+run_sample anyang.energe.B03_MapMatchingGas2017
+run_sample anyang.energe.B04_MapMatchingElectro2017
+run_sample anyang.energe.A05_MapMatchingLand
+run_sample anyang.energe.B06_GridAnalysisGas2017
+run_sample anyang.energe.B07_GridAnalysisElectro2017
+run_sample anyang.energe.A08_GridAnalysisLand
+run_sample anyang.energe.B09_SplitGasMap2017
+run_sample anyang.energe.B10_SplitElectroMap2017
+run_sample anyang.energe.A11_SplitMap
