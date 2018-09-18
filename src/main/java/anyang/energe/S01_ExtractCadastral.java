@@ -1,5 +1,8 @@
 package anyang.energe;
 
+import static marmot.DataSetOption.BLOCK_SIZE;
+import static marmot.DataSetOption.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -7,7 +10,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.plan.StoreOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -51,9 +53,9 @@ public class S01_ExtractCadastral {
 					.load(INPUT)
 					.project("the_geom, 고유번호 as pnu")
 					.shard(1)
-					.store(OUTPUT, StoreOption.BLOCK_SIZE(blockSize))
+					.store(OUTPUT, BLOCK_SIZE(blockSize))
 					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, info, plan, true);
+		DataSet result = marmot.createDataSet(OUTPUT, info, plan, FORCE);
 		
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		

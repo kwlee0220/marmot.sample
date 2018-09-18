@@ -46,12 +46,12 @@ public class T02_SumMonthGas2017 {
 					.load(INPUT)
 					.expand1("year:short", "사용년월.substring(0, 4)")
 					.filter("year == 2017")
-					.expand("month:short", "month = 사용년월.substring(4, 6)")
+					.expand1("month:short", "사용년월.substring(4, 6)")
 					.update("사용량 = Math.max(사용량, 0)")
-					.groupBy("고유번호,month")
+					.groupBy("pnu,month")
 						.workerCount(1)
 						.aggregate(SUM("사용량").as("usage"))
-					.project("고유번호 as pnu, month,  usage")
+					.project("pnu, month,  usage")
 					.store(OUTPUT)
 					.build();
 		DataSet result = marmot.createDataSet(OUTPUT, plan, true);
