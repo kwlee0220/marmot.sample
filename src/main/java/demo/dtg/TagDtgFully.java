@@ -88,7 +88,7 @@ public class TagDtgFully {
 					.toPoint("x좌표", "y좌표", "the_geom")
 					.update(RecordScript.of("if ( !bounds.contains(the_geom) ) { the_geom = null; }")
 								.addArgumentAll(arguments))
-					.transformCrs("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
+					.transformCrs("the_geom", "EPSG:4326", "EPSG:5186", "the_geom")
 					.knnOuterJoin("the_geom", ROAD, 1, DIST, "*-{x좌표,y좌표},param.{link_id}")
 					
 					.assignSquareGridCell("the_geom", bounds, CELL_SIZE, false)

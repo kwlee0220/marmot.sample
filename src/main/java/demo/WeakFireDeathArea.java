@@ -1,5 +1,7 @@
 package demo;
 
+import static marmot.DataSetOption.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -42,6 +44,8 @@ public class WeakFireDeathArea {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
+		Plan plan;
+		DataSet result;
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", SRID);
 		
 		// 서울시 종합병원 위치에서 3km 버퍼 연산을 취해 clustered layer를 생성한다.
@@ -61,17 +65,24 @@ public class WeakFireDeathArea {
 								.build();
 		marmot.createDataSet("tmp/종합병원_위치_추천/병원_원거리_영역", gcInfo, plan1, true);
 		System.out.println("완료: 종합병원 3km 밖의 서울시 영역 계산");
+		
+		// 화재패해 영역에서 서울 지역 부분만 선택한다.
+		plan = marmot.planBuilder("seoul_fire_death")
+					.load(LAYER_FIRE)
+					.filter("sd_nm == '서울특별시'")
+					.store("tmp/종합병원_위치_추천/서울_화재")
+					.build();
+		result = marmot.createDataSet("tmp/종합병원_위치_추천/서울_화재", gcInfo, plan, FORCE);
 
 		// 화재피해 영역 중에서 서울 읍면동과 겹치는 부분을 clip 하고, 각 피해 영역의 중심점을 구한다.
 		Plan plan2 = marmot.planBuilder("clip_bad_area")
-								.load(LAYER_FIRE)
-								.filter("sd_nm == '서울특별시'")
-								.clipJoin("the_geom", LAYER_SEOUL)
+								.load(LAYER_SEOUL)
+								.clipJoin("the_geom", "tmp/종합병원_위치_추천/서울_화재")
 								.centroid("the_geom")
 								.clipJoin("the_geom", "tmp/종합병원_위치_추천/병원_원거리_영역")
 								.store("tmp/종합병원_위치_추천/분석결과")
 								.build();
-		DataSet result = marmot.createDataSet("tmp/종합병원_위치_추천/분석결과", gcInfo, plan2, true);
+		result = marmot.createDataSet("tmp/종합병원_위치_추천/분석결과", gcInfo, plan2, true);
 		System.out.println("완료: 종합병원 3km 밖의 서울시 영역과 화재피해 영역과 교차부분 검색");
 		
 		marmot.deleteDataSet("tmp/종합병원_위치_추천/병원_3km버퍼");

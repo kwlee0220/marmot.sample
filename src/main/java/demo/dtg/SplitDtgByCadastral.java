@@ -79,7 +79,7 @@ public class SplitDtgByCadastral {
 		Plan plan;
 		plan = marmot.planBuilder("to_wgs84_political")
 					.load(POLITICAL)
-					.transformCrs("the_geom", "EPSG:5186", "the_geom", "EPSG:4326")
+					.transformCrs("the_geom", "EPSG:5186", "EPSG:4326", "the_geom")
 					.store(outDsId)
 					.build();
 		DataSet output = marmot.createDataSet(outDsId, info, plan, true);

@@ -79,7 +79,7 @@ public class TagDtgWithGrid {
 					.project("the_geom,운송사코드")
 					.join("운송사코드", TEMP_CARGOS, "회사코드", "the_geom", SEMI_JOIN(nworkers))
 					
-					.transformCrs("the_geom", "EPSG:4326", "the_geom", "EPSG:5186")
+					.transformCrs("the_geom", "EPSG:4326", "EPSG:5186", "the_geom")
 					.assignSquareGridCell("the_geom", bounds, CELL_SIZE)
 					.centroid("cell_geom")
 					.intersects("the_geom", kyounggiGeom)

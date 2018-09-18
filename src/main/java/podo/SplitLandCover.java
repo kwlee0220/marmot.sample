@@ -7,6 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
+import marmot.plan.LoadOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -55,7 +56,7 @@ public class SplitLandCover {
 		String geomCol = ds.getGeometryColumn();
 		
 		Plan plan = marmot.planBuilder(inputDsId + "_분할")
-							.load(inputDsId).splitCountPerBlock(16)
+							.load(inputDsId, LoadOption.SPLIT_COUNT(16))
 							.assignUid("uid")
 							.splitGeometry(geomCol)
 							.drop(0)

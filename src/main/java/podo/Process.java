@@ -14,6 +14,7 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.externio.geojson.GeoJsonRecordSetWriter;
+import marmot.plan.LoadOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -120,7 +121,7 @@ public class Process {
 		String geomCol = ds.getGeometryColumn();
 		
 		Plan plan = marmot.planBuilder(inputDsId + "_분할")
-							.load(inputDsId).splitCountPerBlock(16)
+							.load(inputDsId, LoadOption.SPLIT_COUNT(16))
 							.project("the_geom, 분류구분 as cover")
 							.assignUid("uid")
 							.splitGeometry(geomCol)

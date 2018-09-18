@@ -10,6 +10,7 @@ import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
+import marmot.plan.LoadOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -48,7 +49,7 @@ public class CountCadastral2 {
 		GeometryColumnInfo info = ds.getGeometryColumnInfo();
 
 		Plan plan = marmot.planBuilder("행정도별 필지수 계산")
-						.load(INPUT).splitCountPerBlock(131)
+						.load(INPUT, LoadOption.SPLIT_COUNT(131))
 //						.load(INPUT)
 //						.filter("hcode.startsWith('5011025')")
 						.spatialAggregateJoin("the_geom", PARAM, COUNT())

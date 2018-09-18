@@ -7,6 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
+import marmot.plan.LoadOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -45,7 +46,7 @@ public class DiffLandCoversNL {
 		String geomCol = cover1987.getGeometryColumn();
 
 		Plan plan = marmot.planBuilder("토지피복_변화량")
-						.load(LAND_COVER_2007).splitCountPerBlock(2)
+						.load(LAND_COVER_2007, LoadOption.SPLIT_COUNT(2))
 						.update("분류구 = (분류구.length() > 0) ? 분류구 : 재분류")
 						.intersectionJoin(geomCol, LAND_COVER_1987,
 											"the_geom,param.분류구 as t1987,분류구 as t2007")

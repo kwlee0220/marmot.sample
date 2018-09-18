@@ -6,6 +6,7 @@ import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
+import marmot.plan.LoadOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -53,7 +54,7 @@ public class S03_FindRegistreredBuildingsFixed {
 		String geomCol = input.getGeometryColumn();
 
 		Plan plan = marmot.planBuilder("총괄표제부 보유 건물 추출")
-						.load(registry).splitCountPerBlock(8)
+						.load(registry, LoadOption.SPLIT_COUNT(8))
 						.knnJoin(geomCol, buildings, 10, 1, "param.*")
 						.store(result)
 						.build();
