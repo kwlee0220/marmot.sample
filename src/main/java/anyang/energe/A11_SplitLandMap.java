@@ -15,8 +15,8 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class A11_SplitLandMap {
-	private static final String INPUT = "tmp/anyang/land/map_land";
-	private static final String OUTPUT = "tmp/anyang/land/map_land_splits";
+	private static final String INPUT = "tmp/anyang/map_land";
+	private static final String OUTPUT = "tmp/anyang/map_land_splits";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
