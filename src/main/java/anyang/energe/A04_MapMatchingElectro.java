@@ -75,6 +75,7 @@ public class A04_MapMatchingElectro {
 						.build();
 		DataSet result = marmot.createDataSet(OUTPUT, info, plan, true);
 		marmot.deleteDataSet(INTERM);
+		marmot.deleteDataSet(INPUT);
 
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		SampleUtils.printPrefix(result, 10);
