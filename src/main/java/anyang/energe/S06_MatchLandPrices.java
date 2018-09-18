@@ -65,7 +65,7 @@ public class S06_MatchLandPrices {
 		String rightCols = Arrays.stream(years)
 								.mapToObj(i -> "land_" + i)
 								.collect(Collectors.joining(",", "right.{", "}"));
-		String outCols = "left.{the_geom, 고유번호 as pnu}," + rightCols
+		String outCols = "left.{the_geom, pnu}," + rightCols
 						+ ",left.{개별공시지가 as land_2017}";
 		String updateExpr = FStream.of(years)
 									.map(year -> String.format(PATTERN, year, year))
@@ -78,7 +78,7 @@ public class S06_MatchLandPrices {
 
 		Plan plan;
 		plan = marmot.planBuilder("개별공시지가 매핑")
-						.loadEquiJoin(BASE, "고유번호", INTERM, "pnu", outCols,
+						.loadEquiJoin(BASE, "pnu", INTERM, "pnu", outCols,
 										LEFT_OUTER_JOIN(25))
 						.update(updateExpr)
 
@@ -106,7 +106,7 @@ public class S06_MatchLandPrices {
 		
 		Plan plan = marmot.planBuilder("put_side_by_size_land")
 						.load(INPUT)
-						.project("고유번호 as pnu, 기준년도 as year, 개별공시지가 as usage")
+						.project("pnu, 기준년도 as year, 개별공시지가 as usage")
 						.expand("tag:string", "tag = 'land_' + year")
 						.groupBy("pnu")
 							.putSideBySide(outSchema, "usage", "tag")

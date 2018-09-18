@@ -48,7 +48,7 @@ public class T03_SumMonthElectro2017 {
 					.filter("year == 2017")
 					.expand1("month:short", "사용년월.substring(4, 6)")
 					.update("사용량 = Math.max(사용량, 0)")
-					.groupBy("고유번호,month")
+					.groupBy("pnu,month")
 						.workerCount(1)
 						.aggregate(SUM("사용량").as("usage"))
 					.project("pnu, month,  usage")
