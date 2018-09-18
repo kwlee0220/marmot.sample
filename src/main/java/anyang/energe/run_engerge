@@ -11,4 +11,4 @@ run_sample anyang.energe.A07_GridAnalysisElectro
 run_sample anyang.energe.A08_GridAnalysisLand
 run_sample anyang.energe.A09_SplitGasMap
 run_sample anyang.energe.A10_SplitElectroMap
-run_sample anyang.energe.A11_SplitMap
+run_sample anyang.energe.A11_SplitLandMap

@@ -27,7 +27,7 @@ import utils.StopWatch;
  */
 public class A08_GridAnalysisLand {
 	private static final String INPUT = "tmp/anyang/map_land";
-	private static final String OUTPUT = "tmp/anyang/grid_land";
+	private static final String OUTPUT = "tmp/anyang/land/grid_land";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
