@@ -25,9 +25,9 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S07_GasGridAnalysis {
-	private static final String INPUT = "tmp/anyang/gas/map_gas";
-	private static final String OUTPUT = "tmp/anyang/gas/grid_gas";
+public class A08_LandGridAnalysis {
+	private static final String INPUT = "tmp/anyang/map_land";
+	private static final String OUTPUT = "tmp/anyang/grid_land";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -53,17 +53,17 @@ public class S07_GasGridAnalysis {
 		Envelope bounds = cadastral.getBounds();
 		Size2d cellSize = new Size2d(1000, 1000);
 		
-		int[] years = {2011, 2012, 2013, 2014, 2015, 2016, 2017};
+		int[] years = {2012, 2013, 2014, 2015, 2016, 2017};
 		
 		String updateExpr = Arrays.stream(years)
-									.mapToObj(year -> String.format("gas_%d *= ratio", year))
+									.mapToObj(year -> String.format("land_%d *= ratio", year))
 									.collect(Collectors.joining("; "));
 		List<AggregateFunction> aggrs = Arrays.stream(years)
-											.mapToObj(year -> SUM("gas_"+year).as("value_" + year))
+											.mapToObj(year -> SUM("land_"+year).as("value_" + year))
 											.collect(Collectors.toList());
 		
 		Plan plan;
-		plan = marmot.planBuilder("가스 사용량 격자 분석")
+		plan = marmot.planBuilder("개별공시지가 사용량 격자 분석")
 					.load(INPUT)
 					.assignSquareGridCell("the_geom", bounds, cellSize)
 					.intersection("the_geom", "cell_geom", "overlap")
@@ -71,14 +71,13 @@ public class S07_GasGridAnalysis {
 					.update(updateExpr)
 					.groupBy("cell_id")
 						.tagWith("cell_geom,cell_pos")
-						.workerCount(17)
 						.aggregate(aggrs)
 					.expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
 					.project("cell_geom as the_geom, x, y, *-{cell_geom,x,y}")
 					.store(OUTPUT)
 					.build();
 		GeometryColumnInfo info = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		marmot.createDataSet(OUTPUT, info, plan, true);
+		DataSet result = marmot.createDataSet(OUTPUT, info, plan, true);
 		
 		for ( int year: years ) {
 			extractToYear(marmot, year);
@@ -102,7 +101,7 @@ public class S07_GasGridAnalysis {
 					.project(projectExpr)
 					.store(output)
 					.build();
-		marmot.createDataSet(output, info, plan, true);
+		DataSet result = marmot.createDataSet(output, info, plan, true);
 	}
 	
 //	private static void writeAsRaster(DataSet ds, File file, Envelope bounds, Size2d cellSize)

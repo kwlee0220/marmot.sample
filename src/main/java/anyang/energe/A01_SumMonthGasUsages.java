@@ -17,9 +17,9 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S02_SumMonthGasUsages {
+public class A01_SumMonthGasUsages {
 	private static final String INPUT = Globals.GAS;
-	private static final String OUTPUT = "tmp/anyang/gas/by_year";
+	private static final String OUTPUT = "tmp/anyang/gas_by_year";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -46,9 +46,9 @@ public class S02_SumMonthGasUsages {
 					.load(INPUT)
 					.expand1("year:short", "사용년월.substring(0, 4)")
 					.update("사용량 = Math.max(사용량, 0)")
-					.groupBy("고유번호,year")
+					.groupBy("pnu,year")
 						.aggregate(SUM("사용량").as("usage"))
-					.project("고유번호 as pnu, year,  usage")
+					.project("pnu, year,  usage")
 					.store(OUTPUT)
 					.build();
 		DataSet result = marmot.createDataSet(OUTPUT, plan, true);

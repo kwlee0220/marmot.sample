@@ -2,7 +2,8 @@ package anyang.energe;
 
 import static marmot.optor.JoinOptions.LEFT_OUTER_JOIN;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -25,14 +26,12 @@ import utils.stream.FStream;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S04_MatchGasUsages {
+public class A04_MatchElectroUsages {
 	private static final String CADASTRAL = Globals.CADASTRAL;
-	private static final String INPUT = "tmp/anyang/gas/by_year";
-	private static final String INTERM = "tmp/anyang/gas/side_by_side";
-	private static final String OUTPUT = "tmp/anyang/gas/map_gas";
-	private static final String PATTERN = "if (gas_%d == null) {gas_%d = 0}";
-	private static final int[] YEARS = {2011, 2012, 2013, 2014, 2015, 2016, 2017};
-	private static final List<String> COL_NAMES = FStream.of(YEARS).map(i -> "gas_" + i).toList();
+	private static final String INPUT = "tmp/anyang/electro_by_year";
+	private static final String INTERM = "tmp/anyang/electro_side_by_side";
+	private static final String OUTPUT = "tmp/anyang/map_electro";
+	private static final String PATTERN = "if (electro_%d == null) {electro_%d = 0}";
 	private static final Option<Long> BLOCK_SIZE = Option.some(UnitUtils.parseByteSize("128mb"));
 	
 	public static final void main(String... args) throws Exception {
@@ -56,9 +55,12 @@ public class S04_MatchGasUsages {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		putSideBySide(marmot);
-		
-		String rightCols = FStream.of(COL_NAMES).join(",", "right.{", "}");
-		String updateExpr = FStream.of(YEARS)
+
+		int[] years = { 2011, 2012, 2013, 2014, 2015, 2016, 2017 };
+		String rightCols = Arrays.stream(years)
+								.mapToObj(i -> "electro_" + i)
+								.collect(Collectors.joining(",", "right.{", "}"));
+		String updateExpr = FStream.of(years)
 									.map(year -> String.format(PATTERN, year, year))
 									.join(" ");
 		
@@ -81,14 +83,14 @@ public class S04_MatchGasUsages {
 	}
 	
 	private static void putSideBySide(PBMarmotClient marmot) {
-		RecordSchema outSchema = FStream.of(COL_NAMES)
+		RecordSchema outSchema = FStream.of(2011, 2012, 2013, 2014, 2015, 2016, 2017)
 										.foldLeft(RecordSchema.builder(),
-												(b,cn) -> b.addColumn(cn, DataType.LONG))
+												(b,y) -> b.addColumn("electro_"+y, DataType.LONG))
 										.build();
 		
-		Plan plan = marmot.planBuilder("put_side_by_size_gas")
+		Plan plan = marmot.planBuilder("put_side_by_size_electro")
 						.load(INPUT)
-						.expand("tag:string", "tag = 'gas_' + year")
+						.expand("tag:string", "tag = 'electro_' + year")
 						.groupBy("pnu")
 							.putSideBySide(outSchema, "usage", "tag")
 						.store(INTERM)

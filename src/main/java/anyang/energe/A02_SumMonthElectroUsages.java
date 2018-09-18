@@ -17,14 +17,14 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class T02_SumMonthGas2017 {
-	private static final String INPUT = Globals.GAS;
-	private static final String OUTPUT = "tmp/anyang/gas2017";
+public class A02_SumMonthElectroUsages {
+	private static final String INPUT = Globals.ELECTRO;
+	private static final String OUTPUT = "tmp/anyang/electro_by_year";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		CommandLineParser parser = new CommandLineParser("sum_gas_usages ");
+		CommandLineParser parser = new CommandLineParser("sum_electro_usages ");
 		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
 		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
 		
@@ -42,16 +42,13 @@ public class T02_SumMonthGas2017 {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		Plan plan;
-		plan = marmot.planBuilder("2017년 월별 가스 사용량 합계")
+		plan = marmot.planBuilder("연별 전기 사용량 합계")
 					.load(INPUT)
 					.expand1("year:short", "사용년월.substring(0, 4)")
-					.filter("year == 2017")
-					.expand1("month:short", "사용년월.substring(4, 6)")
 					.update("사용량 = Math.max(사용량, 0)")
-					.groupBy("pnu,month")
-						.workerCount(1)
+					.groupBy("pnu,year")
 						.aggregate(SUM("사용량").as("usage"))
-					.project("pnu, month,  usage")
+					.project("pnu, year, usage")
 					.store(OUTPUT)
 					.build();
 		DataSet result = marmot.createDataSet(OUTPUT, plan, true);

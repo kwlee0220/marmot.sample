@@ -26,11 +26,11 @@ import utils.stream.FStream;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S06_MatchLandPrices {
+public class A05_MatchLandPrices {
 	private static final String INPUT = Globals.LAND_PRICES;
 	private static final String BASE = Globals.LAND_PRICES_2017;
-	private static final String INTERM = "tmp/anyang/land/side_by_side";
-	private static final String OUTPUT = "tmp/anyang/land/map_land";
+	private static final String INTERM = "tmp/anyang/land_side_by_side";
+	private static final String OUTPUT = "tmp/anyang/map_land";
 	private static final String PATTERN = "if (land_%d == null) {land_%d = 0}";
 	private static final String PATTERN2 = "land_%d *= area;";
 	private static final Option<Long> BLOCK_SIZE = Option.some(UnitUtils.parseByteSize("128mb"));

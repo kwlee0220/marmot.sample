@@ -25,9 +25,9 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S09_LandGridAnalysis {
-	private static final String INPUT = "tmp/anyang/land/map_land";
-	private static final String OUTPUT = "tmp/anyang/land/grid_land";
+public class A07_GridAnalysisElectro {
+	private static final String INPUT = "tmp/anyang/map_electro";
+	private static final String OUTPUT = "tmp/anyang/grid/grid_electro";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -53,17 +53,17 @@ public class S09_LandGridAnalysis {
 		Envelope bounds = cadastral.getBounds();
 		Size2d cellSize = new Size2d(1000, 1000);
 		
-		int[] years = {2012, 2013, 2014, 2015, 2016, 2017};
+		int[] years = {2011, 2012, 2013, 2014, 2015, 2016, 2017};
 		
 		String updateExpr = Arrays.stream(years)
-									.mapToObj(year -> String.format("land_%d *= ratio", year))
+									.mapToObj(year -> String.format("electro_%d *= ratio", year))
 									.collect(Collectors.joining("; "));
 		List<AggregateFunction> aggrs = Arrays.stream(years)
-											.mapToObj(year -> SUM("land_"+year).as("value_" + year))
+											.mapToObj(year -> SUM("electro_"+year).as("value_" + year))
 											.collect(Collectors.toList());
 		
 		Plan plan;
-		plan = marmot.planBuilder("개별공시지가 사용량 격자 분석")
+		plan = marmot.planBuilder("전기 사용량 격자 분석")
 					.load(INPUT)
 					.assignSquareGridCell("the_geom", bounds, cellSize)
 					.intersection("the_geom", "cell_geom", "overlap")

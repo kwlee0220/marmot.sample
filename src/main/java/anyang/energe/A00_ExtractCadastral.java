@@ -20,7 +20,7 @@ import utils.UnitUtils;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class T01_ExtractCadastral {
+public class A00_ExtractCadastral {
 	private static final String INPUT = Globals.LAND_PRICES_2017;
 	private static final String OUTPUT = Globals.CADASTRAL;
 	

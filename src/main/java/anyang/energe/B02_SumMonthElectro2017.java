@@ -1,8 +1,11 @@
 package anyang.energe;
 
+import static marmot.optor.AggregateFunction.SUM;
+
 import org.apache.log4j.PropertyConfigurator;
 
-import marmot.GeometryColumnInfo;
+import common.SampleUtils;
+import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -14,14 +17,14 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class T09_SplitMatchedGas2017 {
-	private static final String INPUT = "tmp/anyang/map_gas2017";
-	private static final String OUTPUT = "tmp/anyang/map_gas2017_splits";
+public class B02_SumMonthElectro2017 {
+	private static final String INPUT = Globals.ELECTRO;
+	private static final String OUTPUT = "tmp/anyang/electro2017";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
+		CommandLineParser parser = new CommandLineParser("sum_gas_usages ");
 		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
 		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
 		
@@ -37,21 +40,24 @@ public class T09_SplitMatchedGas2017 {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-		
-		GeometryColumnInfo info = marmot.getDataSet(INPUT).getGeometryColumnInfo();
-		
-		Plan plan = marmot.planBuilder("2017 가스사용량 연속지적도 매칭 분할")
-						.load(INPUT)
-						.expand1("sido:string", "pnu.substring(0, 2)")
-						.groupBy("sido")
-							.storeEachGroup(OUTPUT, info)
-						.build();
-		
-		marmot.deleteDir(OUTPUT);
-		marmot.execute(plan);
-		watch.stop();
 
+		Plan plan;
+		plan = marmot.planBuilder("2017년 월별 전기 사용량 합계")
+					.load(INPUT)
+					.expand1("year:short", "사용년월.substring(0, 4)")
+					.filter("year == 2017")
+					.expand1("month:short", "사용년월.substring(4, 6)")
+					.update("사용량 = Math.max(사용량, 0)")
+					.groupBy("pnu,month")
+						.workerCount(1)
+						.aggregate(SUM("사용량").as("usage"))
+					.project("pnu, month,  usage")
+					.store(OUTPUT)
+					.build();
+		DataSet result = marmot.createDataSet(OUTPUT, plan, true);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
+		
+		SampleUtils.printPrefix(result, 10);
 		
 		marmot.disconnect();
 	}

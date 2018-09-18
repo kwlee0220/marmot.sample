@@ -23,7 +23,7 @@ import utils.stream.FStream;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class T04_MatchGas2017 {
+public class B03_MatchGas2017 {
 	private static final String CADASTRAL = Globals.CADASTRAL;
 	private static final String INPUT = "tmp/anyang/gas2017";
 	private static final String INTERM = "tmp/anyang/pnu_gas";

@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
+import io.vavr.control.Option;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
@@ -17,22 +18,22 @@ import marmot.type.DataType;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.StopWatch;
+import utils.UnitUtils;
 import utils.stream.FStream;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class T05_MatchElectro2017 {
+public class A03_MatchGasUsages {
 	private static final String CADASTRAL = Globals.CADASTRAL;
-	private static final String INPUT = "tmp/anyang/electro2017";
-	private static final String INTERM = "tmp/anyang/pnu_electro";
-	private static final String OUTPUT = "tmp/anyang/map_electro2017";
-
-	private static final List<String> COL_NAMES = FStream.rangeClosed(1, 12)
-													.map(i -> "month_" + i)
-													.toList();
-	private static final String PATTERN = "if (%s == null) {%s = 0}";
+	private static final String INPUT = "tmp/anyang/gas_by_year";
+	private static final String INTERM = "tmp/anyang/gas_side_by_side";
+	private static final String OUTPUT = "tmp/anyang/map_gas";
+	private static final String PATTERN = "if (gas_%d == null) {gas_%d = 0}";
+	private static final int[] YEARS = {2011, 2012, 2013, 2014, 2015, 2016, 2017};
+	private static final List<String> COL_NAMES = FStream.of(YEARS).map(i -> "gas_" + i).toList();
+	private static final Option<Long> BLOCK_SIZE = Option.some(UnitUtils.parseByteSize("128mb"));
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -54,19 +55,19 @@ public class T05_MatchElectro2017 {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
-		putSideBySide(marmot, INTERM);
+		putSideBySide(marmot);
 		
 		String rightCols = FStream.of(COL_NAMES).join(",", "right.{", "}");
-		String updateExpr = FStream.of(COL_NAMES)
-									.map(c -> String.format(PATTERN, c, c))
+		String updateExpr = FStream.of(YEARS)
+									.map(year -> String.format(PATTERN, year, year))
 									.join(" ");
 		
 		DataSet ds = marmot.getDataSet(CADASTRAL);
 		GeometryColumnInfo info = ds.getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder("2017 전기사용량 연속지적도 매칭")
+		Plan plan = marmot.planBuilder("연속지적도 매칭")
 						.loadEquiJoin(CADASTRAL, "pnu", INTERM, "pnu",
-									"left.*," + rightCols, LEFT_OUTER_JOIN(17))
+										"left.*," + rightCols, LEFT_OUTER_JOIN(17))
 						.update(updateExpr)
 						.store(OUTPUT)
 						.build();
@@ -78,20 +79,20 @@ public class T05_MatchElectro2017 {
 		
 		marmot.disconnect();
 	}
-
-	private static void putSideBySide(PBMarmotClient marmot, String outDsId) {
+	
+	private static void putSideBySide(PBMarmotClient marmot) {
 		RecordSchema outSchema = FStream.of(COL_NAMES)
 										.foldLeft(RecordSchema.builder(),
 												(b,cn) -> b.addColumn(cn, DataType.LONG))
 										.build();
 		
-		Plan plan = marmot.planBuilder("put_side_by_side_electro")
+		Plan plan = marmot.planBuilder("put_side_by_size_gas")
 						.load(INPUT)
-						.expand("tag:string", "tag = 'month_' + month")
+						.expand("tag:string", "tag = 'gas_' + year")
 						.groupBy("pnu")
 							.putSideBySide(outSchema, "usage", "tag")
-						.store(outDsId)
+						.store(INTERM)
 						.build();
-		marmot.createDataSet(outDsId, plan, true);
+		marmot.createDataSet(INTERM, plan, true);
 	}
 }
