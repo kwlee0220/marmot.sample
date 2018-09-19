@@ -13,7 +13,7 @@ import marmot.RecordSet;
 import marmot.command.MarmotCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
-import marmot.plan.SpatialRelationOption;
+import marmot.plan.PredicateOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -55,7 +55,7 @@ public class CountInvalidGeoms {
 		plan = marmot.planBuilder("count invalid geometry records")
 					.load(DTG)
 					.toPoint("x좌표", "y좌표", "the_geom")
-					.intersects("the_geom", bounds, SpatialRelationOption.NEGATED)
+					.intersects("the_geom", bounds, PredicateOption.NEGATED)
 					.aggregate(COUNT())
 					.store(RESULT)
 					.build();

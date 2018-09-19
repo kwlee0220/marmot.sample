@@ -26,7 +26,7 @@ import utils.stream.FStream;
  */
 public class B07_GridAnalysisElectro2017 {
 	private static final String INPUT = "tmp/anyang/map_electro2017";
-	private static final String OUTPUT = "tmp/anyang/grid_electro2017";
+	private static final String OUTPUT = "tmp/anyang/grid/grid_electro2017";
 	
 	private static final List<String> COL_NAMES = FStream.rangeClosed(1, 12)
 														.map(i -> "month_" + i)
