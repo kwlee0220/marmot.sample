@@ -13,6 +13,7 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.optor.AggregateFunction;
+import marmot.optor.geo.SquareGrid;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -66,7 +67,7 @@ public class B07_GridAnalysisElectro2017 {
 		Plan plan;
 		plan = marmot.planBuilder("2017 전기 사용량 격자 분석")
 					.load(INPUT)
-					.assignSquareGridCell("the_geom", bounds, cellSize)
+					.assignSquareGridCell("the_geom", new SquareGrid(bounds, cellSize))
 					.intersection("the_geom", "cell_geom", "overlap")
 					.expand("ratio:double", "ratio = (ST_Area(overlap) /  ST_Area(the_geom))")
 					.update(updateExpr)

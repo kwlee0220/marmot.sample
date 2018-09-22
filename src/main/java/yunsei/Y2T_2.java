@@ -12,6 +12,7 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
+import marmot.optor.geo.SquareGrid;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -88,7 +89,7 @@ public class Y2T_2 {
 
 		// 버스 승하차 정보에서 서울 구역부분만 추출한다.
 		plan = marmot.planBuilder("그리드_생성_후_셀별_승하차_횟수_집계")
-					.loadSquareGridFile(bounds, CELL_SIZE, NWORKERS)
+					.loadSquareGridFile(new SquareGrid(bounds, CELL_SIZE), NWORKERS)
 					.spatialOuterJoin("the_geom", TEMP_TAXI, "*,param.{hour,status}")
 					.expand("supply:int, demand:int", expr)
 					.groupBy("cell_id,hour")

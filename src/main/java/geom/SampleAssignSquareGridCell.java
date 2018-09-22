@@ -9,6 +9,7 @@ import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.optor.AggregateFunction;
+import marmot.optor.geo.SquareGrid;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -51,7 +52,7 @@ public class SampleAssignSquareGridCell {
 		
 		Plan plan = marmot.planBuilder("assign_fishnet_gridcell")
 								.load(INPUT)
-								.assignSquareGridCell("the_geom", envl, cellSize)
+								.assignSquareGridCell("the_geom", new SquareGrid(envl, cellSize))
 								.expand1("count:int", "1")
 								.groupBy("cell_id")
 									.tagWith("cell_geom,cell_pos")

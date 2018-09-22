@@ -10,6 +10,7 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.optor.AggregateFunction;
+import marmot.optor.geo.SquareGrid;
 import marmot.plan.GeomOpOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -54,7 +55,7 @@ public class Test2017_2 {
 		Plan plan = marmot.planBuilder("get_biz_grid")
 								.load(ADDR_BLD_UTILS)
 								.buffer("the_geom", 100, GeomOpOption.OUTPUT("buffer"))
-								.assignSquareGridCell("buffer", bounds, cellSize)
+								.assignSquareGridCell("buffer", new SquareGrid(bounds, cellSize))
 								.centroid("cell_geom")
 								.intersects("cell_geom", "the_geom")
 								.groupBy("cell_id")

@@ -16,6 +16,7 @@ import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
+import marmot.optor.geo.SquareGrid;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -80,7 +81,7 @@ public class TagDtgWithGrid {
 					.join("운송사코드", TEMP_CARGOS, "회사코드", "the_geom", SEMI_JOIN(nworkers))
 					
 					.transformCrs("the_geom", "EPSG:4326", "EPSG:5186", "the_geom")
-					.assignSquareGridCell("the_geom", bounds, CELL_SIZE)
+					.assignSquareGridCell("the_geom", new SquareGrid(bounds, CELL_SIZE))
 					.centroid("cell_geom")
 					.intersects("the_geom", kyounggiGeom)
 					

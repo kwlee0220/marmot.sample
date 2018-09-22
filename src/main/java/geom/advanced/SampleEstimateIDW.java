@@ -1,27 +1,30 @@
-package geom;
+package geom.advanced;
+
+import static marmot.DataSetOption.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.optor.geo.SquareGrid;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.Size2d;
 import utils.StopWatch;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleLoadSquareGridFile {
-	private static final String INPUT = "교통/지하철/서울역사";
+public class SampleEstimateIDW {
 	private static final String RESULT = "tmp/result";
-	private static final double SIDE_LEN = 100;
-	
+	private static final String INPUT = "주민/인구밀도_2000";
+	private static final String VALUE_COLUMN = "value";
+	private static final double RADIUS = 5 * 1000;
+	private static final int TOP_K = 10;
+
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
@@ -37,24 +40,37 @@ public class SampleLoadSquareGridFile {
 		String host = MarmotCommands.getMarmotHost(cl);
 		int port = MarmotCommands.getMarmotPort(cl);
 		
+		Plan plan;
+		DataSet result;
+		GeometryColumnInfo info = new GeometryColumnInfo("the_geom", "EPSG:5186");
+		
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		DataSet dataset = marmot.getDataSet(INPUT);
-		Size2d dim = new Size2d(SIDE_LEN, SIDE_LEN);
-
-		Plan plan = marmot.planBuilder("sample_load_squaregrid")
-								.loadSquareGridFile(new SquareGrid(INPUT, dim), -1)
-								.spatialSemiJoin("the_geom", INPUT)
-								.store(RESULT)
-								.build();
-		DataSet result = marmot.createDataSet(RESULT, dataset.getGeometryColumnInfo(), plan, true);
-		watch.stop();
+		String tempPath = "tmp/points";
 		
-		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
+		plan = marmot.planBuilder("to_point")
+						.load(INPUT)
+						.centroid("the_geom")
+						.project("the_geom, big_sq, value")
+						.store(tempPath)
+						.build();
+		result = marmot.createDataSet(tempPath, info, plan, FORCE);
+		result.cluster();
+		
+		plan = marmot.planBuilder("sample_estimate_idw")
+						.load(tempPath)
+						.estimateIDW("the_geom", tempPath, VALUE_COLUMN, RADIUS,
+										TOP_K, "value")
+						.store(RESULT)
+						.build();
+		result = marmot.createDataSet(RESULT, info, plan, FORCE);
+		
+		marmot.deleteDataSet(tempPath);
+		
 		SampleUtils.printPrefix(result, 5);
-		System.out.println("elapsed: " + watch.getElapsedMillisString());
+		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

@@ -27,6 +27,7 @@ import marmot.RecordSchema;
 import marmot.RecordSet;
 import marmot.command.MarmotCommands;
 import marmot.optor.JoinOptions;
+import marmot.optor.geo.SquareGrid;
 import marmot.process.NormalizeParameters;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.rset.RecordSets;
@@ -185,7 +186,7 @@ public class FindBestSubwayStationCandidates {
 						.aggregate(AVG("day_total"))
 						
 					// 각 소지역이 폼함되는 사각 셀을  부가한다.
-					.assignSquareGridCell(geomCol, bounds, CELL_SIZE)
+					.assignSquareGridCell(geomCol, new SquareGrid(bounds, CELL_SIZE))
 					.project("cell_geom as the_geom, cell_id, cell_pos, avg")
 					
 					// 사각 그리드 셀 단위로 그룹핑하고, 각 그룹에 속한 유동인구를 모두 더한다.
@@ -253,7 +254,7 @@ public class FindBestSubwayStationCandidates {
 					.spatialSemiJoin("the_geom", TEMP_STATIONS, NEGATED)
 					
 					// 각 로그 위치가 포함된 사각 셀을  부가한다.
-					.assignSquareGridCell(geomCol, bounds, CELL_SIZE)
+					.assignSquareGridCell(geomCol, new SquareGrid(bounds, CELL_SIZE))
 					.project("cell_geom as the_geom, cell_id, cell_pos")
 					
 					// 사각 그리드 셀 단위로 그룹핑하고, 각 그룹에 속한 레코드 수를 계산한다.

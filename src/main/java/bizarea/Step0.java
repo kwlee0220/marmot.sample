@@ -13,6 +13,7 @@ import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
+import marmot.optor.geo.SquareGrid;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -69,7 +70,7 @@ public class Step0 {
 		
 		Plan plan = marmot.planBuilder("대도시 상업지역 100mX100m 그리드 구역 생성")
 							// 용도지구에 대한 100m 크기의 그리드를 생성 
-							.loadSquareGridFile(bounds, cellSize)
+							.loadSquareGridFile(new SquareGrid(bounds, cellSize), -1)
 							// 상업지구에 겹치는 그리드 셀만 추출한다.
 							.spatialSemiJoin("the_geom", TEMP_BIZ_AREA)
 							// 상업지구 그리드 셀에 대해 대도시 영역만을 선택하고,

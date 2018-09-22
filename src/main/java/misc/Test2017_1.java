@@ -11,6 +11,7 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
+import marmot.optor.geo.SquareGrid;
 import marmot.plan.GeomOpOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -53,7 +54,7 @@ public class Test2017_1 {
 		Size2d cellSize = new Size2d(30, 30);
 		
 		Plan plan = marmot.planBuilder("get_biz_grid")
-								.loadSquareGridFile(ADDR_BLD, cellSize)
+								.loadSquareGridFile(new SquareGrid(ADDR_BLD, cellSize), -1)
 								.centroid("the_geom")
 //								.aggregateJoin("the_geom", ADDR_BLD_UTILS_CLTS,
 //										SpatialRelation.WITHIN_DISTANCE(2000), COUNT())

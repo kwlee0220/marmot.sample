@@ -1,9 +1,11 @@
-package geom;
+package geom.advanced;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.optor.geo.SquareGrid;
@@ -17,11 +19,12 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleLoadSquareGridFile {
-	private static final String INPUT = "교통/지하철/서울역사";
+public class SampleKernelDensity {
 	private static final String RESULT = "tmp/result";
-	private static final double SIDE_LEN = 100;
-	
+	private static final String INPUT = "주민/인구밀도_2000";
+	private static final String VALUE_COLUMN = "value";
+	private static final double RADIUS = 1 * 1000;
+
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
@@ -37,24 +40,22 @@ public class SampleLoadSquareGridFile {
 		String host = MarmotCommands.getMarmotHost(cl);
 		int port = MarmotCommands.getMarmotPort(cl);
 		
+		Plan plan;
 		StopWatch watch = StopWatch.start();
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		DataSet dataset = marmot.getDataSet(INPUT);
-		Size2d dim = new Size2d(SIDE_LEN, SIDE_LEN);
-
-		Plan plan = marmot.planBuilder("sample_load_squaregrid")
-								.loadSquareGridFile(new SquareGrid(INPUT, dim), -1)
-								.spatialSemiJoin("the_geom", INPUT)
-								.store(RESULT)
-								.build();
-		DataSet result = marmot.createDataSet(RESULT, dataset.getGeometryColumnInfo(), plan, true);
-		watch.stop();
+		GeometryColumnInfo info = new GeometryColumnInfo("the_geom", "EPSG:5186");
+		SquareGrid grid = new SquareGrid(INPUT, new Size2d(1000, 1000));
+		plan = marmot.planBuilder("sample_estimate_kernel_density")
+					.loadSquareGridFile(grid, -1)
+					.estimateKernelDensity("the_geom", INPUT, VALUE_COLUMN, RADIUS, VALUE_COLUMN)
+					.store(RESULT)
+					.build();
+		DataSet result = marmot.createDataSet(RESULT, info, plan, DataSetOption.FORCE);
 		
-		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(result, 5);
-		System.out.println("elapsed: " + watch.getElapsedMillisString());
+		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

@@ -14,6 +14,7 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.geo.GeoClientUtils;
+import marmot.optor.geo.SquareGrid;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -59,7 +60,7 @@ public class CalcHeatMap {
 		Size2d cellSize = GeoClientUtils.divide(envl, resol);
 		
 		Plan plan = marmot.planBuilder("calc_heat_map")
-							.loadSquareGridFile(envl, cellSize, 32)
+							.loadSquareGridFile(new SquareGrid(envl, cellSize), 32)
 							.spatialJoin("the_geom", TAXI_LOG, "*")
 							.groupBy("cell_id")
 								.tagWith("the_geom")
