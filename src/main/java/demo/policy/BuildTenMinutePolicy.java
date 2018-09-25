@@ -1,5 +1,6 @@
 package demo.policy;
 
+import static marmot.DataSetOption.FORCE;
 import static marmot.plan.SpatialJoinOption.CLUSTER_OUT_RECORDS;
 import static marmot.plan.SpatialJoinOption.NEGATED;
 
@@ -7,7 +8,6 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -86,7 +86,7 @@ public class BuildTenMinutePolicy {
 						.shard(1)
 						.store(RESULT)
 						.build();
-		output = marmot.createDataSet(RESULT, info, plan, DataSetOption.FORCE);
+		output = marmot.createDataSet(RESULT, info, plan, FORCE);
 		output.cluster();
 		System.out.println("완료: '경로당필요지역' 추출, elapsed="
 							+ watch2.stopAndGetElpasedTimeString());
@@ -110,7 +110,7 @@ public class BuildTenMinutePolicy {
 					.buffer(info.name(), 400)	// (2) 버퍼추정
 					.store(ELDERLY_CARE_BUFFER)
 					.build();
-		return marmot.createDataSet(ELDERLY_CARE_BUFFER, info, plan, DataSetOption.FORCE);
+		return marmot.createDataSet(ELDERLY_CARE_BUFFER, info, plan, FORCE);
 	}
 	
 	private static DataSet findHighPopulationDensity(PBMarmotClient marmot) {
@@ -124,7 +124,7 @@ public class BuildTenMinutePolicy {
 					.filter("value >= 10000")								// (5) 영역분석
 					.store(HIGH_DENSITY_CENTER)
 					.build();
-		return marmot.createDataSet(HIGH_DENSITY_CENTER, info, plan, DataSetOption.FORCE);
+		return marmot.createDataSet(HIGH_DENSITY_CENTER, info, plan, FORCE);
 	}
 	
 	private static DataSet findHighPopulationHDong(PBMarmotClient marmot) {
@@ -137,6 +137,6 @@ public class BuildTenMinutePolicy {
 					.spatialSemiJoin(info.name(), HIGH_DENSITY_CENTER)	// (6) 교차분석
 					.store(HIGH_DENSITY_HDONG)
 					.build();
-		return marmot.createDataSet(HIGH_DENSITY_HDONG, info, plan, DataSetOption.FORCE);
+		return marmot.createDataSet(HIGH_DENSITY_HDONG, info, plan, FORCE);
 	}
 }
