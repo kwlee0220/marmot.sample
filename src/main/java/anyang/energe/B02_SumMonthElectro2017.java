@@ -6,6 +6,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -54,7 +55,7 @@ public class B02_SumMonthElectro2017 {
 					.project("pnu, month,  usage")
 					.store(OUTPUT)
 					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, true);
+		DataSet result = marmot.createDataSet(OUTPUT, plan, DataSetOption.FORCE);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 10);

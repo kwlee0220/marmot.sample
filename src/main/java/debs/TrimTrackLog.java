@@ -6,6 +6,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordSet;
@@ -72,7 +73,7 @@ public class TrimTrackLog {
 //							.project("cell_geom as the_geom,ship_id,departure_port_name,count")
 							.store(RESULT)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, ds.getGeometryColumnInfo(), plan, true);
+		DataSet result = marmot.createDataSet(RESULT, ds.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
@@ -87,7 +88,7 @@ public class TrimTrackLog {
 						.aggregate(AggregateFunction.ENVELOPE("the_geom").as("the_geom"))
 						.store("tmp/ship_tracks_mbr")
 						.build();
-		DataSet result = marmot.createDataSet("tmp/ship_tracks_mbr", plan, true);
+		DataSet result = marmot.createDataSet("tmp/ship_tracks_mbr", plan, DataSetOption.FORCE);
 		try ( RecordSet rset = result.read() ) {
 			return (Envelope)rset.fstream()
 								.first()

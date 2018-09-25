@@ -5,6 +5,7 @@ import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -106,7 +107,7 @@ public class S02_FindHouseCadastral {
 						.project(projectColsExpr)
 						.store(result)
 						.build();
-		DataSet ds = marmot.createDataSet(result, left.getGeometryColumnInfo(), plan, true);
+		DataSet ds = marmot.createDataSet(result, left.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 
 		elapsed.stop();
 		System.out.printf("전국 지적도에서 주거지적 추출 완료, count=%d elapsed=%s%n",

@@ -9,6 +9,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -72,7 +73,7 @@ public class Step1FlowPop {
 							.project(String.format("%s,*-{%s}", geomCol, geomCol))
 							.store(RESULT)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);
+		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

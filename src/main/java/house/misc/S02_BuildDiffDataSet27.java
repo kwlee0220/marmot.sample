@@ -75,7 +75,7 @@ public class S02_BuildDiffDataSet27 {
 					.store("tmp/diff_cadastral")
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		DataSet result = marmot.createDataSet("tmp/diff_cadastral", gcInfo, plan, true);
+		DataSet result = marmot.createDataSet("tmp/diff_cadastral", gcInfo, plan, DataSetOption.FORCE);
 		marmot.deleteDataSet(DIFF_ID_LIST);
 
 		Charset charset = Charset.forName("UTF-8");

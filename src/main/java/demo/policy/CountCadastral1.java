@@ -6,6 +6,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -56,7 +57,7 @@ public class CountCadastral1 {
 //						.shard(1)
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
 //		result.cluster();
 		
 		watch.stop();

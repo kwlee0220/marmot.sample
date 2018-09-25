@@ -1,11 +1,15 @@
 package basic;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.google.protobuf.util.JsonFormat;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -42,6 +46,8 @@ public class SampleExpand1 {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet input = marmot.getDataSet(INPUT);
+		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
+		
 		Plan plan = marmot.planBuilder("update")
 							.load(INPUT)
 							.expand1("area:double", "ST_Area(the_geom);")
@@ -51,7 +57,7 @@ public class SampleExpand1 {
 							.build();
 
 		System.out.println(JsonFormat.printer().print(plan.toProto()));
-		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);
+		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

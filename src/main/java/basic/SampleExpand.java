@@ -1,9 +1,13 @@
 package basic;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -40,6 +44,8 @@ public class SampleExpand {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet input = marmot.getDataSet(INPUT);
+		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
+		
 		Plan plan = marmot.planBuilder("update")
 							.load(INPUT)
 							.expand("the_geom:point,area:double",
@@ -50,7 +56,7 @@ public class SampleExpand {
 							.expand("sig_cd:int")
 							.project("the_geom,area,sig_cd,kor_sub_nm")
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);
+		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

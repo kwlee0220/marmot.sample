@@ -5,6 +5,7 @@ import org.apache.log4j.PropertyConfigurator;
 import carloc.Globals;
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -49,7 +50,7 @@ public class S3_FindMatchingTaxiLog {
 					.knnJoin(geomCol, Globals.ROADS, 1, Globals.DISTANCE, "*")
 					.store(RESULT)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);
+		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

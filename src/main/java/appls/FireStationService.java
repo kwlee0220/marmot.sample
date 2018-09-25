@@ -5,6 +5,7 @@ import org.apache.log4j.LogManager;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -54,7 +55,7 @@ public class FireStationService {
 					.spatialJoin(geomCol, POP, "param.{the_geom as the_geom,인구수 as pop}")
 					.store(RESULT)
 					.build();
-		result = marmot.createDataSet(RESULT, ds.getGeometryColumnInfo(), plan, true);
+		result = marmot.createDataSet(RESULT, ds.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

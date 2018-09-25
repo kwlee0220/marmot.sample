@@ -1,5 +1,7 @@
 package anyang.energe;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.JoinOptions.LEFT_OUTER_JOIN;
 
 import java.util.Arrays;
@@ -10,6 +12,7 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import io.vavr.control.Option;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSchema;
@@ -60,7 +63,7 @@ public class A05_MapMatchingLand {
 		int[] years = { 2012, 2013, 2014, 2015, 2016 };
 		
 		DataSet base = marmot.getDataSet(BASE);
-		GeometryColumnInfo info = base.getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = base.getGeometryColumnInfo();
 		
 		String rightCols = Arrays.stream(years)
 								.mapToObj(i -> "land_" + i)
@@ -89,7 +92,7 @@ public class A05_MapMatchingLand {
 						
 						.store(OUTPUT)
 						.build();
-		DataSet result = marmot.createDataSet(OUTPUT, info, plan, true);
+		DataSet result = marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
 		marmot.deleteDataSet(INTERM);
 
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
@@ -112,6 +115,6 @@ public class A05_MapMatchingLand {
 							.putSideBySide(outSchema, "usage", "tag")
 						.store(INTERM)
 						.build();
-		marmot.createDataSet(INTERM, plan, true);
+		marmot.createDataSet(INTERM, plan, DataSetOption.FORCE);
 	}
 }

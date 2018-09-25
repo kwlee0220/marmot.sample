@@ -6,6 +6,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import carloc.Globals;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -53,7 +54,7 @@ public class S2_FindDongTaxiLog {
 					.intersects(geomCol, guBoundary)
 					.store(RESULT)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, true);
+		DataSet result = marmot.createDataSet(RESULT, input.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 		watch.stop();
 
 		System.out.printf("count=%d elapsed=%s%n", result.getRecordCount(),

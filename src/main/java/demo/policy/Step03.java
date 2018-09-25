@@ -7,6 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -52,7 +53,7 @@ public class Step03 {
 						.spatialSemiJoin(info.name(), PARAM, NEGATED) // (3) 교차반전
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, info, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, info, plan, DataSetOption.FORCE);
 		result.cluster();
 		
 		watch.stop();

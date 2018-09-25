@@ -7,6 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordSchema;
@@ -65,7 +66,7 @@ public class SummarizeByHighSchoolShort {
 		Plan plan1 = countTradeTransaction(marmot);
 		Plan plan2 = countLeaseTransaction(marmot);
 
-		marmot.createDataSet(TEMP, school.getGeometryColumnInfo(), plan1, true);
+		marmot.createDataSet(TEMP, school.getGeometryColumnInfo(), plan1, DataSetOption.FORCE);
 		marmot.execute(plan2);
 		System.out.println("done: 아파트 거래 정보 지오코딩, elapsed=" + watch.getElapsedMillisString());
 		
@@ -80,7 +81,7 @@ public class SummarizeByHighSchoolShort {
 						.sort("count:D")
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, school.getGeometryColumnInfo(), plan1, true);
+		DataSet result = marmot.createDataSet(RESULT, school.getGeometryColumnInfo(), plan1, DataSetOption.FORCE);
 		watch.stop();
 		
 		marmot.deleteDataSet(TEMP);
@@ -162,7 +163,7 @@ public class SummarizeByHighSchoolShort {
 							.store(HIGH_SCHOOLS)
 							.build();
 		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, ds.getGeometryColumnInfo(),
-												plan, true);
+												plan, DataSetOption.FORCE);
 		
 		return result;
 	}

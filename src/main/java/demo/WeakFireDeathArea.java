@@ -54,7 +54,7 @@ public class WeakFireDeathArea {
 								.buffer("the_geom", 3000)
 								.store("tmp/종합병원_위치_추천/병원_3km버퍼")
 								.build();
-		marmot.createDataSet("tmp/종합병원_위치_추천/병원_3km버퍼",  gcInfo, plan0, true);
+		marmot.createDataSet("tmp/종합병원_위치_추천/병원_3km버퍼",  gcInfo, plan0, FORCE);
 		System.out.println("완료: 서울시 종합병원 위치에서 3km 버퍼 영역 생성");
 
 		// 서울시 지도에서 종합병원 3km 이내 영역과 겹치지 않은 영역을 계산한다.
@@ -63,7 +63,7 @@ public class WeakFireDeathArea {
 								.differenceJoin("the_geom", "tmp/종합병원_위치_추천/병원_3km버퍼")
 								.store("tmp/종합병원_위치_추천/병원_원거리_영역")
 								.build();
-		marmot.createDataSet("tmp/종합병원_위치_추천/병원_원거리_영역", gcInfo, plan1, true);
+		marmot.createDataSet("tmp/종합병원_위치_추천/병원_원거리_영역", gcInfo, plan1, FORCE);
 		System.out.println("완료: 종합병원 3km 밖의 서울시 영역 계산");
 		
 		// 화재패해 영역에서 서울 지역 부분만 선택한다.
@@ -82,7 +82,7 @@ public class WeakFireDeathArea {
 								.clipJoin("the_geom", "tmp/종합병원_위치_추천/병원_원거리_영역")
 								.store("tmp/종합병원_위치_추천/분석결과")
 								.build();
-		result = marmot.createDataSet("tmp/종합병원_위치_추천/분석결과", gcInfo, plan2, true);
+		result = marmot.createDataSet("tmp/종합병원_위치_추천/분석결과", gcInfo, plan2, FORCE);
 		System.out.println("완료: 종합병원 3km 밖의 서울시 영역과 화재피해 영역과 교차부분 검색");
 		
 		marmot.deleteDataSet("tmp/종합병원_위치_추천/병원_3km버퍼");

@@ -1,5 +1,8 @@
 package geom;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -41,13 +44,13 @@ public class SampleClipJoin {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		GeometryColumnInfo info = marmot.getDataSet(OUTER).getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = marmot.getDataSet(OUTER).getGeometryColumnInfo();
 		Plan plan = marmot.planBuilder("sample_clip_join")
 								.load(OUTER)
 								.clipJoin("the_geom", INNER)
 								.store(RESULT)
 								.build();
-		DataSet result = marmot.createDataSet(RESULT, info, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		System.out.println("elapsed time=" + watch.stopAndGetElpasedTimeString());
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

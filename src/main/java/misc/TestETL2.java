@@ -4,6 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -62,7 +63,7 @@ public class TestETL2 {
 							.aggregate(AggregateFunction.COUNT())
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT,  plan, true);
+		DataSet result = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
@@ -77,7 +78,7 @@ public class TestETL2 {
 						.buffer("the_geom", 100)
 						.store(PARAM)
 						.build();
-		DataSet result = marmot.createDataSet(PARAM, info, plan, true);
+		DataSet result = marmot.createDataSet(PARAM, info, plan, DataSetOption.FORCE);
 		result.cluster();
 	}
 }

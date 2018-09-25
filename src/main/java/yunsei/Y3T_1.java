@@ -6,6 +6,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -69,7 +70,7 @@ public class Y3T_1 {
 					.project(geomCol + ",refl70,point_x,point_y")
 					.store(TEMP_POP)
 					.build();
-		result = marmot.createDataSet(TEMP_POP, gcInfo, plan, true);
+		result = marmot.createDataSet(TEMP_POP, gcInfo, plan, DataSetOption.FORCE);
 		System.out.println("elapsed: " + watch.getElapsedMillisString());
 
 		plan = marmot.planBuilder("")
@@ -86,7 +87,7 @@ public class Y3T_1 {
 					.loadGetisOrdGi(TEMP_POP, "refl70", 500, LISAWeight.FIXED_DISTANCE_BAND)
 					.store(RESULT)
 					.build();
-		result = marmot.createDataSet(RESULT, gcInfo, plan, true);
+		result = marmot.createDataSet(RESULT, gcInfo, plan, DataSetOption.FORCE);
 		
 		System.out.println("done, elapsed=" + watch.stopAndGetElpasedTimeString());
 	}
@@ -101,7 +102,7 @@ public class Y3T_1 {
 					.buffer(ds.getGeometryColumn(), 500)
 					.store(outputDsId)
 					.build();
-		DataSet result = marmot.createDataSet(outputDsId, ds.getGeometryColumnInfo(), plan, true);
+		DataSet result = marmot.createDataSet(outputDsId, ds.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 		
 		return result;
 	}

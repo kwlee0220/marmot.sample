@@ -8,6 +8,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -64,7 +65,7 @@ public class Test2017_1 {
 								.store(GRID)
 								.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
-		DataSet result = marmot.createDataSet(GRID, gcInfo, plan, true);
+		DataSet result = marmot.createDataSet(GRID, gcInfo, plan, DataSetOption.FORCE);
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

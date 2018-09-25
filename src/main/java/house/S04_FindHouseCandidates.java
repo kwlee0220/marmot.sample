@@ -3,6 +3,7 @@ package house;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -57,7 +58,7 @@ public class S04_FindHouseCandidates {
 						.differenceJoin(geomCol, registeredBuildings)
 						.store(result)
 						.build();
-		DataSet ds = marmot.createDataSet(result, input.getGeometryColumnInfo(), plan, true);
+		DataSet ds = marmot.createDataSet(result, input.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 
 		elapsed.stop();
 		System.out.printf("총괄표제부 건물영역 제외 주거지적 영역 추출 완료, "

@@ -1,5 +1,7 @@
 package geom;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.CONVEX_HULL;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -48,7 +50,7 @@ public class SampleConvexHull {
 								.aggregate(CONVEX_HULL("the_geom").as("the_geom"))
 								.store(RESULT)
 								.build();
-		DataSet result = marmot.createDataSet(RESULT, gcInfo, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		watch.stop();
 
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

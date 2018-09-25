@@ -1,9 +1,5 @@
 package basic;
 
-import static marmot.plan.ParseCsvOption.HEADER;
-import static marmot.plan.ParseCsvOption.NULL_STRING;
-import static marmot.plan.ParseCsvOption.*;
-
 import java.text.DecimalFormat;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -15,7 +11,6 @@ import marmot.RecordSchema;
 import marmot.command.MarmotCommands;
 import marmot.plan.RecordScript;
 import marmot.remote.protobuf.PBMarmotClient;
-import marmot.type.DataType;
 import utils.CSV;
 import utils.CommandLine;
 import utils.CommandLineParser;

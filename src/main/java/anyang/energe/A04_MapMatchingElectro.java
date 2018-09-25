@@ -1,5 +1,7 @@
 package anyang.energe;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.JoinOptions.LEFT_OUTER_JOIN;
 
 import java.util.Arrays;
@@ -10,6 +12,7 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import io.vavr.control.Option;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSchema;
@@ -65,7 +68,7 @@ public class A04_MapMatchingElectro {
 									.join(" ");
 		
 		DataSet ds = marmot.getDataSet(CADASTRAL);
-		GeometryColumnInfo info = ds.getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
 		Plan plan = marmot.planBuilder("연속지적도 매칭")
 						.loadEquiJoin(CADASTRAL, "pnu", INTERM, "pnu",
@@ -73,7 +76,7 @@ public class A04_MapMatchingElectro {
 						.update(updateExpr)
 						.store(OUTPUT)
 						.build();
-		DataSet result = marmot.createDataSet(OUTPUT, info, plan, true);
+		DataSet result = marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
 		marmot.deleteDataSet(INTERM);
 		marmot.deleteDataSet(INPUT);
 
@@ -96,6 +99,6 @@ public class A04_MapMatchingElectro {
 							.putSideBySide(outSchema, "usage", "tag")
 						.store(INTERM)
 						.build();
-		marmot.createDataSet(INTERM, plan, true);
+		marmot.createDataSet(INTERM, plan, DataSetOption.FORCE);
 	}
 }

@@ -9,6 +9,7 @@ import static marmot.optor.AggregateFunction.SUM;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -70,7 +71,7 @@ public class SummarizeBySgg {
 						
 						.store(RESULT)
 						.build();
-		marmot.createDataSet(RESULT, emd.getGeometryColumnInfo(), plan, true);
+		marmot.createDataSet(RESULT, emd.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 		watch.stop();
 		
 		System.out.printf("elapsed: %s%n", watch.getElapsedMillisString());

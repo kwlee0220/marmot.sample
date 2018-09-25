@@ -15,6 +15,7 @@ import com.google.common.collect.Streams;
 import com.vividsolutions.jts.geom.Geometry;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -101,7 +102,7 @@ public class Y2T_1 {
 					.store(TEMP_BUS_SEOUL)
 					.build();
 
-		result = marmot.createDataSet(TEMP_BUS_SEOUL, gcInfo, plan, true);
+		result = marmot.createDataSet(TEMP_BUS_SEOUL, gcInfo, plan, DataSetOption.FORCE);
 		System.out.println("done: crop bus_ot_dt with seoul");
 		
 		DataSet multiRings = doMultiRing(marmot, result, seoul, MULTI_RINGS);
@@ -126,7 +127,7 @@ public class Y2T_1 {
 					.store(TEMP_HISTOGRAM)
 					.build();
 
-		result = marmot.createDataSet(TEMP_HISTOGRAM, gcInfo, plan, true);
+		result = marmot.createDataSet(TEMP_HISTOGRAM, gcInfo, plan, DataSetOption.FORCE);
 		
 		marmot.deleteDataSet(MULTI_RINGS);
 		System.out.println("done: build_histogram, elapsed=" + watch.getElapsedMillisString());
@@ -193,7 +194,7 @@ public class Y2T_1 {
 							.store(outputDs)
 							.build();
 			if ( multiRings == null ) {
-				multiRings = marmot.createDataSet(outputDs, bus.getGeometryColumnInfo(), plan, true);
+				multiRings = marmot.createDataSet(outputDs, bus.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 			}
 			else {
 				marmot.execute(plan);

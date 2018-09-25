@@ -1,5 +1,7 @@
 package demo.dtg;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.JoinOptions.SEMI_JOIN;
 
@@ -10,6 +12,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -89,7 +92,7 @@ public class TagDtgWithRoad {
 					
 					.store(RESULT)
 					.build();
-		output = marmot.createDataSet(RESULT, info, plan, true);
+		output = marmot.createDataSet(RESULT, info, plan, DataSetOption.FORCE);
 		
 		watch.stop();
 		System.out.printf("count=%d, total elapsed time=%s%n",
@@ -110,7 +113,7 @@ public class TagDtgWithRoad {
 	}
 	
 	private static void excludeHighway(PBMarmotClient marmot, String outDsId) {
-		GeometryColumnInfo info = marmot.getDataSet(ROAD).getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = marmot.getDataSet(ROAD).getGeometryColumnInfo();
 		
 		Plan plan;
 		plan = marmot.planBuilder("exclude highway")
@@ -121,7 +124,7 @@ public class TagDtgWithRoad {
 					.project("the_geom,link_id,road_name")
 					.store(outDsId)
 					.build();
-		DataSet output = marmot.createDataSet(outDsId, info, plan, true);
+		DataSet output = marmot.createDataSet(outDsId, plan, GEOMETRY(gcInfo), FORCE);
 		
 		ClusterDataSetOptions opts = ClusterDataSetOptions.create().workerCount(1);
 		output.cluster(opts);
@@ -135,6 +138,6 @@ public class TagDtgWithRoad {
 					.store(output)
 					.build();
 
-		return marmot.createDataSet(output, plan, true);
+		return marmot.createDataSet(output, plan, FORCE);
 	}
 }

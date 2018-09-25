@@ -3,6 +3,7 @@ package house;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -58,7 +59,7 @@ public class S03_FindRegistreredBuildingsFixed {
 						.knnJoin(geomCol, buildings, 10, 1, "param.*")
 						.store(result)
 						.build();
-		DataSet ds = marmot.createDataSet(result, input.getGeometryColumnInfo(), plan, true);
+		DataSet ds = marmot.createDataSet(result, input.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 		ds.cluster();
 		elapsed.stop();
 		

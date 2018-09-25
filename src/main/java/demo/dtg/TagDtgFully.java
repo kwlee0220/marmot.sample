@@ -12,6 +12,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -97,7 +98,7 @@ public class TagDtgFully {
 					
 					.store(RESULT)
 					.build();
-		output = marmot.createDataSet(RESULT, info, plan, true);
+		output = marmot.createDataSet(RESULT, info, plan, DataSetOption.FORCE);
 		
 		watch.stop();
 		System.out.printf("count=%d, total elapsed time=%s%n",

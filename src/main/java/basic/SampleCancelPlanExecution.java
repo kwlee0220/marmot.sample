@@ -62,14 +62,14 @@ public class SampleCancelPlanExecution {
 		
 		// 5. Plan 실행이 종료될 때까지 최대 2초동안 대기한다.
 		boolean done = exec.waitForDone(2, TimeUnit.SECONDS);
-		System.out.printf("done=%s (should be false)%n", done);
+		System.out.printf("is_done=%s (should be false)%n", done);
 		
 		// 6. 실행 중인 Plan을 취소시킨다.
 		exec.cancel();
 		exec.waitForDone();
 		System.out.printf("isCancelled=%s (should be true)%n", exec.isCancelled());
 		
-		System.out.println(exec.getResult());
+		System.out.println(exec.waitForResult());
 		
 		marmot.disconnect();
 	}

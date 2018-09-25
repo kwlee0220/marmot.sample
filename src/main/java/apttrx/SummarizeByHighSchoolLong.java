@@ -10,6 +10,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -104,7 +105,7 @@ public class SummarizeByHighSchoolLong {
 						.store(RESULT)
 						.build();
 		DataSet result = marmot.createDataSet(RESULT, new GeometryColumnInfo("the_geom", srid),
-											plan, true);
+											plan, DataSetOption.FORCE);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 3);
@@ -119,7 +120,7 @@ public class SummarizeByHighSchoolLong {
 							.filter("학교급구분 == '고등학교'")
 							.store(HIGH_SCHOOLS)
 							.build();
-		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, ds.getGeometryColumnInfo(), plan, true);
+		DataSet result = marmot.createDataSet(HIGH_SCHOOLS, ds.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 		return result;
 	}
 }

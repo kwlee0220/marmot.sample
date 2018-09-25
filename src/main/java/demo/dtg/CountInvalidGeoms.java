@@ -8,6 +8,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Polygon;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.RecordSet;
 import marmot.command.MarmotCommands;
@@ -59,7 +60,7 @@ public class CountInvalidGeoms {
 					.aggregate(COUNT())
 					.store(RESULT)
 					.build();
-		DataSet output = marmot.createDataSet(RESULT, plan, true);
+		DataSet output = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
 		try ( RecordSet rset = output.read() ) {
 			long count = rset.nextCopy().get().getLong(0);
 			

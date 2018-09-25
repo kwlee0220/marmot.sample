@@ -5,6 +5,7 @@ import org.apache.log4j.PropertyConfigurator;
 import com.vividsolutions.jts.geom.Polygon;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -82,7 +83,7 @@ public class SplitDtgByCadastral {
 					.transformCrs("the_geom", "EPSG:5186", "EPSG:4326", "the_geom")
 					.store(outDsId)
 					.build();
-		DataSet output = marmot.createDataSet(outDsId, info, plan, true);
+		DataSet output = marmot.createDataSet(outDsId, info, plan, DataSetOption.FORCE);
 		
 		ClusterDataSetOptions opts = ClusterDataSetOptions.create().workerCount(1);
 		output.cluster(opts);

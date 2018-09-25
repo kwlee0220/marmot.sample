@@ -3,6 +3,7 @@ package house;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -57,7 +58,7 @@ public class S03_FindRegistreredBuildings {
 						.arcGisSpatialJoin(geomCol, registry, true)
 						.store(resultId)
 						.build();
-		DataSet result = marmot.createDataSet(resultId, ds.getGeometryColumnInfo(), plan, true);
+		DataSet result = marmot.createDataSet(resultId, ds.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 		result.cluster();
 		elapsed.stop();
 		

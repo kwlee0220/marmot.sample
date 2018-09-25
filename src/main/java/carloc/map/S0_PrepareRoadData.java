@@ -4,6 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import carloc.Globals;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -55,7 +56,7 @@ public class S0_PrepareRoadData {
 						.run(subPlan)
 					.store(Globals.ROADS_IDX)
 					.build();
-		DataSet result = marmot.createDataSet(Globals.ROADS_IDX, info, plan, true);
+		DataSet result = marmot.createDataSet(Globals.ROADS_IDX, info, plan, DataSetOption.FORCE);
 //		DataSet result = marmot.getDataSet(Globals.ROADS_IDX);
 		System.out.printf("elapsed=%s (simplification)%n", watch.getElapsedMillisString());
 		

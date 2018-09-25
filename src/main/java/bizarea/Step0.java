@@ -9,6 +9,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -81,7 +82,7 @@ public class Step0 {
 							.store(BIZ_GRID)
 							.build();
 		result = marmot.createDataSet(BIZ_GRID, new GeometryColumnInfo("the_geom", srid),
-										plan, true);
+										plan, DataSetOption.FORCE);
 		
 		marmot.deleteDataSet(TEMP_BIG_CITIES);
 		marmot.deleteDataSet(TEMP_BIZ_AREA);
@@ -118,7 +119,7 @@ public class Step0 {
 										"$sid_cd.contains(sid_cd) || $sgg_cd.contains(sgg_cd)")
 								.store(result)
 								.build();
-		DataSet ds = marmot.createDataSet(result, political.getGeometryColumnInfo(), plan, true);
+		DataSet ds = marmot.createDataSet(result, political.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 		return ds;
 	}
 
@@ -136,7 +137,7 @@ public class Step0 {
 								.project("the_geom,pnu")
 								.store(result)
 								.build();
-		return marmot.createDataSet(result, political.getGeometryColumnInfo(), plan, true);
+		return marmot.createDataSet(result, political.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 	}
 
 	private static final DataSet filterBizArea(MarmotRuntime marmot, String result)
@@ -154,6 +155,6 @@ public class Step0 {
 							.project("the_geom")
 							.store(TEMP_BIZ_AREA)
 							.build();
-		return marmot.createDataSet(result, ds.getGeometryColumnInfo(), plan, true);
+		return marmot.createDataSet(result, ds.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 	}
 }

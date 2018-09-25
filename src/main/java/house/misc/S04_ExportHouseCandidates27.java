@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -47,7 +48,7 @@ public class S04_ExportHouseCandidates27 {
 					.project("the_geom,pnu")
 					.store(CANDIDATE_AREA + "_27")
 					.build();
-		DataSet ds = marmot.createDataSet(CANDIDATE_AREA + "_27", input.getGeometryColumnInfo(), plan, true);
+		DataSet ds = marmot.createDataSet(CANDIDATE_AREA + "_27", input.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 
 		Charset charset = Charset.forName("UTF-8");
 		marmot.writeToShapefile(ds, SHP_FILE, charset).get();

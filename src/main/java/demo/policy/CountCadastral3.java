@@ -7,10 +7,10 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
-import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -56,7 +56,7 @@ public class CountCadastral3 {
 							.aggregate(COUNT())
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
 //		result.cluster();
 		
 		watch.stop();

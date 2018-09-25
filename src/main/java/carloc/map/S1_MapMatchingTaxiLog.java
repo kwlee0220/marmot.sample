@@ -5,6 +5,7 @@ import org.apache.log4j.PropertyConfigurator;
 import carloc.Globals;
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -56,7 +57,7 @@ public class S1_MapMatchingTaxiLog {
 //					.update(script)
 					.store(RESULT)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, info, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, info, plan, DataSetOption.FORCE);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 10);

@@ -5,6 +5,7 @@ import org.apache.log4j.PropertyConfigurator;
 import com.vividsolutions.jts.geom.Geometry;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSet;
@@ -72,7 +73,7 @@ public class SampleGetStream {
 					.store(RESULT)
 					.build();
 		watch = StopWatch.start();
-		DataSet result = marmot.createDataSet(RESULT, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
 		try ( RecordSet rset2 = result.read() ) {
 			while ( rset.next(output) );
 			System.out.printf("elapsed2=%s%n", watch.getElapsedMillisString());

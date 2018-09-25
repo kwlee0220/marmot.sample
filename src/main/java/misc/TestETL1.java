@@ -4,6 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -59,7 +60,7 @@ public class TestETL1 {
 //						.expand("the_geom:polygon", "the_geom = ST_GeomFromEnvelope(mbr)")
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT,  plan, true);
+		DataSet result = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

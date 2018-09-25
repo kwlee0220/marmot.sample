@@ -1,5 +1,7 @@
 package geom;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.MAX;
 
@@ -52,7 +54,7 @@ public class SampleSpatialAggregateJoin {
 								.store(RESULT)
 								.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		DataSet result = marmot.createDataSet(RESULT, gcInfo, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

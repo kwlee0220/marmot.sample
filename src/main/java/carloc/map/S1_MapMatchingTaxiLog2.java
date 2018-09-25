@@ -7,6 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 import carloc.Globals;
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSet;
@@ -82,7 +83,7 @@ public class S1_MapMatchingTaxiLog2 {
 							"*,param.{the_geom as link_geom, link_id, sub_link_no}")
 					.store("tmp/result")
 					.build();
-		DataSet result = marmot.createDataSet("tmp/result", info, plan, true);
+		DataSet result = marmot.createDataSet("tmp/result", info, plan, DataSetOption.FORCE);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 10);

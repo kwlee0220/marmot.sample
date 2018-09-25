@@ -4,6 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.RecordSet;
 import marmot.command.MarmotCommands;
@@ -54,7 +55,7 @@ public class SampleExecuteMRPlan {
 					.build();
 		
 		// 2. 결과가 기록될 빈 데이터세트 생성하고, Plan 수행으로 데이터세트에 추가
-		DataSet result = marmot.createDataSet("tmp/result", plan, true);
+		DataSet result = marmot.createDataSet("tmp/result", plan, DataSetOption.FORCE);
 		
 		// 3. Plan 실행 결과 채워진 데이터세트 내용 접근 및 출력
 		SampleUtils.printPrefix(result, 5);

@@ -1,5 +1,7 @@
 package geom;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 import static marmot.plan.SpatialJoinOption.WITHIN_DISTANCE;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -40,13 +42,13 @@ public class SampleSpatialSemiJoin {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		GeometryColumnInfo info = marmot.getDataSet(INPUT).getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = marmot.getDataSet(INPUT).getGeometryColumnInfo();
 		Plan plan = marmot.planBuilder("within_distance")
 								.load(INPUT)
 								.spatialSemiJoin("the_geom", PARAMS, WITHIN_DISTANCE(30))
 								.store(RESULT)
 								.build();
-		DataSet result = marmot.createDataSet(RESULT, info, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(result, 10);

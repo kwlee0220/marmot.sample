@@ -76,7 +76,7 @@ public class PrintCadastral {
 					.store("tmp/diff_buildings")
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		marmot.createDataSet("tmp/diff_buildings", gcInfo, plan, true);
+		marmot.createDataSet("tmp/diff_buildings", gcInfo, plan, DataSetOption.FORCE);
 		
 		marmot.disconnect();
 	}

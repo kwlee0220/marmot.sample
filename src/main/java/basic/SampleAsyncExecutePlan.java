@@ -62,7 +62,7 @@ public class SampleAsyncExecutePlan {
 		exec.waitForDone();
 		System.out.printf("done=%s (should be true)%n", exec.isDone());
 		
-		System.out.println(exec.getResult());
+		System.out.println(exec.waitForResult());
 		
 		marmot.disconnect();
 	}

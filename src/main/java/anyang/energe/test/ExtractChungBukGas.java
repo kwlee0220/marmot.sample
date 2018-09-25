@@ -5,6 +5,7 @@ import org.apache.log4j.PropertyConfigurator;
 import anyang.energe.Globals;
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -50,7 +51,7 @@ public class ExtractChungBukGas {
 					.project("the_geom,")
 					.store(OUTPUT)
 					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, true);
+		DataSet result = marmot.createDataSet(OUTPUT, plan, DataSetOption.FORCE);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 10);

@@ -10,6 +10,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -52,7 +53,7 @@ public class SampleAggregate {
 										ENVELOPE("the_geom"))
 							.store(RESULT)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, true);
+		DataSet result = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

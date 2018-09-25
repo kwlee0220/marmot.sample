@@ -1,5 +1,7 @@
 package appls;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.SUM;
@@ -131,15 +133,15 @@ public class FindBestSubwayStationCandidates {
 		
 		// 서울지역 지하철 역사를 구하고 1km 버퍼를 구한다.
 		DataSet stations = marmot.getDataSet(STATIONS);
-		String geomCol = stations.getGeometryColumn();
+		GeometryColumnInfo gcInfo = stations.getGeometryColumnInfo();
 		
 		plan = marmot.planBuilder("서울지역 지하철역사 1KM 버퍼")
 					.load(STATIONS)
 					.filter("sig_cd.substring(0,2) == '11'")
-					.buffer(geomCol, 1000)
+					.buffer(gcInfo.name(), 1000)
 					.store(output)
 					.build();
-		DataSet result = marmot.createDataSet(output, stations.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
+		DataSet result = marmot.createDataSet(output, plan, GEOMETRY(gcInfo), FORCE);
 		
 		System.out.printf("%s(%d건), 소요시간=%s%n",
 							output, result.getRecordCount(), watch.getElapsedMillisString());
@@ -332,8 +334,8 @@ public class FindBestSubwayStationCandidates {
 		Record record = DefaultRecord.of(schema);
 		record.set(0, geom);
 		RecordSet rset = RecordSets.of(record);
-		
-		marmot.uploadDataSet("분석결과/서울지역", new GeometryColumnInfo("the_geom", "EPSG:5186"),
-							rset, DataSetOption.FORCE);
+
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
+		marmot.uploadDataSet("분석결과/서울지역", rset, GEOMETRY(gcInfo), FORCE);
 	}
 }

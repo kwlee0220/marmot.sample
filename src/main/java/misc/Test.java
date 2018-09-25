@@ -4,6 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -50,14 +51,14 @@ public class Test {
 					.update("the_geom = ST_GeomFromEnvelope(ST_AsEnvelope(the_geom))")
 					.store("tmp/hcode2")
 					.build();
-		marmot.createDataSet("tmp/hcode2", gcInfo, plan, true);
+		marmot.createDataSet("tmp/hcode2", gcInfo, plan, DataSetOption.FORCE);
 		
 		plan = marmot.planBuilder("yy")
 					.load("tmp/cada")
 					.update("the_geom = ST_GeomFromEnvelope(ST_AsEnvelope(the_geom))")
 					.store("tmp/cada2")
 					.build();
-		marmot.createDataSet("tmp/cada2", gcInfo, plan, true);
+		marmot.createDataSet("tmp/cada2", gcInfo, plan, DataSetOption.FORCE);
 
 		GeometryColumnInfo gcInfo2 = new GeometryColumnInfo("the_geom", "EPSG:4326");
 		plan = marmot.planBuilder("find_closest_point_on_link")
@@ -69,7 +70,7 @@ public class Test {
 					.transformCrs("the_geom", "EPSG:5186", "EPSG:4326", "the_geom")
 					.store("tmp/result")
 					.build();
-		result = marmot.createDataSet("tmp/result", gcInfo2, plan, true);
+		result = marmot.createDataSet("tmp/result", gcInfo2, plan, DataSetOption.FORCE);
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

@@ -10,6 +10,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -68,7 +69,7 @@ public class Step1Building {
 							.project(String.format("%s,*-{%s}", geomCol, geomCol))
 							.store(RESULT)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, ds.getGeometryColumnInfo(), plan, true);
+		DataSet result = marmot.createDataSet(RESULT, ds.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

@@ -5,6 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.plan.LoadOption;
@@ -64,7 +65,7 @@ public class SplitLandCover {
 							.build();
 
 		StopWatch watch = StopWatch.start();
-		marmot.createDataSet(outputDsId, ds.getGeometryColumnInfo(), plan, true);
+		marmot.createDataSet(outputDsId, ds.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 		watch.stop();
 		
 		System.out.printf("done: input=%s elapsed=%s%n", inputDsId, watch.getElapsedMillisString());

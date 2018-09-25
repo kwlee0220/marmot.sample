@@ -7,6 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.plan.RecordScript;
@@ -70,7 +71,7 @@ public class Step1Buildings {
 					.expand1("old_ratio:double", "(double)old_cnt/bld_cnt")
 					.store(RESULT)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, emd.getGeometryColumnInfo(), plan, true);
+		DataSet result = marmot.createDataSet(RESULT, emd.getGeometryColumnInfo(), plan, DataSetOption.FORCE);
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

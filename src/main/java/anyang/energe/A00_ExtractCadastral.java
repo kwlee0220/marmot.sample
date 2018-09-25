@@ -2,6 +2,7 @@ package anyang.energe;
 
 import static marmot.DataSetOption.BLOCK_SIZE;
 import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -45,7 +46,7 @@ public class A00_ExtractCadastral {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		DataSet ds = marmot.getDataSet(INPUT);
-		GeometryColumnInfo info = ds.getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		long blockSize = UnitUtils.parseByteSize("128mb");
 
 		Plan plan;
@@ -55,7 +56,7 @@ public class A00_ExtractCadastral {
 					.shard(1)
 					.store(OUTPUT, BLOCK_SIZE(blockSize))
 					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, info, plan, FORCE);
+		DataSet result = marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
 		
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		

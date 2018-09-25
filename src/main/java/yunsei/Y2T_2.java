@@ -9,6 +9,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -77,7 +78,7 @@ public class Y2T_2 {
 					.store(TEMP_TAXI)
 					.build();
 
-		result = marmot.createDataSet(TEMP_TAXI, gcInfo, plan, true);
+		result = marmot.createDataSet(TEMP_TAXI, gcInfo, plan, DataSetOption.FORCE);
 		System.out.println("done: 택시 승하차 로그 선택, elapsed=" + watch.getElapsedMillisString());
 		result.cluster();
 		System.out.println("done: 승하차 로그 클러스터링, elapsed=" + watch.getElapsedMillisString());
@@ -98,21 +99,21 @@ public class Y2T_2 {
 									SUM("demand").as("demand_count"))
 					.store(RESULT)
 					.build();
-		result = marmot.createDataSet(RESULT, gcInfo, plan, true);
+		result = marmot.createDataSet(RESULT, gcInfo, plan, DataSetOption.FORCE);
 		
 		plan = marmot.planBuilder("새벽_01시_데이터  선택")
 					.load(RESULT)
 					.filter("hour == 1")
 					.store(RESULT01)
 					.build();
-		result = marmot.createDataSet(RESULT01, gcInfo, plan, true);
+		result = marmot.createDataSet(RESULT01, gcInfo, plan, DataSetOption.FORCE);
 		
 		plan = marmot.planBuilder("새벽_03시_데이터  선택")
 					.load(RESULT)
 					.filter("hour == 3")
 					.store(RESULT03)
 					.build();
-		result = marmot.createDataSet(RESULT03, gcInfo, plan, true);
+		result = marmot.createDataSet(RESULT03, gcInfo, plan, DataSetOption.FORCE);
 		
 		System.out.println("done, elapsed=" + watch.stopAndGetElpasedTimeString());
 		

@@ -1,5 +1,7 @@
 package anyang.energe;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.SUM;
 
 import java.util.Arrays;
@@ -11,6 +13,7 @@ import org.apache.log4j.PropertyConfigurator;
 import com.vividsolutions.jts.geom.Envelope;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -78,8 +81,8 @@ public class A06_GridAnalysisGas {
 					.project("cell_geom as the_geom, x, y, *-{cell_geom,x,y}")
 					.store(OUTPUT)
 					.build();
-		GeometryColumnInfo info = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		marmot.createDataSet(OUTPUT, info, plan, true);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
+		marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
 		
 		for ( int year: years ) {
 			extractToYear(marmot, year);
@@ -95,7 +98,7 @@ public class A06_GridAnalysisGas {
 		String projectExpr = String.format("the_geom,x,y,value_%d as value", year);
 		
 		DataSet ds = marmot.getDataSet(OUTPUT);
-		GeometryColumnInfo info = ds.getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
 		Plan plan;
 		plan = marmot.planBuilder("연도별 격자 분석 추출")
@@ -103,7 +106,7 @@ public class A06_GridAnalysisGas {
 					.project(projectExpr)
 					.store(output)
 					.build();
-		marmot.createDataSet(output, info, plan, true);
+		marmot.createDataSet(output, plan, GEOMETRY(gcInfo), FORCE);
 	}
 	
 //	private static void writeAsRaster(DataSet ds, File file, Envelope bounds, Size2d cellSize)

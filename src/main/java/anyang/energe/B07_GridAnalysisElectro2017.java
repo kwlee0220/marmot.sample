@@ -1,5 +1,7 @@
 package anyang.energe;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.SUM;
 
 import java.util.List;
@@ -79,8 +81,8 @@ public class B07_GridAnalysisElectro2017 {
 					.project("cell_geom as the_geom, x, y, *-{cell_geom,x,y}")
 					.store(OUTPUT)
 					.build();
-		GeometryColumnInfo info = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		marmot.createDataSet(OUTPUT, info, plan, true);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
+		marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
 		
 		for ( int month = 1; month <= 12; ++month ) {
 			extractToMonth(marmot, month);
@@ -96,7 +98,7 @@ public class B07_GridAnalysisElectro2017 {
 		String projectExpr = String.format("the_geom,x,y,month_%d as value", month);
 		
 		DataSet ds = marmot.getDataSet(OUTPUT);
-		GeometryColumnInfo info = ds.getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
 		Plan plan;
 		plan = marmot.planBuilder("월별 격자 분석 추출")
@@ -104,6 +106,6 @@ public class B07_GridAnalysisElectro2017 {
 					.project(projectExpr)
 					.store(output)
 					.build();
-		marmot.createDataSet(output, info, plan, true);
+		marmot.createDataSet(output, plan, GEOMETRY(gcInfo), FORCE);
 	}
 }

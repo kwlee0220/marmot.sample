@@ -12,7 +12,6 @@ import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.StopWatch;
 
 /**
  * 

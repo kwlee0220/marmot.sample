@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordSet;
@@ -62,7 +63,7 @@ public class S02_ExportCompare {
 					.sort("pnu:A,area:A")
 					.store("tmp/result")
 					.build();
-		DataSet ds = marmot.createDataSet("tmp/result", plan, true);
+		DataSet ds = marmot.createDataSet("tmp/result", plan, DataSetOption.FORCE);
 		
 		try ( PrintStream ps = new PrintStream(output);
 			RecordSet rset = ds.read() ) {

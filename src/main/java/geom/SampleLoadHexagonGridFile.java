@@ -1,11 +1,15 @@
 package geom;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -43,17 +47,16 @@ public class SampleLoadHexagonGridFile {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet dataset = marmot.getDataSet(INPUT);
-		String geomCol = dataset.getGeometryColumn();
-		String srid = dataset.getGeometryColumnInfo().srid();
+		GeometryColumnInfo gcInfo = dataset.getGeometryColumnInfo();
 		Envelope bounds = dataset.getBounds();
 		bounds.expandBy(2*SIDE_LEN, SIDE_LEN);
 
 		Plan plan = marmot.planBuilder("load_hexagon_grid")
-							.loadHexagonGridFile(bounds, srid, SIDE_LEN, 8)
+							.loadHexagonGridFile(bounds, gcInfo.srid(), SIDE_LEN, 8)
 							.spatialSemiJoin("the_geom", INPUT)
 							.store(RESULT)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, dataset.getGeometryColumnInfo(), plan, true);
+		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
