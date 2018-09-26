@@ -44,9 +44,9 @@ public class SampleImportShapefile {
 		
 		File file = new File("/mnt/data/sbdata/data/포스웨이브/서울지하철역사");
 		ImportParameters importParams = ImportParameters.create()
-													.dataset("tmp/result")
-													.geometryColumnInfo("the_geom", "EPSG:4326")
-													.force(true);
+													.setDatasetId("tmp/result")
+													.setGeometryColumnInfo("the_geom", "EPSG:4326")
+													.setForce(true);
 		ShapefileParameters shpParams = ShapefileParameters.create()
 													.charset(Charset.forName("euc-kr"))
 													.shpSrid("EPSG:5186");

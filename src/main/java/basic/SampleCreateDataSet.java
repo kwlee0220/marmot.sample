@@ -1,5 +1,7 @@
 package basic;
 
+import static marmot.DataSetOption.FORCE;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,7 +11,6 @@ import com.google.common.collect.Lists;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
@@ -87,7 +88,8 @@ public class SampleCreateDataSet {
 		RecordSet rset = RecordSets.from(schema, recordList);
 
 		// 데이터세트를 생성하고, 레코드 세트를 저장한다.
-		DataSet ds = marmot.uploadDataSet("tmp/test", rset, DataSetOption.FORCE);
+		DataSet ds = marmot.createDataSet("tmp/test", rset.getRecordSchema(), FORCE)
+							.append(rset);
 		
 		SampleUtils.printPrefix(ds, 5);
 		marmot.disconnect();

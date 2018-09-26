@@ -48,9 +48,9 @@ public class SampleImportGeoJsonStream {
 		GeoJsonParameters params = GeoJsonParameters.create()
 											.sourceSrid("EPSG:4326");
 		ImportParameters importParams = ImportParameters.create()
-													.dataset("tmp/result")
-													.geometryColumnInfo("the_geom", "EPSG:5186")
-													.force(true);
+													.setDatasetId("tmp/result")
+													.setGeometryColumnInfo("the_geom", "EPSG:5186")
+													.setForce(true);
 		Plan plan = marmot.planBuilder("import_plan")
 							.project("the_geom,emd_kor_name")
 							.build();

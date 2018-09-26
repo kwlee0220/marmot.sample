@@ -1,5 +1,7 @@
 package house.misc;
 
+import static marmot.DataSetOption.FORCE;
+
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -10,11 +12,11 @@ import java.util.stream.Collectors;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSchema;
+import marmot.RecordSet;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.rset.RecordSets;
@@ -64,7 +66,8 @@ public class S02_BuildDiffDataSet27 {
 										return rec;
 									})
 									.collect(Collectors.toList());
-		marmot.uploadDataSet(DIFF_ID_LIST, RecordSets.from(idList), DataSetOption.FORCE);
+		RecordSet idSet = RecordSets.from(idList);
+		marmot.createDataSet(DIFF_ID_LIST, idSet.getRecordSchema(), FORCE).append(idSet);
 		
 		Plan plan;
 		plan = marmot.planBuilder("test")
@@ -75,7 +78,7 @@ public class S02_BuildDiffDataSet27 {
 					.store("tmp/diff_cadastral")
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		DataSet result = marmot.createDataSet("tmp/diff_cadastral", gcInfo, plan, DataSetOption.FORCE);
+		DataSet result = marmot.createDataSet("tmp/diff_cadastral", gcInfo, plan, FORCE);
 		marmot.deleteDataSet(DIFF_ID_LIST);
 
 		Charset charset = Charset.forName("UTF-8");

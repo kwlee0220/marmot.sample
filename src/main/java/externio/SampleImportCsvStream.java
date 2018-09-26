@@ -51,9 +51,9 @@ public class SampleImportCsvStream {
 											.pointColumn("경도|위도")
 											.csvSrid("EPSG:4326");
 		ImportParameters importParams = ImportParameters.create()
-													.dataset("tmp/result")
-													.geometryColumnInfo("the_geom", "EPSG:5186")
-													.force(true);
+													.setDatasetId("tmp/result")
+													.setGeometryColumnInfo("the_geom", "EPSG:5186")
+													.setForce(true);
 		Plan plan = marmot.planBuilder("import_plan")
 							.project("the_geom,고유번호,휘발유")
 							.build();

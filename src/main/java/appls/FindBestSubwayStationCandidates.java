@@ -336,6 +336,7 @@ public class FindBestSubwayStationCandidates {
 		RecordSet rset = RecordSets.of(record);
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		marmot.uploadDataSet("분석결과/서울지역", rset, GEOMETRY(gcInfo), FORCE);
+		marmot.createDataSet("분석결과/서울지역", rset.getRecordSchema(), GEOMETRY(gcInfo), FORCE)
+				.append(rset);
 	}
 }
