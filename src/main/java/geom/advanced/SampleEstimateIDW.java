@@ -1,6 +1,7 @@
 package geom.advanced;
 
 import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -57,7 +58,7 @@ public class SampleEstimateIDW {
 						.project("the_geom, big_sq, value")
 						.store(tempPath)
 						.build();
-		result = marmot.createDataSet(tempPath, info, plan, FORCE);
+		result = marmot.createDataSet(tempPath, plan, GEOMETRY(info), FORCE);
 		result.cluster();
 		
 		plan = marmot.planBuilder("sample_estimate_idw")
@@ -66,7 +67,7 @@ public class SampleEstimateIDW {
 										TOP_K, "value")
 						.store(RESULT)
 						.build();
-		result = marmot.createDataSet(RESULT, info, plan, FORCE);
+		result = marmot.createDataSet(RESULT, plan, GEOMETRY(info), FORCE);
 		
 		marmot.deleteDataSet(tempPath);
 		

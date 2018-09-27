@@ -1,5 +1,7 @@
 package demo.dtg;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.JoinOptions.SEMI_JOIN;
 
@@ -69,7 +71,6 @@ public class TagDtgWithGrid {
 		int nworkers = (int)(ds.length() / UnitUtils.parseByteSize("20gb"));
 		
 		DataSet output;
-		GeometryColumnInfo info = new GeometryColumnInfo("the_geom", "EPSG:5186");
 
 		Plan plan;
 		plan = marmot.planBuilder("calc_histogram_road_links")
@@ -96,7 +97,8 @@ public class TagDtgWithGrid {
 					
 					.store(RESULT)
 					.build();
-		output = marmot.createDataSet(RESULT, info, plan, DataSetOption.FORCE);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
+		output = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		
 		watch.stop();
 		System.out.printf("count=%d, total elapsed time=%s%n",

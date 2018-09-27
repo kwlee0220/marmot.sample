@@ -1,5 +1,8 @@
 package demo.dtg;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Polygon;
@@ -75,7 +78,6 @@ public class SplitDtgByCadastral {
 	}
 	
 	private static DataSet getWgsPolitical(PBMarmotClient marmot, String outDsId) {
-		GeometryColumnInfo info = new GeometryColumnInfo("the_geom", "EPSG:4326");
 		
 		Plan plan;
 		plan = marmot.planBuilder("to_wgs84_political")
@@ -83,7 +85,8 @@ public class SplitDtgByCadastral {
 					.transformCrs("the_geom", "EPSG:5186", "EPSG:4326", "the_geom")
 					.store(outDsId)
 					.build();
-		DataSet output = marmot.createDataSet(outDsId, info, plan, DataSetOption.FORCE);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:4326");
+		DataSet output = marmot.createDataSet(outDsId, plan, GEOMETRY(gcInfo), FORCE);
 		
 		ClusterDataSetOptions opts = ClusterDataSetOptions.create().workerCount(1);
 		output.cluster(opts);

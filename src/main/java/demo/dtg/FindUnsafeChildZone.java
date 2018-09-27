@@ -12,7 +12,6 @@ import com.vividsolutions.jts.geom.Polygon;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -62,7 +61,6 @@ public class FindUnsafeChildZone {
 		Polygon key = getValidWgsBounds(schools.getBounds());
 		
 		DataSet output;
-		GeometryColumnInfo info = marmot.getDataSet(CHILD_ZONE).getGeometryColumnInfo();
 
 		Plan plan;
 		plan = marmot.planBuilder("find average speed around primary schools")
@@ -86,7 +84,8 @@ public class FindUnsafeChildZone {
 					
 					.store(RESULT)
 					.build();
-		output = marmot.createDataSet(RESULT, info, plan, DataSetOption.FORCE);
+		GeometryColumnInfo gcInfo = marmot.getDataSet(CHILD_ZONE).getGeometryColumnInfo();
+		output = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		
 		watch.stop();
 		System.out.printf("count=%d, total elapsed time=%s%n",

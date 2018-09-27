@@ -1,12 +1,13 @@
 package demo.dtg;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.COUNT;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -46,7 +47,6 @@ public class BuildGridCellHistogram {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet output;
-		GeometryColumnInfo info = new GeometryColumnInfo("the_geom", "EPSG:5186");
 
 		Plan plan;
 		plan = marmot.planBuilder("build_histogram_grid")
@@ -58,7 +58,8 @@ public class BuildGridCellHistogram {
 					.project("grid as the_geom,count")
 					.store(RESULT)
 					.build();
-		output = marmot.createDataSet(RESULT, info, plan, DataSetOption.FORCE);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
+		output = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		
 		watch.stop();
 		System.out.printf("count=%d, total elapsed time=%s%n",

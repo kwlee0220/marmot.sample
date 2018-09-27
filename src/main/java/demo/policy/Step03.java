@@ -1,13 +1,14 @@
 package demo.policy;
 
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 import static marmot.plan.SpatialJoinOption.NEGATED;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -46,14 +47,14 @@ public class Step03 {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet ds = marmot.getDataSet(INPUT);
-		GeometryColumnInfo info = ds.getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
 		Plan plan = marmot.planBuilder("노인복지시설필요지역추출")
 						.load(INPUT)
-						.spatialSemiJoin(info.name(), PARAM, NEGATED) // (3) 교차반전
+						.spatialSemiJoin(gcInfo.name(), PARAM, NEGATED) // (3) 교차반전
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, info, plan, DataSetOption.FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		result.cluster();
 		
 		watch.stop();

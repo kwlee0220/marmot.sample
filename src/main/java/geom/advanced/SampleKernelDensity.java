@@ -1,10 +1,12 @@
 package geom.advanced;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
@@ -53,7 +55,7 @@ public class SampleKernelDensity {
 					.estimateKernelDensity("the_geom", INPUT, VALUE_COLUMN, RADIUS, VALUE_COLUMN)
 					.store(RESULT)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, info, plan, DataSetOption.FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(info), FORCE);
 		
 		SampleUtils.printPrefix(result, 5);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());

@@ -82,7 +82,7 @@ public class B06_GridAnalysisGas2017 {
 					.store(OUTPUT)
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		marmot.createDataSet(OUTPUT, gcInfo, plan, GEOMETRY(gcInfo), FORCE);
+		marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
 		
 		for ( int month = 1; month <= 12; ++month ) {
 			extractToMonth(marmot, month);
