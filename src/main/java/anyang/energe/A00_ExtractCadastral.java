@@ -54,14 +54,12 @@ public class A00_ExtractCadastral {
 					.load(INPUT)
 					.project("the_geom, pnu")
 					.shard(1)
-					.store(OUTPUT, BLOCK_SIZE(blockSize))
 					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE,
+												BLOCK_SIZE(blockSize));
 		
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 10);
-		
-		marmot.disconnect();
 	}
 }

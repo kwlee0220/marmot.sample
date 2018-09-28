@@ -1,12 +1,12 @@
 package anyang.energe;
 
+import static marmot.DataSetOption.FORCE;
 import static marmot.optor.AggregateFunction.SUM;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -50,9 +50,8 @@ public class A02_SumMonthElectroUsages {
 					.groupBy("pnu,year")
 						.aggregate(SUM("사용량").as("usage"))
 					.project("pnu, year, usage")
-					.store(OUTPUT)
 					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, DataSetOption.FORCE);
+		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 10);

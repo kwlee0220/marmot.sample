@@ -72,7 +72,6 @@ public class A03_MapMatchingGas {
 						.loadEquiJoin(CADASTRAL, "pnu", INTERM, "pnu",
 										"left.*," + rightCols, LEFT_OUTER_JOIN(17))
 						.update(updateExpr)
-						.store(OUTPUT)
 						.build();
 		DataSet result = marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
 		marmot.deleteDataSet(INTERM);

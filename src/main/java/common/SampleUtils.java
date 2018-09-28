@@ -10,7 +10,6 @@ import org.apache.commons.lang.SystemUtils;
 import com.google.common.collect.Maps;
 
 import marmot.DataSet;
-import marmot.MarmotRuntime;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
@@ -50,11 +49,6 @@ public class SampleUtils {
 		try ( RecordSet rset = dataset.read() ) {
 			printPrefix(dataset.read(), count);
 		}
-	}
-	
-	public static void printMarmotFilePrefix(MarmotRuntime marmot, String path, int count) {
-		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		printPrefix(marmot.readMarmotFile(path), count);
 	}
 	
 	public static void printPrefix(RecordSet rset, int count) {

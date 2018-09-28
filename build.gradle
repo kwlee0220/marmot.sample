@@ -19,10 +19,6 @@ repositories {
 		url "https://jai.dev.java.net/"
 	}	
     mavenCentral()
-    maven {
-    	name = 'dist'
-    	url = "file:${distRepositoryDir}"
-    }
 }
 
 dependencies {
@@ -53,14 +49,6 @@ task javadocJar(type: Jar) {
 artifacts {
 	archives sourceJar
 	archives javadocJar
-}
-
-uploadArchives {
-	repositories {
-		mavenDeployer {
-			repository(url: "file:${distRepositoryDir}")
-		}
-	}
 }
 
 apply plugin: 'eclipse'

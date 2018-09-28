@@ -1,15 +1,16 @@
 package geom.advanced;
 
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import com.google.common.collect.Maps;
 
 import common.SampleUtils;
+import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.Plan;
-import marmot.Record;
+import marmot.RecordSet;
 import marmot.command.MarmotCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.LISAWeight;
@@ -47,21 +48,16 @@ public class SampleFindLocalMoranI {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
-		String tempPath = "tmp/" + UUID.randomUUID();
 		Plan plan0 = marmot.planBuilder("find_statistics")
 								.load(INPUT)
 								.aggregate(AggregateFunction.COUNT(),
 											AggregateFunction.AVG(VALUE_COLUMN),
 											AggregateFunction.STDDEV(VALUE_COLUMN))
-								.storeMarmotFile(tempPath)
 								.build();
-		marmot.execute(plan0);
-		
-		Map<String,Object> params = Maps.newHashMap();
 
-		Record result = marmot.readMarmotFile(tempPath).stream().findAny().get();
-		params.putAll(result.toMap());
-		marmot.deleteFile(tempPath);
+		Map<String,Object> params = Maps.newHashMap();
+		RecordSet result0 = marmot.executeWithTemporaryDataSet(plan0);
+		params.putAll(result0.getFirst().get().toMap());
 		
 		double avg = (Double)params.get("avg");
 		Plan plan1 = marmot.planBuilder("find_statistics2")
@@ -72,23 +68,21 @@ public class SampleFindLocalMoranI {
 							.aggregate(AggregateFunction.SUM("diff").as("diffSum"),
 										AggregateFunction.SUM("diff2").as("diff2Sum"),
 										AggregateFunction.SUM("diff4").as("diff4Sum"))
-							.storeMarmotFile(tempPath)
 							.build();
-		marmot.execute(plan1);
-		Record result2 = marmot.readMarmotFile(tempPath).stream().findAny().get();
-		params.putAll(result2.toMap());
-		marmot.deleteFile(tempPath);
+
+		RecordSet result1 = marmot.executeWithTemporaryDataSet(plan1);
+		params.putAll(result1.getFirst().get().toMap());
 		
 		Plan plan = marmot.planBuilder("local_spatial_auto_correlation")
 								.loadLocalMoranI(INPUT, "uid", "fctr_meas", 1000,
 												LISAWeight.FIXED_DISTANCE_BAND)
 								.project("uid,moran_i,moran_zscore,moran_pvalue")
 								.sort("UID")
-								.storeMarmotFile(RESULT)
+								.store(RESULT)
 								.build();
-		marmot.deleteFile(RESULT);
-		marmot.execute(plan);
+		DataSet result3 = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
+		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
-		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 5);
+		SampleUtils.printPrefix(result3, 5);
 	}
 }

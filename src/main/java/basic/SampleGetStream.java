@@ -58,7 +58,7 @@ public class SampleGetStream {
 							.query(INPUT, SpatialRelation.INTERSECTS, key)
 							.build();
 		watch = StopWatch.start();
-		RecordSet rset = marmot.getStream("test", plan);
+		RecordSet rset = marmot.executeToStream("test", plan);
 
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 		Record output = DefaultRecord.of(rset.getRecordSchema());

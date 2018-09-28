@@ -1,8 +1,11 @@
 package geom;
 
+import static marmot.DataSetOption.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
+import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.optor.geo.SpatialRelation;
@@ -45,12 +48,11 @@ public class SampleLoadSpatialIndexJoin {
 														"left.*,right.{the_geom as the_geom2}")
 								.intersection("the_geom", "the_geom2", "the_geom")
 								.project("*-{the_geom2}")
-								.storeMarmotFile(RESULT)
+								.store(RESULT)
 								.build();
-		marmot.deleteFile(RESULT);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 10);
+		SampleUtils.printPrefix(result, 10);
 	}
 }

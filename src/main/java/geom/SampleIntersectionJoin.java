@@ -1,8 +1,11 @@
 package geom;
 
+import static marmot.DataSetOption.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
+import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -43,14 +46,12 @@ public class SampleIntersectionJoin {
 								.load(OUTER)
 								.buffer("the_geom", 50)
 								.intersectionJoin("the_geom", INNER)
-								.storeMarmotFile(RESULT)
+								.store(RESULT)
 								.build();
-
-		marmot.deleteFile(RESULT);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE);
 		System.out.println("elapsed time=" + watch.stopAndGetElpasedTimeString());
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 5);
+		SampleUtils.printPrefix(result, 5);
 	}
 }

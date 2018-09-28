@@ -1,5 +1,7 @@
 package geom;
 
+import static marmot.DataSetOption.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -60,15 +62,14 @@ public class SampleAssignSquareGridCell {
 									.aggregate(AggregateFunction.SUM("count").as("count"))
 								.expand("x:int,y:int", "x = cell_pos.x; y = cell_pos.y")
 								.project("cell_geom as the_geom,x,y,count")
-								.storeMarmotFile(RESULT)
+								.store(RESULT)
 								.build();
-
-		marmot.deleteFile(RESULT);
-		marmot.execute(plan);
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE);
 		watch.stop();
-		
+
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		SampleUtils.printMarmotFilePrefix(marmot, RESULT, 5);
+		SampleUtils.printPrefix(result, 5);
+		
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

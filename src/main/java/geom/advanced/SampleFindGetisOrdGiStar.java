@@ -1,5 +1,7 @@
 package geom.advanced;
 
+import static marmot.DataSetOption.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.Plan;
@@ -44,10 +46,9 @@ public class SampleFindGetisOrdGiStar {
 												LISAWeight.FIXED_DISTANCE_BAND)
 								.project("UID,gi_zscore,gi_pvalue")
 								.sort("UID")
-								.storeAsCsv(RESULT, ',')
+								.store(RESULT)
 								.build();
-		marmot.deleteFile(RESULT);
-		marmot.execute(plan);
+		marmot.createDataSet(RESULT, plan, FORCE);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 //		RecordSet rset = marmot.readLayer(RESULT);
