@@ -1,8 +1,6 @@
 package common;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Map;
 
 import org.apache.commons.lang.SystemUtils;
@@ -13,7 +11,6 @@ import marmot.DataSet;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
-import marmot.remote.protobuf.PBMarmotClient;
 import marmot.support.DefaultRecord;
 
 /**
@@ -32,17 +29,6 @@ public class SampleUtils {
 		else {
 			TEMP_DIR = new File(".");
 		}
-	}
-	
-	public static void writeAsShapefile(PBMarmotClient marmot, String dsId, String path)
-		throws IOException {
-		writeAsShapefile(marmot, marmot.getDataSet(dsId), path);
-	}
-	
-	public static void writeAsShapefile(PBMarmotClient marmot, DataSet ds, String path)
-		throws IOException {
-		File file = new File(TEMP_DIR, path);
-		marmot.writeToShapefile(ds, file, Charset.forName("euc-kr"));
 	}
 	
 	public static void printPrefix(DataSet dataset, int count) {
