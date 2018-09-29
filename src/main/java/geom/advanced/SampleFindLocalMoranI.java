@@ -4,8 +4,6 @@ import java.util.Map;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import com.google.common.collect.Maps;
-
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.DataSetOption;
@@ -37,10 +35,8 @@ public class SampleFindLocalMoranI {
 											AggregateFunction.AVG(VALUE_COLUMN),
 											AggregateFunction.STDDEV(VALUE_COLUMN))
 								.build();
-
-		Map<String,Object> params = Maps.newHashMap();
-		RecordSet result0 = marmot.executeWithTemporaryDataSet(plan0);
-		params.putAll(result0.getFirst().get().toMap());
+		
+		Map<String,Object> params = marmot.executeToRecord(plan0).get().toMap();
 		
 		double avg = (Double)params.get("avg");
 		Plan plan1 = marmot.planBuilder("find_statistics2")
@@ -53,7 +49,7 @@ public class SampleFindLocalMoranI {
 										AggregateFunction.SUM("diff4").as("diff4Sum"))
 							.build();
 
-		RecordSet result1 = marmot.executeWithTemporaryDataSet(plan1);
+		RecordSet result1 = marmot.executeToRecordSet(plan1);
 		params.putAll(result1.getFirst().get().toMap());
 		
 		Plan plan = marmot.planBuilder("local_spatial_auto_correlation")
