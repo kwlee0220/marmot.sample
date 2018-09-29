@@ -9,7 +9,7 @@ import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSet;
-import marmot.command.MarmotCommands;
+import marmot.command.MarmotClient;
 import marmot.optor.geo.SpatialRelation;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.support.DefaultRecord;
@@ -21,7 +21,7 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleGetStream {
+public class SampleExecuteToStream {
 	private static final String INPUT = "로그/나비콜/택시로그";
 	private static final String INPUT2 = "구역/행정동코드";
 	private static final String RESULT = "tmp/result";
@@ -38,8 +38,8 @@ public class SampleGetStream {
 			cl.exitWithUsage(0);
 		}
 
-		String host = MarmotCommands.getMarmotHost(cl);
-		int port = MarmotCommands.getMarmotPort(cl);
+		String host = MarmotClient.getMarmotHost(cl);
+		int port = MarmotClient.getMarmotPort(cl);
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);

@@ -1,5 +1,7 @@
 package basic;
 
+import static marmot.DataSetOption.BLOCK_SIZE;
+import static marmot.DataSetOption.COMPRESS;
 import static marmot.DataSetOption.FORCE;
 
 import java.util.Arrays;
@@ -14,15 +16,12 @@ import marmot.DataSet;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
-import marmot.command.MarmotCommands;
+import marmot.command.MarmotClient;
 import marmot.geo.GeoClientUtils;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.rset.RecordSets;
 import marmot.support.DefaultRecord;
 import marmot.type.DataType;
-import utils.CommandLine;
-import utils.CommandLineParser;
-import utils.StopWatch;
 
 /**
  * 
@@ -31,24 +30,9 @@ import utils.StopWatch;
 public class SampleCreateDataSet {
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
-		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
-		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
-		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
-		
-		CommandLine cl = parser.parseArgs(args);
-		if ( cl.hasOption("help") ) {
-			cl.exitWithUsage(0);
-		}
 
-		String host = MarmotCommands.getMarmotHost(cl);
-		int port = MarmotCommands.getMarmotPort(cl);
-		
-		StopWatch watch = StopWatch.start();
-		
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-//		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
+		PBMarmotClient marmot = MarmotClient.connect();
 		
 		// 생성될 데이터세트의 스키마를 정의함.
 		RecordSchema schema = RecordSchema.builder()
@@ -60,6 +44,13 @@ public class SampleCreateDataSet {
 		
 		// 생성할 데이터세트에 저장될 레코드를 담을 레코드 객체를 생성
 		Record record = DefaultRecord.of(schema);
+		
+		DataSet ds;
+		ds = marmot.createDataSet("tmp/result", schema, FORCE);
+		System.out.printf("block_size=%d, compression=%s(=false)%n", ds.getBlockSize(), ds.getCompression());
+		
+		ds = marmot.createDataSet("tmp/result", schema, BLOCK_SIZE(64), COMPRESS, FORCE);
+		System.out.printf("block_size=%d(=64), compression=%s(=true)%n", ds.getBlockSize(), ds.getCompression());
 		
 		// 생성할 데이터세트에 저장될 레코드들의 리스트를 생성.
 		List<Record> recordList = Lists.newArrayList();
@@ -88,10 +79,9 @@ public class SampleCreateDataSet {
 		RecordSet rset = RecordSets.from(schema, recordList);
 
 		// 데이터세트를 생성하고, 레코드 세트를 저장한다.
-		DataSet ds = marmot.createDataSet("tmp/test", rset.getRecordSchema(), FORCE)
-							.append(rset);
+		ds = marmot.createDataSet("tmp/test", rset.getRecordSchema(), FORCE)
+					.append(rset);
 		
 		SampleUtils.printPrefix(ds, 5);
-		marmot.disconnect();
 	}
 }

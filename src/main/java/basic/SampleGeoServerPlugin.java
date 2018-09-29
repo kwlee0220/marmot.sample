@@ -15,7 +15,7 @@ import org.opengis.feature.type.GeometryDescriptor;
 
 import com.google.common.collect.Maps;
 
-import marmot.command.MarmotCommands;
+import marmot.command.MarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
 
@@ -38,8 +38,8 @@ public class SampleGeoServerPlugin {
 		if ( cl.hasOption("help") ) {
 			cl.exitWithUsage(0);
 		}
-		String host = MarmotCommands.getMarmotHost(cl);
-		int port = MarmotCommands.getMarmotPort(cl);
+		String host = MarmotClient.getMarmotHost(cl);
+		int port = MarmotClient.getMarmotPort(cl);
 		
 		Map<String,Serializable> params = Maps.newHashMap();
 		params.put("host", host);

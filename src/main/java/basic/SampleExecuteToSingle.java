@@ -3,12 +3,9 @@ package basic;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.Plan;
-import marmot.command.MarmotCommands;
+import marmot.command.MarmotClient;
 import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.CommandLine;
-import utils.CommandLineParser;
-import utils.StopWatch;
 
 /**
  * 
@@ -19,34 +16,15 @@ public class SampleExecuteToSingle {
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
-		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
-		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
-		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
-		
-		CommandLine cl = parser.parseArgs(args);
-		if ( cl.hasOption("help") ) {
-			cl.exitWithUsage(0);
-		}
 
-		String host = MarmotCommands.getMarmotHost(cl);
-		int port = MarmotCommands.getMarmotPort(cl);
-		
-		StopWatch watch = StopWatch.start();
-		
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
+		PBMarmotClient marmot = MarmotClient.connect();
 		
 		Plan plan = marmot.planBuilder("test")
 							.load(INPUT)
 							.aggregate(AggregateFunction.COUNT())
 							.build();
-		long count = marmot.executeToSingle(plan, false)
-							.get()
-							.getLong(0);
-		watch.stop();
-		
+		Long count = marmot.executeToLong(plan).get();
 		System.out.println("count=" + count);
-		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

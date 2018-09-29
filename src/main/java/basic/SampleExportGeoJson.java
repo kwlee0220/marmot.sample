@@ -6,12 +6,9 @@ import java.nio.charset.StandardCharsets;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
-import marmot.command.MarmotCommands;
+import marmot.command.MarmotClient;
 import marmot.externio.geojson.GeoJsonRecordSetWriter;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.CommandLine;
-import utils.CommandLineParser;
-import utils.StopWatch;
 
 
 /**
@@ -24,34 +21,16 @@ public class SampleExportGeoJson {
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
-		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
-		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
-		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
-		
-		CommandLine cl = parser.parseArgs(args);
-		if ( cl.hasOption("help") ) {
-			cl.exitWithUsage(0);
-		}
 
-		String host = MarmotCommands.getMarmotHost(cl);
-		int port = MarmotCommands.getMarmotPort(cl);
-		
-		StopWatch watch = StopWatch.start();
-		
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-//		KryoMarmotClient marmot = KryoMarmotClient.connect(host, port);
+		PBMarmotClient marmot = MarmotClient.connect();
 		
 		DataSet ds = marmot.getDataSet(INPUT);
 		try ( GeoJsonRecordSetWriter writer = GeoJsonRecordSetWriter.get(new File(OUTPUT),
 																		StandardCharsets.UTF_8)
 																	.prettyPrinter(true) ) {
 			long ncount = writer.write(ds);
-			watch.stop();
-			
-			System.out.printf("written %d records into %s, elapsed=%s%n",
-								ncount, OUTPUT, watch.getElapsedMillisString());
+			System.out.printf("written %d records into %s%n", ncount, OUTPUT);
 		}
 	}
 }

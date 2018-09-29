@@ -11,7 +11,7 @@ import marmot.DataSet;
 import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.command.MarmotCommands;
+import marmot.command.MarmotClient;
 import marmot.geo.GeoClientUtils;
 import marmot.geo.command.ClusterDataSetOptions;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -42,8 +42,8 @@ public class SplitDtgByCadastral {
 			cl.exitWithUsage(0);
 		}
 
-		String host = MarmotCommands.getMarmotHost(cl);
-		int port = MarmotCommands.getMarmotPort(cl);
+		String host = MarmotClient.getMarmotHost(cl);
+		int port = MarmotClient.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
 		
