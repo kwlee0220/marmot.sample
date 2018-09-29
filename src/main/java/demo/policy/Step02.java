@@ -1,9 +1,12 @@
 package demo.policy;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
+import static marmot.ExecutePlanOption.DISABLE_LOCAL_EXEC;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.CreateDataSetParameters;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
@@ -47,12 +50,9 @@ public class Step02 {
 		Plan plan = marmot.planBuilder("노인복지시설_경로당_추출_버퍼")
 						.load(INPUT)
 						.buffer(info.name(), 400)	// (2) 버퍼추정
-						.store(RESULT)
 						.build();
-		CreateDataSetParameters params = new CreateDataSetParameters(RESULT, plan)
-																.setGeometryColumnInfo(info)
-																.setForce();
-		DataSet result = marmot.createDataSet(params);
+		DataSet result = marmot.createDataSet(RESULT, plan, DISABLE_LOCAL_EXEC,
+												GEOMETRY(info), FORCE);
 		result.cluster();
 		
 		watch.stop();

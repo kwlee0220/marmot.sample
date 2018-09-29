@@ -1,9 +1,12 @@
 package demo.policy;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
+import static marmot.ExecutePlanOption.DISABLE_LOCAL_EXEC;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.CreateDataSetParameters;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
@@ -49,10 +52,8 @@ public class Step01 {
 						.filter("induty_nm == '경로당'")			// (1) 영역분석
 						.store(RESULT)
 						.build();
-		CreateDataSetParameters params = new CreateDataSetParameters(RESULT, plan)
-																.setGeometryColumnInfo(info)
-																.setForce();
-		DataSet result = marmot.createDataSet(params);
+		DataSet result = marmot.createDataSet(RESULT, plan, DISABLE_LOCAL_EXEC,
+												GEOMETRY(info), FORCE);
 		result.cluster();
 		
 		watch.stop();
