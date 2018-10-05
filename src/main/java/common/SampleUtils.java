@@ -33,7 +33,7 @@ public class SampleUtils {
 	
 	public static void printPrefix(DataSet dataset, int count) {
 		try ( RecordSet rset = dataset.read() ) {
-			printPrefix(dataset.read(), count);
+			printPrefix(rset, count);
 		}
 	}
 	

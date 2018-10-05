@@ -35,17 +35,18 @@ public class SampleMarmotClient {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		marmot.deleteDataSet("tmp/result");
-		
-		DataSet ds;
-		
-		// 데이터세트를 읽어 화면에 출력
-		//
-		ds = marmot.getDataSet("교통/지하철/서울역사");
-		try ( RecordSet rset = ds.read() ) {
-			rset.stream().limit(5).forEach(System.out::println);
-		}
+
 		
 		Plan plan;
+		DataSet ds;
+	
+		// 데이터세트를 읽어 화면에 출력
+		//
+//		ds = marmot.getDataSet("교통/지하철/서울역사");
+//		try ( RecordSet rset = ds.read() ) {
+//			rset.stream().limit(5).forEach(System.out::println);
+//		}
+		
 		RecordSet rset;
 		
 		// Plan을 이용한 데이터 접근
@@ -55,8 +56,8 @@ public class SampleMarmotClient {
 					.filter("kor_sub_nm.length() > 5")
 					.project("sub_sta_sn,kor_sub_nm")
 					.build();
-		rset = marmot.executeLocally(plan);
-		SampleUtils.printPrefix(rset, 5);
+//		rset = marmot.executeLocally(plan);
+//		SampleUtils.printPrefix(rset, 5);
 		
 		// 사용자가 제공하는 입력 레코드세트를 활용한 Plan 수행.
 		//
@@ -65,8 +66,12 @@ public class SampleMarmotClient {
 					.filter("kor_sub_nm.length() > 5")
 					.project("sub_sta_sn,kor_sub_nm")
 					.build();
-		rset = marmot.executeLocally(plan, ds.read());
-		SampleUtils.printPrefix(rset, 5);
+		
+		try ( RecordSet input = ds.read() ) {
+			try ( RecordSet result = marmot.executeLocally(plan, input) ) {
+				SampleUtils.printPrefix(result, 5);
+			}
+		}
 		
 		marmot.disconnect();
 	}
