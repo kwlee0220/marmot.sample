@@ -6,8 +6,6 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.google.protobuf.util.JsonFormat;
 
-import marmot.Plan;
-import marmot.RecordSchema;
 import marmot.command.MarmotClient;
 import marmot.plan.ParseCsvOption;
 import marmot.plan.RecordScript;
@@ -58,7 +56,6 @@ public class PrintPlanAsJson {
 //					.parse("사용년월,대지위치,도로명_대지위치,시군구코드,법정동코드,대지구분코드,번,지,새주소_일련번호,새주소_도로코드,새주소_지상지하코드,새주소_본번,새주소_부번,사용량")
 //					.parse("시군구,번지,본번,부번,단지명,전월세구분,전용면적,계약년월,계약일,보증금,월세,층,건축년도,도로명")
 //					.parse("STD_YM,BLOCK_CD,X_COORD,Y_COORD,AVG_00TMST,AVG_01TMST,AVG_02TMST,AVG_03TMST,AVG_04TMST,AVG_05TMST,AVG_06TMST,AVG_07TMST,AVG_08TMST,AVG_09TMST,AVG_10TMST,AVG_11TMST,AVG_12TMST,AVG_13TMST,AVG_14TMST,AVG_15TMST,AVG_16TMST,AVG_17TMST,AVG_18TMST,AVG_19TMST,AVG_20TMST,AVG_21TMST,AVG_22TMST,AVG_23TMST")
-//					.parse("도로명코드,도로명,도로명로마자,읍면동_일련번호,시도명,시도명로마자,시군구명,시군구명로마자,읍면동명,읍면동명로마자,읍면동구분,읍면동코드,사용여부,변경사유,변경이력,고시일자,말소일자")
 					.toArray(new String[0]);
 		
 		String colDecls = FStream.range(0, 24)
@@ -78,16 +75,19 @@ public class PrintPlanAsJson {
 //					.project("고유번호,기준년도,기준월,개별공시지가")
 //					.assignUid("id")
 //					.parseCsv(',', HEADER(header))
-					.parseCsv(',', ParseCsvOption.HEADER(header), ParseCsvOption.COMMENT('#'))
+//					.parseCsv(',', ParseCsvOption.HEADER(header), ParseCsvOption.COMMENT('#'))
 //					.parseCsv('|', HEADER(header))
-					.expand1("status:byte")
-					.toPoint("xpos", "ypos", "the_geom")
-					.transformCrs("the_geom", "EPSG:5179", "EPSG:5186")
+//					.expand1("status:byte")
+//					.parse("도로명코드,도로명,도로명로마자,읍면동_일련번호,시도명,시도명로마자,시군구명,시군구명로마자,읍면동명,읍면동명로마자,읍면동구분,읍면동코드,사용여부,변경사유,변경이력,고시일자,말소일자")
+					.expand1("the_geom:polygon", "ST_GeomFromGeoJSON(다발지역폴리곤)")
+					.toPoint("경도", "위도", "다발지점")
+					.transformCrs("the_geom", "EPSG:4326", "EPSG:5186")
+					.transformCrs("다발지점", "EPSG:4326", "EPSG:5186")
 //					.expand1("pnu:string", "시군구코드 + 법정동코드 + 대지구분코드 + 번 + 지")
 //					.parseCsv('|', HEADER(header), TRIM_FIELD)
 //					.expand("기준년도:short,개별공시지가:long")
-					.project("the_geom,*-{the_geom,xpos,ypos,besselX,besselY,month,sid_cd}")
-//					.expand("읍면동구분:byte,사용여부:byte,변경사유:byte")
+					.project("the_geom,*-{the_geom,경도,위도}")
+					.expand("발생건수:int,사상자수:int,사망자수:int,중상자수:int,경상자수:int,부상신고자수:int")
 //					.transformCrs("the_geom", "EPSG:5179", "aaa", "EPSG:5186")
 //					.update("기준년도=(기준년도.length() > 0) ? 기준년도 : '2017'; 기준월=(기준월.length() > 0) ? 기준월 : '01'")
 //					.expand1("거래금액:int",script)
