@@ -12,6 +12,7 @@ import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordSet;
+import marmot.SpatialClusterInfo;
 import marmot.command.MarmotClient;
 import marmot.remote.protobuf.PBMarmotClient;
 
@@ -32,11 +33,11 @@ public class SampleQuerySpatialCluster {
 		Envelope bounds = getSeoChoGu(marmot);
 		
 		DataSet buildings = marmot.getDataSet(INPUT);
-		List<String> quadKeys = buildings.querySpatialClusterKeyAll(bounds);
-		System.out.println("quad_keys:  " + quadKeys);
+		List<SpatialClusterInfo> infos = buildings.querySpatialClusterInfo(bounds);
+		System.out.println("quad_keys:  " + infos);
 		
-		Option<String> cqlExpr = Option.some("grnd_flr >= 5");
-		try ( RecordSet rset = buildings.readSpatialCluster(quadKeys.get(0), cqlExpr) ) {
+		Option<String> cqlExpr = Option.some("grnd_flr >= 20");
+		try ( RecordSet rset = buildings.readSpatialCluster(infos.get(0).getQuadKey(), cqlExpr) ) {
 			SampleUtils.printPrefix(rset, 10);
 		}
 	}
