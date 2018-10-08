@@ -3,16 +3,10 @@ package marmot;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
 import io.vavr.control.Option;
-import marmot.DataSet;
-import marmot.MarmotRuntime;
-import marmot.Plan;
-import marmot.RecordSet;
 import marmot.command.MarmotClient;
-import marmot.geo.GeoClientUtils;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -30,10 +24,9 @@ public class SampleQuery {
 		PBMarmotClient marmot = MarmotClient.connect();
 		
 		Envelope bounds = getSeoChoDong(marmot);
-		Geometry key = GeoClientUtils.toPolygon(bounds);
 		
 		DataSet ds = marmot.getDataSet(INPUT);
-		try ( RecordSet rset = ds.query(key, Option.some("trnsit_yn = '1'")) ) {
+		try ( RecordSet rset = ds.queryRange(bounds, Option.some("trnsit_yn = '1'")) ) {
 			SampleUtils.printPrefix(rset, 5);
 		}
 	}
