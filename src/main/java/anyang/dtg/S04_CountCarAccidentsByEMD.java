@@ -1,4 +1,4 @@
-package anyang.minwon;
+package anyang.dtg;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
@@ -10,7 +10,7 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClient;
-import marmot.optor.JoinOptions;
+import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 
@@ -18,10 +18,10 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S02_JoinParkAndSent_ID {
-	private static final String PARK = "기타/안양대/도봉구/공원";
-	private static final String EMOTION = "기타/안양대/도봉구/공원_감성분석";
-	private static final String OUTPUT = "분석결과/안양대/도봉구/공원_감석분석_맵_ID";
+public class S04_CountCarAccidentsByEMD {
+	private static final String ACCIDENT = "분석결과/안양대/도봉구/사망사고";
+	private static final String EMD = "기타/안양대/도봉구/행정동_구역";
+	private static final String OUTPUT = "분석결과/안양대/도봉구/읍면동별_사망사고_빈도";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -32,12 +32,11 @@ public class S02_JoinParkAndSent_ID {
 		PBMarmotClient marmot = MarmotClient.connect();
 
 		Plan plan;
-		plan = marmot.planBuilder("이름기반 공원 감성분석 맵매칭_ID")
-					.load(PARK)
-					.join("id", EMOTION, "id", "the_geom,param.*-{the_geom}",
-							JoinOptions.INNER_JOIN())
-					.build();
-		GeometryColumnInfo gcInfo = marmot.getDataSet(PARK).getGeometryColumnInfo();
+		plan = marmot.planBuilder("읍면동별 사망사고 빈도집계")
+						.load(EMD)
+						.spatialAggregateJoin("the_geom", ACCIDENT, AggregateFunction.COUNT())
+						.build();
+		GeometryColumnInfo gcInfo = marmot.getDataSet(ACCIDENT).getGeometryColumnInfo();
 		DataSet result = marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		

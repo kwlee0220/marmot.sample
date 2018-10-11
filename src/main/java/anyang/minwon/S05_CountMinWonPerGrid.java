@@ -21,7 +21,7 @@ import utils.StopWatch;
 public class S05_CountMinWonPerGrid {
 	private static final String MINWON = "기타/안양대/도봉구/민원";
 	private static final String GRID = "기타/안양대/도봉구/GRID_100";
-	private static final String OUTPUT = "분석결과/안양대/민원/격자별_민원수";
+	private static final String OUTPUT = "분석결과/안양대/도봉구/격자별_민원수";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -32,7 +32,7 @@ public class S05_CountMinWonPerGrid {
 		PBMarmotClient marmot = MarmotClient.connect();
 
 		Plan plan;
-		plan = marmot.planBuilder("연별 가스 사용량 합계")
+		plan = marmot.planBuilder("격자별_민원수 합계")
 					.load(GRID)
 					.spatialAggregateJoin("the_geom", MINWON, AggregateFunction.COUNT())
 					.build();

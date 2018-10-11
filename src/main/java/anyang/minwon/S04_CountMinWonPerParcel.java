@@ -1,11 +1,13 @@
 package anyang.minwon;
 
 import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClient;
 import marmot.optor.JoinOptions;
@@ -19,7 +21,7 @@ import utils.StopWatch;
 public class S04_CountMinWonPerParcel {
 	private static final String MINWON = "기타/안양대/도봉구/민원";
 	private static final String PARCEL = "기타/안양대/도봉구/필지";
-	private static final String OUTPUT = "분석결과/안양대/민원/필지별_민원수";
+	private static final String OUTPUT = "분석결과/안양대/도봉구/필지별_민원수";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -30,15 +32,16 @@ public class S04_CountMinWonPerParcel {
 		PBMarmotClient marmot = MarmotClient.connect();
 
 		Plan plan;
-		plan = marmot.planBuilder("연별 가스 사용량 합계")
+		plan = marmot.planBuilder("필지별_민원수 합계")
 					.loadEquiJoin(MINWON, "all_parcel_layer_id", PARCEL, "id",
 									"right.{the_geom,id}, left.*-{the_geom,all_parcel_layer_id}",
-									JoinOptions.INNER_JOIN())
+									JoinOptions.RIGHT_OUTER_JOIN())
 					.groupBy("id")
 						.tagWith("the_geom")
 						.count()
 					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE);
+		GeometryColumnInfo gcInfo = marmot.getDataSet(PARCEL).getGeometryColumnInfo();
+		DataSet result = marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

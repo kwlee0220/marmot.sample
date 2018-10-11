@@ -18,6 +18,9 @@ repositories {
 //	maven {
 //		url "https://jai.dev.java.net/"
 //	}	
+	maven {
+		url "http://repo.boundlessgeo.com/main/"
+	}
     mavenCentral()
 }
 
