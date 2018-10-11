@@ -12,10 +12,6 @@ import org.apache.log4j.PropertyConfigurator;
 import com.google.common.collect.Lists;
 
 import common.SampleUtils;
-import marmot.DataSet;
-import marmot.Record;
-import marmot.RecordSchema;
-import marmot.RecordSet;
 import marmot.command.MarmotClient;
 import marmot.geo.GeoClientUtils;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -79,9 +75,10 @@ public class SampleCreateDataSet {
 		RecordSet rset = RecordSets.from(schema, recordList);
 
 		// 데이터세트를 생성하고, 레코드 세트를 저장한다.
-		ds = marmot.createDataSet("tmp/test", rset.getRecordSchema(), FORCE)
-					.append(rset);
+		marmot.createDataSet("tmp/test", rset.getRecordSchema(), FORCE)
+				.append(rset);
 		
+		ds = marmot.getDataSet("tmp/test");
 		SampleUtils.printPrefix(ds, 5);
 	}
 }

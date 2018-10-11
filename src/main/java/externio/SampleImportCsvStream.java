@@ -60,9 +60,10 @@ public class SampleImportCsvStream {
 		
 		BufferedReader reader = Files.newBufferedReader(file.toPath());
 		ImportIntoDataSet importDs = ImportCsv.from(reader, plan, params, importParams);
-		DataSet result = importDs.run(marmot);
+		importDs.run(marmot);
 		watch.stop();
 
+		DataSet result = marmot.getDataSet("tmp/result");
 		SampleUtils.printPrefix(result, 5);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}

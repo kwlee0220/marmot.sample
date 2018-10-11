@@ -52,9 +52,10 @@ public class SampleImportShapefile {
 													.shpSrid("EPSG:5186");
 		
 		ImportIntoDataSet importDs = ImportShapefile.from(file, shpParams, importParams);
-		DataSet result = importDs.run(marmot);
+		importDs.run(marmot);
 		watch.stop();
 
+		DataSet result = marmot.getDataSet("tmp/result");
 		SampleUtils.printPrefix(result, 5);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}

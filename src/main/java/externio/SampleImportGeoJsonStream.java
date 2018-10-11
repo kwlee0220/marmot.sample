@@ -57,9 +57,10 @@ public class SampleImportGeoJsonStream {
 		
 		BufferedReader reader = Files.newBufferedReader(file.toPath());
 		ImportIntoDataSet importDs = ImportGeoJson.from(reader, plan, params, importParams);
-		DataSet result = importDs.run(marmot);
+		importDs.run(marmot);
 		watch.stop();
-
+		
+		DataSet result = marmot.getDataSet("tmp/result");
 		SampleUtils.printPrefix(result, 5);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
