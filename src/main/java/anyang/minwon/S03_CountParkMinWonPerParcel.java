@@ -18,10 +18,10 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S02_JoinParkAndSent_ID {
-	private static final String PARK = "기타/안양대/도봉구/공원";
-	private static final String EMOTION = "기타/안양대/도봉구/공원_감성분석";
-	private static final String OUTPUT = "분석결과/안양대/도봉구/공원_감석분석_맵_ID";
+public class S03_CountParkMinWonPerParcel {
+	private static final String PARK_MINWON = "기타/안양대/도봉구/공원_민원";
+	private static final String PARCEL = "기타/안양대/도봉구/필지";
+	private static final String OUTPUT = "분석결과/안양대/도봉구/필지별_공원민원수";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -30,18 +30,18 @@ public class S02_JoinParkAndSent_ID {
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
-		
-		String prjExpr = "the_geom,row_id,poi,id,sp,sn,언급빈도수 as mention,"
-						+ "선호도 as preference";
 
-		Plan plan;
-		plan = marmot.planBuilder("이름기반 공원 감성분석 맵매칭_ID")
-					.load(PARK)
-					.join("id", EMOTION, "id", "the_geom,param.*-{the_geom}",
-							JoinOptions.INNER_JOIN())
-					.project(prjExpr)
+		Plan plan;		
+		plan = marmot.planBuilder("담당팀_필지별_민원수 합계")
+					.load(PARK_MINWON)
+					.join("all_parcel_layer_id", PARCEL, "id", 
+							"param.{the_geom,id},team_name",
+							JoinOptions.RIGHT_OUTER_JOIN())
+					.groupBy("id")
+						.tagWith("the_geom")
+						.count()
 					.build();
-		GeometryColumnInfo gcInfo = marmot.getDataSet(PARK).getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = marmot.getDataSet(PARCEL).getGeometryColumnInfo();
 		DataSet result = marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		

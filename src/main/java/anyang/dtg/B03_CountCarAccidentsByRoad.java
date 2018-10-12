@@ -2,6 +2,8 @@ package anyang.dtg;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
+import static marmot.optor.AggregateFunction.COUNT;
+import static marmot.plan.SpatialJoinOption.WITHIN_DISTANCE;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -18,10 +20,10 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S04_CountCarAccidentsByEMD {
+public class B03_CountCarAccidentsByRoad {
 	private static final String ACCIDENT = "분석결과/안양대/도봉구/사망사고";
-	private static final String EMD = "기타/안양대/도봉구/행정동_구역";
-	private static final String OUTPUT = "분석결과/안양대/도봉구/읍면동별_사망사고_빈도";
+	private static final String ROADS = "기타/안양대/도봉구/도로망";
+	private static final String OUTPUT = "분석결과/안양대/도봉구/도로별_사망사고_빈도";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -30,12 +32,14 @@ public class S04_CountCarAccidentsByEMD {
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
+		
+		AggregateFunction[] aggrs = new AggregateFunction[]{ COUNT() };
 
 		Plan plan;
-		plan = marmot.planBuilder("읍면동별 사망사고 빈도집계")
-						.load(EMD)
-						.spatialAggregateJoin("the_geom", ACCIDENT, AggregateFunction.COUNT())
-						.build();
+		plan = marmot.planBuilder("도로별 사망사고 빈도집계")
+					.load(ROADS)
+					.spatialAggregateJoin("the_geom", ACCIDENT, aggrs, WITHIN_DISTANCE(15))
+					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(ACCIDENT).getGeometryColumnInfo();
 		DataSet result = marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());

@@ -21,7 +21,7 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S07_CountDtgByRoad {
+public class A03_CountDtgByRoad {
 	private static final String DTG = "분석결과/안양대/도봉구/DTG";
 	private static final String ROADS = "기타/안양대/도봉구/도로망";
 	private static final String OUTPUT = "분석결과/안양대/도봉구/도로별_DTG_빈도";

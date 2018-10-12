@@ -19,7 +19,7 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S06_CountDtgByEMD {
+public class A02_CountDtgByEMD {
 	private static final String DTG = "분석결과/안양대/도봉구/DTG";
 	private static final String EMD = "기타/안양대/도봉구/행정동_구역";
 	private static final String OUTPUT = "분석결과/안양대/도봉구/읍면동별_DTG_빈도";
@@ -45,12 +45,13 @@ public class S06_CountDtgByEMD {
 					.load(DTG)
 					.filter("운행속도 > 0")
 					.expand1("ts:datetime", script)
-					.spatialJoin("the_geom", EMD, "param.*,차량번호,ts")
-					.groupBy("db_id,차량번호")
-						.tagWith("the_geom,행정동")
+					.spatialJoin("the_geom", EMD,
+								"param.*-{행정동},param.행정동 as hdong,차량번호 as car_no,ts")
+					.groupBy("db_id,car_no")
+						.tagWith("the_geom,hdong")
 						.run(aggrPlan)
 					.groupBy("db_id")
-						.tagWith("the_geom,행정동")
+						.tagWith("the_geom,hdong")
 						.aggregate(AggregateFunction.SUM("count").as("count"))
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(EMD).getGeometryColumnInfo();
