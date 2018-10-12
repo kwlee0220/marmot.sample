@@ -15,7 +15,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.SquareGrid;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -44,8 +44,8 @@ public class A07_GridAnalysisElectro {
 			cl.exitWithUsage(0);
 		}
 
-		String host = MarmotClient.getMarmotHost(cl);
-		int port = MarmotClient.getMarmotPort(cl);
+		String host = MarmotClientCommands.getMarmotHost(cl);
+		int port = MarmotClientCommands.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
 		

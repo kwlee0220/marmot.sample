@@ -6,7 +6,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 import common.SampleUtils;
 import io.vavr.control.Option;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -21,7 +21,7 @@ public class SampleQuery {
 		PropertyConfigurator.configure("log4j.properties");
 
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = MarmotClient.connect();
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		Envelope bounds = getSeoChoDong(marmot);
 		

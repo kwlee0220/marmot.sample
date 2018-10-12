@@ -4,7 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -19,7 +19,7 @@ public class SampleStoreKeyedDataSet {
 		PropertyConfigurator.configure("log4j.properties");
 
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = MarmotClient.connect();
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		DataSet input = marmot.getDataSet(INPUT);
 		Plan plan = marmot.planBuilder("test StoreKeyedDataSet")

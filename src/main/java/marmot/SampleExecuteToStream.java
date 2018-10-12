@@ -9,7 +9,7 @@ import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSet;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.optor.geo.SpatialRelation;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.support.DefaultRecord;
@@ -38,8 +38,8 @@ public class SampleExecuteToStream {
 			cl.exitWithUsage(0);
 		}
 
-		String host = MarmotClient.getMarmotHost(cl);
-		int port = MarmotClient.getMarmotPort(cl);
+		String host = MarmotClientCommands.getMarmotHost(cl);
+		int port = MarmotClientCommands.getMarmotPort(cl);
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);

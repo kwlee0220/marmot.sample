@@ -9,7 +9,7 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -29,7 +29,7 @@ public class S04_CountCarAccidentsByEMD {
 		StopWatch watch = StopWatch.start();
 
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = MarmotClient.connect();
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 
 		Plan plan;
 		plan = marmot.planBuilder("읍면동별 사망사고 빈도집계")

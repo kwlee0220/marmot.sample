@@ -9,7 +9,7 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import navi_call.Globals;
 import utils.StopWatch;
@@ -29,7 +29,7 @@ public class S1_MapMatchingTaxiLog {
 		StopWatch watch = StopWatch.start();
 
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = MarmotClient.connect();
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		DataSet input = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();

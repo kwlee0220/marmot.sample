@@ -7,7 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import io.vavr.control.Try;
 import marmot.Plan;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.jdbc.JdbcProcessor;
 
@@ -22,7 +22,7 @@ public class SampleStoreIntoJdbcTable {
 		PropertyConfigurator.configure("log4j.properties");
 
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = MarmotClient.connect();
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		JdbcProcessor jdbc = new JdbcProcessor("jdbc:postgresql://129.254.82.95:5433/sbdata",
 												"sbdata", "urc2004", "org.postgresql.Driver");

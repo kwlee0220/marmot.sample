@@ -4,7 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import marmot.Plan;
 import marmot.RecordSet;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -18,7 +18,7 @@ public class SampleExecuteToRecordSet {
 		PropertyConfigurator.configure("log4j.properties");
 
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = MarmotClient.connect();
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 
 		Plan plan = marmot.planBuilder("test")
 							.load(INPUT)

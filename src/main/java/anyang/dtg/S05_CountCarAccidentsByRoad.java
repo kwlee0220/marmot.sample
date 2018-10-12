@@ -11,7 +11,7 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -31,7 +31,7 @@ public class S05_CountCarAccidentsByRoad {
 		StopWatch watch = StopWatch.start();
 
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = MarmotClient.connect();
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		AggregateFunction[] aggrs = new AggregateFunction[]{ COUNT() };
 

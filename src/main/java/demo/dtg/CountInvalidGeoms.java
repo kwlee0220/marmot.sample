@@ -11,7 +11,7 @@ import marmot.DataSet;
 import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.RecordSet;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
 import marmot.plan.PredicateOption;
@@ -41,8 +41,8 @@ public class CountInvalidGeoms {
 			cl.exitWithUsage(0);
 		}
 
-		String host = MarmotClient.getMarmotHost(cl);
-		int port = MarmotClient.getMarmotPort(cl);
+		String host = MarmotClientCommands.getMarmotHost(cl);
+		int port = MarmotClientCommands.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
 		

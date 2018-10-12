@@ -8,7 +8,7 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.type.DataType;
 import navi_call.Globals;
@@ -25,7 +25,7 @@ public class S0_PrepareRoadData {
 		StopWatch watch = StopWatch.start();
 
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = MarmotClient.connect();
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		DataSet input = marmot.getDataSet(Globals.ROADS);
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();

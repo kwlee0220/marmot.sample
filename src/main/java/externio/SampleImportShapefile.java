@@ -7,7 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.externio.ImportIntoDataSet;
 import marmot.externio.ImportParameters;
 import marmot.externio.shp.ImportShapefile;
@@ -34,8 +34,8 @@ public class SampleImportShapefile {
 			cl.exitWithUsage(0);
 		}
 
-		String host = MarmotClient.getMarmotHost(cl);
-		int port = MarmotClient.getMarmotPort(cl);
+		String host = MarmotClientCommands.getMarmotHost(cl);
+		int port = MarmotClientCommands.getMarmotPort(cl);
 		
 		StopWatch watch = StopWatch.start();
 		

@@ -9,7 +9,7 @@ import marmot.DataSet;
 import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.RecordSet;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.LISAWeight;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -27,7 +27,7 @@ public class SampleFindLocalMoranI {
 		PropertyConfigurator.configure("log4j.properties");
 
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = MarmotClient.connect();
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		Plan plan0 = marmot.planBuilder("find_statistics")
 								.load(INPUT)

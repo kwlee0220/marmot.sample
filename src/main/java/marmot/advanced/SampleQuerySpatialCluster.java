@@ -13,7 +13,7 @@ import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordSet;
 import marmot.SpatialClusterInfo;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -28,7 +28,7 @@ public class SampleQuerySpatialCluster {
 		PropertyConfigurator.configure("log4j.properties");
 
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = MarmotClient.connect();
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		Envelope bounds = getSeoChoGu(marmot);
 		

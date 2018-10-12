@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.externio.geojson.GeoJsonRecordSetWriter;
 import marmot.remote.protobuf.PBMarmotClient;
 
@@ -23,7 +23,7 @@ public class SampleExportGeoJson {
 		PropertyConfigurator.configure("log4j.properties");
 
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = MarmotClient.connect();
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		DataSet ds = marmot.getDataSet(INPUT);
 		try ( GeoJsonRecordSetWriter writer = GeoJsonRecordSetWriter.get(new File(OUTPUT),

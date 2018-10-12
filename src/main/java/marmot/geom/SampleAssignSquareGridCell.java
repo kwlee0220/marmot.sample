@@ -11,7 +11,7 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.SquareGrid;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -30,7 +30,7 @@ public class SampleAssignSquareGridCell {
 		PropertyConfigurator.configure("log4j.properties");
 
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = MarmotClient.connect();
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		Envelope border = getBorder(marmot).getEnvelopeInternal();
 		Size2d cellSize = new Size2d(border.getWidth() / 100, border.getHeight() / 100);

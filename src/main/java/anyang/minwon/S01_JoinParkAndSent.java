@@ -9,7 +9,7 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -29,7 +29,7 @@ public class S01_JoinParkAndSent {
 		StopWatch watch = StopWatch.start();
 
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = MarmotClient.connect();
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 
 		Plan plan;
 		plan = marmot.planBuilder("이름기반 공원 감성분석 맵매칭")

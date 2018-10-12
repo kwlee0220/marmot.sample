@@ -11,7 +11,7 @@ import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.externio.shp.ShapefileRecordSet;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.support.DefaultRecord;
@@ -28,7 +28,7 @@ public class SampleExecutePlanLocally {
 		PropertyConfigurator.configure("log4j.properties");
 
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = MarmotClient.connect();
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 
 		sample1(marmot);
 		sample2(marmot);

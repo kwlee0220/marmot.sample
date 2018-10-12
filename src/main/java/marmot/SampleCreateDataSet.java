@@ -12,7 +12,7 @@ import org.apache.log4j.PropertyConfigurator;
 import com.google.common.collect.Lists;
 
 import common.SampleUtils;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.geo.GeoClientUtils;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.rset.RecordSets;
@@ -28,7 +28,7 @@ public class SampleCreateDataSet {
 		PropertyConfigurator.configure("log4j.properties");
 
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = MarmotClient.connect();
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		// 생성될 데이터세트의 스키마를 정의함.
 		RecordSchema schema = RecordSchema.builder()

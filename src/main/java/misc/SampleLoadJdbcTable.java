@@ -8,7 +8,7 @@ import static marmot.plan.LoadJdbcTableOption.SELECT;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.Plan;
-import marmot.command.MarmotClient;
+import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -28,7 +28,7 @@ public class SampleLoadJdbcTable {
 		PropertyConfigurator.configure("log4j.properties");
 
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = MarmotClient.connect();
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 
 		Plan plan = marmot.planBuilder("test")
 							.loadJdbcTable(JDBC_URL, USER, PASSWD, DRIVER_CLASS, TABLE_NAME,
