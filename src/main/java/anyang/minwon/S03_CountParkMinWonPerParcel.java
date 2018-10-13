@@ -32,7 +32,7 @@ public class S03_CountParkMinWonPerParcel {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
 		Plan plan;		
-		plan = marmot.planBuilder("담당팀_필지별_민원수 합계")
+		plan = marmot.planBuilder("필지별 공원관련 민원수 합계")
 					.load(PARK_MINWON)
 					.join("all_parcel_layer_id", PARCEL, "id", 
 							"param.{the_geom,id},team_name",

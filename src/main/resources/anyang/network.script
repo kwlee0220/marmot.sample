@@ -1,0 +1,108 @@
+# 도봉구 전첵 영역 적재
+mc_import_shapefile $MARMOT_DATA/기타/안양대제공/도봉구/전체구역 -dataset 기타/안양대/도봉구/전체구역	\
+				-shp_srid EPSG:5179 -srid EPSG:4326 -charset euc-kr -f
+
+# 도봉구내 행정동 구역 정보 적재
+mc_import_shapefile $MARMOT_DATA/기타/안양대제공/도봉구/행정동_구역 -dataset 기타/안양대/도봉구/행정동_구역	\
+				-shp_srid EPSG:5179 -srid EPSG:4326 -charset euc-kr -f
+
+# 도봉구내 필지 구역 정보 적재
+mc_import_shapefile $MARMOT_DATA/기타/안양대제공/도봉구/필지 -dataset 기타/안양대/도봉구/필지	\
+				-shp_srid EPSG:5179 -srid EPSG:4326 -charset euc-kr -f
+cluster_dataset 기타/안양대/도봉구/필지
+
+# 도봉구내 도로망 정보 적재
+mc_import_shapefile $MARMOT_DATA/기타/안양대제공/도봉구/도로망 -dataset 기타/안양대/도봉구/도로망	\
+				-shp_srid EPSG:5179 -srid EPSG:4326 -charset euc-kr -f
+cluster_dataset 기타/안양대/도봉구/도로망
+
+# 도봉구내 100단위 격자 구역 정보 적재
+import_shapefile $MARMOT_DATA/기타/안양대제공/도봉구/GRID_100 -dataset 기타/안양대/도봉구/GRID_100	\
+				-shp_srid EPSG:5179 -srid EPSG:5186 -charset euc-kr -f
+
+########################################
+########################################
+### 도봉구 영역 DTG 검색
+########################################
+########################################
+
+# 전체 DTG에서 도봉구 영역만 추출
+mc_copy 기타/안양대/도봉구/전체구역 tmp/temp -project the_geom -f
+mc_export_csv tmp/temp -csv_srid EPSG:4326  > /tmp/dobonggu.wkt
+mc_delete tmp/temp
+mc_copy 교통/dtg 분석결과/안양대/도봉구/DTG -range_file /tmp/dobonggu.wkt -dest_srid EPSG:5186 -shard 7 -f
+rm /tmp/dobonggu.wkt
+
+
+
+
+
+
+
+
+
+
+mc_import_shapefile $MARMOT_DATA/기타/안양대제공/도봉구/공원 -dataset 기타/안양대/도봉구/공원	\
+					-shp_srid EPSG:5179 -srid EPSG:5186 -charset euc-kr -f
+cluster_dataset 기타/안양대/도봉구/공원
+
+# 도봉구 공원 감성분석 결과 적재
+mc_import_excel $MARMOT_DATA/기타/안양대제공/도봉구/공원_감성분석 -dataset 기타/안양대/도봉구/공원_감성분석	\
+				-header_first -null_string '#N/A' -geom_col the_geom -srid EPSG:5186 -f
+
+# 공원 이름 기반 감성분석 맵매칭
+mc_copy 기타/안양대/도봉구/공원 분석결과/안양대/도봉구/공원_감석분석_맵 -filter '!kor_par_nm.equals("#N/A")' \
+	-join 'kor_par_nm:기타/안양대/도봉구/공원_감성분석:poi' \
+	-join_output_cols 'the_geom,param.*-{the_geom}' -f
+	
+# 공원 식별자 기반 감성분석 맵매칭
+mc_copy 기타/안양대/도봉구/공원 분석결과/안양대/도봉구/공원_감석분석_맵_ID \
+	-join 'id:기타/안양대/도봉구/공원_감성분석:id' -join_output_cols 'the_geom,param.*-{the_geom}' \
+	-project 'the_geom,row_id,poi,id,sp,sn,언급빈도수 as mention,선호도 as preference' -f
+
+
+
+########################################
+########################################
+### 도봉구 공원 관련 민원 분포 분석
+########################################
+########################################
+
+# 공원 관련 민원 데이터 적재
+mc_import_excel $MARMOT_DATA/기타/안양대제공/도봉구/공원_민원 -dataset 기타/안양대/도봉구/공원_민원 -header_first -point_col 'x,y'  \
+                -excel_srid EPSG:5181 -geom_col the_geom -srid EPSG:5186 -f
+cluster_dataset 기타/안양대/도봉구/공원_민원
+
+# 필지별 공원관련 민원수 합계
+mc_copy 기타/안양대/도봉구/공원_민원 분석결과/안양대/도봉구/필지별_공원민원수 -f	\
+	-join 'all_parcel_layer_id:기타/안양대/도봉구/필지:id'	\
+	-join_output_cols 'param.{the_geom,id},team_name' -join_type "right_outer"	\
+	-group_by 'id:the_geom' -aggregate 'count'
+
+# 격자별 공원관련 민원수 합계
+mc_copy 기타/안양대/도봉구/GRID_100 분석결과/안양대/도봉구/격자별_공원민원수 -f	\
+	-spatial_outer_join 'the_geom:기타/안양대/도봉구/공원_민원' -join_output_cols 'the_geom,spo_no_cd'	\
+	-group_by 'spo_no_cd:the_geom' -aggregate 'count'
+
+########################################
+########################################
+### 도봉구 민원 분포 분석
+########################################
+########################################
+
+# 도봉구 지역 민원 데이터 적재
+mc_import_excel $MARMOT_DATA/기타/안양대제공/도봉구/민원 -dataset 기타/안양대/도봉구/민원 -header_first	\
+				-point_col 'x,y' -excel_srid EPSG:5181 -geom_col the_geom -srid EPSG:5186 -f
+cluster_dataset 기타/안양대/도봉구/민원
+
+# 담당팀_필지별_민원수 합계
+mc_copy 기타/안양대/도봉구/민원 분석결과/안양대/도봉구/팀별_필지별_민원수 -f -filter 'team_name != null'	\
+	-join 'all_parcel_layer_id:기타/안양대/도봉구/필지:id'	\
+	-join_output_cols 'param.{the_geom,id},team_name' -join_type "right_outer"	\
+	-group_by 'team_name,id:the_geom' -aggregate 'count'
+
+# 담당팀_격자별_민원수 합계
+mc_copy 기타/안양대/도봉구/민원 분석결과/안양대/도봉구/팀별_격자별_민원수 -f -filter 'team_name != null'	\
+	-spatial_join 'the_geom:기타/안양대/도봉구/GRID_100'	\
+	-join_output_cols 'team_name,param.{the_geom,spo_no_cd}'	\
+	-group_by 'team_name,spo_no_cd:the_geom' -aggregate 'count'

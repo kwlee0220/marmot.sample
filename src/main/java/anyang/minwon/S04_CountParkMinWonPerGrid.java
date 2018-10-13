@@ -31,7 +31,7 @@ public class S04_CountParkMinWonPerGrid {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
 		Plan plan;
-		plan = marmot.planBuilder("격자별_팀별_민원수")
+		plan = marmot.planBuilder("격자별 공원관련 민원수 합계")
 					.load(GRID)
 					.spatialOuterJoin("the_geom", PARK_MINWON, "the_geom,spo_no_cd")
 					.groupBy("spo_no_cd")

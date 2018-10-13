@@ -21,7 +21,7 @@ import utils.StopWatch;
 public class S05_CountMinWonPerTeamParcel {
 	private static final String MINWON = "기타/안양대/도봉구/민원";
 	private static final String PARCEL = "기타/안양대/도봉구/필지";
-	private static final String OUTPUT = "분석결과/안양대/도봉구/필지별_팀별_민원수";
+	private static final String OUTPUT = "분석결과/안양대/도봉구/팀별_필지별_민원수";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
