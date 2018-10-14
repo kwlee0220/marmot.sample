@@ -22,7 +22,7 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class A03_CountDtgByRoad {
-	private static final String DTG = "분석결과/안양대/도봉구/DTG";
+	private static final String DTG = "기타/안양대/도봉구/DTG";
 	private static final String ROADS = "기타/안양대/도봉구/도로망";
 	private static final String OUTPUT = "분석결과/안양대/도봉구/도로별_DTG_빈도";
 	
@@ -38,15 +38,11 @@ public class A03_CountDtgByRoad {
 								.clusterChronicles("ts", "interval", "10m")
 								.aggregate(AggregateFunction.COUNT())
 								.build();
-		
-		RecordScript script = RecordScript.of("$pat = ST_DTPattern(\"yyyyMMddHHmmss\")",
-											"ST_DTParseLE(운행일자 + 운행시분초.substring(0,6), $pat)");
 
 		Plan plan;
 		plan = marmot.planBuilder("읍면동별 DTG 빈도집계")
 					.load(DTG)
 					.filter("운행속도 > 0")
-					.expand1("ts:datetime", script)
 					.spatialJoin("the_geom", ROADS, "param.*,차량번호,ts",
 								JOIN_EXPR(WITHIN_DISTANCE(15)))
 					.groupBy("db_id,차량번호")

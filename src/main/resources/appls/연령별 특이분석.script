@@ -1,0 +1,10 @@
+##### 성연령별인구
+import_shapefile $MARMOT_DATA/사업단자료/성연령별인구 -dataset 주민/성연령별인구 -f -srid EPSG:5186 -charset utf-8
+
+주민/성연령별인구
+mc_copy 주민/성연령별인구 분석결과/5차년도_통합시연/연령대별_인구 -f	\
+		-expand 'base_year:int,age_intvl:int' -update 'age_intvl = (item_name.substring(7) / 10) * 10'	\
+		-group_by 'tot_oa_cd,base_year,age_intvl:the_geom' -aggregate 'count:value:total'	\
+		-project 'the_geom,tot_oa_cd,base_year,age_intvl,total'
+
+mc_export_csv 분석결과/5차년도_통합시연/연령대별_인구 -output ~/tmp/연령대별_인구.csv -quote '"' -header_first 

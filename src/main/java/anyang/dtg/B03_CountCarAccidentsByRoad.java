@@ -21,8 +21,8 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class B03_CountCarAccidentsByRoad {
-	private static final String ACCIDENT = "분석결과/안양대/도봉구/사망사고";
 	private static final String ROADS = "기타/안양대/도봉구/도로망";
+	private static final String ACCIDENT = "분석결과/안양대/도봉구/사망사고";
 	private static final String OUTPUT = "분석결과/안양대/도봉구/도로별_사망사고_빈도";
 	
 	public static final void main(String... args) throws Exception {
