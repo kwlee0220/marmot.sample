@@ -24,7 +24,8 @@ import utils.CommandLineParser;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleGeoServerPlugin {
-	private static final String INPUT = "POI/주유소_가격";
+//	private static final String INPUT = "POI/주유소_가격";
+	private static final String INPUT = "기타/안양대/도봉구/민원";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
