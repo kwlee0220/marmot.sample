@@ -71,20 +71,20 @@ public class PrintPlanAsJson {
 										"ST_DTParseLE(운행일자 + 운행시분초.substring(0,6), $pat)");
 		Plan plan;
 		plan = marmot.planBuilder("import_plan")
+					.parseCsv(',', ParseCsvOption.HEADER(header))
+//					.parseCsv(',', ParseCsvOption.HEADER(header), ParseCsvOption.COMMENT('#'))
+//					.parseCsv('|', HEADER(header))
 //					.filter("sp != null && sn != null")
-					.expand1("ts:datetime", script2)
-					.project("the_geom,운송사코드,차량번호,일일주행거리,누적주행거리,운행속도,rpm,"
-							+ "브레이크신호,방위각,가속도x,가속도y")
+//					.expand1("ts:datetime", script2)
+//					.project("the_geom,운송사코드,차량번호,일일주행거리,누적주행거리,운행속도,rpm,"
+//							+ "브레이크신호,방위각,가속도x,가속도y")
 //					.expand1("기준년도:short", "(기준년도.length() > 0) ? 기준년도 : '2017'")
 //					.expand1("기준월:short", "(기준월.length() > 0) ? 기준월 : '01'")
 //					.expand1("개별공시지가:long")
 //					.project("고유번호,기준년도,기준월,개별공시지가")
 //					.assignUid("id")
-//					.parseCsv(',', ParseCsvOption.HEADER(header))
 //					.expand("일일주행거리:int,누적주행거리:int,운행속도:short,RPM:short,브레이크신호:boolean,방위각:short,가속도X:float,가속도Y:float")
 //					.toPoint("x", "y", "the_geom")
-//					.parseCsv(',', ParseCsvOption.HEADER(header), ParseCsvOption.COMMENT('#'))
-//					.parseCsv('|', HEADER(header))
 //					.expand1("status:byte")
 //					.parse("도로명코드,도로명,도로명로마자,읍면동_일련번호,시도명,시도명로마자,시군구명,시군구명로마자,읍면동명,읍면동명로마자,읍면동구분,읍면동코드,사용여부,변경사유,변경이력,고시일자,말소일자")
 //					.expand1("the_geom:polygon", "ST_GeomFromGeoJSON(다발지역폴리곤)")
