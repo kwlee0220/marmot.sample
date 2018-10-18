@@ -1,13 +1,9 @@
 package appls;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
-import common.SampleUtils;
-import marmot.DataSet;
+import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
@@ -47,7 +43,6 @@ public class PreProcessAgePop {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan;
-		DataSet result;
 		
 		GeometryColumnInfo gcInfo = marmot.getDataSet(INPUT).getGeometryColumnInfo();
 		
@@ -59,12 +54,19 @@ public class PreProcessAgePop {
 						.tagWith("the_geom")
 						.aggregate(AggregateFunction.SUM("value").as("total"))
 					.project("the_geom,tot_oa_cd,base_year,age_intvl,total")
-					.store(RESULT)
+					.groupBy("base_year")
+//						.count()
+						.storeEachGroup(RESULT, DataSetOption.GEOMETRY(gcInfo),
+										DataSetOption.FORCE)
 					.build();
-		result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
+		marmot.execute(plan);
+//		marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
+//		marmot.createDataSet(RESULT, plan, DataSetOption.GEOMETRY(gcInfo), DataSetOption.FORCE);
 		watch.stop();
-
-		SampleUtils.printPrefix(result, 5);
+		
+//		for ( DataSet result: marmot.getDataSetAllInDir(RESULT, true) ) {
+//			SampleUtils.printPrefix(result, 5);
+//		}
 		System.out.println("elapsed: " + watch.getElapsedMillisString());
 	}
 }

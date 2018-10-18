@@ -89,7 +89,7 @@ public class PrintPlanAsJson {
 //					.parse("도로명코드,도로명,도로명로마자,읍면동_일련번호,시도명,시도명로마자,시군구명,시군구명로마자,읍면동명,읍면동명로마자,읍면동구분,읍면동코드,사용여부,변경사유,변경이력,고시일자,말소일자")
 //					.expand1("the_geom:polygon", "ST_GeomFromGeoJSON(다발지역폴리곤)")
 //					.toPoint("경도", "위도", "다발지점")
-//					.transformCrs("다발지점", "EPSG:4326", "EPSG:5186")
+					.transformCrs("다발지점", "EPSG:4326", "EPSG:5186")
 //					.expand1("pnu:string", "시군구코드 + 법정동코드 + 대지구분코드 + 번 + 지")
 //					.parseCsv('|', HEADER(header), TRIM_FIELD)
 //					.update("$part=Lat_Lon.split(','); lat=$part[0]; lon=$part[1];")

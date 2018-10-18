@@ -2,10 +2,15 @@ package marmot.advanced;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import common.SampleUtils;
 import marmot.DataSet;
+import marmot.DataSetOption;
+import marmot.ExecutePlanOption;
+import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
+
 
 /**
  * 
@@ -22,12 +27,17 @@ public class SampleStoreKeyedDataSet {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		DataSet input = marmot.getDataSet(INPUT);
+		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		Plan plan = marmot.planBuilder("test StoreKeyedDataSet")
-							.load(INPUT)
-							.groupBy("sig_cd")
-								.storeEachGroup(RESULT, input.getGeometryColumnInfo())
-							.build();
-		marmot.deleteDir(RESULT);
-		marmot.execute(plan);
+						.load(INPUT)
+						.groupBy("sig_cd")
+							.count()
+//							.storeEachGroup(RESULT, DataSetOption.FORCE,
+//											DataSetOption.GEOMETRY(gcInfo))
+						.build();
+//		marmot.execute(plan, ExecutePlanOption.DISABLE_LOCAL_EXEC);
+		DataSet result = marmot.createDataSet(RESULT, plan, ExecutePlanOption.DISABLE_LOCAL_EXEC,
+												DataSetOption.FORCE);
+		SampleUtils.printPrefix(result, 500);
 	}
 }

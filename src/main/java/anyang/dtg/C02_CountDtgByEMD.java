@@ -20,7 +20,7 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class C02_CountDtgByEMD {
-	private static final String DTG = "교통/dtg";
+	private static final String DTG = "교통/dtg_s";
 	private static final String EMD = "분석결과/안양대/네트워크/읍면동_wgs84";
 	private static final String OUTPUT = "분석결과/안양대/네트워크/전국_읍면동별_통행량";
 	
@@ -49,6 +49,8 @@ public class C02_CountDtgByEMD {
 								"param.{the_geom,emd_cd,emd_kor_nm},"
 								+ "차량번호 as car_no,운행일자,운행시분초")
 					.expand1("ts:datetime", script)
+					.expand("emd_cd:int")
+					.project("*-{운행일자,운행시분초}")
 					.groupBy("emd_cd,car_no")
 						.tagWith("the_geom,emd_kor_nm")
 						.run(aggrPlan)
