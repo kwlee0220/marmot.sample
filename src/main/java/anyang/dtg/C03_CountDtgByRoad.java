@@ -2,8 +2,6 @@ package anyang.dtg;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
-import static marmot.optor.geo.SpatialRelation.WITHIN_DISTANCE;
-import static marmot.plan.SpatialJoinOption.JOIN_EXPR;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -13,6 +11,8 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
+import marmot.optor.JoinOptions;
+import marmot.plan.RecordScript;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 
@@ -33,29 +33,32 @@ public class C03_CountDtgByRoad {
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
-		
+
+		RecordScript script = RecordScript.of("$pat = ST_DTPattern(\"yyyyMMddHHmmss\")",
+										"ST_DTParseLE(운행일자 + 운행시분초.substring(0,6), $pat)");
 		Plan aggrPlan = marmot.planBuilder("aggregate")
 								.clusterChronicles("ts", "interval", "10m")
 								.aggregate(AggregateFunction.COUNT())
 								.build();
 		GeometryColumnInfo dtgInfo = marmot.getDataSet(DTG).getGeometryColumnInfo();
-		GeometryColumnInfo roadInfo = marmot.getDataSet(ROADS).getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = marmot.getDataSet(ROADS).getGeometryColumnInfo();
 
 		Plan plan;
 		plan = marmot.planBuilder("전국_도로별_통행량")
 					.load(DTG)
 					.filter("운행속도 > 0")
-					.transformCrs(dtgInfo.name(), dtgInfo.srid(), roadInfo.srid())
-					.spatialJoin("the_geom", ROADS, "param.*,차량번호,ts",
-								JOIN_EXPR(WITHIN_DISTANCE(RADIUS)))
-					.groupBy("db_id,차량번호")
-						.tagWith("the_geom,id")
+					.expand1("ts:datetime", script)
+					.transformCrs(dtgInfo.name(), dtgInfo.srid(), gcInfo.srid())
+					.knnJoin("the_geom", ROADS, 1, RADIUS,
+							"param.{link_id},차량번호 as car_no,ts")
+					.groupBy("link_id,car_no")
+						.workerCount(37)
 						.run(aggrPlan)
-					.groupBy("db_id")
-						.tagWith("the_geom,id")
+					.groupBy("link_id")
 						.aggregate(AggregateFunction.SUM("count").as("count"))
+					.join("link_id", ROADS, "link_id", "param.{the_geom,link_id,road_name},count",
+							JoinOptions.INNER_JOIN(1))
 					.build();
-		GeometryColumnInfo gcInfo = marmot.getDataSet(ROADS).getGeometryColumnInfo();
 		DataSet result = marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		

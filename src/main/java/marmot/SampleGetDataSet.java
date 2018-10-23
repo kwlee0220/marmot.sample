@@ -3,7 +3,6 @@ package marmot;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.DataSet;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 
@@ -22,5 +21,9 @@ public class SampleGetDataSet {
 		
 		DataSet input = marmot.getDataSet(INPUT);
 		SampleUtils.printPrefix(input, 50);
+		
+		for ( DataSet ds: marmot.getDataSetAllInDir("구역", true) ) {
+			System.out.println(ds.getId());
+		}
 	}
 }
