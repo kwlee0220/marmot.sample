@@ -5,14 +5,19 @@ import java.text.DecimalFormat;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.google.protobuf.util.JsonFormat;
+import com.vividsolutions.jts.geom.Envelope;
 
 import marmot.command.MarmotClientCommands;
+import marmot.optor.AggregateFunction;
+import marmot.optor.JoinOptions;
+import marmot.optor.geo.SquareGrid;
 import marmot.plan.ParseCsvOption;
 import marmot.plan.RecordScript;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CSV;
 import utils.CommandLine;
 import utils.CommandLineParser;
+import utils.Size2d;
 import utils.stream.FStream;
 
 /**
@@ -43,6 +48,7 @@ public class PrintPlanAsJson {
 		RecordSchema schema = RecordSchema.parse(outSchemaExpr);
 		String initExpr = "$format=ST_DTPattern('EEE MMM dd HH:mm:ss Z yyyy').withLocale(Locale.ENGLISH)";
 		String transExpr = "local:_meta.mvel";
+		Envelope envl = marmot.getDataSet("구역/시도").getBounds();
 		
 		String[] header = FStream.range(0, 13)
 								.map(idx -> String.format("field_%02d", idx))
@@ -83,13 +89,14 @@ public class PrintPlanAsJson {
 //					.expand1("개별공시지가:long")
 //					.project("고유번호,기준년도,기준월,개별공시지가")
 //					.assignUid("id")
+//					.sample(0.23)
 //					.expand("일일주행거리:int,누적주행거리:int,운행속도:short,RPM:short,브레이크신호:boolean,방위각:short,가속도X:float,가속도Y:float")
 //					.toPoint("x", "y", "the_geom")
 //					.expand1("status:byte")
 //					.parse("도로명코드,도로명,도로명로마자,읍면동_일련번호,시도명,시도명로마자,시군구명,시군구명로마자,읍면동명,읍면동명로마자,읍면동구분,읍면동코드,사용여부,변경사유,변경이력,고시일자,말소일자")
 //					.expand1("the_geom:polygon", "ST_GeomFromGeoJSON(다발지역폴리곤)")
 //					.toPoint("경도", "위도", "다발지점")
-					.transformCrs("다발지점", "EPSG:4326", "EPSG:5186")
+//					.transformCrs("다발지점", "EPSG:4326", "EPSG:5186")
 //					.expand1("pnu:string", "시군구코드 + 법정동코드 + 대지구분코드 + 번 + 지")
 //					.parseCsv('|', HEADER(header), TRIM_FIELD)
 //					.update("$part=Lat_Lon.split(','); lat=$part[0]; lon=$part[1];")
@@ -101,6 +108,15 @@ public class PrintPlanAsJson {
 //					.transformCrs("the_geom", "EPSG:5179", "aaa", "EPSG:5186")
 //					.update("기준년도=(기준년도.length() > 0) ? 기준년도 : '2017'; 기준월=(기준월.length() > 0) ? 기준월 : '01'")
 //					.expand1("거래금액:int",script)
+//					.spatialJoin("the_geom", "xxxxx", "output_cols")
+//					.spatialSemiJoin("the_geom", "xxxxx")
+//					.loadSquareGridFile(new SquareGrid(envl, new Size2d(100, 100)), 7)
+//					.assignSquareGridCell("the_geom", new SquareGrid("dsid", new Size2d(100, 100)))
+//					.join("col1,col2", "ds_id", "jcols", "out_cols", JoinOptions.LEFT_OUTER_JOIN(7))
+//					.join("emd_cd,name", "EMD", "emd_cd,age", "param.{the_geom,emd_kor_nm},count",
+//							JoinOptions.INNER_JOIN(1))
+					.groupBy("aaa,bbb")
+						.aggregate(AggregateFunction.SUM("cc"), AggregateFunction.COUNT())
 					.build();
 		
 		System.out.println(JsonFormat.printer().print(plan.toProto()));

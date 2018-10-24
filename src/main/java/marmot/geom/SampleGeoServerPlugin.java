@@ -1,4 +1,4 @@
-package marmot.advanced;
+package marmot.geom;
 
 import java.io.Serializable;
 import java.util.Arrays;

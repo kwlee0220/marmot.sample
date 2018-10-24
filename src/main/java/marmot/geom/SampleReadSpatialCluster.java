@@ -1,15 +1,15 @@
-package marmot.advanced;
-
-import java.util.List;
-import java.util.stream.Collectors;
+package marmot.geom;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
 
+import common.SampleUtils;
+import io.vavr.control.Option;
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
+import marmot.RecordSet;
 import marmot.SpatialClusterInfo;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -18,7 +18,7 @@ import marmot.remote.protobuf.PBMarmotClient;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleQuerySpatialClusterInfo {
+public class SampleReadSpatialCluster {
 	private static final String INPUT = "주소/건물POI";
 	private static final String SIDO = "구역/시도";
 	private static final String SGG = "구역/시군구";
@@ -30,32 +30,30 @@ public class SampleQuerySpatialClusterInfo {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
+		Envelope range;
 		DataSet ds = marmot.getDataSet(INPUT);
 		
-		test(ds, "서초구", getGu(marmot, "서초구"));
-		test(ds, "노원구", getGu(marmot, "노원구"));
-		test(ds, "송파구", getGu(marmot, "송파구"));
-		test(ds, "서울특별시", getSiDo(marmot, "서울특별시"));
-	}
-	
-	private static void test(DataSet ds, String title, Envelope range) {
-		List<String> quadKeys = ds.querySpatialClusterInfo(range)
-									.stream()
-									.map(SpatialClusterInfo::getQuadKey)
-									.collect(Collectors.toList());
-		System.out.print(title + ": ");
-		System.out.println(quadKeys);
-		System.out.println("------------------------------------------------");
-	}
-	
-	private static Envelope getSiDo(MarmotRuntime marmot, String name) {
-		String expr = String.format("ctp_kor_nm == '%s'", name);
-		Plan plan = marmot.planBuilder("get seoul")
-							.load(SIDO)
-							.filter(expr)
-							.project("the_geom")
-							.build();
-		return marmot.executeToGeometry(plan).get().getEnvelopeInternal();
+		range = getGu(marmot, "노원구");
+		for ( SpatialClusterInfo info: ds.querySpatialClusterInfo(range) ) {
+			String quadKey = info.getQuadKey();
+			
+			System.out.println(quadKey + ": ");
+			try ( RecordSet rset = ds.readSpatialCluster(quadKey, Option.none()) ) {
+				SampleUtils.printPrefix(rset, 5);
+			}
+		}
+		
+		range = getGu(marmot, "서초구");
+		for ( SpatialClusterInfo info: ds.querySpatialClusterInfo(range) ) {
+			String quadKey = info.getQuadKey();
+			
+			System.out.println(quadKey + ": ");
+			
+			Option<String> filter = Option.some("건물용도분류 == '주택' && 건물명 != null");
+			try ( RecordSet rset = ds.readSpatialCluster(quadKey, filter) ) {
+				SampleUtils.printPrefix(rset, 5);
+			}
+		}
 	}
 	
 	private static Envelope getGu(MarmotRuntime marmot, String guName) {
