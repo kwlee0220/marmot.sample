@@ -9,10 +9,10 @@ import marmot.DataSet;
 import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.RecordScript;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.JoinOptions;
-import marmot.plan.RecordScript;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 

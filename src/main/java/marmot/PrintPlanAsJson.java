@@ -12,7 +12,6 @@ import marmot.optor.AggregateFunction;
 import marmot.optor.JoinOptions;
 import marmot.optor.geo.SquareGrid;
 import marmot.plan.ParseCsvOption;
-import marmot.plan.RecordScript;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CSV;
 import utils.CommandLine;
