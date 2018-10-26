@@ -114,8 +114,9 @@ public class PrintPlanAsJson {
 //					.join("col1,col2", "ds_id", "jcols", "out_cols", JoinOptions.LEFT_OUTER_JOIN(7))
 //					.join("emd_cd,name", "EMD", "emd_cd,age", "param.{the_geom,emd_kor_nm},count",
 //							JoinOptions.INNER_JOIN(1))
-					.groupBy("aaa,bbb")
-						.aggregate(AggregateFunction.SUM("cc"), AggregateFunction.COUNT())
+//					.groupBy("aaa,bbb")
+//						.aggregate(AggregateFunction.SUM("cc"), AggregateFunction.COUNT())
+					.aggregate(AggregateFunction.SUM("aaa"), AggregateFunction.MAX("bbb").as("ccc"))
 					.build();
 		
 		System.out.println(JsonFormat.printer().print(plan.toProto()));

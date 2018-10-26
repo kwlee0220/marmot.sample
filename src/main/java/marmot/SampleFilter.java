@@ -10,6 +10,7 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.STScriptPlanLoader;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -28,12 +29,13 @@ public class SampleFilter {
 		
 		DataSet input = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
-		
-		Plan plan = marmot.planBuilder("filter")
-							.load(INPUT)
-							.filter("휘발유 > 2000")
-							.project("the_geom,상호,휘발유")
-							.build();
+
+		Plan plan = STScriptPlanLoader.load("marmot/sample_filter.st");
+//		Plan plan = marmot.planBuilder("filter")
+//							.load(INPUT)
+//							.filter("휘발유 > 2000")
+//							.project("the_geom,상호,휘발유")
+//							.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		SampleUtils.printPrefix(result, 5);
 	}
