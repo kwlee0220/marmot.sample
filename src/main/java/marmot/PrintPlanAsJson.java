@@ -10,13 +10,10 @@ import com.vividsolutions.jts.geom.Envelope;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.JoinOptions;
-import marmot.optor.geo.SquareGrid;
-import marmot.plan.ParseCsvOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CSV;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.Size2d;
 import utils.stream.FStream;
 
 /**
@@ -76,7 +73,7 @@ public class PrintPlanAsJson {
 										"ST_DTParseLE(운행일자 + 운행시분초.substring(0,6), $pat)");
 		Plan plan;
 		plan = marmot.planBuilder("import_plan")
-					.parseCsv(',', ParseCsvOption.HEADER(header))
+//					.parseCsv(',', ParseCsvOption.HEADER(header))
 //					.parseCsv(',', ParseCsvOption.HEADER(header), ParseCsvOption.COMMENT('#'))
 //					.parseCsv('|', HEADER(header))
 //					.filter("sp != null && sn != null")
@@ -111,12 +108,13 @@ public class PrintPlanAsJson {
 //					.spatialSemiJoin("the_geom", "xxxxx")
 //					.loadSquareGridFile(new SquareGrid(envl, new Size2d(100, 100)), 7)
 //					.assignSquareGridCell("the_geom", new SquareGrid("dsid", new Size2d(100, 100)))
-//					.join("col1,col2", "ds_id", "jcols", "out_cols", JoinOptions.LEFT_OUTER_JOIN(7))
+//					.join("col1,col2", "ds_id", "jcols", "out_cols", JoinOptions.SEMI_JOIN())
 //					.join("emd_cd,name", "EMD", "emd_cd,age", "param.{the_geom,emd_kor_nm},count",
 //							JoinOptions.INNER_JOIN(1))
 //					.groupBy("aaa,bbb")
 //						.aggregate(AggregateFunction.SUM("cc"), AggregateFunction.COUNT())
-					.aggregate(AggregateFunction.SUM("aaa"), AggregateFunction.MAX("bbb").as("ccc"))
+//					.aggregate(AggregateFunction.SUM("aaa"), AggregateFunction.MAX("bbb").as("ccc"))
+					.sort("보관일수:A:F,카메라대수:A")
 					.build();
 		
 		System.out.println(JsonFormat.printer().print(plan.toProto()));
