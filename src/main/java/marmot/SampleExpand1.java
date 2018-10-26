@@ -6,11 +6,7 @@ import static marmot.DataSetOption.GEOMETRY;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
-import marmot.Plan;
 import marmot.command.MarmotClientCommands;
-import marmot.plan.STScriptPlanLoader;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -30,15 +26,13 @@ public class SampleExpand1 {
 		DataSet input = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 
-		Plan plan = STScriptPlanLoader.load("marmot/sample_expand1.st");
-//		Plan plan = marmot.planBuilder("update")
-//							.load(INPUT)
-//							.expand1("area:double", "ST_Area(the_geom);")
-//							.expand1("the_geom:point", "ST_Centroid(the_geom)")
-//							.expand1("sig_cd:int")
-//							.project("the_geom,area,sig_cd")
-//							.build();
-
+		Plan plan = marmot.planBuilder("update")
+							.load(INPUT)
+							.expand1("area:double", "ST_Area(the_geom);")
+							.expand1("the_geom:point", "ST_Centroid(the_geom)")
+							.expand1("sig_cd:int")
+							.project("the_geom,area,sig_cd")
+							.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		SampleUtils.printPrefix(result, 5);
 	}

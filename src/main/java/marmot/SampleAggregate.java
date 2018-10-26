@@ -30,13 +30,12 @@ public class SampleAggregate {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
-		Plan plan = STScriptPlanLoader.load("marmot/sample_aggregate.st");
-//		Plan plan = marmot.planBuilder("sample_aggreate")
-//							.load(INPUT)
-//							.filter("휘발유 > 0")
-//							.aggregate(MAX("휘발유"), MIN("휘발유"), AVG("휘발유"), STDDEV("휘발유"),
-//										ENVELOPE("the_geom"))
-//							.build();
+		Plan plan = marmot.planBuilder("sample_aggreate")
+							.load(INPUT)
+							.filter("휘발유 > 0")
+							.aggregate(MAX("휘발유"), MIN("휘발유"), AVG("휘발유"), STDDEV("휘발유"),
+										ENVELOPE("the_geom"))
+							.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, FORCE);
 		SampleUtils.printPrefix(result, 5);
 	}

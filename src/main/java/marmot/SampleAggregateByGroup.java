@@ -31,15 +31,14 @@ public class SampleAggregateByGroup {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
-		Plan plan = STScriptPlanLoader.load("marmot/sample_aggregate_by_group.st");
-//		Plan plan = marmot.planBuilder("group_by")
-//							.load(INPUT)
-//							.filter("sig_cd.startsWith('11')")
-//							.groupBy("sig_cd")
-//								.aggregate(COUNT(), MAX("sub_sta_sn"), MIN("sub_sta_sn"),
-//											SUM("sub_sta_sn"), AVG("sub_sta_sn"),
-//											STDDEV("sub_sta_sn"))
-//							.build();
+		Plan plan = marmot.planBuilder("group_by")
+							.load(INPUT)
+							.filter("sig_cd.startsWith('11')")
+							.groupBy("sig_cd")
+								.aggregate(COUNT(), MAX("sub_sta_sn"), MIN("sub_sta_sn"),
+											SUM("sub_sta_sn"), AVG("sub_sta_sn"),
+											STDDEV("sub_sta_sn"))
+							.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, FORCE);
 		SampleUtils.printPrefix(result, 5);
 	}
