@@ -1,6 +1,6 @@
 {
   "name": "sample expand1",
-  "operator": [
+  "operators": [
     <load("교통/지하철/서울역사")>,
     <expand("area", "DOUBLE", "ST_Area(the_geom)")>,
     <expand("the_geom", "POINT")>,

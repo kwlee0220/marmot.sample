@@ -1,0 +1,8 @@
+{
+  "name": "sample filter",
+  "operator": [
+    @includeNamed{'load'; dsid="POI/주유소_가격"},
+    @includeNamed{'filter'; pred="휘발유 > 2000"; init=null},
+    @includeNamed{'project'; cols_expr="the_geom,상호,휘발유"}
+  ]
+}

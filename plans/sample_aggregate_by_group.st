@@ -1,6 +1,6 @@
 {
   "name": "sample aggregate_by_group",
-  "operator": [
+  "operators": [
     <load("교통/지하철/서울역사")>,
     <filter("sig_cd.startsWith('11')")>,
     <aggregate_by_group("sig_cd", ["count::count",

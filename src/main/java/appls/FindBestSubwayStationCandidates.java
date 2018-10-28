@@ -48,17 +48,17 @@ public class FindBestSubwayStationCandidates {
 	private static final String TAXI_LOG = "로그/나비콜/택시로그";
 	private static final String FLOW_POP_BYTIME = "주민/유동인구/월별_시간대/2015";
 	private static final String STATIONS = "교통/지하철/역사";
-	private static final String RESULT = "분석결과/최종결과";
+	private static final String RESULT = "분석결과/지하철역사_추천/최종결과";
 	private static final String GEOM_COL = "the_geom";
 	private static final String SRID = "EPSG:5186";
 	private static final GeometryColumnInfo GEOM_COL_INFO = new GeometryColumnInfo(GEOM_COL, SRID);
 	private static final Size2d CELL_SIZE = new Size2d(500, 500);
 	
-	private static final String TEMP_STATIONS = "분석결과/지하철역사_버퍼_그리드";
-	private static final String TEMP_SEOUL_TAXI_LOG_GRID = "분석결과/역사외_지역/택시로그/격자별_집계";
-	private static final String TEMP_SEOUL_FLOW_POP_GRID = "분석결과/역사외_지역/유동인구/격자별_집계";
-	private static final String TEMP_FLOW_POP = "분석결과/유동인구";
-	private static final String TEMP_TAXI_LOG = "분석결과/택시로그";
+	private static final String TEMP_STATIONS = "분석결과/지하철역사_추천/지하철역사_버퍼_그리드";
+	private static final String TEMP_SEOUL_TAXI_LOG_GRID = "분석결과/지하철역사_추천/역사외_지역/택시로그/격자별_집계";
+	private static final String TEMP_SEOUL_FLOW_POP_GRID = "분석결과/지하철역사_추천/역사외_지역/유동인구/격자별_집계";
+	private static final String TEMP_FLOW_POP = "분석결과/지하철역사_추천/유동인구";
+	private static final String TEMP_TAXI_LOG = "분석결과/지하철역사_추천/택시로그";
 	
 	public static final void main(String... args) throws Exception {
 //		PropertyConfigurator.configure("log4j.properties");
