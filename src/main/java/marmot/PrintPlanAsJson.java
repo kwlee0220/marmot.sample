@@ -9,14 +9,11 @@ import com.vividsolutions.jts.geom.Envelope;
 
 import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
-import marmot.optor.geo.SquareGrid;
 import marmot.plan.PredicateOption;
-import marmot.plan.SpatialJoinOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CSV;
 import utils.CommandLine;
 import utils.CommandLineParser;
-import utils.Size2d;
 import utils.stream.FStream;
 
 /**
@@ -109,16 +106,17 @@ public class PrintPlanAsJson {
 //					.expand1("거래금액:int",script)
 //					.query("input_dsid", SpatialRelation.WITHIN_DISTANCE(30), "key_disId")
 //					.spatialJoin("the_geom", "xxxxx", "output_cols")
+					.spatialOuterJoin("the_geom", "xxxxx", "output_cols")
 //					.spatialSemiJoin("the_geom", "xxxxx",
 //									SpatialJoinOption.NEGATED)
 //					.loadSpatialIndexJoin("leftDsId", "rightDsId", "*", SpatialRelation.WITHIN_DISTANCE(30))
 //					.intersection("the_geom", "the_geom2", "the_geom")
-					.intersects("the_geom", "param_dsid", PredicateOption.NEGATED)
+//					.intersects("the_geom", "param_dsid", PredicateOption.NEGATED)
 //					.loadSquareGridFile(new SquareGrid(envl, new Size2d(100, 100)), 7)
 //					.assignSquareGridCell("the_geom", new SquareGrid("dsid", new Size2d(100, 100)))
 //					.join("col1,col2", "ds_id", "jcols", "out_cols", JoinOptions.SEMI_JOIN())
-					.join("emd_cd,name", "EMD", "emd_cd,age", "param.{the_geom,emd_kor_nm},count",
-							JoinOptions.FULL_OUTER_JOIN(1))
+//					.join("emd_cd,name", "EMD", "emd_cd,age", "param.{the_geom,emd_kor_nm},count",
+//							JoinOptions.FULL_OUTER_JOIN(1))
 //					.groupBy("aaa,bbb")
 //						.aggregate(AggregateFunction.SUM("cc"), AggregateFunction.COUNT())
 //					.groupBy("block_cd")
