@@ -44,8 +44,8 @@ public class SampleLoadSpatialIndexJoin {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan = marmot.planBuilder("load_spatial_index_join")
-								.loadSpatialIndexJoin(OUTER, INNER, "left.*,right.{the_geom as the_geom2}",
-														SpatialRelation.INTERSECTS)
+								.loadSpatialIndexJoin(OUTER, INNER,
+													"left.*,right.{the_geom as the_geom2}")
 								.intersection("the_geom", "the_geom2", "the_geom")
 								.project("*-{the_geom2}")
 								.store(RESULT)

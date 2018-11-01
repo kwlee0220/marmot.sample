@@ -8,6 +8,7 @@ import com.google.protobuf.util.JsonFormat;
 import com.vividsolutions.jts.geom.Envelope;
 
 import marmot.command.MarmotClientCommands;
+import marmot.optor.AggregateFunction;
 import marmot.optor.JoinOptions;
 import marmot.plan.PredicateOption;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -106,12 +107,13 @@ public class PrintPlanAsJson {
 //					.expand1("거래금액:int",script)
 //					.query("input_dsid", SpatialRelation.WITHIN_DISTANCE(30), "key_disId")
 //					.spatialJoin("the_geom", "xxxxx", "output_cols")
-					.spatialOuterJoin("the_geom", "xxxxx", "output_cols")
+//					.spatialOuterJoin("the_geom", "xxxxx", "output_cols")
 //					.spatialSemiJoin("the_geom", "xxxxx",
 //									SpatialJoinOption.NEGATED)
 //					.loadSpatialIndexJoin("leftDsId", "rightDsId", "*", SpatialRelation.WITHIN_DISTANCE(30))
 //					.intersection("the_geom", "the_geom2", "the_geom")
 //					.intersects("the_geom", "param_dsid", PredicateOption.NEGATED)
+//					.withinDistance("the_geom", "param_dsid", 500, PredicateOption.NEGATED)
 //					.loadSquareGridFile(new SquareGrid(envl, new Size2d(100, 100)), 7)
 //					.assignSquareGridCell("the_geom", new SquareGrid("dsid", new Size2d(100, 100)))
 //					.join("col1,col2", "ds_id", "jcols", "out_cols", JoinOptions.SEMI_JOIN())
@@ -124,6 +126,14 @@ public class PrintPlanAsJson {
 //						.aggregate(AVG("day_total"))
 //					.aggregate(AggregateFunction.SUM("aaa"), AggregateFunction.MAX("bbb").as("ccc"))
 //					.sort("보관일수:A:F,카메라대수:A")
+//					.distinct("c1,c2", 11)
+//					.loadEquiJoin("left_dsId", "lc1,lc2", "right_dsId", "rc1,rc2",
+//									"left.oc1,right.oc2", JoinOptions.INNER_JOIN(11))
+//					.clipJoin("the_geom", "clipper_dsid")
+//					.differenceJoin("the_geom", "clipper_dsid")
+					.spatialAggregateJoin("the_geom", "clipper_dsid",
+											AggregateFunction.COUNT(), AggregateFunction.MAX("c2"))
+//					.shard(11)
 					.build();
 		
 		System.out.println(JsonFormat.printer().print(plan.toProto()));
