@@ -1,7 +1,7 @@
 package marmot;
 
 import static marmot.DataSetOption.FORCE;
-import static marmot.optor.AggregateFunction.AVG;
+import static marmot.optor.AggregateFunction.*;
 import static marmot.optor.AggregateFunction.ENVELOPE;
 import static marmot.optor.AggregateFunction.MAX;
 import static marmot.optor.AggregateFunction.MIN;
@@ -33,7 +33,7 @@ public class SampleAggregate {
 		Plan plan = marmot.planBuilder("sample_aggreate")
 							.load(INPUT)
 							.filter("휘발유 > 0")
-							.aggregate(MAX("휘발유"), MIN("휘발유"), AVG("휘발유"), STDDEV("휘발유"),
+							.aggregate(COUNT(), MAX("휘발유"), MIN("휘발유"), AVG("휘발유"), STDDEV("휘발유"),
 										ENVELOPE("the_geom"))
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, FORCE);
