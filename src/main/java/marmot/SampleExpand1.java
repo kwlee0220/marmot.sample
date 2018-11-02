@@ -24,7 +24,8 @@ public class SampleExpand1 {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		DataSet input = marmot.getDataSet(INPUT);
-		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
+//		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("THE_GEOM", "EPSG:5186");
 
 		Plan plan = marmot.planBuilder("update")
 							.load(INPUT)

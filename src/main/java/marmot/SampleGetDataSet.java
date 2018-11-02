@@ -4,6 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.command.MarmotClientCommands;
+import marmot.geo.catalog.SpatialIndexInfo;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -20,6 +21,9 @@ public class SampleGetDataSet {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		DataSet input = marmot.getDataSet(INPUT);
+		
+		SpatialIndexInfo siInfo = input.getDefaultSpatialIndexInfoOrNull();
+		
 		SampleUtils.printPrefix(input, 50);
 		
 		for ( DataSet ds: marmot.getDataSetAllInDir("구역", true) ) {
