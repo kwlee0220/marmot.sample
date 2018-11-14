@@ -8,6 +8,6 @@
     <spatial_semijoin("분석결과/지하철역사_추천/지하철역사_버퍼_그리드", "true")>,
     <assign_gridcell("tmp/seoul", "500", "500")>,
     <project("cell_geom as the_geom, cell_id, cell_pos")>,
-    <aggregate_by_group("cell_id", "count::count", "the_geom")>
+    <aggregate_by_key("cell_id", "count::count", "the_geom")>
   ]
 }

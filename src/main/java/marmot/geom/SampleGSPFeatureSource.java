@@ -12,9 +12,10 @@ import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
-import marmot.geoserver.plugin.GSPDataStore;
-import marmot.geoserver.plugin.GSPFeatureSource;
+import marmot.geo.geoserver.GSPDataStore;
+import marmot.geo.geoserver.GSPFeatureSource;
 import marmot.remote.protobuf.PBMarmotClient;
+import utils.UnitUtils;
 
 /**
  * 
@@ -35,7 +36,13 @@ public class SampleGSPFeatureSource {
 		
 		Envelope bounds = getGu(marmot, "서초구");
 		
-		GSPDataStore store = GSPDataStore.from(marmot, 10000);
+		int cacheSize = (int)UnitUtils.parseByteSize("512mb");
+		File parentDir = Files.createTempDir().getParentFile();
+		File cacheDir =  new File(parentDir, "marmot_geoserver_cache");
+		
+		GSPDataStore store = new GSPDataStore(marmot, cacheSize, 5, cacheDir);
+		store.sampleCount(50000);
+		
 		GSPFeatureSource src = (GSPFeatureSource)store.getFeatureSource("주소.건물POI");
 		RecordSet rset = src.query(bounds);
 		SampleUtils.printPrefix(rset, 3);

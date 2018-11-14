@@ -8,9 +8,7 @@ import com.google.protobuf.util.JsonFormat;
 import com.vividsolutions.jts.geom.Envelope;
 
 import marmot.command.MarmotClientCommands;
-import marmot.optor.AggregateFunction;
-import marmot.optor.JoinOptions;
-import marmot.plan.PredicateOption;
+import marmot.optor.geo.SpatialRelation;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CSV;
 import utils.CommandLine;
@@ -129,10 +127,15 @@ public class PrintPlanAsJson {
 //					.distinct("c1,c2", 11)
 //					.loadEquiJoin("left_dsId", "lc1,lc2", "right_dsId", "rc1,rc2",
 //									"left.oc1,right.oc2", JoinOptions.INNER_JOIN(11))
-//					.clipJoin("the_geom", "clipper_dsid")
+					.clipJoin("the_geom", "clipper_dsid")
+					.intersectionJoin("the_geom", "param_id", "out_cols")
 //					.differenceJoin("the_geom", "clipper_dsid")
-					.spatialAggregateJoin("the_geom", "clipper_dsid",
-											AggregateFunction.COUNT(), AggregateFunction.MAX("c2"))
+//					.spatialAggregateJoin("the_geom", "clipper_dsid",
+//											AggregateFunction.COUNT(), AggregateFunction.MAX("c2"))
+//					.pickTopK("col1:A:F", 5)
+//					.toXYCoordinates("the_geom", "x", "y")
+//					.matchSpatially("the_geom", SpatialRelation.CONTAINS, "param_ds_id")
+//					.knnJoin("the_geom", "param_ds_id", 3, 100, "*,param.{xx}")
 //					.shard(11)
 					.build();
 		
