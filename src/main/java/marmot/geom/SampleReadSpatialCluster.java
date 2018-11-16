@@ -1,11 +1,12 @@
 package marmot.geom;
 
+import java.io.InputStream;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 import common.SampleUtils;
-import io.vavr.control.Option;
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -13,6 +14,7 @@ import marmot.RecordSet;
 import marmot.SpatialClusterInfo;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
+import marmot.rset.PBInputStreamRecordSet;
 
 /**
  * 
@@ -38,7 +40,8 @@ public class SampleReadSpatialCluster {
 			String quadKey = info.getQuadKey();
 			
 			System.out.println(quadKey + ": ");
-			try ( RecordSet rset = ds.readSpatialCluster(quadKey, Option.none()) ) {
+			try ( InputStream is = ds.readRawSpatialCluster(quadKey);
+					RecordSet rset = PBInputStreamRecordSet.from(is) ) {
 				SampleUtils.printPrefix(rset, 5);
 			}
 		}
@@ -48,9 +51,9 @@ public class SampleReadSpatialCluster {
 			String quadKey = info.getQuadKey();
 			
 			System.out.println(quadKey + ": ");
-			
-			Option<String> filter = Option.some("건물용도분류 == '주택' && 건물명 != null");
-			try ( RecordSet rset = ds.readSpatialCluster(quadKey, filter) ) {
+
+			try ( InputStream is = ds.readRawSpatialCluster(quadKey);
+					RecordSet rset = PBInputStreamRecordSet.from(is) ) {
 				SampleUtils.printPrefix(rset, 5);
 			}
 		}
