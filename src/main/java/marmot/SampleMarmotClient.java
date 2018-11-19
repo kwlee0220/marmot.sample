@@ -36,16 +36,17 @@ public class SampleMarmotClient {
 
 		marmot.deleteDataSet("tmp/result");
 
-		
 		Plan plan;
 		DataSet ds;
 	
 		// 데이터세트를 읽어 화면에 출력
 		//
 //		ds = marmot.getDataSet("교통/지하철/서울역사");
-//		try ( RecordSet rset = ds.read() ) {
-//			rset.stream().limit(5).forEach(System.out::println);
-//		}
+		ds = marmot.getDataSet("주소/건물POI");
+		try ( RecordSet rset = ds.read() ) {
+			rset.stream().limit(5).forEach(System.out::println);
+//			rset.stream().limit(5000).count();
+		}
 		
 		RecordSet rset;
 		
@@ -67,11 +68,11 @@ public class SampleMarmotClient {
 					.project("sub_sta_sn,kor_sub_nm")
 					.build();
 		
-		try ( RecordSet input = ds.read() ) {
-			try ( RecordSet result = marmot.executeLocally(plan, input) ) {
-				SampleUtils.printPrefix(result, 5);
-			}
-		}
+//		try ( RecordSet input = ds.read() ) {
+//			try ( RecordSet result = marmot.executeLocally(plan, input) ) {
+//				SampleUtils.printPrefix(result, 5);
+//			}
+//		}
 		
 		marmot.disconnect();
 	}

@@ -28,6 +28,7 @@ public class SampleQuery {
 		DataSet ds = marmot.getDataSet(INPUT);
 		try ( RecordSet rset = ds.queryRange(bounds, Option.some("trnsit_yn = '1'")) ) {
 			SampleUtils.printPrefix(rset, 5);
+//			rset.stream().count();
 		}
 	}
 	
