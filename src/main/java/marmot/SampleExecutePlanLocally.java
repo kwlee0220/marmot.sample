@@ -5,12 +5,6 @@ import java.nio.charset.Charset;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import marmot.DataSet;
-import marmot.DataSetOption;
-import marmot.Plan;
-import marmot.Record;
-import marmot.RecordSchema;
-import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
 import marmot.externio.shp.ShapefileRecordSet;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -34,6 +28,7 @@ public class SampleExecutePlanLocally {
 		sample2(marmot);
 		sample3(marmot);
 		sample4(marmot);
+		sample5(marmot);
 	}
 	
 	private static void sample1(PBMarmotClient marmot) {
@@ -89,6 +84,20 @@ public class SampleExecutePlanLocally {
 				}
 			}
 			marmot.getDataSet(RESULT).read().forEach(System.out::println);
+		}
+	}
+
+	private static final File SHP_FILE2 = new File("/mnt/data/sbdata/data/사업단자료/행정동코드");
+	private static void sample5(PBMarmotClient marmot) {
+		try ( ShapefileRecordSet rset = new ShapefileRecordSet(SHP_FILE2, Charset.forName("utf-8")) ) {
+			Plan plan = marmot.planBuilder("test")
+								.project("the_geom,hcode")
+								.build();
+			RecordSchema schema = marmot.getOutputRecordSchema(plan, rset.getRecordSchema());
+			marmot.createDataSet(RESULT, schema, DataSetOption.FORCE);
+			try ( RecordSet result = marmot.executeLocally(plan, rset) ) {
+				System.out.println("count = " + result.count());
+			}
 		}
 	}
 }

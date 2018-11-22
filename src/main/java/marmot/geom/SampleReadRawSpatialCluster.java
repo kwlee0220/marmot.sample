@@ -20,7 +20,7 @@ import marmot.rset.PBInputStreamRecordSet;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleReadSpatialCluster {
+public class SampleReadRawSpatialCluster {
 	private static final String INPUT = "주소/건물POI";
 	private static final String SIDO = "구역/시도";
 	private static final String SGG = "구역/시군구";
