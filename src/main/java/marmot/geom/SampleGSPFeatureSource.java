@@ -36,14 +36,15 @@ public class SampleGSPFeatureSource {
 		
 		Envelope bounds = getGu(marmot, "서초구");
 		
-		int cacheSize = (int)UnitUtils.parseByteSize("512mb");
+		int cacheSize = (int)UnitUtils.parseByteSize("256mb");
 		File parentDir = Files.createTempDir().getParentFile();
 		File cacheDir =  new File(parentDir, "marmot_geoserver_cache");
 		
 		GSPDataStore store = new GSPDataStore(marmot, cacheSize, 5, cacheDir);
-		store.sampleCount(50000);
+		store.sampleCount(20000);
 		
 		GSPFeatureSource src = (GSPFeatureSource)store.getFeatureSource("주소.건물POI");
+//		GSPFeatureSource src = (GSPFeatureSource)store.getFeatureSource("건물.건물통합정보마스터");
 		RecordSet rset = src.query(bounds);
 		SampleUtils.printPrefix(rset, 3);
 		

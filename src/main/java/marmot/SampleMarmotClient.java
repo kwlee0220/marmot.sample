@@ -45,7 +45,7 @@ public class SampleMarmotClient {
 		ds = marmot.getDataSet("주소/건물POI");
 		try ( RecordSet rset = ds.read() ) {
 			rset.stream().limit(5).forEach(System.out::println);
-//			rset.stream().limit(5000).count();
+//			rset.stream().limit(50000000).count();
 		}
 		
 		RecordSet rset;
