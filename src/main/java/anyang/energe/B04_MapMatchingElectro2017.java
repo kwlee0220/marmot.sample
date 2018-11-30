@@ -68,7 +68,7 @@ public class B04_MapMatchingElectro2017 {
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
 		Plan plan = marmot.planBuilder("2017 전기사용량 연속지적도 매칭")
-						.loadEquiJoin(CADASTRAL, "pnu", INTERM, "pnu",
+						.loadHashJoin(CADASTRAL, "pnu", INTERM, "pnu",
 									"left.*," + rightCols, LEFT_OUTER_JOIN(17))
 						.update(updateExpr)
 						.store(OUTPUT)

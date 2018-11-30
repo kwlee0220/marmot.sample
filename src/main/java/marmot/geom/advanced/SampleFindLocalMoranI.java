@@ -50,7 +50,7 @@ public class SampleFindLocalMoranI {
 							.build();
 
 		RecordSet result1 = marmot.executeToRecordSet(plan1);
-		params.putAll(result1.getFirst().get().toMap());
+		params.putAll(result1.getFirst().toMap());
 		
 		Plan plan = marmot.planBuilder("local_spatial_auto_correlation")
 								.loadLocalMoranI(INPUT, "uid", "fctr_meas", 1000,

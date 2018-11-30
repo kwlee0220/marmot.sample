@@ -81,7 +81,7 @@ public class A05_MapMatchingLand {
 
 		Plan plan;
 		plan = marmot.planBuilder("개별공시지가 매핑")
-						.loadEquiJoin(BASE, "pnu", INTERM, "pnu", outCols,
+						.loadHashJoin(BASE, "pnu", INTERM, "pnu", outCols,
 										LEFT_OUTER_JOIN(25))
 						.update(updateExpr)
 

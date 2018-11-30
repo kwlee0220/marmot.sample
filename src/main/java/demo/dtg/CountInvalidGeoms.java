@@ -7,10 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Polygon;
 
-import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.Plan;
-import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
@@ -60,14 +57,11 @@ public class CountInvalidGeoms {
 					.aggregate(COUNT())
 					.store(RESULT)
 					.build();
-		DataSet output = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
-		try ( RecordSet rset = output.read() ) {
-			long count = rset.nextCopy().get().getLong(0);
-			
-			watch.stop();
-			System.out.printf("count=%d, total elapsed time=%s%n",
-								count, watch.getElapsedMillisString());
-		}
+		long count = marmot.executeToLong(plan).get();
+		watch.stop();
+		
+		System.out.printf("count=%d, total elapsed time=%s%n",
+							count, watch.getElapsedMillisString());
 	}
 	
 	private static Polygon getValidWgsBounds(PBMarmotClient marmot) {

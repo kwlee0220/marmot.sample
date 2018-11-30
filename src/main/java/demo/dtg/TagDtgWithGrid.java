@@ -116,7 +116,7 @@ public class TagDtgWithGrid {
 					.project("the_geom")
 					.build();
 		
-		return marmot.executeLocally(plan).getFirst().map(r -> r.getGeometry(0)).get();
+		return marmot.executeToGeometry(plan).get();
 	}
 	
 	private static Polygon getValidWgsBounds(Envelope bounds) {
