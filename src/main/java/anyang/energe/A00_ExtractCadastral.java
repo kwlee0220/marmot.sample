@@ -55,11 +55,11 @@ public class A00_ExtractCadastral {
 					.project("the_geom, pnu")
 					.shard(1)
 					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE,
-												BLOCK_SIZE(blockSize));
+		DataSet result = marmot.createDataSet(OUTPUT, plan, 
+												GEOMETRY(gcInfo), FORCE, BLOCK_SIZE(blockSize));
 		
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
-		SampleUtils.printPrefix(result, 10);
+		SampleUtils.printPrefix(result, 5);
 	}
 }

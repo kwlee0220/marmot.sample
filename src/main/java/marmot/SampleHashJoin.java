@@ -17,7 +17,7 @@ import marmot.remote.protobuf.PBMarmotClient;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleEquiJoin {
+public class SampleHashJoin {
 	private static final String INPUT = "구역/시군구";
 	private static final String PARAM = "구역/시도";
 	private static final String RESULT = "tmp/result";

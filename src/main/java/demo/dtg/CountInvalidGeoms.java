@@ -45,7 +45,6 @@ public class CountInvalidGeoms {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-		marmot.setMapOutputCompression(false);
 		
 		Polygon bounds = getValidWgsBounds(marmot);
 

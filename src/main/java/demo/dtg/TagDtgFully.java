@@ -62,7 +62,6 @@ public class TagDtgFully {
 		
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
-		marmot.setMapOutputCompression(true);
 		
 //		Geometry sidoGeom = getGyoungGiDo(marmot);
 //		Envelope bounds = sidoGeom.getEnvelopeInternal();

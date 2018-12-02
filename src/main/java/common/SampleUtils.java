@@ -1,5 +1,8 @@
 package common;
 
+import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
+
 import java.io.File;
 import java.util.Map;
 
@@ -8,6 +11,9 @@ import org.apache.commons.lang.SystemUtils;
 import com.google.common.collect.Maps;
 
 import marmot.DataSet;
+import marmot.GeometryColumnInfo;
+import marmot.MarmotRuntime;
+import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
@@ -29,6 +35,15 @@ public class SampleUtils {
 		else {
 			TEMP_DIR = new File(".");
 		}
+	}
+	
+	public static DataSet writeSeoul(MarmotRuntime marmot, String dsId) {
+		GeometryColumnInfo gcInfo = marmot.getDataSet("구역/시도").getGeometryColumnInfo();
+		Plan plan = marmot.planBuilder("extract_seoul")
+						.load("구역/시도")
+						.filter("ctprvn_cd == '11'")
+						.build();
+		return marmot.createDataSet(dsId, plan, GEOMETRY(gcInfo), FORCE);
 	}
 	
 	public static void printPrefix(DataSet dataset, int count) {
