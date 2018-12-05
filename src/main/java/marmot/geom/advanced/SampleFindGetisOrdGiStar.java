@@ -8,7 +8,7 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
-import marmot.optor.geo.LISAWeight;
+import marmot.optor.geo.advanced.LISAWeight;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**

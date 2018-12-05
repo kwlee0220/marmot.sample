@@ -11,7 +11,7 @@ import marmot.Plan;
 import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
-import marmot.optor.geo.LISAWeight;
+import marmot.optor.geo.advanced.LISAWeight;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
