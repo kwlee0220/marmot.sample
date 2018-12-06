@@ -98,7 +98,7 @@ public class PrintPlanAsJson {
 //					.toPoint("lon", "lat", "the_geom")
 //					.transformCrs("the_geom", "EPSG:4326", "EPSG:5186")
 //					.project("ROW_ID,POI,ID,SP,SN,언급빈도수,선호도")
-//					.expand("sp:double,sn:double,언급빈도수:int,선호도:double")
+					.expand("sp:double,sn:double,언급빈도수:int,선호도:double", "sn=sp + 1")
 //					.expand("발생건수:int,사상자수:int,사망자수:int,중상자수:int,경상자수:int,부상신고자수:int")
 //					.transformCrs("the_geom", "EPSG:5179", "aaa", "EPSG:5186")
 //					.update("기준년도=(기준년도.length() > 0) ? 기준년도 : '2017'; 기준월=(기준월.length() > 0) ? 기준월 : '01'")
@@ -127,8 +127,8 @@ public class PrintPlanAsJson {
 //					.distinct("c1,c2", 11)
 //					.loadEquiJoin("left_dsId", "lc1,lc2", "right_dsId", "rc1,rc2",
 //									"left.oc1,right.oc2", JoinOptions.INNER_JOIN(11))
-					.clipJoin("the_geom", "clipper_dsid")
-					.intersectionJoin("the_geom", "param_id", "out_cols")
+//					.clipJoin("the_geom", "clipper_dsid")
+//					.intersectionJoin("the_geom", "param_id", "out_cols")
 //					.differenceJoin("the_geom", "clipper_dsid")
 //					.spatialAggregateJoin("the_geom", "clipper_dsid",
 //											AggregateFunction.COUNT(), AggregateFunction.MAX("c2"))
