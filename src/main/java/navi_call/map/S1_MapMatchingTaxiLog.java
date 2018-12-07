@@ -40,7 +40,7 @@ public class S1_MapMatchingTaxiLog {
 		Plan plan;
 		plan = marmot.planBuilder("택시로그_맵_매핑_org_road")
 					.load(INPUT)
-					.knnJoin(geomCol, PARAM, 1, Globals.DISTANCE,
+					.knnJoin(geomCol, PARAM, Globals.MAX_CANDIDATES, Globals.DISTANCE,
 							"*,param.{the_geom as link_geom, link_id}")
 //					.update(script)
 					.store(RESULT)

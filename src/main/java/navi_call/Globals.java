@@ -12,6 +12,7 @@ public class Globals {
 	public static final String ROADS = "교통/도로/링크";
 	public static final String ROADS_IDX = "tmp/road/flatten_links";
 	public static final String TAXI_LOG_MAP = "tmp/taxi/mapped_log";
-	public static final double DISTANCE = 10;
+	public static final double DISTANCE = 20;
+	public static final int MAX_CANDIDATES = 5;
 	public static final String DONG = "방배동";
 }
