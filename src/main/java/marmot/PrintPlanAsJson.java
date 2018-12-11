@@ -8,7 +8,7 @@ import com.google.protobuf.util.JsonFormat;
 import com.vividsolutions.jts.geom.Envelope;
 
 import marmot.command.MarmotClientCommands;
-import marmot.optor.geo.SpatialRelation;
+import marmot.plan.ParseCsvOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CSV;
 import utils.CommandLine;
@@ -45,20 +45,19 @@ public class PrintPlanAsJson {
 		String transExpr = "local:_meta.mvel";
 		Envelope envl = marmot.getDataSet("구역/시도").getBounds();
 		
-		String[] header = FStream.range(0, 13)
+		String header = FStream.range(0, 13)
 								.map(idx -> String.format("field_%02d", idx))
-								.toArray(String.class);
-		header = CSV.get()
-//					.parse("date,owner,car_no,time,mileage,mileage_accum,velo,rpm,brake,xpos,ypos,heading,xacc,yacc")
-//					.parse("car_no,ts,month,sid_cd,besselX,besselY,status,company,driver_id,xpos,ypos")
-					.parse("운행일자,ts,운송사코드,차량번호")
-//					.parse("번호,사업자명,소재지전체주소,도로명주소,인허가일자,형태,경도,위도")
-//					.parse("시군구코드,출입구일련번호,법정동코드,시도명,시군구명,읍면동명,도로명코드,도로명,지하여부,건물본번,건물부번,건물명,우편번호,건물용도분류,건물군여부,관할행정동,xpos,ypos")
-//					.parse("시군구,번지,본번,부번,단지명,전용면적,계약년월,계약일,거래금액,층,건축년도,도로명")
-//					.parse("사용년월,대지위치,도로명_대지위치,시군구코드,법정동코드,대지구분코드,번,지,새주소_일련번호,새주소_도로코드,새주소_지상지하코드,새주소_본번,새주소_부번,사용량")
-//					.parse("시군구,번지,본번,부번,단지명,전월세구분,전용면적,계약년월,계약일,보증금,월세,층,건축년도,도로명")
-//					.parse("STD_YM,BLOCK_CD,X_COORD,Y_COORD,AVG_00TMST,AVG_01TMST,AVG_02TMST,AVG_03TMST,AVG_04TMST,AVG_05TMST,AVG_06TMST,AVG_07TMST,AVG_08TMST,AVG_09TMST,AVG_10TMST,AVG_11TMST,AVG_12TMST,AVG_13TMST,AVG_14TMST,AVG_15TMST,AVG_16TMST,AVG_17TMST,AVG_18TMST,AVG_19TMST,AVG_20TMST,AVG_21TMST,AVG_22TMST,AVG_23TMST")
-					.toArray(new String[0]);
+								.join(",");
+		header = 
+//				"date,owner,car_no,time,mileage,mileage_accum,velo,rpm,brake,xpos,ypos,heading,xacc,yacc")
+//				"car_no,ts,month,sid_cd,besselX,besselY,status,company,driver_id,xpos,ypos")
+				"운행일자,ts,운송사코드,차량번호";
+//					"번호,사업자명,소재지전체주소,도로명주소,인허가일자,형태,경도,위도")
+//					"시군구코드,출입구일련번호,법정동코드,시도명,시군구명,읍면동명,도로명코드,도로명,지하여부,건물본번,건물부번,건물명,우편번호,건물용도분류,건물군여부,관할행정동,xpos,ypos")
+//					"시군구,번지,본번,부번,단지명,전용면적,계약년월,계약일,거래금액,층,건축년도,도로명")
+//					"사용년월,대지위치,도로명_대지위치,시군구코드,법정동코드,대지구분코드,번,지,새주소_일련번호,새주소_도로코드,새주소_지상지하코드,새주소_본번,새주소_부번,사용량")
+//					"시군구,번지,본번,부번,단지명,전월세구분,전용면적,계약년월,계약일,보증금,월세,층,건축년도,도로명")
+//					"STD_YM,BLOCK_CD,X_COORD,Y_COORD,AVG_00TMST,AVG_01TMST,AVG_02TMST,AVG_03TMST,AVG_04TMST,AVG_05TMST,AVG_06TMST,AVG_07TMST,AVG_08TMST,AVG_09TMST,AVG_10TMST,AVG_11TMST,AVG_12TMST,AVG_13TMST,AVG_14TMST,AVG_15TMST,AVG_16TMST,AVG_17TMST,AVG_18TMST,AVG_19TMST,AVG_20TMST,AVG_21TMST,AVG_22TMST,AVG_23TMST";
 
 		String colDecls = FStream.range(0, 24)
 							.map(idx -> String.format("AVG_%02dTMST:float", idx))
@@ -73,7 +72,7 @@ public class PrintPlanAsJson {
 		Plan plan;
 		plan = marmot.planBuilder("import_plan")
 //					.parseCsv(',', ParseCsvOption.HEADER(header))
-//					.parseCsv(',', ParseCsvOption.HEADER(header), ParseCsvOption.COMMENT('#'))
+					.parseCsv(',', ParseCsvOption.HEADER(header), ParseCsvOption.COMMENT('#'))
 //					.parseCsv('|', HEADER(header))
 //					.filter("sp != null && sn != null")
 //					.expand1("ts:datetime", script2)
@@ -98,7 +97,7 @@ public class PrintPlanAsJson {
 //					.toPoint("lon", "lat", "the_geom")
 //					.transformCrs("the_geom", "EPSG:4326", "EPSG:5186")
 //					.project("ROW_ID,POI,ID,SP,SN,언급빈도수,선호도")
-					.expand("sp:double,sn:double,언급빈도수:int,선호도:double", "sn=sp + 1")
+//					.expand("sp:double,sn:double,언급빈도수:int,선호도:double", "sn=sp + 1")
 //					.expand("발생건수:int,사상자수:int,사망자수:int,중상자수:int,경상자수:int,부상신고자수:int")
 //					.transformCrs("the_geom", "EPSG:5179", "aaa", "EPSG:5186")
 //					.update("기준년도=(기준년도.length() > 0) ? 기준년도 : '2017'; 기준월=(기준월.length() > 0) ? 기준월 : '01'")

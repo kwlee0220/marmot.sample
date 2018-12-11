@@ -42,6 +42,7 @@ public class S0_PrepareRoadData {
 					.breakLineString(geomCol)
 					.groupBy("link_id")
 						.run(subPlan)
+					.expand("sub_link_no:short")
 					.store(Globals.ROADS_IDX)
 					.build();
 		DataSet result = marmot.createDataSet(Globals.ROADS_IDX, plan, GEOMETRY(gcInfo), FORCE);
