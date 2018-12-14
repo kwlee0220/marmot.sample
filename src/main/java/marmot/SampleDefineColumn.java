@@ -13,7 +13,7 @@ import marmot.remote.protobuf.PBMarmotClient;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleExpand1 {
+public class SampleDefineColumn {
 	private static final String INPUT = "교통/지하철/서울역사";
 	private static final String RESULT = "tmp/result";
 	
@@ -29,9 +29,9 @@ public class SampleExpand1 {
 
 		Plan plan = marmot.planBuilder("update")
 							.load(INPUT)
-							.expand1("area:double", "ST_Area(the_geom);")
-							.expand1("the_geom:point", "ST_Centroid(the_geom)")
-							.expand1("sig_cd:int")
+							.defineColumn("area:double", "ST_Area(the_geom);")
+							.defineColumn("the_geom:point", "ST_Centroid(the_geom)")
+							.defineColumn("sig_cd:int")
 							.project("the_geom,area,sig_cd")
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);

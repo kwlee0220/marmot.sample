@@ -88,7 +88,7 @@ public class TagDtgWithGrid {
 					.intersects("the_geom", kyounggiGeom)
 					
 					.groupBy("cell_id")
-						.tagWith("the_geom,cell_pos")
+						.withTags("the_geom,cell_pos")
 						.workerCount(WORKER_COUNT)
 						.aggregate(COUNT())
 						

@@ -65,7 +65,7 @@ public class Step1FlowPop {
 							.load(FLOW_POP)
 							.update(handleNull)
 							// 시간대 단위의 유동인구는 모두 합쳐 하루 매출액을 계산한다. 
-							.expand1("flow_pop:double", avgExpr)
+							.defineColumn("flow_pop:double", avgExpr)
 							.project("std_ym,block_cd,flow_pop")
 							// BIZ_GRID와 소지역 코드를 이용하여 조인하여, 대도시 상업지역과 겹치는
 							// 유동인구 구역을 뽑는다. 
@@ -75,7 +75,7 @@ public class Step1FlowPop {
 							// 한 그리드 셀에 여러 소지역 유동인구 정보가 존재하면,
 							// 해당 유동인구들의 평균을 구한다.
 							.groupBy("std_ym,cell_id")
-								.tagWith(geomCol + ",sgg_cd")
+								.withTags(geomCol + ",sgg_cd")
 								.workerCount(3)
 								.aggregate(AVG("flow_pop").as("flow_pop"))
 							.project(String.format("%s,*-{%s}", geomCol, geomCol))

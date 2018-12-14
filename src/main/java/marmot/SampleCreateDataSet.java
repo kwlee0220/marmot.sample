@@ -15,7 +15,6 @@ import common.SampleUtils;
 import marmot.command.MarmotClientCommands;
 import marmot.geo.GeoClientUtils;
 import marmot.remote.protobuf.PBMarmotClient;
-import marmot.rset.RecordSets;
 import marmot.support.DefaultRecord;
 import marmot.type.DataType;
 
@@ -72,7 +71,7 @@ public class SampleCreateDataSet {
 		recordList.add(record.duplicate());
 		
 		// 생성된 레코드들을 이용하여 레코드 세트 생성
-		RecordSet rset = RecordSets.from(schema, recordList);
+		RecordSet rset = RecordSet.from(schema, recordList);
 
 		// 데이터세트를 생성하고, 레코드 세트를 저장한다.
 		marmot.createDataSet("tmp/test", rset.getRecordSchema(), FORCE)

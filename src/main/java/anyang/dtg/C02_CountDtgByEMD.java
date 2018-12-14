@@ -45,7 +45,7 @@ public class C02_CountDtgByEMD {
 		plan = marmot.planBuilder("전국_읍면동별_통행량")
 					.load(DTG)
 					.filter("운행속도 > 0")
-					.expand1("ts:datetime", script)
+					.defineColumn("ts:datetime", script)
 					.spatialJoin("the_geom", EMD_WGS84, "param.{emd_cd},차량번호 as car_no,ts")
 					.expand("emd_cd:int")
 					.groupBy("emd_cd,car_no")

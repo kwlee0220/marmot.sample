@@ -74,7 +74,7 @@ public class B07_GridAnalysisElectro2017 {
 					.expand("ratio:double", "ratio = (ST_Area(overlap) /  ST_Area(the_geom))")
 					.update(updateExpr)
 					.groupBy("cell_id")
-						.tagWith("cell_geom,cell_pos")
+						.withTags("cell_geom,cell_pos")
 						.workerCount(7)
 						.aggregate(aggrs)
 					.expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")

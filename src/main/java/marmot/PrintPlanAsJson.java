@@ -72,13 +72,13 @@ public class PrintPlanAsJson {
 		Plan plan;
 		plan = marmot.planBuilder("import_plan")
 //					.parseCsv(',', ParseCsvOption.HEADER(header))
-					.parseCsv(',', ParseCsvOption.HEADER(header), ParseCsvOption.COMMENT('#'))
+//					.parseCsv(',', ParseCsvOption.HEADER(header), ParseCsvOption.COMMENT('#'))
 //					.parseCsv('|', HEADER(header))
 //					.filter("sp != null && sn != null")
 //					.expand1("ts:datetime", script2)
 //					.project("the_geom,운송사코드,차량번호,일일주행거리,누적주행거리,운행속도,rpm,"
 //							+ "브레이크신호,방위각,가속도x,가속도y")
-//					.expand1("기준년도:short", "(기준년도.length() > 0) ? 기준년도 : '2017'")
+					.defineColumn("기준년도:short", "(기준년도.length() > 0) ? 기준년도 : '2017'")
 //					.expand1("기준월:short", "(기준월.length() > 0) ? 기준월 : '01'")
 //					.expand1("개별공시지가:long")
 //					.project("고유번호,기준년도,기준월,개별공시지가")

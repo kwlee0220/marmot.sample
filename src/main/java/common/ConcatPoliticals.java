@@ -76,13 +76,13 @@ public class ConcatPoliticals {
 						.project("the_geom,bjd_cd,bjd_nm,"
 								+ "emd_cd,emd_kor_nm as emd_nm,"
 								+ "li_cd,li_kor_nm as li_nm")
-						.expand1("sig_cd2:string", "bjd_cd.substring(0,5)")
+						.defineColumn("sig_cd2:string", "bjd_cd.substring(0,5)")
 						.join("sig_cd2", SGG, "sig_cd", "*,param.sig_kor_nm", jopts)
 						.update(script1)
 						.project("the_geom,bjd_cd,bjd_nm,"
 								+ "sig_cd2 as sgg_cd,sig_kor_nm as sgg_nm,"
 								+ "emd_cd,emd_nm,li_cd,li_nm")
-						.expand1("sid_cd2:string", "bjd_cd.substring(0,2)")
+						.defineColumn("sid_cd2:string", "bjd_cd.substring(0,2)")
 						.join("sid_cd2", SID, "ctprvn_cd", "*,param.{ctp_kor_nm,ctprvn_cd}", jopts)
 						.update("bjd_nm = ctp_kor_nm + ' ' + bjd_nm")
 						.project("the_geom,bjd_cd,bjd_nm,"

@@ -44,10 +44,10 @@ public class A02_CountDtgByEMD {
 					.spatialJoin("the_geom", EMD,
 								"param.*-{행정동},param.행정동 as hdong,차량번호 as car_no,ts")
 					.groupBy("db_id,car_no")
-						.tagWith("the_geom,hdong")
+						.withTags("the_geom,hdong")
 						.run(aggrPlan)
 					.groupBy("db_id")
-						.tagWith("the_geom,hdong")
+						.withTags("the_geom,hdong")
 						.aggregate(AggregateFunction.SUM("count").as("count"))
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(EMD).getGeometryColumnInfo();

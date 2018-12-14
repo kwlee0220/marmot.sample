@@ -84,7 +84,7 @@ public class TagDtgWithRoad {
 					.knnJoin("the_geom", TEMP_ROAD, 1, DIST, "param.{the_geom, link_id, road_name}")
 					
 					.groupBy("link_id")
-						.tagWith("the_geom")
+						.withTags("the_geom")
 						.workerCount(WORKER_COUNT)
 						.aggregate(COUNT())
 					

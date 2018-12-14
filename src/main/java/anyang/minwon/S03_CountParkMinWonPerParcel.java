@@ -38,7 +38,7 @@ public class S03_CountParkMinWonPerParcel {
 							"param.{the_geom,id},team_name",
 							JoinOptions.RIGHT_OUTER_JOIN())
 					.groupBy("id")
-						.tagWith("the_geom")
+						.withTags("the_geom")
 						.count()
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(PARCEL).getGeometryColumnInfo();

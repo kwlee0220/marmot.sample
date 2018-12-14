@@ -52,7 +52,7 @@ public class BuildGridCellHistogram {
 		plan = marmot.planBuilder("build_histogram_grid")
 					.load(TAGGED)
 					.groupBy("cell_id")
-						.tagWith("grid")
+						.withTags("grid")
 						.workerCount(WORKER_COUNT)
 						.aggregate(COUNT())
 					.project("grid as the_geom,count")

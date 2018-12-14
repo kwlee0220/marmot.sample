@@ -35,7 +35,7 @@ public class S04_CountParkMinWonPerGrid {
 					.load(GRID)
 					.spatialOuterJoin("the_geom", PARK_MINWON, "the_geom,spo_no_cd")
 					.groupBy("spo_no_cd")
-						.tagWith("the_geom")
+						.withTags("the_geom")
 						.count()
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(GRID).getGeometryColumnInfo();

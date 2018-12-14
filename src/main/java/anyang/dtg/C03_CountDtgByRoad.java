@@ -47,7 +47,7 @@ public class C03_CountDtgByRoad {
 		plan = marmot.planBuilder("전국_도로별_통행량")
 					.load(DTG)
 					.filter("운행속도 > 0")
-					.expand1("ts:datetime", script)
+					.defineColumn("ts:datetime", script)
 					.transformCrs(dtgInfo.name(), dtgInfo.srid(), gcInfo.srid())
 					.knnJoin("the_geom", ROADS, 1, RADIUS,
 							"param.{link_id},차량번호 as car_no,ts")

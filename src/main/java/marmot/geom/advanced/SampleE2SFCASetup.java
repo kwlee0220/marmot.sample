@@ -58,7 +58,7 @@ public class SampleE2SFCASetup {
 						.query(FLOW_POP, SpatialRelation.INTERSECTS, gangnaum)
 						.expand("year:int", "year = std_ym.substring(0,4)")
 						.groupBy("block_cd,year")
-							.tagWith("the_geom")
+							.withTags("the_geom")
 							.aggregate(AVG("avg_08tmst").as("avg_08tmst"),
 										AVG("avg_15tmst").as("avg_15tmst"))
 						.project("*-{year}")

@@ -74,12 +74,12 @@ public class FindUnsafeChildZone {
 					.spatialJoin("the_geom", TEMP_ZONE, "param.*,운행속도")
 					
 					.groupBy("id")
-						.tagWith("the_geom,대상시설명")
+						.withTags("the_geom,대상시설명")
 						.workerCount(WORKER_COUNT)
 						.aggregate(AVG("운행속도"), COUNT())
 					.filter("count > 10000")	
 						
-					.expand1("speed:int", "avg")
+					.defineColumn("speed:int", "avg")
 					.project("the_geom,id,대상시설명 as name,speed,count")
 					
 					.store(RESULT)

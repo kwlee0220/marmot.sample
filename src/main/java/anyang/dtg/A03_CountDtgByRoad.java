@@ -46,10 +46,10 @@ public class A03_CountDtgByRoad {
 					.spatialJoin("the_geom", ROADS, "param.*,차량번호,ts",
 								JOIN_EXPR(WITHIN_DISTANCE(15)))
 					.groupBy("db_id,차량번호")
-						.tagWith("the_geom,id")
+						.withTags("the_geom,id")
 						.run(aggrPlan)
 					.groupBy("db_id")
-						.tagWith("the_geom,id")
+						.withTags("the_geom,id")
 						.aggregate(AggregateFunction.SUM("count").as("count"))
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(ROADS).getGeometryColumnInfo();

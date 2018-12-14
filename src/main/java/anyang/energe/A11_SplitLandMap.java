@@ -43,7 +43,7 @@ public class A11_SplitLandMap {
 		
 		Plan plan = marmot.planBuilder("2012-2017년도 개별공시지가 연속지적도 매칭 분할")
 						.load(INPUT)
-						.expand1("sido:string", "pnu.substring(0, 2)")
+						.defineColumn("sido:string", "pnu.substring(0, 2)")
 						.groupBy("sido")
 							.storeEachGroup(OUTPUT, DataSetOption.GEOMETRY(info))
 						.build();

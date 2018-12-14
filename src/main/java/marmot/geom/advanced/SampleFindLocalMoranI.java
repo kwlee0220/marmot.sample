@@ -41,7 +41,7 @@ public class SampleFindLocalMoranI {
 		double avg = (Double)params.get("avg");
 		Plan plan1 = marmot.planBuilder("find_statistics2")
 							.load(INPUT)
-							.expand1("diff:double", "fctr_meas -" + avg)
+							.defineColumn("diff:double", "fctr_meas -" + avg)
 							.expand("diff2:double,diff4:double",
 									"diff2 = diff * diff; diff4=diff2*diff2")
 							.aggregate(AggregateFunction.SUM("diff").as("diffSum"),

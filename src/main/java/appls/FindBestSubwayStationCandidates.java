@@ -31,7 +31,6 @@ import marmot.optor.JoinOptions;
 import marmot.optor.geo.SquareGrid;
 import marmot.process.NormalizeParameters;
 import marmot.remote.protobuf.PBMarmotClient;
-import marmot.rset.RecordSets;
 import marmot.support.DefaultRecord;
 import marmot.type.DataType;
 import utils.CommandLine;
@@ -177,11 +176,11 @@ public class FindBestSubwayStationCandidates {
 					.update(expr)
 					
 					// 각 시간대의 유동인구를 모두 더해 하루동안의 유동인구를 계산
-					.expand1("day_total:double", sumExpr)
+					.defineColumn("day_total:double", sumExpr)
 					
 					// 각 달의 소지역의 연간 유동인구 평균을 계산한다.
 					.groupBy("block_cd")
-						.tagWith(geomCol)
+						.withTags(geomCol)
 						.aggregate(AVG("day_total"))
 						
 					// 각 소지역이 폼함되는 사각 셀을  부가한다.
@@ -190,7 +189,7 @@ public class FindBestSubwayStationCandidates {
 					
 					// 사각 그리드 셀 단위로 그룹핑하고, 각 그룹에 속한 유동인구를 모두 더한다.
 					.groupBy("cell_id")
-						.tagWith("the_geom")
+						.withTags("the_geom")
 						.aggregate(SUM("avg").as("avg"))
 						
 					.store(TEMP_SEOUL_FLOW_POP_GRID)
@@ -259,7 +258,7 @@ public class FindBestSubwayStationCandidates {
 					
 					// 사각 그리드 셀 단위로 그룹핑하고, 각 그룹에 속한 레코드 수를 계산한다.
 					.groupBy("cell_id")
-						.tagWith("the_geom")
+						.withTags("the_geom")
 						.aggregate(COUNT())
 					
 					.store(TEMP_SEOUL_TAXI_LOG_GRID)
@@ -332,7 +331,7 @@ public class FindBestSubwayStationCandidates {
 											.build();
 		Record record = DefaultRecord.of(schema);
 		record.set(0, geom);
-		RecordSet rset = RecordSets.of(record);
+		RecordSet rset = RecordSet.of(record);
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		marmot.createDataSet("분석결과/서울지역", rset.getRecordSchema(), GEOMETRY(gcInfo), FORCE)

@@ -38,7 +38,7 @@ public class S06_CountMinWonPerTeamGrid {
 					.spatialJoin("the_geom", GRID,
 									"team_name,param.{the_geom,spo_no_cd}")
 					.groupBy("team_name,spo_no_cd")
-						.tagWith("the_geom")
+						.withTags("the_geom")
 						.count()
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(MINWON).getGeometryColumnInfo();

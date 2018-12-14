@@ -48,10 +48,10 @@ public class PreProcessAgePop {
 		
 		plan = marmot.planBuilder("pre_process_age_pop")
 					.load(INPUT)
-					.expand1("base_year:int")
-					.expand1("age_intvl:int", "(item_name.substring(7) / 10) * 10")
+					.defineColumn("base_year:int")
+					.defineColumn("age_intvl:int", "(item_name.substring(7) / 10) * 10")
 					.groupBy("tot_oa_cd,base_year,age_intvl")
-						.tagWith("the_geom")
+						.withTags("the_geom")
 						.aggregate(AggregateFunction.SUM("value").as("total"))
 					.project("the_geom,tot_oa_cd,base_year,age_intvl,total")
 					.groupBy("base_year")

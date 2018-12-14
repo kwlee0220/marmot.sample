@@ -86,7 +86,7 @@ public class A05_MapMatchingLand {
 						.update(updateExpr)
 
 						// 공시지가는 평망미터당 지가이므로, 평당액수에 면적을 곱한다.
-						.expand1("area:double", "ST_Area(the_geom)")
+						.defineColumn("area:double", "ST_Area(the_geom)")
 						.update(updatePriceExpr)
 						.project("*-{area}")
 						

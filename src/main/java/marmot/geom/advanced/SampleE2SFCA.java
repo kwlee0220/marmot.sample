@@ -98,7 +98,7 @@ public class SampleE2SFCA {
 		plan = marmot.planBuilder("combine two results")
 					.load(RESULT_CONCAT)
 					.groupBy("block_cd")
-						.tagWith("the_geom")
+						.withTags("the_geom")
 						.aggregate(SUM("index_08").as("index_08"),
 									SUM("index_15").as("index_15"))
 					.build();
