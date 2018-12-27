@@ -9,9 +9,9 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
+import marmot.command.ImportParameters;
 import marmot.command.MarmotClientCommands;
 import marmot.externio.ImportIntoDataSet;
-import marmot.externio.ImportParameters;
 import marmot.externio.csv.CsvParameters;
 import marmot.externio.csv.ImportCsv;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -50,10 +50,11 @@ public class SampleImportCsvStream {
 											.headerFirst(true)
 											.pointColumn("경도|위도")
 											.csvSrid("EPSG:4326");
-		ImportParameters importParams = ImportParameters.create()
-													.setDatasetId("tmp/result")
-													.setGeometryColumnInfo("the_geom", "EPSG:5186")
-													.setForce(true);
+		ImportParameters importParams = new ImportParameters();
+		importParams.setDataSetId("tmp/result");
+		importParams.setGeometryColumnInfo("the_geom", "EPSG:5186");
+		importParams.setForce(true);
+		
 		Plan plan = marmot.planBuilder("import_plan")
 							.project("the_geom,고유번호,휘발유")
 							.build();

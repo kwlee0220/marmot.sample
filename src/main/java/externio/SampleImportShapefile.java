@@ -7,9 +7,9 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.command.ImportParameters;
 import marmot.command.MarmotClientCommands;
 import marmot.externio.ImportIntoDataSet;
-import marmot.externio.ImportParameters;
 import marmot.externio.shp.ImportShapefile;
 import marmot.externio.shp.ShapefileParameters;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -43,10 +43,11 @@ public class SampleImportShapefile {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		File file = new File("/mnt/data/sbdata/data/포스웨이브/서울지하철역사");
-		ImportParameters importParams = ImportParameters.create()
-													.setDatasetId("tmp/result")
-													.setGeometryColumnInfo("the_geom", "EPSG:4326")
-													.setForce(true);
+		ImportParameters importParams = new ImportParameters();
+		importParams.setDataSetId("tmp/result");
+		importParams.setGeometryColumnInfo("the_geom", "EPSG:4326");
+		importParams.setForce(true);
+		
 		ShapefileParameters shpParams = ShapefileParameters.create()
 													.charset(Charset.forName("euc-kr"))
 													.shpSrid("EPSG:5186");

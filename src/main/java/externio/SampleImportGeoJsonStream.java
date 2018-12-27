@@ -9,9 +9,9 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
+import marmot.command.ImportParameters;
 import marmot.command.MarmotClientCommands;
 import marmot.externio.ImportIntoDataSet;
-import marmot.externio.ImportParameters;
 import marmot.externio.geojson.GeoJsonParameters;
 import marmot.externio.geojson.ImportGeoJson;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -46,11 +46,12 @@ public class SampleImportGeoJsonStream {
 		
 		File file = new File("/mnt/data/sbdata/data/기타/유엔진/읍면동/읍면동.geojson");
 		GeoJsonParameters params = GeoJsonParameters.create()
-											.sourceSrid("EPSG:4326");
-		ImportParameters importParams = ImportParameters.create()
-													.setDatasetId("tmp/result")
-													.setGeometryColumnInfo("the_geom", "EPSG:5186")
-													.setForce(true);
+											.geoJsonSrid("EPSG:4326");
+		ImportParameters importParams = new ImportParameters();
+		importParams.setDataSetId("tmp/result");
+		importParams.setGeometryColumnInfo("the_geom", "EPSG:5186");
+		importParams.setForce(true);
+		
 		Plan plan = marmot.planBuilder("import_plan")
 							.project("the_geom,emd_kor_name")
 							.build();
