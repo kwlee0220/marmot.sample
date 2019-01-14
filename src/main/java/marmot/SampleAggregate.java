@@ -1,7 +1,8 @@
 package marmot;
 
 import static marmot.DataSetOption.FORCE;
-import static marmot.optor.AggregateFunction.*;
+import static marmot.optor.AggregateFunction.AVG;
+import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.ENVELOPE;
 import static marmot.optor.AggregateFunction.MAX;
 import static marmot.optor.AggregateFunction.MIN;
@@ -10,10 +11,7 @@ import static marmot.optor.AggregateFunction.STDDEV;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.DataSet;
-import marmot.Plan;
 import marmot.command.MarmotClientCommands;
-import marmot.plan.STScriptPlanLoader;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
