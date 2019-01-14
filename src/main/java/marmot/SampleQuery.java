@@ -5,9 +5,9 @@ import org.apache.log4j.PropertyConfigurator;
 import com.vividsolutions.jts.geom.Envelope;
 
 import common.SampleUtils;
-import io.vavr.control.Option;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
+import utils.func.FOption;
 
 /**
  * 
@@ -26,7 +26,7 @@ public class SampleQuery {
 		Envelope bounds = getSeoChoDong(marmot);
 		
 		DataSet ds = marmot.getDataSet(INPUT);
-		try ( RecordSet rset = ds.queryRange(bounds, Option.some("trnsit_yn = '1'")) ) {
+		try ( RecordSet rset = ds.queryRange(bounds, FOption.of("trnsit_yn = '1'")) ) {
 			SampleUtils.printPrefix(rset, 5);
 //			rset.stream().count();
 		}
