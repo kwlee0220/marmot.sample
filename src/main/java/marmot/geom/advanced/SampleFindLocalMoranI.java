@@ -8,11 +8,13 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.DataSetOption;
 import marmot.Plan;
+import marmot.Record;
 import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.advanced.LISAWeight;
 import marmot.remote.protobuf.PBMarmotClient;
+import utils.stream.KVFStream;
 
 /**
  * 
@@ -36,8 +38,10 @@ public class SampleFindLocalMoranI {
 											AggregateFunction.STDDEV(VALUE_COLUMN))
 								.build();
 		
-		Map<String,Object> params = marmot.executeToRecord(plan0).get().toMap();
-		
+		Record result = marmot.executeToRecord(plan0).get();
+		Map<String,Object> params = KVFStream.of(result.toMap())
+											.mapKey((k,v) -> k.get())
+											.toMap();
 		double avg = (Double)params.get("avg");
 		Plan plan1 = marmot.planBuilder("find_statistics2")
 							.load(INPUT)
@@ -50,7 +54,9 @@ public class SampleFindLocalMoranI {
 							.build();
 
 		RecordSet result1 = marmot.executeToRecordSet(plan1);
-		params.putAll(result1.getFirst().toMap());
+		KVFStream.of(result1.getFirst().toMap())
+				.mapKey((k,v) -> k.get())
+				.toMap(params);
 		
 		Plan plan = marmot.planBuilder("local_spatial_auto_correlation")
 								.loadLocalMoranI(INPUT, "uid", "fctr_meas", 1000,

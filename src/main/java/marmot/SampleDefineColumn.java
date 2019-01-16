@@ -29,10 +29,10 @@ public class SampleDefineColumn {
 
 		Plan plan = marmot.planBuilder("update")
 							.load(INPUT)
-							.defineColumn("area:double", "ST_Area(the_geom);")
+							.defineColumn("AREA:double", "ST_Area(the_geom);")
 							.defineColumn("the_geom:point", "ST_Centroid(the_geom)")
 							.defineColumn("sig_cd:int")
-							.project("the_geom,area,sig_cd")
+							.project("the_geom,area,SIG_CD")
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		SampleUtils.printPrefix(result, 5);

@@ -65,7 +65,7 @@ public class SampleUtils {
 			while ( ++i <= count && rset.next(record) ) {
 				Map<String,Object> values = Maps.newLinkedHashMap();
 				for ( int j =0; j < colIdxs.length; ++j ) {
-					String name = schema.getColumnAt(colIdxs[j]).name();
+					String name = schema.getColumnAt(colIdxs[j]).name().get();
 					Object value = record.get(colIdxs[j]);
 					values.put(name, value);
 				}

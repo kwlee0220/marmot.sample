@@ -51,10 +51,10 @@ public class SampleExpand {
 							.expand("the_geom:point,area:double",
 									"area = ST_Area(the_geom);"
 										+ "the_geom = ST_Centroid(the_geom);"
-										+ "kor_sub_nm = 'Station(' + kor_sub_nm + ')';"
+										+ "kor_SUB_nm = 'Station(' + kor_sub_nm + ')';"
 										+ "eng_sub_nm = kor_sub_nm + '_ENG'")
 							.expand("sig_cd:int")
-							.project("the_geom,area,sig_cd,kor_sub_nm")
+							.project("the_geom,area,SIG_CD,kor_sub_nm")
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		watch.stop();

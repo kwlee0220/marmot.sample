@@ -35,13 +35,13 @@ public class SampleEstimateIDW {
 		
 		String tempPath = "tmp/points";
 		
-//		plan = marmot.planBuilder("to_point")
-//						.load(INPUT)
-//						.centroid("the_geom")
-//						.project("the_geom, big_sq, value")
-//						.build();
-//		result = marmot.createDataSet(tempPath, plan, GEOMETRY(info), FORCE);
-//		result.cluster();
+		plan = marmot.planBuilder("to_point")
+						.load(INPUT)
+						.centroid("the_geom")
+						.project("the_geom, big_sq, value")
+						.build();
+		result = marmot.createDataSet(tempPath, plan, GEOMETRY(info), FORCE);
+		result.cluster();
 		
 		plan = marmot.planBuilder("sample_estimate_idw")
 						.load(tempPath)
@@ -49,7 +49,7 @@ public class SampleEstimateIDW {
 										TOP_K, "value")
 						.build();
 		result = marmot.createDataSet(RESULT, plan, GEOMETRY(info), FORCE);
-//		marmot.deleteDataSet(tempPath);
+		marmot.deleteDataSet(tempPath);
 		
 		SampleUtils.printPrefix(result, 5);
 	}
