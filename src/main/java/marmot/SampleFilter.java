@@ -28,7 +28,7 @@ public class SampleFilter {
 
 		Plan plan = marmot.planBuilder("filter")
 							.load(INPUT)
-							.filter("휘발유 > 2000 && !THE_GEOM2.isEmpty()")
+							.filter("휘발유 > 2000")
 							.project("THE_GEOM,상호,휘발유")
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);

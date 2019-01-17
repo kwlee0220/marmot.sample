@@ -11,10 +11,7 @@ import static marmot.optor.AggregateFunction.SUM;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.DataSet;
-import marmot.Plan;
 import marmot.command.MarmotClientCommands;
-import marmot.plan.STScriptPlanLoader;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**

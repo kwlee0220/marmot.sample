@@ -6,9 +6,6 @@ import static marmot.DataSetOption.GEOMETRY;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
-import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
