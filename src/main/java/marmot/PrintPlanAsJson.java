@@ -10,7 +10,6 @@ import com.vividsolutions.jts.geom.Envelope;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.ParseCsvOption;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.CSV;
 import utils.CommandLine;
 import utils.CommandLineParser;
 import utils.stream.FStream;
@@ -78,7 +77,7 @@ public class PrintPlanAsJson {
 //					.expand1("ts:datetime", script2)
 //					.project("the_geom,운송사코드,차량번호,일일주행거리,누적주행거리,운행속도,rpm,"
 //							+ "브레이크신호,방위각,가속도x,가속도y")
-					.defineColumn("기준년도:short", "(기준년도.length() > 0) ? 기준년도 : '2017'")
+//					.defineColumn("기준년도:short", "(기준년도.length() > 0) ? 기준년도 : '2017'")
 //					.expand1("기준월:short", "(기준월.length() > 0) ? 기준월 : '01'")
 //					.expand1("개별공시지가:long")
 //					.project("고유번호,기준년도,기준월,개별공시지가")
@@ -92,7 +91,7 @@ public class PrintPlanAsJson {
 //					.toPoint("경도", "위도", "다발지점")
 //					.transformCrs("다발지점", "EPSG:4326", "EPSG:5186")
 //					.expand1("pnu:string", "시군구코드 + 법정동코드 + 대지구분코드 + 번 + 지")
-//					.parseCsv('|', HEADER(header), TRIM_FIELD)
+//					.parseCsv('|', ParseCsvOption.HEADER(header), ParseCsvOption.TRIM_FIELD)
 //					.update("$part=Lat_Lon.split(','); lat=$part[0]; lon=$part[1];")
 //					.toPoint("lon", "lat", "the_geom")
 //					.transformCrs("the_geom", "EPSG:4326", "EPSG:5186")
@@ -119,9 +118,12 @@ public class PrintPlanAsJson {
 //					.groupBy("aaa,bbb")
 //						.aggregate(AggregateFunction.SUM("cc"), AggregateFunction.COUNT())
 //					.groupBy("block_cd")
-//						.tagWith("geomCol")
-//						.aggregate(AVG("day_total"))
+//						.withTags("geomCol")
+//						.workerCount(1)
+//						.aggregate(AggregateFunction.AVG("day_total"))
 //					.aggregate(AggregateFunction.SUM("aaa"), AggregateFunction.MAX("bbb").as("ccc"))
+//					.groupBy("block_cd")
+//						.putSideBySide(schema, "usage", "tag")
 //					.sort("보관일수:A:F,카메라대수:A")
 //					.distinct("c1,c2", 11)
 //					.loadEquiJoin("left_dsId", "lc1,lc2", "right_dsId", "rc1,rc2",
@@ -136,6 +138,7 @@ public class PrintPlanAsJson {
 //					.matchSpatially("the_geom", SpatialRelation.CONTAINS, "param_ds_id")
 //					.knnJoin("the_geom", "param_ds_id", 3, 100, "*,param.{xx}")
 //					.shard(11)
+					.store("tmp/result")
 					.build();
 		
 		System.out.println(JsonFormat.printer().print(plan.toProto()));

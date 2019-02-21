@@ -59,8 +59,8 @@ public class B04_MapMatchingElectro2017 {
 
 		putSideBySide(marmot, INTERM);
 		
-		String rightCols = FStream.of(COL_NAMES).join(",", "right.{", "}");
-		String updateExpr = FStream.of(COL_NAMES)
+		String rightCols = FStream.from(COL_NAMES).join(",", "right.{", "}");
+		String updateExpr = FStream.from(COL_NAMES)
 									.map(c -> String.format(PATTERN, c, c))
 									.join(" ");
 		
@@ -83,7 +83,7 @@ public class B04_MapMatchingElectro2017 {
 	}
 
 	private static void putSideBySide(PBMarmotClient marmot, String outDsId) {
-		RecordSchema outSchema = FStream.of(COL_NAMES)
+		RecordSchema outSchema = FStream.from(COL_NAMES)
 										.foldLeft(RecordSchema.builder(),
 												(b,cn) -> b.addColumn(cn, DataType.LONG))
 										.build();

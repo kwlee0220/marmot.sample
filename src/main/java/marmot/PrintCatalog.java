@@ -56,7 +56,7 @@ public class PrintCatalog {
 
 			System.out.println("\tColumns: ");
 			RecordSchema schema = ds.getRecordSchema();
-			for ( Column col: schema.getColumnAll() ) {
+			for ( Column col: schema.getColumns() ) {
 				System.out.printf("\t\t%02d:%s, %s%n", col.ordinal(), col.name(),
 												col.type().getName());
 			}

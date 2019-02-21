@@ -54,27 +54,25 @@ public class BuildTenMinutePolicyFull {
 		StopWatch watch2 = StopWatch.start();
 		DataSet output;
 		
-/*
 		// '노인복지시설_경로당_추출_버퍼' 추출
 		output = bufferElderlyCareFacilities(marmot);
 		output.cluster();
 		System.out.println("완료: '노인복지시설_경로당_추출_버퍼' 추출, elapsed="
 							+ watch2.stopAndGetElpasedTimeString());
-		
+
 		// '인구밀도_2017_중심점추출_10000이상' 추출
 		watch2 = StopWatch.start();
 		output = findHighPopulationDensity(marmot);
 		output.cluster();
 		System.out.println("완료: '인구밀도_2017_중심점추출_10000이상' 추출, elapsed="
 							+ watch2.stopAndGetElpasedTimeString());
-		
+
 		// 인구밀도_10000이상_행정동추출
 		watch2 = StopWatch.start();
 		output = findHighPopulationHDong(marmot);
 		output.cluster();
 		System.out.println("완료: '인구밀도_10000이상_행정동' 추출, elapsed="
 							+ watch2.stopAndGetElpasedTimeString());
-*/
 
 		watch2 = StopWatch.start();
 		DataSet ds = marmot.getDataSet(CADASTRAL);
@@ -85,11 +83,11 @@ public class BuildTenMinutePolicyFull {
 						.project("the_geom,pnu")
 						.spatialSemiJoin(info.name(), ELDERLY_CARE_BUFFER, NEGATED)
 						.clipJoin(info.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석
-//						.shard(1)
+						.shard(1)
 						.store(RESULT)
 						.build();
 		output = marmot.createDataSet(RESULT, plan, GEOMETRY(info), FORCE);
-//		output.cluster();
+		output.cluster();
 		System.out.println("완료: '경로당필요지역' 추출, elapsed="
 							+ watch2.stopAndGetElpasedTimeString());
 		

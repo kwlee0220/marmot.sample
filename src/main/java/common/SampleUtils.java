@@ -55,7 +55,7 @@ public class SampleUtils {
 	public static void printPrefix(RecordSet rset, int count) {
 		RecordSchema schema = rset.getRecordSchema();
 		Record record = DefaultRecord.of(schema);
-		int[] colIdxs = schema.getColumnAll().stream()
+		int[] colIdxs = schema.getColumns().stream()
 							.filter(c -> !c.type().isGeometryType())
 							.mapToInt(c -> c.ordinal())
 							.toArray();

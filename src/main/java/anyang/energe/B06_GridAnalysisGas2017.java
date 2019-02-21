@@ -59,10 +59,10 @@ public class B06_GridAnalysisGas2017 {
 		Envelope bounds = cadastral.getBounds();
 		Size2d cellSize = new Size2d(1000, 1000);
 		
-		String updateExpr = FStream.of(COL_NAMES)
+		String updateExpr = FStream.from(COL_NAMES)
 									.map(c -> String.format("%s *= ratio", c))
 									.join("; ");
-		List<AggregateFunction> aggrs = FStream.of(COL_NAMES)
+		List<AggregateFunction> aggrs = FStream.from(COL_NAMES)
 												.map(c -> SUM(c).as(c))
 												.toList();
 		

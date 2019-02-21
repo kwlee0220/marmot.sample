@@ -3,7 +3,7 @@
   "operators": [
     <load("기타/안양대/도봉구/공원")>,
     <filter("!kor_par_nm.equals('#N/A')")>,
-    <join("id", "기타/안양대/도봉구/공원_감성분석", "id", "the_geom,param.*-{the_geom}")>,
+    <hash_join("id", "기타/안양대/도봉구/공원_감성분석", "id", "the_geom,param.*-{the_geom}")>,
     <project("the_geom,row_id,poi,id,sp,sn,언급빈도수 as mention,선호도 as preference")>
   ]
 }

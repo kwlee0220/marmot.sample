@@ -60,7 +60,7 @@ public class A03_MapMatchingGas {
 
 		putSideBySide(marmot);
 		
-		String rightCols = FStream.of(COL_NAMES).join(",", "right.{", "}");
+		String rightCols = FStream.from(COL_NAMES).join(",", "right.{", "}");
 		String updateExpr = FStream.of(YEARS)
 									.map(year -> String.format(PATTERN, year, year))
 									.join(" ");
@@ -84,7 +84,7 @@ public class A03_MapMatchingGas {
 	}
 	
 	private static void putSideBySide(PBMarmotClient marmot) {
-		RecordSchema outSchema = FStream.of(COL_NAMES)
+		RecordSchema outSchema = FStream.from(COL_NAMES)
 										.foldLeft(RecordSchema.builder(),
 												(b,cn) -> b.addColumn(cn, DataType.LONG))
 										.build();
