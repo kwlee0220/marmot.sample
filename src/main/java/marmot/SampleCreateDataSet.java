@@ -10,11 +10,13 @@ import java.util.List;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import common.SampleUtils;
 import marmot.command.MarmotClientCommands;
 import marmot.geo.GeoClientUtils;
+import marmot.geo.catalog.SpatialIndexInfo;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.support.DefaultRecord;
 import marmot.type.DataType;
@@ -48,10 +50,6 @@ public class SampleCreateDataSet {
 		ds = marmot.createDataSet("tmp/result", schema, BLOCK_SIZE(64), COMPRESS, FORCE);
 		System.out.printf("block_size=%d(=64), compression=%s(=true)%n", ds.getBlockSize(), ds.getCompression());
 		
-		ds = marmot.createDataSet("tmp/result", schema, GEOMETRY("the_geom", "EPSG:5186"), FORCE);
-		System.out.printf("geometry=%s, block_size=%d, compression=%s(=false)%n",
-							ds.getGeometryColumnInfo(), ds.getBlockSize(), ds.getCompression());
-		
 		// 생성할 데이터세트에 저장될 레코드들의 리스트를 생성.
 		List<Record> recordList = Lists.newArrayList();
 		
@@ -79,10 +77,40 @@ public class SampleCreateDataSet {
 		RecordSet rset = RecordSet.from(schema, recordList);
 
 		// 데이터세트를 생성하고, 레코드 세트를 저장한다.
-		marmot.createDataSet("tmp/test", rset.getRecordSchema(), FORCE)
-				.append(rset);
+		ds = marmot.createDataSet("tmp/result", schema, GEOMETRY("the_geom", "EPSG:5186"), FORCE);
+		System.out.printf("geometry=%s, block_size=%d, compression=%s(=false)%n",
+							ds.getGeometryColumnInfo(), ds.getBlockSize(), ds.getCompression());
+		ds.append(rset);
 		
-		ds = marmot.getDataSet("tmp/test");
+		ds = marmot.getDataSet("tmp/result");
 		SampleUtils.printPrefix(ds, 5);
+		
+		SpatialIndexInfo idxInfo;
+		
+		idxInfo = ds.cluster();
+		System.out.printf("created index: ds=%s, geom=%s, tile_mbr=%s%n",
+							idxInfo.getDataSetId(), idxInfo.getGeometryColumnInfo(),
+							idxInfo.getTileBounds());
+		
+		idxInfo = ds.getDefaultSpatialIndexInfo();
+		Preconditions.checkState(idxInfo != null);
+		
+		ds.deleteSpatialCluster();
+		idxInfo = ds.getDefaultSpatialIndexInfoOrNull();
+		Preconditions.checkState(idxInfo == null);
+		System.out.printf("deleted spatial cluster: ds=%s%n", ds.getId());
+		
+		idxInfo = ds.cluster();
+		System.out.printf("created index again: ds=%s, geom=%s, tile_mbr=%s%n",
+							idxInfo.getDataSetId(), idxInfo.getGeometryColumnInfo(),
+							idxInfo.getTileBounds());
+		
+		idxInfo = ds.getDefaultSpatialIndexInfo();
+		Preconditions.checkState(idxInfo != null);
+		
+		ds.deleteSpatialCluster();
+		idxInfo = ds.getDefaultSpatialIndexInfoOrNull();
+		Preconditions.checkState(idxInfo == null);
+		System.out.printf("deleted spatial cluster again: ds=%s%n", ds.getId());
 	}
 }
