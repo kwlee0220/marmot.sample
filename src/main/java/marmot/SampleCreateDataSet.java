@@ -3,6 +3,7 @@ package marmot;
 import static marmot.DataSetOption.BLOCK_SIZE;
 import static marmot.DataSetOption.COMPRESS;
 import static marmot.DataSetOption.FORCE;
+import static marmot.DataSetOption.GEOMETRY;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,6 +47,10 @@ public class SampleCreateDataSet {
 		
 		ds = marmot.createDataSet("tmp/result", schema, BLOCK_SIZE(64), COMPRESS, FORCE);
 		System.out.printf("block_size=%d(=64), compression=%s(=true)%n", ds.getBlockSize(), ds.getCompression());
+		
+		ds = marmot.createDataSet("tmp/result", schema, GEOMETRY("the_geom", "EPSG:5186"), FORCE);
+		System.out.printf("geometry=%s, block_size=%d, compression=%s(=false)%n",
+							ds.getGeometryColumnInfo(), ds.getBlockSize(), ds.getCompression());
 		
 		// 생성할 데이터세트에 저장될 레코드들의 리스트를 생성.
 		List<Record> recordList = Lists.newArrayList();
