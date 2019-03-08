@@ -31,7 +31,7 @@ public class Step0 {
 	private static final String LAND_USAGE = "토지/용도지역지구";
 	private static final String POLITICAL = "구역/통합법정동";
 	private static final String BLOCK_CENTERS = "구역/지오비전_집계구_Point";
-	private static final String CADASTRAL = "구역/연속지적도";
+	private static final String CADASTRAL = "구역/연속지적도_2017";
 	private static final String TEMP_BIG_CITIES = "tmp/bizarea/big_cities";
 	private static final String TEMP_BIZ_AREA = "tmp/bizarea/area";
 	private static final String BIZ_GRID = "tmp/bizarea/grid100";

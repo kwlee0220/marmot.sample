@@ -36,6 +36,7 @@ public class SampleHashJoin {
 									JoinOptions.INNER_JOIN())
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
+		System.out.printf("should: %d == %d%n", result.getRecordCount(), input.getRecordCount());
 		SampleUtils.printPrefix(result, 5);
 	}
 }

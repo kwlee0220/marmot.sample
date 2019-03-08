@@ -2,10 +2,6 @@ package marmot;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import common.SampleUtils;
-import marmot.DataSet;
-import marmot.Plan;
-import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -44,7 +40,7 @@ public class SampleMarmotClient {
 //		ds = marmot.getDataSet("교통/지하철/서울역사");
 		ds = marmot.getDataSet("주소/건물POI");
 		try ( RecordSet rset = ds.read() ) {
-			rset.stream().limit(5).forEach(System.out::println);
+			rset.stream().take(5).forEach(System.out::println);
 //			rset.stream().limit(50000000).count();
 		}
 		

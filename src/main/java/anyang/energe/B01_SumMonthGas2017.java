@@ -58,7 +58,7 @@ public class B01_SumMonthGas2017 {
 		DataSet result = marmot.createDataSet(OUTPUT, plan, DataSetOption.FORCE);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
-		SampleUtils.printPrefix(result, 10);
+		SampleUtils.printPrefix(result, 30);
 		
 		marmot.disconnect();
 	}
