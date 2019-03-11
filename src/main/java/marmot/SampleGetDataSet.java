@@ -22,7 +22,7 @@ public class SampleGetDataSet {
 		
 		DataSet input = marmot.getDataSet(INPUT);
 		
-		SpatialIndexInfo siInfo = input.getDefaultSpatialIndexInfoOrNull();
+		SpatialIndexInfo siInfo = input.getDefaultSpatialIndexInfo().get();
 		
 		SampleUtils.printPrefix(input, 50);
 		
