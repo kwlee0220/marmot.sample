@@ -22,8 +22,8 @@ import utils.UnitUtils;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleGSPFeatureSource {
-//	private static final String INPUT = "건물/건물통합정보마스터";
-	private static final String INPUT = "주소/건물POI";
+	private static final String INPUT = "건물/건물통합정보마스터";
+//	private static final String INPUT = "주소/건물POI";
 	private static final String SIDO = "구역/시도";
 	private static final String SGG = "구역/시군구";
 	private static final String EMD = "구역/읍면동";
@@ -41,10 +41,10 @@ public class SampleGSPFeatureSource {
 		File cacheDir =  new File(parentDir, "marmot_geoserver_cache");
 		
 		GSPDataStore store = new GSPDataStore(marmot, cacheSize, 5, cacheDir);
-		store.sampleCount(20000);
+		store.setSampleCount(20000);
 		
-		GSPFeatureSource src = (GSPFeatureSource)store.getFeatureSource("주소.건물POI");
-//		GSPFeatureSource src = (GSPFeatureSource)store.getFeatureSource("건물.건물통합정보마스터");
+//		GSPFeatureSource src = (GSPFeatureSource)store.getFeatureSource("주소.건물POI");
+		GSPFeatureSource src = (GSPFeatureSource)store.getFeatureSource("건물.건물통합정보마스터");
 		RecordSet rset = src.query(bounds);
 		SampleUtils.printPrefix(rset, 3);
 		
