@@ -1,0 +1,16 @@
+##### 분석 (단순)
+mc_count 교통/dtg_m
+mc_count 교통/dtg_m0
+mc_count 교통/dtg_m1
+mc_count 교통/dtg_m2
+
+##### 분석 (중간)
+mc_copy 교통/dtg_m tmp/result -
+
+주민/성연령별인구
+mc_copy 주민/성연령별인구 분석결과/5차년도_통합시연/연령대별_인구 -f	\
+		-expand 'base_year:int,age_intvl:int' -update 'age_intvl = (item_name.substring(7) / 10) * 10'	\
+		-group_by 'tot_oa_cd,base_year,age_intvl:the_geom' -aggregate 'count:value:total'	\
+		-project 'the_geom,tot_oa_cd,base_year,age_intvl,total'
+
+mc_export_csv 분석결과/5차년도_통합시연/연령대별_인구 -output ~/tmp/연령대별_인구.csv -quote '"' -header_first 

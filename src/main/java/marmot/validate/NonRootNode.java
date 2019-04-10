@@ -14,7 +14,7 @@ import utils.func.FOption;
  * @author Kang-Woo Lee (ETRI)
  */
 public class NonRootNode extends Node {
-	static final String SUFFIX_EMPTY_PARENT = "empty_parents";
+	static final String SUFFIX_EMPTY_PARENT = "no_child_parents";
 	
 	protected final Node m_parent;
 	private final FOption<Integer> m_nworkers;
@@ -69,8 +69,8 @@ public class NonRootNode extends Node {
 		DataSet temp = findUnmatchedPairs(marmot);
 		try {
 			if ( temp.getRecordCount() == 0 ) {
-				System.out.println(m_name + ": number of dangling ids: 0");
-				System.out.println(m_name + ": number of no-child parent ids: 0");
+				System.out.println(m_name + ": number of orphan nodes: 0");
+				System.out.println(m_name + ": number of no-child parent nodes: 0");
 				
 				return;
 			}
@@ -79,24 +79,24 @@ public class NonRootNode extends Node {
 			DataSet result;
 	
 			String danglingExpr = String.format("%s == null", m_parent.m_keyCol);
-			plan = marmot.planBuilder("find dangling ids")
+			plan = marmot.planBuilder("find orphan ids")
 							.load(temp.getId())
 							.filter(danglingExpr)
 							.project(m_keyCol)
 							.build();
-			result = marmot.createDataSet(m_prefix + "dangling_ids", plan, FORCE);
-			System.out.printf("%s: number of dangling ids: %d%n", m_name, result.getRecordCount());
+			result = marmot.createDataSet(m_prefix + "orphans", plan, FORCE);
+			System.out.printf("%s: number of orphans: %d%n", m_name, result.getRecordCount());
 			if ( result.getRecordCount() == 0 ) {
 				marmot.deleteDataSet(result.getId());
 			}
 	
-			plan = marmot.planBuilder("find empty childs")
+			plan = marmot.planBuilder("find infertile nodes")
 							.load(temp.getId())
 							.filter("parent_key == null")
 							.project(m_parent.m_keyCol)
 							.build();
 			result = marmot.createDataSet(m_prefix + SUFFIX_EMPTY_PARENT, plan, FORCE);
-			System.out.printf("%s: number of empty parents (%s): %d%n",
+			System.out.printf("%s: number of no-child parents (%s): %d%n",
 								m_name, m_parent.m_name, result.getRecordCount());
 			if ( result.getRecordCount() == 0 ) {
 				marmot.deleteDataSet(result.getId());

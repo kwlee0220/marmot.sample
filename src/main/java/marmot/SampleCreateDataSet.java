@@ -77,14 +77,15 @@ public class SampleCreateDataSet {
 		RecordSet rset = RecordSet.from(schema, recordList);
 
 		// 데이터세트를 생성하고, 레코드 세트를 저장한다.
-		ds = marmot.createDataSet("tmp/result", schema, GEOMETRY("the_geom", "EPSG:5186"), FORCE);
+		ds = marmot.createDataSet("tmp/result2", schema, GEOMETRY("the_geom", "EPSG:5186"), FORCE);
 		System.out.printf("geometry=%s, block_size=%d, compression=%s(=false)%n",
 							ds.getGeometryColumnInfo(), ds.getBlockSize(), ds.isCompressed());
 		ds.append(rset);
 		
-		ds = marmot.getDataSet("tmp/result");
+		ds = marmot.getDataSet("tmp/result2");
 		SampleUtils.printPrefix(ds, 5);
-		
+
+		/*
 		SpatialIndexInfo idxInfo;
 		
 		idxInfo = ds.cluster();
@@ -108,5 +109,6 @@ public class SampleCreateDataSet {
 		ds.deleteSpatialCluster();
 		Preconditions.checkState(!ds.isSpatiallyClustered());
 		System.out.printf("deleted spatial cluster again: ds=%s%n", ds.getId());
+*/
 	}
 }

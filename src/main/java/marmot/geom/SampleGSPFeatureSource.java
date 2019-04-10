@@ -15,7 +15,6 @@ import marmot.command.MarmotClientCommands;
 import marmot.geo.geoserver.GSPDataStore;
 import marmot.geo.geoserver.GSPFeatureSource;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.UnitUtils;
 
 /**
  * 
@@ -36,34 +35,39 @@ public class SampleGSPFeatureSource {
 		
 		Envelope bounds = getGu(marmot, "서초구");
 		
-		int cacheSize = (int)UnitUtils.parseByteSize("256mb");
 		File parentDir = Files.createTempDir().getParentFile();
 		File cacheDir =  new File(parentDir, "marmot_geoserver_cache");
 		
-		GSPDataStore store = new GSPDataStore(marmot, cacheSize, 5, cacheDir);
+		GSPDataStore store = new GSPDataStore(marmot, cacheDir);
 		store.setSampleCount(20000);
+		store.usePrefetch(true);
 		
+		RecordSet rset;
 //		GSPFeatureSource src = (GSPFeatureSource)store.getFeatureSource("주소.건물POI");
 		GSPFeatureSource src = (GSPFeatureSource)store.getFeatureSource("건물.건물통합정보마스터");
-		RecordSet rset = src.query(bounds);
-		SampleUtils.printPrefix(rset, 3);
 		
-		rset = src.query(getSeoChoDong(marmot));
-		SampleUtils.printPrefix(rset, 3);
+//		rset = src.query(bounds);
+//		SampleUtils.printPrefix(rset, 3);
 		
-		rset = src.query(getGu(marmot, "노원구"));
-		SampleUtils.printPrefix(rset, 3);
+//		rset = src.query(getSeoChoDong(marmot));
+//		SampleUtils.printPrefix(rset, 3);
+//		
+//		rset = src.query(getGu(marmot, "노원구"));
+//		SampleUtils.printPrefix(rset, 3);
+//		
+//		rset = src.query(getGu(marmot, "송파구"));
+//		SampleUtils.printPrefix(rset, 3);
+//		
+//		rset = src.query(getGu(marmot, "양천구"));
+//		SampleUtils.printPrefix(rset, 3);
+//		
+//		rset = src.query(getGu(marmot, "관악구"));
+//		SampleUtils.printPrefix(rset, 3);
 		
-		rset = src.query(getGu(marmot, "송파구"));
-		SampleUtils.printPrefix(rset, 3);
+//		rset = src.query(getSiDo(marmot, "서울특별시"));
+//		SampleUtils.printPrefix(rset, 3);
 		
-		rset = src.query(getGu(marmot, "양천구"));
-		SampleUtils.printPrefix(rset, 3);
-		
-		rset = src.query(getGu(marmot, "관악구"));
-		SampleUtils.printPrefix(rset, 3);
-		
-		rset = src.query(getSiDo(marmot, "서울특별시"));
+		rset = src.query(getSiDo(marmot, "경상남도"));
 		SampleUtils.printPrefix(rset, 3);
 	}
 	

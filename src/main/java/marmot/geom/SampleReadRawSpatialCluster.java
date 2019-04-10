@@ -1,27 +1,23 @@
 package marmot.geom;
 
-import java.io.InputStream;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-import common.SampleUtils;
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordSet;
-import marmot.SpatialClusterInfo;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
-import marmot.rset.PBInputStreamRecordSet;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleReadRawSpatialCluster {
-	private static final String INPUT = "주소/건물POI";
+//	private static final String INPUT = "주소/건물POI";
+	private static final String INPUT = "건물/건물통합정보마스터";
 	private static final String SIDO = "구역/시도";
 	private static final String SGG = "구역/시군구";
 	private static final String EMD = "구역/읍면동";
@@ -35,28 +31,14 @@ public class SampleReadRawSpatialCluster {
 		Envelope range;
 		DataSet ds = marmot.getDataSet(INPUT);
 		
-		range = getGu(marmot, "노원구");
-		for ( SpatialClusterInfo info: ds.querySpatialClusterInfo(range) ) {
-			String quadKey = info.getQuadKey();
-			
-			System.out.println(quadKey + ": ");
-			try ( InputStream is = ds.readRawSpatialCluster(quadKey);
-					RecordSet rset = PBInputStreamRecordSet.from(is) ) {
-				SampleUtils.printPrefix(rset, 5);
-			}
+		try ( RecordSet rset = ds.readSpatialCluster("13211032233") ) {
+			rset.stream().count();
+		}
+		try ( RecordSet rset = ds.readSpatialCluster("13211210100") ) {
+			rset.stream().count();
 		}
 		
-		range = getGu(marmot, "서초구");
-		for ( SpatialClusterInfo info: ds.querySpatialClusterInfo(range) ) {
-			String quadKey = info.getQuadKey();
-			
-			System.out.println(quadKey + ": ");
-
-			try ( InputStream is = ds.readRawSpatialCluster(quadKey);
-					RecordSet rset = PBInputStreamRecordSet.from(is) ) {
-				SampleUtils.printPrefix(rset, 5);
-			}
-		}
+//		rangfg
 	}
 	
 	private static Envelope getGu(MarmotRuntime marmot, String guName) {

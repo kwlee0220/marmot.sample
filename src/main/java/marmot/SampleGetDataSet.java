@@ -4,7 +4,6 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.command.MarmotClientCommands;
-import marmot.geo.catalog.SpatialIndexInfo;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -12,7 +11,7 @@ import marmot.remote.protobuf.PBMarmotClient;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleGetDataSet {
-	private static final String INPUT = "POI/주유소_가격";
+	private static final String INPUT = "POI/전국도서관";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -21,10 +20,9 @@ public class SampleGetDataSet {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		DataSet input = marmot.getDataSet(INPUT);
-		
-		SpatialIndexInfo siInfo = input.getDefaultSpatialIndexInfo().get();
-		
-		SampleUtils.printPrefix(input, 50);
+		int cnt = (int)input.getRecordCount();
+
+		SampleUtils.printPrefix(input, 5);
 		
 		for ( DataSet ds: marmot.getDataSetAllInDir("구역", true) ) {
 			System.out.println(ds.getId());

@@ -22,17 +22,17 @@ public class CheckDataSetValidation {
 		Node LI = new LiNode(EMD, "li", "구역/리", "LI_CD", 10, PREFIX);
 		Node HJD = new NonRootNode(SGG, "hjd", "구역/행정동코드", "hcode", 10, PREFIX);
 		Node BAS = new NonRootNode(SGG, "bas", "구역/기초구역", "bas_mgt_sn", 10, PREFIX);
-		Node JJD = new NonRootNode(EMD, "jjd", "구역/연속지적도_2017", "pnu", 19, PREFIX, 31);
+		Node JJD = new NonRootNode(EMD, "jjd", "구역/연속지적도", "pnu", 19, PREFIX, 31);
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
-		SIDO.validate(marmot);
-		SGG.validate(marmot);
-		EMD.validate(marmot);
-		LI.validate(marmot);
-		HJD.validate(marmot);
-		BAS.validate(marmot);
+//		SIDO.validate(marmot);
+//		SGG.validate(marmot);
+//		EMD.validate(marmot);
+//		LI.validate(marmot);
+//		HJD.validate(marmot);
+//		BAS.validate(marmot);
 		JJD.validate(marmot);
 	}
 }
