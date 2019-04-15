@@ -23,9 +23,11 @@ import utils.stream.FStream;
  * @author Kang-Woo Lee (ETRI)
  */
 public class PerfTransform {
+	private static final String INPUT_H0 = "교통/dtg_h0";
 	private static final String INPUT_L0 = "교통/dtg_l0";
 	private static final String INPUT_M0 = "교통/dtg_m0";
 	private static final String INPUT_S0 = "교통/dtg_s0";
+	private static final String INPUT_T0 = "교통/dtg_t0";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -33,9 +35,11 @@ public class PerfTransform {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
+//		collect(marmot, INPUT_T0, 5);
 		collect(marmot, INPUT_S0, 5);
-		collect(marmot, INPUT_M0, 5);
-		collect(marmot, INPUT_L0, 5);
+//		collect(marmot, INPUT_M0, 5);
+//		collect(marmot, INPUT_L0, 5);
+//		collect(marmot, INPUT_H0, 5);
 	}
 	
 	private static final void collect(MarmotRuntime marmot, String input, int count) {
@@ -69,11 +73,12 @@ public class PerfTransform {
 						.defineColumn("방위각:short")
 						.toPoint("X좌표", "Y좌표", "the_geom")
 						.project("the_geom, ts, *-{the_geom,X좌표,Y좌표,운행일자,운행시분초,ts}")
+						.shard(1)
 						.build();
 
 		StopWatch watch = StopWatch.start();
 		DataSet result = marmot.createDataSet("tmp/" + input, plan,
-												BLOCK_SIZE("128mb"), FORCE);
+												BLOCK_SIZE("64mb"), FORCE);
 		watch.stop();
 		System.out.printf("\tcount=%d, elapsed=%s%n",
 							result.getRecordCount(), watch.getElapsedSecondString());

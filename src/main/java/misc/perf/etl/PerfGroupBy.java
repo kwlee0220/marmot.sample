@@ -19,23 +19,33 @@ import utils.stream.FStream;
  * @author Kang-Woo Lee (ETRI)
  */
 public class PerfGroupBy {
+	private static final String INPUT_H = "교통/dtg_h";
 	private static final String INPUT_L = "교통/dtg_l";
 	private static final String INPUT_M = "교통/dtg_m";
 	private static final String INPUT_S = "교통/dtg_s";
-	
+	private static final String INPUT_T = "교통/dtg_t";
+
+	private static final String INPUT_H1 = "교통/dtg_h1";
 	private static final String INPUT_L1 = "교통/dtg_l1";
 	private static final String INPUT_M1 = "교통/dtg_m1";
 	private static final String INPUT_S1 = "교통/dtg_s1";
-	
+	private static final String INPUT_T1 = "교통/dtg_t1";
+
+	private static final String INPUT_HE = "교통/dtg_he";
 	private static final String INPUT_LE = "교통/dtg_le";
 	private static final String INPUT_ME = "교통/dtg_me";
 	private static final String INPUT_SE = "교통/dtg_se";
+	private static final String INPUT_TE = "교통/dtg_te";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
+
+		collect(marmot, INPUT_TE, 1, 5);
+		collect(marmot, INPUT_T1, 1, 5);
+		collect(marmot, INPUT_T, 1, 5);	
 
 		collect(marmot, INPUT_SE, 1, 5);
 		collect(marmot, INPUT_S1, 1, 5);
@@ -47,7 +57,11 @@ public class PerfGroupBy {
 
 		collect(marmot, INPUT_LE, 5, 5);
 		collect(marmot, INPUT_L1, 5, 5);
-		collect(marmot, INPUT_L, 5, 5);		
+		collect(marmot, INPUT_L, 5, 5);	
+
+		collect(marmot, INPUT_HE, 5, 5);
+		collect(marmot, INPUT_H1, 5, 5);
+		collect(marmot, INPUT_H, 5, 5);			
 	}
 	
 	private static final void collect(MarmotRuntime marmot, String input, int nworkers, int count) {

@@ -25,17 +25,23 @@ public class PerfSpatialJoin {
 	private static final String EMD = "구역/읍면동";
 	private static final String REF = "tmp/emd";
 
+	private static final String INPUT_T = "교통/dtg_t";
 	private static final String INPUT_S = "교통/dtg_s";
 	private static final String INPUT_M = "교통/dtg_m";
 	private static final String INPUT_L = "교통/dtg_l";
-	
+	private static final String INPUT_H = "교통/dtg_h";
+
+	private static final String INPUT_H2 = "교통/dtg_h2";
 	private static final String INPUT_L2 = "교통/dtg_l2";
 	private static final String INPUT_M2 = "교통/dtg_m2";
 	private static final String INPUT_S2 = "교통/dtg_s2";
-	
+	private static final String INPUT_T2 = "교통/dtg_t2";
+
+	private static final String INPUT_TE = "교통/dtg_te";
 	private static final String INPUT_SE = "교통/dtg_se";
 	private static final String INPUT_ME = "교통/dtg_me";
 	private static final String INPUT_LE = "교통/dtg_le";
+	private static final String INPUT_HE = "교통/dtg_he";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -43,19 +49,27 @@ public class PerfSpatialJoin {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
-		transformEmd(marmot);
-
+//		transformEmd(marmot);
+		
+//		collect(marmot, INPUT_TE, 1, 5);
+//		collect(marmot, INPUT_T2, 1, 5);
+//		collect(marmot, INPUT_T, 1, 5);
+//
 		collect(marmot, INPUT_SE, 3, 5);
 		collect(marmot, INPUT_S2, 3, 5);
 		collect(marmot, INPUT_S, 3, 5);
-
-		collect(marmot, INPUT_ME, 5, 5);
-		collect(marmot, INPUT_M2, 5, 5);
-		collect(marmot, INPUT_M, 5, 5);
-		
-		collect(marmot, INPUT_LE, 7, 5);
-		collect(marmot, INPUT_L2, 7, 5);
-		collect(marmot, INPUT_L, 7, 5);
+//
+//		collect(marmot, INPUT_ME, 5, 5);
+//		collect(marmot, INPUT_M2, 5, 5);
+//		collect(marmot, INPUT_M, 5, 5);
+//		
+//		collect(marmot, INPUT_LE, 7, 5);
+//		collect(marmot, INPUT_L2, 7, 5);
+//		collect(marmot, INPUT_L, 7, 5);
+//		
+//		collect(marmot, INPUT_HE, 7, 5);
+//		collect(marmot, INPUT_H2, 7, 5);
+//		collect(marmot, INPUT_H, 7, 5);
 	}
 	
 	private static final void collect(MarmotRuntime marmot, String input, int nworkers, int count) {

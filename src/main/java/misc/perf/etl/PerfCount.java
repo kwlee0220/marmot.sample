@@ -19,6 +19,10 @@ import utils.stream.FStream;
  * @author Kang-Woo Lee (ETRI)
  */
 public class PerfCount {
+	private static final String INPUT_H = "교통/dtg_h";
+	private static final String INPUT_H0 = "교통/dtg_h0";
+	private static final String INPUT_HE = "교통/dtg_he";
+	
 	private static final String INPUT_L = "교통/dtg_l";
 	private static final String INPUT_L0 = "교통/dtg_l0";
 	private static final String INPUT_LE = "교통/dtg_le";
@@ -31,23 +35,35 @@ public class PerfCount {
 	private static final String INPUT_S0 = "교통/dtg_s0";
 	private static final String INPUT_SE = "교통/dtg_se";
 	
+	private static final String INPUT_T = "교통/dtg_t";
+	private static final String INPUT_T0 = "교통/dtg_t0";
+	private static final String INPUT_TE = "교통/dtg_te";
+	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
-		collect(marmot, INPUT_SE, 5);
-		collect(marmot, INPUT_S0, 5);
+//		collect(marmot, INPUT_TE, 5);
+//		collect(marmot, INPUT_T0, 5);
+//		collect(marmot, INPUT_T, 5);
+//
+//		collect(marmot, INPUT_SE, 5);
+//		collect(marmot, INPUT_S0, 5);
 		collect(marmot, INPUT_S, 5);
-
-		collect(marmot, INPUT_ME, 5);
-		collect(marmot, INPUT_M0, 5);
-		collect(marmot, INPUT_M, 5);
-
-		collect(marmot, INPUT_LE, 5);
-		collect(marmot, INPUT_L0, 5);
-		collect(marmot, INPUT_L, 5);	
+//
+//		collect(marmot, INPUT_ME, 5);
+//		collect(marmot, INPUT_M0, 5);
+//		collect(marmot, INPUT_M, 5);
+//
+//		collect(marmot, INPUT_LE, 5);
+//		collect(marmot, INPUT_L0, 5);
+//		collect(marmot, INPUT_L, 5);
+//
+//		collect(marmot, INPUT_HE, 5);
+//		collect(marmot, INPUT_H0, 5);
+//		collect(marmot, INPUT_H, 5);		
 	}
 	
 	private static final void collect(MarmotRuntime marmot, String input, int count) {
