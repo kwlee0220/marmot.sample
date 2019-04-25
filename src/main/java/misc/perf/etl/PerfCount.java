@@ -45,25 +45,25 @@ public class PerfCount {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
-//		collect(marmot, INPUT_TE, 5);
-//		collect(marmot, INPUT_T0, 5);
-//		collect(marmot, INPUT_T, 5);
-//
-//		collect(marmot, INPUT_SE, 5);
-//		collect(marmot, INPUT_S0, 5);
+		collect(marmot, INPUT_TE, 5);
+		collect(marmot, INPUT_T0, 5);
+		collect(marmot, INPUT_T, 5);
+
+		collect(marmot, INPUT_SE, 5);
+		collect(marmot, INPUT_S0, 5);
 		collect(marmot, INPUT_S, 5);
-//
-//		collect(marmot, INPUT_ME, 5);
-//		collect(marmot, INPUT_M0, 5);
-//		collect(marmot, INPUT_M, 5);
-//
-//		collect(marmot, INPUT_LE, 5);
-//		collect(marmot, INPUT_L0, 5);
-//		collect(marmot, INPUT_L, 5);
-//
-//		collect(marmot, INPUT_HE, 5);
-//		collect(marmot, INPUT_H0, 5);
-//		collect(marmot, INPUT_H, 5);		
+
+		collect(marmot, INPUT_ME, 5);
+		collect(marmot, INPUT_M0, 5);
+		collect(marmot, INPUT_M, 5);
+
+		collect(marmot, INPUT_LE, 5);
+		collect(marmot, INPUT_L0, 5);
+		collect(marmot, INPUT_L, 5);
+
+		collect(marmot, INPUT_HE, 5);
+		collect(marmot, INPUT_H0, 5);
+		collect(marmot, INPUT_H, 5);		
 	}
 	
 	private static final void collect(MarmotRuntime marmot, String input, int count) {

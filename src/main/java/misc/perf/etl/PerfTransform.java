@@ -35,11 +35,11 @@ public class PerfTransform {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
-//		collect(marmot, INPUT_T0, 5);
+		collect(marmot, INPUT_T0, 5);
 		collect(marmot, INPUT_S0, 5);
-//		collect(marmot, INPUT_M0, 5);
-//		collect(marmot, INPUT_L0, 5);
-//		collect(marmot, INPUT_H0, 5);
+		collect(marmot, INPUT_M0, 5);
+		collect(marmot, INPUT_L0, 5);
+		collect(marmot, INPUT_H0, 5);
 	}
 	
 	private static final void collect(MarmotRuntime marmot, String input, int count) {
@@ -63,7 +63,7 @@ public class PerfTransform {
 												"DateTimeParseLE(운행일자 + 운행시분초.substring(0,6), $pat)");
 		Plan plan = marmot.planBuilder(planName)
 						.load(input)
-						.parseCsv(',', header)
+						.parseCsv("text", ',', header)
 						.defineColumn("ts:datetime",tsExpr)
 						.defineColumn("일일주행거리:int")
 						.defineColumn("누적주행거리:int")

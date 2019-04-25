@@ -3,6 +3,7 @@ package misc.perf.etl;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
+import static marmot.optor.geo.SpatialRelation.WITHIN_DISTANCE;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -12,6 +13,8 @@ import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
+import static marmot.plan.GeomOpOption.*;
+import static marmot.plan.SpatialJoinOption.*;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 import utils.UnitUtils;
@@ -23,6 +26,8 @@ import utils.stream.FStream;
  */
 public class PerfSpatialJoin {
 	private static final String EMD = "구역/읍면동";
+	private static final String HJD = "구역/행정동코드";
+	private static final String ELDERLY = "POI/노인복지시설";
 	private static final String REF = "tmp/emd";
 
 	private static final String INPUT_T = "교통/dtg_t";
@@ -49,27 +54,20 @@ public class PerfSpatialJoin {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
-//		transformEmd(marmot);
-		
-//		collect(marmot, INPUT_TE, 1, 5);
-//		collect(marmot, INPUT_T2, 1, 5);
-//		collect(marmot, INPUT_T, 1, 5);
-//
+		collect(marmot, INPUT_TE, 1, 5);
+		collect(marmot, INPUT_T, 1, 5);
+
 		collect(marmot, INPUT_SE, 3, 5);
-		collect(marmot, INPUT_S2, 3, 5);
 		collect(marmot, INPUT_S, 3, 5);
-//
-//		collect(marmot, INPUT_ME, 5, 5);
-//		collect(marmot, INPUT_M2, 5, 5);
-//		collect(marmot, INPUT_M, 5, 5);
-//		
-//		collect(marmot, INPUT_LE, 7, 5);
-//		collect(marmot, INPUT_L2, 7, 5);
-//		collect(marmot, INPUT_L, 7, 5);
-//		
-//		collect(marmot, INPUT_HE, 7, 5);
-//		collect(marmot, INPUT_H2, 7, 5);
-//		collect(marmot, INPUT_H, 7, 5);
+
+		collect(marmot, INPUT_ME, 5, 5);
+		collect(marmot, INPUT_M, 5, 5);
+		
+		collect(marmot, INPUT_LE, 7, 5);
+		collect(marmot, INPUT_L, 7, 5);
+		
+		collect(marmot, INPUT_HE, 7, 5);
+		collect(marmot, INPUT_H, 7, 5);
 	}
 	
 	private static final void collect(MarmotRuntime marmot, String input, int nworkers, int count) {
@@ -90,11 +88,17 @@ public class PerfSpatialJoin {
 		String planName = "perf_spatial_join_" + input.replaceAll("/", ".");
 		Plan plan = marmot.planBuilder(planName)
 							.load(input)
+							.transformCrs("the_geom", "EPSG:4326", "EPSG:5186")
+							.buffer("the_geom", 100)
 							.defineColumn("hour:byte", "DateTimeGetHour(ts)")
-							.spatialJoin("the_geom", REF, "hour,운행속도,param.emd_cd")
-							.groupBy("hour,emd_cd")
+							.spatialJoin("the_geom", ELDERLY,
+										"param.{the_geom,bplc_nm,row_num},hour,운행속도")
+							.spatialJoin("the_geom", HJD, "*-{the_geom},param.hcode")
+							.groupBy("bplc_nm,hour")
+								.withTags("hcode")
 								.workerCount(nworkers)
 								.aggregate(AggregateFunction.MAX("운행속도"))
+							.project("bplc_nm,hcode,hour,max")
 							.build();
 
 		StopWatch watch = StopWatch.start();
@@ -104,16 +108,5 @@ public class PerfSpatialJoin {
 							result.getRecordCount(), watch.getElapsedSecondString());
 		
 		return watch.getElapsedInMillis();
-	}
-	
-	private static final void transformEmd(MarmotRuntime marmot) {
-		Plan plan = marmot.planBuilder("transform_srid")
-						.load(EMD)
-						.transformCrs("the_geom", "EPSG:5186", "EPSG:4326")
-						.build();
-
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:4326");
-		DataSet result = marmot.createDataSet(REF, plan, GEOMETRY(gcInfo), FORCE);
-		result.cluster();
 	}
 }

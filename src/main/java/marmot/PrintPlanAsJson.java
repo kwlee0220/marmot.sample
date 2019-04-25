@@ -70,7 +70,8 @@ public class PrintPlanAsJson {
 										"ST_DTParseLE(운행일자 + 운행시분초.substring(0,6), $pat)");
 		Plan plan;
 		plan = marmot.planBuilder("import_plan")
-//					.parseCsv(',', ParseCsvOption.HEADER(header))
+					.parseCsv("text", ',', ParseCsvOption.HEADER(header),
+											ParseCsvOption.NULL_VALUE(""))
 //					.parseCsv(',', ParseCsvOption.HEADER(header), ParseCsvOption.COMMENT('#'))
 //					.parseCsv('|', HEADER(header))
 //					.filter("sp != null && sn != null")
@@ -96,11 +97,11 @@ public class PrintPlanAsJson {
 //					.toPoint("lon", "lat", "the_geom")
 //					.transformCrs("the_geom", "EPSG:4326", "EPSG:5186")
 //					.project("ROW_ID,POI,ID,SP,SN,언급빈도수,선호도")
-					.expand("coldecs", script2)
+//					.expand("coldecs", script2)
 //					.expand("sp:double,sn:double,언급빈도수:int,선호도:double", "sn=sp + 1")
 //					.expand("발생건수:int,사상자수:int,사망자수:int,중상자수:int,경상자수:int,부상신고자수:int")
 //					.transformCrs("the_geom", "EPSG:5179", "aaa", "EPSG:5186")
-					.update(script)
+//					.update(script)
 //					.expand1("거래금액:int",script)
 //					.query("input_dsid", SpatialRelation.WITHIN_DISTANCE(30), "key_disId")
 //					.spatialJoin("the_geom", "xxxxx", "output_cols")

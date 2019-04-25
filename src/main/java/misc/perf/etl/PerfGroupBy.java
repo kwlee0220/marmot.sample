@@ -86,7 +86,7 @@ public class PerfGroupBy {
 							.defineColumn("hour:byte", "DateTimeGetHour(ts)")
 							.filter("hour >= 8 && hour <= 10")
 							.groupBy("차량번호")
-								.aggregate(AggregateFunction.COUNT())
+								.aggregate(AggregateFunction.MAX("운행속도"))
 							.build();
 
 		StopWatch watch = StopWatch.start();

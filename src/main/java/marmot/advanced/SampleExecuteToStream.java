@@ -22,7 +22,7 @@ import utils.StopWatch;
 public class SampleExecuteToStream {
 	private static final String TINY = "교통/지하철/서울역사";
 	private static final String SMALL = "로그/나비콜/택시로그";
-	private static final String MEDIUM = "건물/건물통합정보마스터";
+	private static final String MEDIUM = "건물/건물통합정보마스터/201809";
 	private static final String LARGE = "교통/dtg_s";
 	private static final String RANGE = "구역/행정동코드";
 	private static final String RESULT = "tmp/result";
