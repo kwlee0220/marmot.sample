@@ -35,7 +35,7 @@ public class S05_CountMinWonPerTeamParcel {
 		plan = marmot.planBuilder("담당팀_필지별_민원수 합계")
 					.load(MINWON)
 					.filter("team_name != null")
-					.join("all_parcel_layer_id", PARCEL, "id", 
+					.hashJoin("all_parcel_layer_id", PARCEL, "id", 
 							"param.{the_geom,id},team_name",
 							JoinOptions.RIGHT_OUTER_JOIN())
 					.groupBy("team_name,id")

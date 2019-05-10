@@ -13,7 +13,6 @@ import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
-import marmot.optor.geo.SpatialRelation;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 
@@ -48,7 +47,7 @@ public class B01_FilterDoBongGuCarAccident {
 
 		Plan plan;
 		plan = marmot.planBuilder("도봉구_사망교통사고_추출")
-						.query(DEATH_ACCIDENT, SpatialRelation.INTERSECTS, dobong)
+						.query(DEATH_ACCIDENT, dobong)
 						.project(prjExpr)
 						.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(DEATH_ACCIDENT).getGeometryColumnInfo();

@@ -56,7 +56,7 @@ public class C03_CountDtgByRoad {
 						.run(aggrPlan)
 					.groupBy("link_id")
 						.aggregate(AggregateFunction.SUM("count").as("count"))
-					.join("link_id", ROADS, "link_id", "param.{the_geom,link_id,road_name},count",
+					.hashJoin("link_id", ROADS, "link_id", "param.{the_geom,link_id,road_name},count",
 							JoinOptions.INNER_JOIN(1))
 					.build();
 		DataSet result = marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);

@@ -16,10 +16,10 @@
   "name": "행정구역당 20년 이상된 건물 집계",
   "operators": [
     <load("건물/통합정보")>,
-    <define_column("emd_cd:string", "pnu.substring(0,8)")>,
+    <defineColumn("emd_cd:string", "pnu.substring(0,8)")>,
     <expand("old:byte,be5:byte", "@{trans}", "$now = DateNow(); $pat = DatePattern('yyyyMMdd');")>,
     <project("emd_cd,old,be5")>,
-    <aggregate_by_key("emd_cd",["sum:old:old_cnt", "sum:be5:be5_cnt", "count::bld_cnt"], [], "1")>,
-    <define_column("old_ratio:double", "(double)old_cnt/bld_cnt")>
+    <aggregateByGroup("emd_cd",["sum:old:old_cnt", "sum:be5:be5_cnt", "count::bld_cnt"], [], "1")>,
+    <defineColumn("old_ratio:double", "(double)old_cnt/bld_cnt")>
   ]
 }

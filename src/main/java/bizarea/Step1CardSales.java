@@ -64,7 +64,7 @@ public class Step1CardSales {
 							.project("std_ym,block_cd,daily_sales")
 							// BIZ_GRID와 소지역 코드를 이용하여 조인하여, 대도시 상업지역과 겹치는
 							// 매출액 구역을 뽑는다.
-							.join("block_cd", BIZ_GRID, "block_cd",
+							.hashJoin("block_cd", BIZ_GRID, "block_cd",
 									"param.*,std_ym,daily_sales",
 									new JoinOptions().workerCount(64))
 							// 한 그리드 셀에 여러 소지역 매출액 정보가 존재하면,

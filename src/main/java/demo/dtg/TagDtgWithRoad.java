@@ -4,6 +4,7 @@ import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.JoinOptions.SEMI_JOIN;
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -75,10 +76,10 @@ public class TagDtgWithRoad {
 					.load(DTG)
 
 					.toPoint("x좌표", "y좌표", "the_geom")
-					.intersects("the_geom", key)
+					.filterSpatially("the_geom", INTERSECTS, key)
 					
 					.project("the_geom,운송사코드")
-					.join("운송사코드", TEMP_CARGOS, "회사코드", "the_geom", SEMI_JOIN(nworkers))
+					.hashJoin("운송사코드", TEMP_CARGOS, "회사코드", "the_geom", SEMI_JOIN(nworkers))
 					
 					.transformCrs("the_geom", "EPSG:4326", "EPSG:5186")
 					.knnJoin("the_geom", TEMP_ROAD, 1, DIST, "param.{the_geom, link_id, road_name}")

@@ -11,7 +11,6 @@ import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
-import marmot.optor.geo.SpatialRelation;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 import utils.UnitUtils;
@@ -76,7 +75,7 @@ public class PerfRangeQuery {
 	private static final long process(MarmotRuntime marmot, String input, Envelope range) {
 		String planName = "perf_range_query_" + input.replaceAll("/", ".");
 		Plan plan = marmot.planBuilder(planName)
-							.query(input, SpatialRelation.INTERSECTS, range)
+							.query(input, range)
 							.buffer("the_geom", 100)
 							.build();
 

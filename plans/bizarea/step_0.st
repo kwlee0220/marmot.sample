@@ -7,8 +7,8 @@
   "name": "대도시지역 추출",
   "operators": [
     <load("구역/통합법정동")>,
-    <define_column("sid_cd:string", "bjd_cd.substring(0,2)")>,
-    <define_column("sgg_cd:string", "bjd_cd.substring(0,5)")>,
+    <defineColumn("sid_cd:string", "bjd_cd.substring(0,2)")>,
+    <defineColumn("sgg_cd:string", "bjd_cd.substring(0,5)")>,
     <filter("$sid_cd.contains(sid_cd) || $sgg_cd.contains(sgg_cd)", "@{init_expr}")>
   ]
 }

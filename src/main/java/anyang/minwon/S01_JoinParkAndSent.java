@@ -35,7 +35,7 @@ public class S01_JoinParkAndSent {
 		plan = marmot.planBuilder("이름기반 공원 감성분석 맵매칭")
 					.load(PARK)
 					.filter("!kor_par_nm.equals('#N/A')")
-					.join("kor_par_nm", EMOTION, "poi", "the_geom,param.*-{the_geom}",
+					.hashJoin("kor_par_nm", EMOTION, "poi", "the_geom,param.*-{the_geom}",
 							JoinOptions.INNER_JOIN())
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(PARK).getGeometryColumnInfo();

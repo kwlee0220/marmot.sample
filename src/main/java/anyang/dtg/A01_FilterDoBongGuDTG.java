@@ -13,7 +13,6 @@ import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
-import marmot.optor.geo.SpatialRelation;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 
@@ -43,7 +42,7 @@ public class A01_FilterDoBongGuDTG {
 		
 		Plan plan;
 		plan = marmot.planBuilder("도봉구_영역_DTG 추출")
-						.query(DTG, SpatialRelation.INTERSECTS, dobong)
+						.query(DTG, dobong)
 //						.project(prjExpr)
 						.transformCrs("the_geom", "EPSG:4326", "EPSG:5186")
 						.shard(7)

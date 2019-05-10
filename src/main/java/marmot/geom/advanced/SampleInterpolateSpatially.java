@@ -56,7 +56,7 @@ public class SampleInterpolateSpatially {
 								+ "return numerator / denominator;}";
 		plan = marmot.planBuilder("calc_idw_interpolation")
 					.load(tempPath)
-					.spatialInterpolation("the_geom", tempPath, VALUE_COLUMN, RADIUS,
+					.interpolateSpatially("the_geom", tempPath, VALUE_COLUMN, RADIUS,
 											"value", IDWInterpolation.ofPower(1))
 					.build();
 		result = marmot.createDataSet(RESULT, plan, GEOMETRY(info), FORCE);

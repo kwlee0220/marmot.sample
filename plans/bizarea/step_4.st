@@ -14,10 +14,10 @@
   "name": "대도시 상업지역 구역별 카드 일매출 집계",
   "operators": [
     <load("주민/카드매출/월별_시간대/2015")>,
-    <define_column("daily_sales:double", "@{sumExpr}")>,
+    <defineColumn("daily_sales:double", "@{sumExpr}")>,
     <project("std_ym,block_cd,daily_sales")>,
-    <hash_join("block_cd", "tmp/bizarea/grid100", "block_cd", "param.*,std_ym,daily_sales", "64")>,
-    <aggregate_by_key("std_ym,cell_id", "sum:daily_sales:daily_sales", "the_geom,sgg_cd", "3")>,
+    <hashJoin("block_cd", "tmp/bizarea/grid100", "block_cd", "param.*,std_ym,daily_sales", "64")>,
+    <aggregateByGroup("std_ym,cell_id", "sum:daily_sales:daily_sales", "the_geom,sgg_cd", "3")>,
     <project("the_geom,*-{the_geom}")>
   ]
 }

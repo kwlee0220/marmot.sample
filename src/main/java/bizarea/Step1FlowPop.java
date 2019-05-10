@@ -69,7 +69,7 @@ public class Step1FlowPop {
 							.project("std_ym,block_cd,flow_pop")
 							// BIZ_GRID와 소지역 코드를 이용하여 조인하여, 대도시 상업지역과 겹치는
 							// 유동인구 구역을 뽑는다. 
-							.join("block_cd", BIZ_GRID, "block_cd",
+							.hashJoin("block_cd", BIZ_GRID, "block_cd",
 									"param.*,std_ym,flow_pop",
 									new JoinOptions().workerCount(32))
 							// 한 그리드 셀에 여러 소지역 유동인구 정보가 존재하면,

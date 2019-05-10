@@ -19,12 +19,12 @@
   "name": "'500mX500m 격자단위 유동인구' 집계",
   "operators": [
     <query("주민/유동인구/월별_시간대/2015", "tmp/seoul")>,
-    <spatial_semijoin("분석결과/지하철역사_추천/지하철역사_버퍼_그리드", "true")>,
+    <spatialSemiJoin("분석결과/지하철역사_추천/지하철역사_버퍼_그리드", "true")>,
     <update("@{updateExpr}")>,
     <expand("day_total", "DOUBLE", "@{sumExpr}")>,
-    <aggregate_by_key("block_cd", "avg:day_total:avg", "the_geom")>,
-    <assign_gridcell("tmp/seoul", "500", "500")>,
+    <aggregateByGroup("block_cd", "avg:day_total:avg", "the_geom")>,
+    <assignGridCell("tmp/seoul", "500", "500")>,
     <project("cell_geom as the_geom, cell_id, cell_pos, avg")>,
-    <aggregate_by_key("cell_id", "sum:avg:avg", "the_geom")>
+    <aggregateByGroup("cell_id", "sum:avg:avg", "the_geom")>
   ]
 }

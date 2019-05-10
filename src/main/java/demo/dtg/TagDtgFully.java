@@ -83,7 +83,7 @@ public class TagDtgFully {
 		plan = marmot.planBuilder("tag dtg")
 					.load(DTG)
 					
-					.join("운송사코드", DTG_COMPANY, "회사코드", "*,param.업종코드",
+					.hashJoin("운송사코드", DTG_COMPANY, "회사코드", "*,param.업종코드",
 							LEFT_OUTER_JOIN(joinWorkers))
 
 					.toPoint("x좌표", "y좌표", "the_geom")

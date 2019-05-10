@@ -4,6 +4,7 @@ import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.AggregateFunction.COUNT;
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -68,7 +69,7 @@ public class FindUnsafeChildZone {
 
 					.filter("운행속도 > 1")
 					.toPoint("x좌표", "y좌표", "the_geom")
-					.intersects("the_geom", key)
+					.filterSpatially("the_geom", INTERSECTS, key)
 					.transformCrs("the_geom", "EPSG:4326", "EPSG:5186")
 					
 					.spatialJoin("the_geom", TEMP_ZONE, "param.*,운행속도")

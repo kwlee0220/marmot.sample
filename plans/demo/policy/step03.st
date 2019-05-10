@@ -3,7 +3,7 @@
   "operators": [
     <load("구역/행정동코드")>,
     <project("the_geom")>,
-    <spatial_semijoin("tmp/10min/high_density_center")>,
+    <spatialSemiJoin("tmp/10min/high_density_center")>,
     <project("the_geom")>
   ]
 }

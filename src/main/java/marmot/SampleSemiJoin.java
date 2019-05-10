@@ -33,7 +33,7 @@ public class SampleSemiJoin {
 		
 		Plan plan = marmot.planBuilder("test semi_join")
 							.load(INPUT)
-							.join("sig_cd", PARAM, "sig_cd", "param.sig_kor_nm",
+							.hashJoin("sig_cd", PARAM, "sig_cd", "param.sig_kor_nm",
 									JoinOptions.SEMI_JOIN())
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);

@@ -14,8 +14,8 @@
     <load("주민/유동인구/월별_시간대/2015")>,
     <define_column("avg:double", "@{avgExpr}")>,
     <project("block_cd,avg")>,
-    <aggregate_by_key("block_cd",["avg:avg:avg"])>,
-    <hash_join("block_cd", "tmp/oldbld/blocks_emd", "block_cd", "*,param.{emd_cd}")>,
-    <aggregate_by_key("emd_cd",["avg:avg:pop_avg"], [], "1")>
+    <aggregateByGroup("block_cd",["avg:avg:avg"])>,
+    <hashJoin("block_cd", "tmp/oldbld/blocks_emd", "block_cd", "*,param.{emd_cd}")>,
+    <aggregateByGroup("emd_cd",["avg:avg:pop_avg"], [], "1")>
   ]
 }

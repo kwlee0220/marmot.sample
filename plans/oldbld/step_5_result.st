@@ -11,10 +11,10 @@
 {
   "name": "결과 통합",
   "operators": [
-    <load_full_outer_hash_join("tmp/oldbld/buildings_emd", "emd_cd",
+    <loadFullOuterHashJoin("tmp/oldbld/buildings_emd", "emd_cd",
     							"tmp/oldbld/card_sale_emd", "emd_cd",
     							"left.*,right.*-{emd_cd}", "1")>,
-    <full_outer_hash_join("emd_cd", "tmp/oldbld/pop_emd", "emd_cd", "*,param.*-{emd_cd}", "1")>,
-    <hash_join("emd_cd", "구역/읍면동", "emd_cd", "param.the_geom,*", "1")>
+    <fullOuterHashJoin("emd_cd", "tmp/oldbld/pop_emd", "emd_cd", "*,param.*-{emd_cd}", "1")>,
+    <hashJoin("emd_cd", "구역/읍면동", "emd_cd", "param.the_geom,*", "1")>
   ]
 }

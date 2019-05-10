@@ -4,6 +4,7 @@ import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.JoinOptions.SEMI_JOIN;
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -77,15 +78,15 @@ public class TagDtgWithGrid {
 					.load(DTG)
 
 					.toPoint("x좌표", "y좌표", "the_geom")
-					.intersects("the_geom", key)
+					.filterSpatially("the_geom", INTERSECTS, key)
 					
 					.project("the_geom,운송사코드")
-					.join("운송사코드", TEMP_CARGOS, "회사코드", "the_geom", SEMI_JOIN(nworkers))
+					.hashJoin("운송사코드", TEMP_CARGOS, "회사코드", "the_geom", SEMI_JOIN(nworkers))
 					
 					.transformCrs("the_geom", "EPSG:4326", "EPSG:5186")
 					.assignSquareGridCell("the_geom", new SquareGrid(bounds, CELL_SIZE))
 					.centroid("cell_geom")
-					.intersects("the_geom", kyounggiGeom)
+					.filterSpatially("the_geom", INTERSECTS, kyounggiGeom)
 					
 					.groupBy("cell_id")
 						.withTags("the_geom,cell_pos")

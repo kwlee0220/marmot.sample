@@ -53,8 +53,8 @@ public class Step5_Result {
 		plan = marmot.planBuilder("결과 통합")
 					.loadHashJoin(BUILDINGS, "emd_cd", CARD_SALE, "emd_cd",
 								"left.*,right.*-{emd_cd}", FULL_OUTER_JOIN(1))
-					.join("emd_cd", FLOW_POP, "emd_cd", "*,param.*-{emd_cd}", FULL_OUTER_JOIN(1))
-					.join("emd_cd", EMD, "emd_cd", "param.the_geom,*", INNER_JOIN(1))
+					.hashJoin("emd_cd", FLOW_POP, "emd_cd", "*,param.*-{emd_cd}", FULL_OUTER_JOIN(1))
+					.hashJoin("emd_cd", EMD, "emd_cd", "param.the_geom,*", INNER_JOIN(1))
 					.store(RESULT)
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(EMD).getGeometryColumnInfo();

@@ -167,7 +167,7 @@ public class FindBestSubwayStationCandidates {
 		
 		plan = marmot.planBuilder("'500mX500m 격자단위 유동인구' 집계")
 					// 서울시 영역만 추출한다.
-					.query(FLOW_POP_BYTIME, INTERSECTS, seoul)
+					.query(FLOW_POP_BYTIME, seoul)
 					
 					// 모든 지하철 역사로부터 1km 이상 떨어진 로그 데이터만 선택한다.
 					.spatialSemiJoin("the_geom", TEMP_STATIONS, NEGATED)
@@ -245,7 +245,7 @@ public class FindBestSubwayStationCandidates {
 					.filter("status == 1 || status == 2")
 					
 					// 서울특별시 영역만의 로그만 선택한다.
-					.intersects(geomCol, seoul)
+					.filterSpatially(geomCol, INTERSECTS, seoul)
 					// 불필요한 컬럼 제거
 					.project("the_geom")
 					
@@ -309,7 +309,7 @@ public class FindBestSubwayStationCandidates {
 		
 		plan = marmot.planBuilder("그리드 셀단위 유동인구 비율과 택시 승하차 로그 비율 합계 계산")
 					.load(TEMP_FLOW_POP)
-					.join("cell_id", TEMP_TAXI_LOG, "cell_id",
+					.hashJoin("cell_id", TEMP_TAXI_LOG, "cell_id",
 							"the_geom,cell_id,normalized,"
 							+ "param.{the_geom as param_geom,cell_id as param_cell_id,"
 							+ "normalized as param_normalized}",

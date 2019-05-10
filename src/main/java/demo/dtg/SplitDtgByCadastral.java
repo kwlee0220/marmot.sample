@@ -2,13 +2,13 @@ package demo.dtg;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Polygon;
 
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
@@ -62,7 +62,7 @@ public class SplitDtgByCadastral {
 					.load(DTG)
 
 					.toPoint("x좌표", "y좌표", "the_geom")
-					.intersects("the_geom", validBounds)
+					.filterSpatially("the_geom", INTERSECTS, validBounds)
 					
 					.spatialJoin("the_geom", TEMP_POLITICAL, "*-{the_geom},param.sig_cd")
 					

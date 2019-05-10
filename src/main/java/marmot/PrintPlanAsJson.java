@@ -8,6 +8,7 @@ import com.google.protobuf.util.JsonFormat;
 import com.vividsolutions.jts.geom.Envelope;
 
 import marmot.command.MarmotClientCommands;
+import marmot.optor.AggregateFunction;
 import marmot.plan.ParseCsvOption;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -70,8 +71,8 @@ public class PrintPlanAsJson {
 										"ST_DTParseLE(운행일자 + 운행시분초.substring(0,6), $pat)");
 		Plan plan;
 		plan = marmot.planBuilder("import_plan")
-					.parseCsv("text", ',', ParseCsvOption.HEADER(header),
-											ParseCsvOption.NULL_VALUE(""))
+//					.parseCsv("text", ',', ParseCsvOption.HEADER(header),
+//											ParseCsvOption.NULL_VALUE(""))
 //					.parseCsv(',', ParseCsvOption.HEADER(header), ParseCsvOption.COMMENT('#'))
 //					.parseCsv('|', HEADER(header))
 //					.filter("sp != null && sn != null")
@@ -117,13 +118,15 @@ public class PrintPlanAsJson {
 //					.join("col1,col2", "ds_id", "jcols", "out_cols", JoinOptions.SEMI_JOIN())
 //					.join("emd_cd,name", "EMD", "emd_cd,age", "param.{the_geom,emd_kor_nm},count",
 //							JoinOptions.FULL_OUTER_JOIN(1))
+					.aggregate(AggregateFunction.SUM("aaa"), AggregateFunction.MAX("bbb").as("ccc"))
 //					.groupBy("aaa,bbb")
 //						.aggregate(AggregateFunction.SUM("cc"), AggregateFunction.COUNT())
 //					.groupBy("block_cd")
 //						.withTags("geomCol")
 //						.workerCount(1)
 //						.aggregate(AggregateFunction.AVG("day_total"))
-//					.aggregate(AggregateFunction.SUM("aaa"), AggregateFunction.MAX("bbb").as("ccc"))
+//					.groupBy("key_col").orderBy("order_key").list()
+//					.groupBy("key_col").orderBy("order_key").take(5)
 //					.groupBy("block_cd")
 //						.putSideBySide(schema, "usage", "tag")
 //					.sort("보관일수:A:F,카메라대수:A")
@@ -140,7 +143,12 @@ public class PrintPlanAsJson {
 //					.matchSpatially("the_geom", SpatialRelation.CONTAINS, "param_ds_id")
 //					.knnJoin("the_geom", "param_ds_id", 3, 100, "*,param.{xx}")
 //					.shard(11)
-					.store("tmp/result")
+//					.interpolateSpatially("the_geom", "tmp/points", "value1,value2", 3000,
+//											"output_col1,output_col2", IDWInterpolation.ofPower(1))
+//					.estimateIDW("the_geom", "tmp/points", "value1,value2", 3000, 1, "densi",
+//								PowerOption.POWER(1))
+//					.estimateKernelDensity("the_geom", "tmp/points", "value1,value2", 3000, "densi")
+//					.store("tmp/result")
 					.build();
 		
 		System.out.println(JsonFormat.printer().print(plan.toProto()));

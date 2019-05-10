@@ -59,7 +59,7 @@ public class Step4_Pop {
 					.project("block_cd,avg")
 					.groupBy("block_cd")
 						.aggregate(AVG("avg").as("avg"))
-					.join("block_cd", BLOCKS, "block_cd", "*,param.{emd_cd}", INNER_JOIN())
+					.hashJoin("block_cd", BLOCKS, "block_cd", "*,param.{emd_cd}", INNER_JOIN())
 					.groupBy("emd_cd")
 						.workerCount(1)
 						.aggregate(AVG("avg").as("pop_avg"))

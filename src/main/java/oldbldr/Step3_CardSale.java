@@ -58,7 +58,7 @@ public class Step3_CardSale {
 					.project("block_cd,sale_amt")
 					.groupBy("block_cd")
 						.aggregate(SUM("sale_amt").as("sale_amt"))
-					.join("block_cd", BLOCKS, "block_cd", "*,param.{emd_cd}", INNER_JOIN())
+					.hashJoin("block_cd", BLOCKS, "block_cd", "*,param.{emd_cd}", INNER_JOIN())
 					.groupBy("emd_cd")
 						.workerCount(1)
 						.aggregate(SUM("sale_amt").as("sale_amt"))

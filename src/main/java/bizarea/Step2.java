@@ -55,7 +55,7 @@ public class Step2 {
 
 		Plan plan = marmot.planBuilder("대도시 상업지역 구역별 카드매출액 및 유동인구수 통합")
 							.load(BIZ_GRID_SALES)
-							.join("std_ym,cell_id,sgg_cd", BIZ_GRID_FLOW_POP,
+							.hashJoin("std_ym,cell_id,sgg_cd", BIZ_GRID_FLOW_POP,
 									"std_ym,cell_id,sgg_cd",
 									"*, param.{"
 										+ "the_geom as param_the_geom,"

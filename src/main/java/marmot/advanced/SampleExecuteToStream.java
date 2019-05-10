@@ -1,5 +1,7 @@
 package marmot.advanced;
 
+import static marmot.optor.geo.SpatialRelation.INTERSECTS;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -103,7 +105,7 @@ public class SampleExecuteToStream {
 		Plan plan;
 		plan = marmot.planBuilder("test batch_medium")
 					.load(SMALL)
-					.intersects("the_geom", range)
+					.filterSpatially("the_geom", INTERSECTS, range)
 					.build();
 		
 		StopWatch watch = StopWatch.start();	
@@ -123,7 +125,7 @@ public class SampleExecuteToStream {
 		Plan plan;
 		plan = marmot.planBuilder("test SampleGetStream")
 					.load(SMALL)
-					.intersects("the_geom", range)
+					.filterSpatially("the_geom", INTERSECTS, range)
 					.build();
 		
 		StopWatch watch = StopWatch.start();		

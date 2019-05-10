@@ -31,7 +31,7 @@ public class SampleHashJoin {
 		Plan plan = marmot.planBuilder("test equi_join")
 							.load(INPUT)
 							.update("sig_cd = sig_cd.substring(0,2)")
-							.join("sig_cd", PARAM, "ctprvn_cd",
+							.hashJoin("sig_cd", PARAM, "ctprvn_cd",
 									"the_geom,param.ctp_kor_nm,sig_kor_nm",
 									JoinOptions.INNER_JOIN())
 							.build();

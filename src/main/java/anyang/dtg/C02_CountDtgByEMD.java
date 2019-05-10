@@ -54,7 +54,7 @@ public class C02_CountDtgByEMD {
 					.groupBy("emd_cd")
 						.aggregate(AggregateFunction.SUM("count").as("count"))
 					.expand("emd_cd:string")
-					.join("emd_cd", EMD, "emd_cd", "param.{the_geom,emd_kor_nm},count",
+					.hashJoin("emd_cd", EMD, "emd_cd", "param.{the_geom,emd_kor_nm},count",
 							JoinOptions.INNER_JOIN(1))
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(EMD).getGeometryColumnInfo();
