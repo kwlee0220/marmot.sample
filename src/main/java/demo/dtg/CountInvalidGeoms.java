@@ -2,7 +2,6 @@ package demo.dtg;
 
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
-import static marmot.plan.PredicateOption.NEGATED;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -13,6 +12,7 @@ import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
+import marmot.plan.PredicateOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -53,7 +53,8 @@ public class CountInvalidGeoms {
 		plan = marmot.planBuilder("count invalid geometry records")
 					.load(DTG)
 					.toPoint("x좌표", "y좌표", "the_geom")
-					.filterSpatially("the_geom", INTERSECTS, bounds, NEGATED)
+					.filterSpatially("the_geom", INTERSECTS, bounds,
+									PredicateOptions.create().negated(true))
 					.aggregate(COUNT())
 					.store(RESULT)
 					.build();

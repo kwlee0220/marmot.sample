@@ -8,6 +8,7 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -30,7 +31,7 @@ public class SampleIntersectionJoin {
 		Plan plan = marmot.planBuilder("sample_intersection_join")
 							.load(OUTER)
 							.buffer("the_geom", 50)
-							.intersectionJoin("the_geom", INNER)
+							.intersectionJoin("the_geom", INNER, SpatialJoinOptions.create())
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, FORCE);
 		marmot.deleteDataSet(INNER);

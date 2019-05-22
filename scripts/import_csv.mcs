@@ -1,0 +1,18 @@
+def MARMOT_DATA = System.getenv()['MARMOT_DATA']
+
+importCsvFile "$MARMOT_DATA/공공데이터포털/주유소_가격" to 'tmp/result' options {
+	delim '|'
+	quote '"'
+	commentMarker '#'
+	headerFirst
+	trimColumns
+	nullValue '0'
+	maxColumnLength '16k'
+	pointColumns '경도|위도'
+	csvSrid 'EPSG:4326'
+	charset 'utf-8'
+	geometry 'the_geom(EPSG:5186)'
+	force = true
+	blockSize '64mb'
+	compression true
+}

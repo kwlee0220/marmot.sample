@@ -11,6 +11,7 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
+import utils.func.FOption;
 
 /**
  * 
@@ -46,7 +47,7 @@ public class SampleEstimateIDW {
 		plan = marmot.planBuilder("sample_estimate_idw")
 						.load(tempPath)
 						.estimateIDW("the_geom", tempPath, VALUE_COLUMN, RADIUS,
-										TOP_K, "value")
+										TOP_K, "value", FOption.empty())
 						.build();
 		result = marmot.createDataSet(RESULT, plan, GEOMETRY(info), FORCE);
 		marmot.deleteDataSet(tempPath);

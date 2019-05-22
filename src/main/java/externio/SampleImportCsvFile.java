@@ -1,14 +1,11 @@
 package externio;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.nio.file.Files;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Plan;
 import marmot.command.ImportParameters;
 import marmot.command.MarmotClientCommands;
 import marmot.externio.ImportIntoDataSet;
@@ -23,11 +20,11 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleImportCsvStream {
+public class SampleImportCsvFile {
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
+		CommandLineParser parser = new CommandLineParser("sample_import_csv ");
 		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
 		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
 		
@@ -45,7 +42,7 @@ public class SampleImportCsvStream {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		File file = new File("/mnt/data/sbdata/data/공공데이터포털/주유소_가격/주유소_가격.csv");
-		CsvParameters params = CsvParameters.create()
+		CsvParameters csvOpts = CsvParameters.create()
 										.delimiter('|')
 										.headerFirst(true)
 										.pointColumns("경도|위도")
@@ -55,12 +52,7 @@ public class SampleImportCsvStream {
 		importParams.setGeometryColumnInfo("the_geom", "EPSG:5186");
 		importParams.setForce(true);
 		
-		Plan plan = marmot.planBuilder("import_plan")
-							.project("the_geom,고유번호,휘발유")
-							.build();
-		
-		BufferedReader reader = Files.newBufferedReader(file.toPath());
-		ImportIntoDataSet importDs = ImportCsv.from(reader, plan, params, importParams);
+		ImportIntoDataSet importDs = ImportCsv.from(file, csvOpts, importParams);
 		importDs.run(marmot);
 		watch.stop();
 

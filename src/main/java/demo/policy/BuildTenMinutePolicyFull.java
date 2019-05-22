@@ -2,7 +2,6 @@ package demo.policy;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
-import static marmot.plan.SpatialJoinOption.NEGATED;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -11,6 +10,7 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -81,7 +81,8 @@ public class BuildTenMinutePolicyFull {
 		Plan plan = marmot.planBuilder("경로당필요지역추출")
 						.load(CADASTRAL)
 						.project("the_geom,pnu")
-						.spatialSemiJoin(info.name(), ELDERLY_CARE_BUFFER, NEGATED)
+						.spatialSemiJoin(info.name(), ELDERLY_CARE_BUFFER,
+										SpatialJoinOptions.create().negated(true))
 						.clipJoin(info.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석
 						.shard(1)
 						.store(RESULT)

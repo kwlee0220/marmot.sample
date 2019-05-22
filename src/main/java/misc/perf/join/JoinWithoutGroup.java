@@ -2,7 +2,6 @@ package misc.perf.join;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
-import static marmot.plan.SpatialJoinOption.CLUSTER_OUT_RECORDS;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -11,7 +10,8 @@ import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
-import static marmot.plan.LoadOption.*;
+import marmot.plan.LoadOptions;
+import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 import utils.UnitUtils;
@@ -69,9 +69,9 @@ public class JoinWithoutGroup {
 		
 		Plan plan;
 		plan = marmot.planBuilder(planName)
-					.load(dsId, SPLIT_COUNT(2))
+					.load(dsId, LoadOptions.create().splitCount(2))
 					.spatialJoin("the_geom", INPUT, "the_geom,param.출입구일련번호",
-								CLUSTER_OUT_RECORDS(false))
+								SpatialJoinOptions.create().clusterOuterRecords(false))
 					.build();
 
 		StopWatch watch = StopWatch.start();

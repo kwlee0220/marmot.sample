@@ -8,6 +8,7 @@ import org.apache.log4j.PropertyConfigurator;
 import io.vavr.control.Try;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.JdbcConnectOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.jdbc.JdbcProcessor;
 
@@ -38,13 +39,16 @@ public class SampleStoreIntoJdbcTable {
 		builder.append(")");
 		jdbc.executeUpdate(builder.toString());
 		
+		JdbcConnectOptions jdbcOpts = JdbcConnectOptions.create()
+											.jdbcUrl("jdbc:postgresql://129.254.82.95:5433/sbdata")
+											.user("sbdata")
+											.passwd("urc2004")
+											.driverClassName("org.postgresql.Driver");
 		Plan plan = marmot.planBuilder("test")
 							.load("교통/지하철/서울역사")
 							.project("the_geom,sig_cd")
 							.expand("the_geom:binary", "the_geom = ST_AsBinary(the_geom)")
-							.storeIntoJdbcTable("jdbc:postgresql://129.254.82.95:5433/sbdata",
-											"sbdata", "urc2004", "org.postgresql.Driver",
-											TABLE_NAME,
+							.storeIntoJdbcTable(TABLE_NAME, jdbcOpts,
 											"(the_geom,sig_cd) values (ST_GeomFromWKB(?), ?)")
 							.build();
 		marmot.execute(plan);

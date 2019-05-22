@@ -3,7 +3,6 @@ package misc.perf.etl;
 
 import static marmot.DataSetOption.BLOCK_SIZE;
 import static marmot.DataSetOption.FORCE;
-import static marmot.plan.ParseCsvOption.HEADER;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -12,7 +11,7 @@ import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordScript;
 import marmot.command.MarmotClientCommands;
-import marmot.plan.ParseCsvOption;
+import marmot.optor.ParseCsvOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 import utils.UnitUtils;
@@ -57,13 +56,14 @@ public class PerfTransform {
 	
 	private static final long process(MarmotRuntime marmot, String input) {
 		String planName = "perf_transform_" + input.replaceAll("/", ".");
-		ParseCsvOption header = HEADER("운행일자,운송사코드,차량번호,운행시분초,일일주행거리,누적주행거리,"
-										+ "운행속도,RPM,브레이크신호,X좌표,Y좌표,방위각,가속도X,가속도Y");
+		ParseCsvOptions opts = ParseCsvOptions.create();
+		opts.header("운행일자,운송사코드,차량번호,운행시분초,일일주행거리,누적주행거리,"
+					+ "운행속도,RPM,브레이크신호,X좌표,Y좌표,방위각,가속도X,가속도Y");
 		RecordScript tsExpr = RecordScript.of("$pat = DateTimePattern('yyyyMMddkkmmss')",
 												"DateTimeParseLE(운행일자 + 운행시분초.substring(0,6), $pat)");
 		Plan plan = marmot.planBuilder(planName)
 						.load(input)
-						.parseCsv("text", ',', header)
+						.parseCsv("text", opts)
 						.defineColumn("ts:datetime",tsExpr)
 						.defineColumn("일일주행거리:int")
 						.defineColumn("누적주행거리:int")

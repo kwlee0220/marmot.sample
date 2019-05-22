@@ -7,7 +7,6 @@ import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.SUM;
 import static marmot.optor.JoinType.FULL_OUTER_JOIN;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
-import static marmot.plan.SpatialJoinOption.NEGATED;
 
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -29,6 +28,7 @@ import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
 import marmot.optor.geo.SquareGrid;
+import marmot.plan.SpatialJoinOptions;
 import marmot.process.NormalizeParameters;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.support.DefaultRecord;
@@ -170,7 +170,8 @@ public class FindBestSubwayStationCandidates {
 					.query(FLOW_POP_BYTIME, seoul)
 					
 					// 모든 지하철 역사로부터 1km 이상 떨어진 로그 데이터만 선택한다.
-					.spatialSemiJoin("the_geom", TEMP_STATIONS, NEGATED)
+					.spatialSemiJoin("the_geom", TEMP_STATIONS,
+									SpatialJoinOptions.create().negated(true))
 					
 					// 일부 시간대 유동인구가 null인 경우 0으로 치환한다.
 					.update(expr)
@@ -250,7 +251,8 @@ public class FindBestSubwayStationCandidates {
 					.project("the_geom")
 					
 					// 모든 지하철 역사로부터 1km 이상 떨어진 로그 데이터만 선택한다.
-					.spatialSemiJoin("the_geom", TEMP_STATIONS, NEGATED)
+					.spatialSemiJoin("the_geom", TEMP_STATIONS,
+										SpatialJoinOptions.create().negated(true))
 					
 					// 각 로그 위치가 포함된 사각 셀을  부가한다.
 					.assignSquareGridCell(geomCol, new SquareGrid(bounds, CELL_SIZE))

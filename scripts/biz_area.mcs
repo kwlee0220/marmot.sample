@@ -1,0 +1,100 @@
+
+def LAND_USAGE = "토지/용도지역지구";
+def POLITICAL = "구역/통합법정동";
+def BLOCK_CENTERS = "구역/지오비전_집계구_Point";
+def CADASTRAL = "구역/연속지적도_2017"
+def BUILDINGS = "건물/통합정보"
+def CARD_SALES = "주민/카드매출/월별_시간대/2015";
+def TEMP_BIG_CITIES = "tmp/bizarea/big_cities"
+def TEMP_BIZ_AREA = "tmp/bizarea/area";
+def BIZ_GRID = "tmp/bizarea/grid100";
+
+def GC_INFO = 'the_geom(EPSG:5186)'
+def MARMOT_DATA = System.getenv()['MARMOT_DATA']
+
+/*
+//  연속지적도에서 대도시 영역을 추출한다.
+def watch = utils.StopWatch.start();
+def SIDO_EXPR = '[' + [11,26,27, 28, 29, 30, 31].collect {"'${it}'"}.join(',') + ']'
+def SGG_EXPR = '[' + [41115,41111,41117, 41113, 48125, 48123,48127, 48121, 48129,41281, 41285, 41287].collect {"'${it}'"}.join(',') + ']'
+def initExpr = String.format("_sid_cd=%s; _sgg_cd=%s", SIDO_EXPR, SGG_EXPR)
+
+createDataset TEMP_BIG_CITIES options {
+	geometry GC_INFO
+	force = true
+	from plan('대도시지역 추출') {
+		load POLITICAL
+		defineColumn "sid_cd:string" set "bjd_cd.substring(0,2)"
+		defineColumn "sgg_cd:string" set "bjd_cd.substring(0,5)"
+		filter "_sid_cd.contains(sid_cd) || _sgg_cd.contains(sgg_cd)", initializer: initExpr
+	}
+}
+clusterDataset TEMP_BIG_CITIES
+println "대도시 영역 추출 완료, elapsed=" + watch.getElapsedMillisString()
+
+
+// 용도지구에서 상업지역 추출
+watch = utils.StopWatch.start();
+initExpr = '[' + ["일반상업지역","유통상업지역","근린상업지역", "중심상업지역"].collect {"'${it}'"}.join(',') + ']'
+initExpr = "_types = $initExpr"
+
+createDataset TEMP_BIZ_AREA options {
+	geometry GC_INFO
+	force = true
+	from plan('상업지역 추출') {
+		load LAND_USAGE
+		filter "_types.contains(dgm_nm)", initializer: initExpr
+		project 'the_geom'
+	}
+}
+clusterDataset TEMP_BIZ_AREA
+println "용도지구에서 상업지역 추출 완료, elapsed=" + watch.getElapsedMillisString()
+
+createDataset BIZ_GRID options {
+	geometry GC_INFO
+	force = true
+	from plan('상업지역 추출') {
+		load squareGrid(bounds: dataset(CADASTRAL), cellSize: '100x100')
+		spatialSemiJoin TEMP_BIZ_AREA
+		spatialJoin TEMP_BIG_CITIES output "*-{cell_pos},param.sgg_cd"
+		spatialJoin BLOCK_CENTERS output "*-{cell_pos},param.block_cd"
+	}
+}
+deleteDataset TEMP_BIG_CITIES, TEMP_BIZ_AREA
+println "상업지구 그리드 셀 구성 완료, elapsed=" + watch.getElapsedMillisString()
+
+createDataset "tmp/bizarea/grid100_land" options {
+	geometry GC_INFO
+	force = true
+	from plan('대도시 상업지역 구역별 건축물 수와 면적 집계') {
+		load BUILDINGS
+		spatialJoin BIZ_GRID output "건축물용도코드,대지면적,param.*"
+		aggregate { 대지면적 = sum "대지면적"; bld_cnt = count() } group {
+			keys 'cell_id,block_cd,건축물용도코드'
+			tags "the_geom,sgg_cd"
+			workerCount 3
+		}
+		project 'the_geom, *-{the_geom}'
+	}
+}
+*/
+
+def sumExpr = (0..23).collect { String.format("sale_amt_%02dtmst", it) }.join('+')
+createDataset "tmp/bizarea/grid100_sales" options {
+	geometry GC_INFO
+	force = true
+	from plan('대도시 상업지역 구역별 카드 일매출 집계') {
+		load CARD_SALES
+		defineColumn "daily_sales:double" set sumExpr
+		project "std_ym,block_cd,daily_sales"
+		hashJoin "block_cd", BIZ_GRID, 'block_cd' output "param.*,std_ym,daily_sales" options {
+			workerCount 64
+		}
+		aggregate { daily_sales = sum "daily_sales" } group {
+			keys 'std_ym,cell_id'
+			tags "the_geom,sgg_cd"
+			workerCount 3
+		}
+		project 'the_geom, *-{the_geom}'
+	}
+}

@@ -2,8 +2,6 @@ package anyang.dtg;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
-import static marmot.optor.geo.SpatialRelation.WITHIN_DISTANCE;
-import static marmot.plan.SpatialJoinOption.JOIN_EXPR;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -13,6 +11,7 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
+import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 
@@ -43,7 +42,7 @@ public class A03_CountDtgByRoad {
 					.load(DTG)
 					.filter("운행속도 > 0")
 					.spatialJoin("the_geom", ROADS, "param.*,차량번호,ts",
-								JOIN_EXPR(WITHIN_DISTANCE(15)))
+								SpatialJoinOptions.create().withinDistance(15))
 					.groupBy("db_id,차량번호")
 						.withTags("the_geom,id")
 						.run(aggrPlan)

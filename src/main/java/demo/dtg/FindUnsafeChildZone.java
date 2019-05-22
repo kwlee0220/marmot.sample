@@ -19,7 +19,7 @@ import marmot.command.MarmotClientCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
 import marmot.geo.command.ClusterDataSetOptions;
-import marmot.plan.GeomOpOption;
+import marmot.plan.GeomOpOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -112,7 +112,7 @@ public class FindUnsafeChildZone {
 		Plan plan;
 		plan = marmot.planBuilder("buffer child zones")
 					.load(CHILD_ZONE)
-					.buffer("the_geom", DISTANCE, GeomOpOption.OUTPUT("area"))
+					.buffer("the_geom", DISTANCE, GeomOpOptions.OUTPUT("area"))
 					.project("the_geom,id,대상시설명,area")
 					.store(outDsId)
 					.build();

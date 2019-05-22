@@ -3,7 +3,6 @@ package anyang.dtg;
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.COUNT;
-import static marmot.plan.SpatialJoinOption.WITHIN_DISTANCE;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -13,6 +12,7 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
+import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 
@@ -38,7 +38,8 @@ public class D03_CountCarAccidentsByRoad {
 		Plan plan;
 		plan = marmot.planBuilder("도로별 사망사고 빈도집계")
 					.load(ROADS)
-					.spatialAggregateJoin("the_geom", ACCIDENT, aggrs, WITHIN_DISTANCE(15))
+					.spatialAggregateJoin("the_geom", ACCIDENT, aggrs,
+										SpatialJoinOptions.create().withinDistance(15))
 					.project("the_geom,link_id,road_name,count")
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(ACCIDENT).getGeometryColumnInfo();

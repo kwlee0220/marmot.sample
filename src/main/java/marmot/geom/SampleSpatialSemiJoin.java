@@ -2,7 +2,6 @@ package marmot.geom;
 
 import static marmot.DataSetOption.FORCE;
 import static marmot.DataSetOption.GEOMETRY;
-import static marmot.plan.SpatialJoinOption.WITHIN_DISTANCE;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -11,6 +10,7 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -31,7 +31,8 @@ public class SampleSpatialSemiJoin {
 		GeometryColumnInfo gcInfo = marmot.getDataSet(INPUT).getGeometryColumnInfo();
 		Plan plan = marmot.planBuilder("within_distance")
 							.load(INPUT)
-							.spatialSemiJoin("the_geom", PARAMS, WITHIN_DISTANCE(30))
+							.spatialSemiJoin("the_geom", PARAMS,
+											SpatialJoinOptions.create().withinDistance(30))
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
 		

@@ -21,7 +21,7 @@ import marmot.command.MarmotClientCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
 import marmot.optor.geo.SquareGrid;
-import marmot.plan.GeomOpOption;
+import marmot.plan.GeomOpOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -93,7 +93,7 @@ public class TagDtgFully {
 					.knnOuterJoin("the_geom", ROAD, 1, DIST, "*-{x좌표,y좌표},param.{link_id}")
 					
 					.assignSquareGridCell("the_geom", new SquareGrid(bounds, CELL_SIZE), false)
-					.centroid("cell_geom", GeomOpOption.OUTPUT("grid"))
+					.centroid("cell_geom", GeomOpOptions.OUTPUT("grid"))
 					
 					.store(RESULT)
 					.build();
