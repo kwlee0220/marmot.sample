@@ -23,7 +23,6 @@ repositories {
 dependencies {
 //	compile 'etri:marmot.client:1.1'
 	compile project(':marmot.client')
-	compile project(':marmot.script')
 //	compile files("$System.env.MARMOT_CLIENT_HOME/bin/marmot.client.jar")
 	
 }
