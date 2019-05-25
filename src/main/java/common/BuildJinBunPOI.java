@@ -1,17 +1,14 @@
 package common;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import java.util.UUID;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSchema;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -59,7 +56,7 @@ public class BuildJinBunPOI {
 					.distinct("건물관리번호", 11) 
 					.store(tempDs)
 					.build();
-		result = marmot.createDataSet(tempDs, plan, DataSetOption.FORCE);
+		result = marmot.createDataSet(tempDs, plan, StoreDataSetOptions.create().force(true));
 
 		try {
 			DataSet ds = marmot.getDataSet(BUILD_POI);
@@ -78,7 +75,7 @@ public class BuildJinBunPOI {
 							.store(RESULT)
 							.build();
 			GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-			result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
+			result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 			System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 			
 			SampleUtils.printPrefix(result, 5);

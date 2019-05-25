@@ -1,8 +1,5 @@
 package anyang.dtg;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -10,6 +7,7 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordScript;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.JoinOptions;
@@ -59,7 +57,7 @@ public class C03_CountDtgByRoad {
 					.hashJoin("link_id", ROADS, "link_id", "param.{the_geom,link_id,road_name},count",
 							JoinOptions.INNER_JOIN(1))
 					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(OUTPUT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

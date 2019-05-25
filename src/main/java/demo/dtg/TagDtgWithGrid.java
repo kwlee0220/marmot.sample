@@ -1,7 +1,5 @@
 package demo.dtg;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.JoinOptions.SEMI_JOIN;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
@@ -14,9 +12,9 @@ import com.vividsolutions.jts.geom.Polygon;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
@@ -84,7 +82,7 @@ public class TagDtgWithGrid {
 					.hashJoin("운송사코드", TEMP_CARGOS, "회사코드", "the_geom", SEMI_JOIN(nworkers))
 					
 					.transformCrs("the_geom", "EPSG:4326", "EPSG:5186")
-					.assignSquareGridCell("the_geom", new SquareGrid(bounds, CELL_SIZE))
+					.assignGridCell("the_geom", new SquareGrid(bounds, CELL_SIZE), false)
 					.centroid("cell_geom")
 					.filterSpatially("the_geom", INTERSECTS, kyounggiGeom)
 					
@@ -99,7 +97,7 @@ public class TagDtgWithGrid {
 					.store(RESULT)
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		output = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
+		output = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		
 		watch.stop();
 		System.out.printf("count=%d, total elapsed time=%s%n",
@@ -138,6 +136,6 @@ public class TagDtgWithGrid {
 					.store(output)
 					.build();
 
-		return marmot.createDataSet(output, plan, DataSetOption.FORCE);
+		return marmot.createDataSet(output, plan, StoreDataSetOptions.create().force(true));
 	}
 }

@@ -1,6 +1,5 @@
 package anyang.energe;
 
-import static marmot.DataSetOption.FORCE;
 import static marmot.optor.AggregateFunction.SUM;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -8,6 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -51,7 +51,7 @@ public class A01_SumMonthGasUsages {
 						.aggregate(SUM("사용량").as("usage"))
 					.project("pnu,year,usage")
 					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE);
+		DataSet result = marmot.createDataSet(OUTPUT, plan, StoreDataSetOptions.create().force(true));
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 10);

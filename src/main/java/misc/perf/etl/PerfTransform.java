@@ -1,15 +1,13 @@
 package misc.perf.etl;
 
 
-import static marmot.DataSetOption.BLOCK_SIZE;
-import static marmot.DataSetOption.FORCE;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordScript;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.ParseCsvOptions;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -78,7 +76,7 @@ public class PerfTransform {
 
 		StopWatch watch = StopWatch.start();
 		DataSet result = marmot.createDataSet("tmp/" + input, plan,
-												BLOCK_SIZE("64mb"), FORCE);
+												StoreDataSetOptions.create().blockSize("64mb").force(true));
 		watch.stop();
 		System.out.printf("\tcount=%d, elapsed=%s%n",
 							result.getRecordCount(), watch.getElapsedSecondString());

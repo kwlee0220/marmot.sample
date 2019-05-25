@@ -1,11 +1,11 @@
 package marmot.validate;
 
-import static marmot.DataSetOption.FORCE;
 import static marmot.optor.JoinOptions.INNER_JOIN;
 
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 
 /**
  * 
@@ -27,12 +27,12 @@ public class LiNode extends NonRootNode {
 		try {
 			String outCols = String.format("right.{%s,emd_kor_nm}", m_parent.m_keyCol);
 			Plan plan = marmot.planBuilder("adjust empty childs")
-							.loadHashJoin(m_prefix + "__tmp", m_parent.m_keyCol,
+							.loadHashJoinFile(m_prefix + "__tmp", m_parent.m_keyCol,
 											m_parent.m_dsId, m_parent.m_keyCol,
 											outCols, INNER_JOIN())
 							.filter("emd_kor_nm.endsWith('읍')")
 							.build();
-			DataSet result = marmot.createDataSet(m_prefix + SUFFIX_EMPTY_PARENT, plan, FORCE);
+			DataSet result = marmot.createDataSet(m_prefix + SUFFIX_EMPTY_PARENT, plan, StoreDataSetOptions.create().force(true));
 			System.out.printf("%s: number of empty parents (revised): %d%n", m_name, result.getRecordCount());
 			if ( result.getRecordCount() == 0 ) {
 				marmot.deleteDataSet(result.getId());

@@ -2,9 +2,9 @@ package anyang.energe;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -45,7 +45,7 @@ public class A11_SplitLandMap {
 						.load(INPUT)
 						.defineColumn("sido:string", "pnu.substring(0, 2)")
 						.groupBy("sido")
-							.storeEachGroup(OUTPUT, DataSetOption.GEOMETRY(info))
+							.storeEachGroup(OUTPUT, StoreDataSetOptions.create().geometryColumnInfo(info))
 						.build();
 		
 		marmot.deleteDir(OUTPUT);

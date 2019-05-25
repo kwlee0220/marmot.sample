@@ -1,8 +1,5 @@
 package bizarea;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -15,6 +12,8 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
+import marmot.RecordScript;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.geo.SquareGrid;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -73,7 +72,7 @@ public class Step0 {
 		
 		Plan plan = marmot.planBuilder("대도시 상업지역 100mX100m 그리드 구역 생성")
 							// 용도지구에 대한 100m 크기의 그리드를 생성 
-							.loadSquareGridFile(new SquareGrid(bounds, cellSize), -1)
+							.loadGrid(new SquareGrid(bounds, cellSize), -1)
 							// 상업지구에 겹치는 그리드 셀만 추출한다.
 							.spatialSemiJoin("the_geom", TEMP_BIZ_AREA)
 							// 상업지구 그리드 셀에 대해 대도시 영역만을 선택하고,
@@ -84,7 +83,7 @@ public class Step0 {
 							.store(BIZ_GRID)
 							.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
-		result = marmot.createDataSet(BIZ_GRID, plan, GEOMETRY(gcInfo), FORCE);
+		result = marmot.createDataSet(BIZ_GRID, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		
 		marmot.deleteDataSet(TEMP_BIG_CITIES);
 		marmot.deleteDataSet(TEMP_BIZ_AREA);
@@ -117,12 +116,11 @@ public class Step0 {
 								.expand("sid_cd:string,sgg_cd:string",
 										"sid_cd = bjd_cd.substring(0,2);"
 										+ "sgg_cd = bjd_cd.substring(0,5);")
-								.filter(initExpr,
-										"$sid_cd.contains(sid_cd) || $sgg_cd.contains(sgg_cd)")
+								.filter(RecordScript.of("$sid_cd.contains(sid_cd) || $sgg_cd.contains(sgg_cd)", initExpr))
 								.store(result)
 								.build();
 		GeometryColumnInfo gcInfo = political.getGeometryColumnInfo();
-		DataSet ds = marmot.createDataSet(result, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet ds = marmot.createDataSet(result, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		return ds;
 	}
 
@@ -135,13 +133,12 @@ public class Step0 {
 								.expand("sid_cd:string,sgg_cd:string",
 										"sid_cd = pnu.substring(0,2);"
 										+ "sgg_cd = pnu.substring(0,5);")
-								.filter(initExpr,
-										"$sid_cd.contains(sid_cd) || $sgg_cd.contains(sgg_cd)")
+								.filter(RecordScript.of("$sid_cd.contains(sid_cd) || $sgg_cd.contains(sgg_cd)", initExpr))
 								.project("the_geom,pnu")
 								.store(result)
 								.build();
 		GeometryColumnInfo gcInfo = political.getGeometryColumnInfo();
-		return marmot.createDataSet(result, plan, GEOMETRY(gcInfo), FORCE);
+		return marmot.createDataSet(result, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 	}
 
 	private static final DataSet filterBizArea(MarmotRuntime marmot, String result)
@@ -155,11 +152,11 @@ public class Step0 {
 		DataSet ds = marmot.getDataSet(LAND_USAGE);
 		Plan plan = marmot.planBuilder("상업지역 추출")
 							.load(LAND_USAGE)
-							.filter(initExpr, "$types.contains(dgm_nm)")
+							.filter(RecordScript.of(initExpr, "$types.contains(dgm_nm)"))
 							.project("the_geom")
 							.store(TEMP_BIZ_AREA)
 							.build();
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-		return marmot.createDataSet(result, plan, GEOMETRY(gcInfo), FORCE);
+		return marmot.createDataSet(result, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 	}
 }

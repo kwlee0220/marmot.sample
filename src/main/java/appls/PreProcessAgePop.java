@@ -3,9 +3,9 @@ package appls;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -56,8 +56,7 @@ public class PreProcessAgePop {
 					.project("the_geom,tot_oa_cd,base_year,age_intvl,total")
 					.groupBy("base_year")
 //						.count()
-						.storeEachGroup(RESULT, DataSetOption.GEOMETRY(gcInfo),
-										DataSetOption.FORCE)
+						.storeEachGroup(RESULT, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true))
 					.build();
 		marmot.execute(plan);
 //		marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);

@@ -1,8 +1,5 @@
 package marmot;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -35,7 +32,7 @@ public class SampleHashJoin {
 									"the_geom,param.ctp_kor_nm,sig_kor_nm",
 									JoinOptions.INNER_JOIN())
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		System.out.printf("should: %d == %d%n", result.getRecordCount(), input.getRecordCount());
 		SampleUtils.printPrefix(result, 5);
 	}

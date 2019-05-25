@@ -1,7 +1,5 @@
 package anyang.energe;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.SUM;
 
 import java.util.Arrays;
@@ -13,9 +11,9 @@ import org.apache.log4j.PropertyConfigurator;
 import com.vividsolutions.jts.geom.Envelope;
 
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.SquareGrid;
@@ -69,7 +67,7 @@ public class A06_GridAnalysisGas {
 		Plan plan;
 		plan = marmot.planBuilder("가스 사용량 격자 분석")
 					.load(INPUT)
-					.assignSquareGridCell("the_geom", new SquareGrid(bounds, cellSize))
+					.assignGridCell("the_geom", new SquareGrid(bounds, cellSize), false)
 					.intersection("the_geom", "cell_geom", "overlap")
 					.defineColumn("ratio:double", "(ST_Area(overlap) /  ST_Area(the_geom))")
 					.update(updateExpr)
@@ -82,7 +80,7 @@ public class A06_GridAnalysisGas {
 					.store(OUTPUT)
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
+		marmot.createDataSet(OUTPUT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		
 		for ( int year: years ) {
 			extractToYear(marmot, year);
@@ -106,7 +104,7 @@ public class A06_GridAnalysisGas {
 					.project(projectExpr)
 					.store(output)
 					.build();
-		marmot.createDataSet(output, plan, GEOMETRY(gcInfo), FORCE);
+		marmot.createDataSet(output, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 	}
 	
 //	private static void writeAsRaster(DataSet ds, File file, Envelope bounds, Size2d cellSize)

@@ -1,7 +1,5 @@
 package marmot;
 
-import static marmot.DataSetOption.FORCE;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -29,7 +27,7 @@ public class SampleFindFirstByGroup {
 								.take(1)
 							.project("* - {the_geom}")
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
 		SampleUtils.printPrefix(result, 10);
 	}
 }

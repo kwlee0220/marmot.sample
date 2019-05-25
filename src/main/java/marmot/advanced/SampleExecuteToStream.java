@@ -7,11 +7,11 @@ import org.apache.log4j.PropertyConfigurator;
 import com.vividsolutions.jts.geom.Geometry;
 
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSet;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.support.DefaultRecord;
@@ -61,7 +61,7 @@ public class SampleExecuteToStream {
 		
 		StopWatch watch = StopWatch.start();	
 
-		DataSet result = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
 		try ( RecordSet rset = result.read() ) {
 			Record output = DefaultRecord.of(rset.getRecordSchema());
 			rset.next(output);
@@ -110,7 +110,7 @@ public class SampleExecuteToStream {
 		
 		StopWatch watch = StopWatch.start();	
 
-		DataSet result = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
 		try ( RecordSet rset = result.read() ) {
 			Record output = DefaultRecord.of(rset.getRecordSchema());
 			rset.next(output);
@@ -150,7 +150,7 @@ public class SampleExecuteToStream {
 		
 		StopWatch watch = StopWatch.start();	
 
-		DataSet result = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
 		try ( RecordSet rset = result.read() ) {
 			Record output = DefaultRecord.of(rset.getRecordSchema());
 			rset.next(output);
@@ -190,7 +190,7 @@ public class SampleExecuteToStream {
 		
 		StopWatch watch = StopWatch.start();	
 
-		DataSet result = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
 		try ( RecordSet rset = result.read() ) {
 			Record output = DefaultRecord.of(rset.getRecordSchema());
 			rset.next(output);

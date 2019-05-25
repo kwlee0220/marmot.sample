@@ -1,9 +1,8 @@
 package marmot.validate;
 
-import static marmot.DataSetOption.FORCE;
-
 import marmot.MarmotRuntime;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 
 /**
  * 
@@ -20,6 +19,6 @@ public class RootNode extends Node {
 						.load(m_dsId)
 						.project(m_keyCol)
 						.build();
-		marmot.createDataSet(getIdDataSet(), plan, FORCE);
+		marmot.createDataSet(getIdDataSet(), plan, StoreDataSetOptions.create().force(true));
 	}
 }

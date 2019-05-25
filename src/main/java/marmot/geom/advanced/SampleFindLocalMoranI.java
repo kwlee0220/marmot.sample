@@ -8,10 +8,10 @@ import com.google.common.collect.Maps;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSet;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.advanced.LISAWeight;
@@ -62,7 +62,7 @@ public class SampleFindLocalMoranI {
 								.sort("UID")
 								.store(RESULT)
 								.build();
-		DataSet result3 = marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
+		DataSet result3 = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
 		SampleUtils.printPrefix(result3, 5);
 	}
 }

@@ -24,7 +24,7 @@ public class SampleLoadText {
 					.loadTextFile(PATH)
 					.filter("text.endsWith('37.633827')")
 					.build();
-		DataSet result = marmot.createDataSet("tmp/result", plan, DataSetOption.FORCE);
+		DataSet result = marmot.createDataSet("tmp/result", plan, StoreDataSetOptions.create().force(true));
 		SampleUtils.printPrefix(result, 5);
 	}
 }

@@ -1,8 +1,5 @@
 package common;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import java.io.File;
 import java.util.Map;
 
@@ -17,6 +14,7 @@ import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
+import marmot.StoreDataSetOptions;
 import marmot.support.DefaultRecord;
 
 /**
@@ -43,7 +41,7 @@ public class SampleUtils {
 						.load("구역/시도")
 						.filter("ctprvn_cd == '11'")
 						.build();
-		return marmot.createDataSet(dsId, plan, GEOMETRY(gcInfo), FORCE);
+		return marmot.createDataSet(dsId, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 	}
 	
 	public static void printPrefix(DataSet dataset, int count) {

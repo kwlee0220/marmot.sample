@@ -2,8 +2,8 @@ run plan('test_csv') {
 	load '교통/지하철/서울역사'
 	filter 'trnsit_yn==1'
 	centroid 'the_geom'
-	transformCrs 'the_geom' from 'EPSG:5186' to 'EPSG:4326'
-	toXY 'the_geom' x_col 'x_pos' y_col 'y_pos' ignore geometry
+	transformCrs 'the_geom', 'EPSG:5186', 'EPSG:4326'
+	toXY 'the_geom', 'x_pos','y_pos', ignore geometry
 	project '*-{ the_geom }}'
-	storeAsCsv 'tmp/csv' headerFirst true
+	storeAsCsv('tmp/csv', headerFirst: true)
 }

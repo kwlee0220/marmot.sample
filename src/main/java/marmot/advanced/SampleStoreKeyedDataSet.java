@@ -4,10 +4,10 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.ExecutePlanOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 
@@ -37,7 +37,7 @@ public class SampleStoreKeyedDataSet {
 						.build();
 //		marmot.execute(plan, ExecutePlanOption.DISABLE_LOCAL_EXEC);
 		DataSet result = marmot.createDataSet(RESULT, plan, ExecutePlanOption.DISABLE_LOCAL_EXEC,
-												DataSetOption.FORCE);
+												StoreDataSetOptions.create().force(true));
 		SampleUtils.printPrefix(result, 500);
 	}
 }

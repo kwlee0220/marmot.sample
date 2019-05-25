@@ -1,14 +1,12 @@
 package marmot.geom.advanced;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.geo.advanced.IDWInterpolation;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -41,7 +39,7 @@ public class SampleInterpolateSpatially {
 						.centroid("the_geom")
 						.project("the_geom, big_sq, value")
 						.build();
-		result = marmot.createDataSet(tempPath, plan, GEOMETRY(info), FORCE);
+		result = marmot.createDataSet(tempPath, plan, StoreDataSetOptions.create().geometryColumnInfo(info).force(true));
 		result.cluster();
 		
 		String interpolator = "def interpolate(factors) { "
@@ -59,7 +57,7 @@ public class SampleInterpolateSpatially {
 					.interpolateSpatially("the_geom", tempPath, VALUE_COLUMN, RADIUS,
 											"value", IDWInterpolation.ofPower(1))
 					.build();
-		result = marmot.createDataSet(RESULT, plan, GEOMETRY(info), FORCE);
+		result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(info).force(true));
 		marmot.deleteDataSet(tempPath);
 		
 		SampleUtils.printPrefix(result, 5);

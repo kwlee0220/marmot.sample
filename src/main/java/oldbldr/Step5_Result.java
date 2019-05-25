@@ -1,7 +1,5 @@
 package oldbldr;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.JoinOptions.FULL_OUTER_JOIN;
 import static marmot.optor.JoinOptions.INNER_JOIN;
 
@@ -11,6 +9,7 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -51,14 +50,14 @@ public class Step5_Result {
 		
 		Plan plan;
 		plan = marmot.planBuilder("결과 통합")
-					.loadHashJoin(BUILDINGS, "emd_cd", CARD_SALE, "emd_cd",
+					.loadHashJoinFile(BUILDINGS, "emd_cd", CARD_SALE, "emd_cd",
 								"left.*,right.*-{emd_cd}", FULL_OUTER_JOIN(1))
 					.hashJoin("emd_cd", FLOW_POP, "emd_cd", "*,param.*-{emd_cd}", FULL_OUTER_JOIN(1))
 					.hashJoin("emd_cd", EMD, "emd_cd", "param.the_geom,*", INNER_JOIN(1))
 					.store(RESULT)
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(EMD).getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		watch.stop();
 		
 		marmot.deleteDataSet(BLOCKS);

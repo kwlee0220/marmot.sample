@@ -21,17 +21,21 @@ public class SampleScript {
 	private static final String SCRIPT_03 = "scripts/import_csv.mcs";
 	private static final String SCRIPT_04 = "scripts/anyang_minwon.mcs";
 	private static final String SCRIPT_05 = "scripts/biz_area.mcs";
+	private static final String SCRIPT_06 = "scripts/10minutes_policy.mcs";
+	private static final String SCRIPT_07 = "scripts/anyang_energe.mcs";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
+//		PropertyConfigurator.configure("log4j.properties");
+//		MarmotClientCommands.configureLog4j();
+		MarmotClientCommands.disableLog4j();
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
-		String script = loadScript(SCRIPT_05);
+		String script = loadScript(SCRIPT_07);
 //		System.out.println(script);
 		
-		MarmotScriptEngine engine = new MarmotScriptEngine(marmot);
+		MarmotScriptEngine engine = new MarmotScriptEngine(marmot).setVerbose(true);
 		engine.evaluate(script);
 	}
 	

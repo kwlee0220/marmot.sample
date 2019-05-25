@@ -1,7 +1,5 @@
 package anyang.energe;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.JoinOptions.LEFT_OUTER_JOIN;
 
 import java.util.List;
@@ -10,10 +8,10 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSchema;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.type.DataType;
@@ -68,12 +66,13 @@ public class B04_MapMatchingElectro2017 {
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
 		Plan plan = marmot.planBuilder("2017 전기사용량 연속지적도 매칭")
-						.loadHashJoin(CADASTRAL, "pnu", INTERM, "pnu",
+						.loadHashJoinFile(CADASTRAL, "pnu", INTERM, "pnu",
 									"left.*," + rightCols, LEFT_OUTER_JOIN(17))
 						.update(updateExpr)
 						.store(OUTPUT)
 						.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(OUTPUT, plan,
+										StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		marmot.deleteDataSet(INTERM);
 
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
@@ -95,6 +94,6 @@ public class B04_MapMatchingElectro2017 {
 							.putSideBySide(outSchema, "usage", "tag")
 						.store(outDsId)
 						.build();
-		marmot.createDataSet(outDsId, plan, DataSetOption.FORCE);
+		marmot.createDataSet(outDsId, plan, StoreDataSetOptions.create().force(true));
 	}
 }

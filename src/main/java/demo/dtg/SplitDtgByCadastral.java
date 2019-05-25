@@ -1,7 +1,5 @@
 package demo.dtg;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -11,6 +9,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.geo.GeoClientUtils;
 import marmot.geo.command.ClusterDataSetOptions;
@@ -68,7 +67,7 @@ public class SplitDtgByCadastral {
 					
 					.groupBy("sig_cd")
 						.workerCount(nworkers)
-						.storeEachGroup(RESULT)
+						.storeEachGroup(RESULT, StoreDataSetOptions.create())
 					.build();
 		marmot.deleteDir(RESULT);
 		marmot.execute(plan);
@@ -86,7 +85,7 @@ public class SplitDtgByCadastral {
 					.store(outDsId)
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:4326");
-		DataSet output = marmot.createDataSet(outDsId, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet output = marmot.createDataSet(outDsId, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		
 		ClusterDataSetOptions opts = ClusterDataSetOptions.create().workerCount(1);
 		output.cluster(opts);

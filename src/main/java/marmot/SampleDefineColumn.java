@@ -1,8 +1,5 @@
 package marmot;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -34,7 +31,7 @@ public class SampleDefineColumn {
 							.defineColumn("sig_cd:int")
 							.project("the_geom,area,SIG_CD")
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		SampleUtils.printPrefix(result, 5);
 	}
 }

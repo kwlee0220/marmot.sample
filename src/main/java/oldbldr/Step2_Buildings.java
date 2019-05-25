@@ -1,7 +1,5 @@
 package oldbldr;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.SUM;
 
@@ -9,9 +7,9 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordScript;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -75,7 +73,7 @@ public class Step2_Buildings {
 					.defineColumn("old_ratio:double", "(double)old_cnt/bld_cnt")
 					.store(RESULT)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

@@ -1,14 +1,12 @@
 package demo.policy;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -76,18 +74,18 @@ public class BuildTenMinutePolicyFull {
 
 		watch2 = StopWatch.start();
 		DataSet ds = marmot.getDataSet(CADASTRAL);
-		GeometryColumnInfo info = ds.getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
 		Plan plan = marmot.planBuilder("경로당필요지역추출")
 						.load(CADASTRAL)
 						.project("the_geom,pnu")
-						.spatialSemiJoin(info.name(), ELDERLY_CARE_BUFFER,
+						.spatialSemiJoin(gcInfo.name(), ELDERLY_CARE_BUFFER,
 										SpatialJoinOptions.create().negated(true))
-						.clipJoin(info.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석
+						.clipJoin(gcInfo.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석
 						.shard(1)
 						.store(RESULT)
 						.build();
-		output = marmot.createDataSet(RESULT, plan, GEOMETRY(info), FORCE);
+		output = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		output.cluster();
 		System.out.println("완료: '경로당필요지역' 추출, elapsed="
 							+ watch2.stopAndGetElpasedTimeString());
@@ -102,7 +100,7 @@ public class BuildTenMinutePolicyFull {
 	
 	private static DataSet bufferElderlyCareFacilities(PBMarmotClient marmot) {
 		DataSet ds = marmot.getDataSet(ELDERLY_CARE);
-		GeometryColumnInfo info = ds.getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
 		Plan plan;
 		plan = marmot.planBuilder("노인복지시설_경로당_추출_버퍼")
@@ -112,12 +110,12 @@ public class BuildTenMinutePolicyFull {
 					.buffer("the_geom", 400)	// (2) 버퍼추정
 					.store(ELDERLY_CARE_BUFFER)
 					.build();
-		return marmot.createDataSet(ELDERLY_CARE_BUFFER, plan, GEOMETRY(info), FORCE);
+		return marmot.createDataSet(ELDERLY_CARE_BUFFER, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 	}
 	
 	private static DataSet findHighPopulationDensity(PBMarmotClient marmot) {
 		DataSet ds = marmot.getDataSet(POP_DENSITY);
-		GeometryColumnInfo info = ds.getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
 		Plan plan;
 		plan = marmot.planBuilder("인구밀도_2017_중심점추출_10000이상")
@@ -127,12 +125,12 @@ public class BuildTenMinutePolicyFull {
 					.project("the_geom")
 					.store(HIGH_DENSITY_CENTER)
 					.build();
-		return marmot.createDataSet(HIGH_DENSITY_CENTER, plan, GEOMETRY(info), FORCE);
+		return marmot.createDataSet(HIGH_DENSITY_CENTER, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 	}
 	
 	private static DataSet findHighPopulationHDong(PBMarmotClient marmot) {
 		DataSet ds = marmot.getDataSet(HDONG);
-		GeometryColumnInfo info = ds.getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
 		Plan plan;
 		plan = marmot.planBuilder("인구밀도_10000이상_행정동추출")
@@ -142,6 +140,6 @@ public class BuildTenMinutePolicyFull {
 					.project("the_geom")
 					.store(HIGH_DENSITY_HDONG)
 					.build();
-		return marmot.createDataSet(HIGH_DENSITY_HDONG, plan, GEOMETRY(info), FORCE);
+		return marmot.createDataSet(HIGH_DENSITY_HDONG, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 	}
 }

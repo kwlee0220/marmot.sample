@@ -1,12 +1,12 @@
 package marmot.validate;
 
-import static marmot.DataSetOption.FORCE;
 import static marmot.optor.JoinOptions.FULL_OUTER_JOIN;
 import static marmot.optor.JoinOptions.INNER_JOIN;
 
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import utils.func.FOption;
 
 /**
@@ -62,7 +62,7 @@ public class NonRootNode extends Node {
 							.defineColumn("parent_key:string", getParentKeyExpr())
 							.project(projExpr)
 							.build();
-		marmot.createDataSet(getIdDataSet(), plan, FORCE);
+		marmot.createDataSet(getIdDataSet(), plan, StoreDataSetOptions.create().force(true));
 	}
 	
 	protected void findInvalidLinks(MarmotRuntime marmot) {
@@ -84,7 +84,7 @@ public class NonRootNode extends Node {
 							.filter(danglingExpr)
 							.project(m_keyCol)
 							.build();
-			result = marmot.createDataSet(m_prefix + "orphans", plan, FORCE);
+			result = marmot.createDataSet(m_prefix + "orphans", plan, StoreDataSetOptions.create().force(true));
 			System.out.printf("%s: number of orphans: %d%n", m_name, result.getRecordCount());
 			if ( result.getRecordCount() == 0 ) {
 				marmot.deleteDataSet(result.getId());
@@ -95,7 +95,7 @@ public class NonRootNode extends Node {
 							.filter("parent_key == null")
 							.project(m_parent.m_keyCol)
 							.build();
-			result = marmot.createDataSet(m_prefix + SUFFIX_EMPTY_PARENT, plan, FORCE);
+			result = marmot.createDataSet(m_prefix + SUFFIX_EMPTY_PARENT, plan, StoreDataSetOptions.create().force(true));
 			System.out.printf("%s: number of no-child parents (%s): %d%n",
 								m_name, m_parent.m_name, result.getRecordCount());
 			if ( result.getRecordCount() == 0 ) {
@@ -113,12 +113,12 @@ public class NonRootNode extends Node {
 		String tempDsId = m_prefix + "id_pairs";
 		
 		Plan plan = marmot.planBuilder("build id pairs")
-					.loadHashJoin(getIdDataSet(), "parent_key",
+					.loadHashJoinFile(getIdDataSet(), "parent_key",
 									m_parent.getIdDataSet(), m_parent.m_keyCol,
 									outCols, FULL_OUTER_JOIN())
 					.filter(filterExpr)
 					.build();
-		return marmot.createDataSet(tempDsId, plan, FORCE);
+		return marmot.createDataSet(tempDsId, plan, StoreDataSetOptions.create().force(true));
 	}
 	
 	private void findUncoveredGeoms(MarmotRuntime marmot, FOption<Integer> nworkers) {
@@ -129,7 +129,7 @@ public class NonRootNode extends Node {
 			Plan plan;
 			
 			plan = marmot.planBuilder("find uncovered geoms")
-						.loadHashJoin(tempId, "parent_key", m_parent.m_dsId, m_parent.m_keyCol,
+						.loadHashJoinFile(tempId, "parent_key", m_parent.m_dsId, m_parent.m_keyCol,
 										"left.*,right.the_geom as parent_geom",
 										INNER_JOIN(nworkers))
 						.filter("!ST_Contains(parent_geom, the_geom)")
@@ -141,7 +141,7 @@ public class NonRootNode extends Node {
 						.project("the_geom," + m_keyCol + ",uncover,uncover_area,ratio")
 //						.sort("ratio:DESC")
 						.build();
-			DataSet result = marmot.createDataSet(m_prefix + "uncovered_geoms", plan, FORCE);
+			DataSet result = marmot.createDataSet(m_prefix + "uncovered_geoms", plan, StoreDataSetOptions.create().force(true));
 			System.out.printf("%s: number of un-covered geoms: %d%n", m_name, result.getRecordCount());
 			if ( result.getRecordCount() == 0 ) {
 				marmot.deleteDataSet(result.getId());
@@ -159,6 +159,6 @@ public class NonRootNode extends Node {
 					.defineColumn("parent_key:string", getParentKeyExpr())
 					.project(joinExpr)
 					.build();
-		return marmot.createDataSet(outDsId, plan, FORCE);
+		return marmot.createDataSet(outDsId, plan, StoreDataSetOptions.create().force(true));
 	}
 }

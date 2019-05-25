@@ -1,7 +1,5 @@
 package appls;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.SUM;
@@ -25,6 +23,7 @@ import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
 import marmot.optor.geo.SquareGrid;
@@ -137,7 +136,7 @@ public class FindBestSubwayStationCandidates {
 					.buffer(gcInfo.name(), 1000)
 					.store(output)
 					.build();
-		DataSet result = marmot.createDataSet(output, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(output, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		
 		System.out.printf("%s(%d건), 소요시간=%s%n",
 							output, result.getRecordCount(), watch.getElapsedMillisString());
@@ -185,7 +184,7 @@ public class FindBestSubwayStationCandidates {
 						.aggregate(AVG("day_total"))
 						
 					// 각 소지역이 폼함되는 사각 셀을  부가한다.
-					.assignSquareGridCell(geomCol, new SquareGrid(bounds, CELL_SIZE))
+					.assignGridCell(geomCol, new SquareGrid(bounds, CELL_SIZE), false)
 					.project("cell_geom as the_geom, cell_id, cell_pos, avg")
 					
 					// 사각 그리드 셀 단위로 그룹핑하고, 각 그룹에 속한 유동인구를 모두 더한다.
@@ -199,7 +198,7 @@ public class FindBestSubwayStationCandidates {
 		try {
 			GeometryColumnInfo gcInfo = new GeometryColumnInfo(GEOM_COL, srid);
 			DataSet result = marmot.createDataSet(TEMP_SEOUL_FLOW_POP_GRID, plan,
-													GEOMETRY(gcInfo), FORCE);
+													StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 			System.out.printf("%s(%d건), 소요시간=%s%n",
 								TEMP_SEOUL_FLOW_POP_GRID, result.getRecordCount(),
 								watch.getElapsedMillisString());
@@ -255,7 +254,7 @@ public class FindBestSubwayStationCandidates {
 										SpatialJoinOptions.create().negated(true))
 					
 					// 각 로그 위치가 포함된 사각 셀을  부가한다.
-					.assignSquareGridCell(geomCol, new SquareGrid(bounds, CELL_SIZE))
+					.assignGridCell(geomCol, new SquareGrid(bounds, CELL_SIZE), false)
 					.project("cell_geom as the_geom, cell_id, cell_pos")
 					
 					// 사각 그리드 셀 단위로 그룹핑하고, 각 그룹에 속한 레코드 수를 계산한다.
@@ -268,7 +267,7 @@ public class FindBestSubwayStationCandidates {
 		try {
 			GeometryColumnInfo gcInfo = new GeometryColumnInfo(GEOM_COL, srid);
 			DataSet result = marmot.createDataSet(TEMP_SEOUL_TAXI_LOG_GRID, plan,
-													GEOMETRY(gcInfo), FORCE);
+													StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 			System.out.printf("%s(%d건), 소요시간=%s%n", TEMP_SEOUL_TAXI_LOG_GRID,
 								result.getRecordCount(), watch.getElapsedMillisString());
 
@@ -320,7 +319,7 @@ public class FindBestSubwayStationCandidates {
 					.project("the_geom,cell_id,normalized as value")
 					.store(output)
 					.build();
-		DataSet result = marmot.createDataSet(output, plan, GEOMETRY(GEOM_COL_INFO), FORCE);
+		DataSet result = marmot.createDataSet(output, plan, StoreDataSetOptions.create().geometryColumnInfo(GEOM_COL_INFO).force(true));
 		System.out.printf("%s(%d건), 소요시간=%s%n",
 							output, result.getRecordCount(), watch.getElapsedMillisString());
 		
@@ -336,7 +335,7 @@ public class FindBestSubwayStationCandidates {
 		RecordSet rset = RecordSet.of(record);
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		marmot.createDataSet("분석결과/서울지역", rset.getRecordSchema(), GEOMETRY(gcInfo), FORCE)
+		marmot.createDataSet("분석결과/서울지역", rset.getRecordSchema(), StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true))
 				.append(rset);
 	}
 }

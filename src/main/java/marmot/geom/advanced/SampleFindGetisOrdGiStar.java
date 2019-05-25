@@ -1,12 +1,11 @@
 package marmot.geom.advanced;
 
-import static marmot.DataSetOption.FORCE;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.geo.advanced.LISAWeight;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -32,7 +31,7 @@ public class SampleFindGetisOrdGiStar {
 								.project("UID,gi_zscore,gi_pvalue")
 								.sort("UID")
 								.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
 		SampleUtils.printPrefix(result, 5);
 	}
 }

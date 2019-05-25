@@ -1,0 +1,122 @@
+
+def LAND_PRICES_2017 = "토지/개별공시지가_2017";
+def LAND_PRICES = "토지/개별공시지가_2012_2016";
+def GAS = "건물/건물에너지/가스사용량";
+def ELECTRO = "건물/건물에너지/전기사용량";
+def CADASTRAL = "tmp/anyang/cadastral";
+
+def GC_INFO = 'the_geom(EPSG:5186)'
+def COL_NAMES = (1..12).collect { "month_$it" }
+
+
+createDataset(CADASTRAL) {
+	geometry GC_INFO
+	force = true
+	from plan('연속지적도 추출') {
+		load(LAND_PRICES_2017)
+		project('the_geom,pnu')
+		shard(1)
+	}
+}
+
+createDataset("tmp/anyang/gas2017") {
+	force = true
+	from plan('2017년 월별 가스 사용량 합계') {
+		load(GAS)
+		defineColumn("year:short", "사용년월.substring(0, 4)")
+		filter "year == 2017"
+		defineColumn "month:short", "사용년월.substring(4, 6)"
+		update "사용량 = Math.max(사용량, 0)"
+		aggregateByGroup group(keys: "pnu,month", workerCount: 1), { usage = sum("사용량") }
+		project "pnu,month,usage"
+	}
+}
+
+createDataset("tmp/anyang/electro2017") {
+	force = true
+	from plan('2017년 월별 전기 사용량 합계') {
+		load ELECTRO
+		defineColumn "year:short", "사용년월.substring(0, 4)"
+		filter "year == 2017"
+		defineColumn "month:short", "사용년월.substring(4, 6)"
+		update "사용량 = Math.max(사용량, 0)"
+		aggregateByGroup group(keys: "pnu,month", workerCount: 1), { usage = sum("사용량") }
+		project "pnu,month,usage"
+	}
+}
+
+
+def outSchema = COL_NAMES.inject(RecordSchema.builder()) { b, n -> b.addColumn(n, DataType.LONG)}.build()
+def outCols = 'left.*,right.{' + COL_NAMES.join(',') + '}'
+		
+def INTERM_GAS = "tmp/anyang/pnu_gas"
+createDataset(INTERM_GAS) {
+	force = true
+	from plan('put_side_by_size_gas') {
+		load "tmp/anyang/gas2017"
+		defineColumn "tag:string", "'month_' + month"
+		reduceColumnsByGroup group(keys:'pnu'), outSchema, 'tag', 'usage'
+	}
+}
+createDataset('tmp/anyang/map_gas2017') {
+	geometry GC_INFO
+	force = true
+	from plan('2017 가스사용량 연속지적도 매칭') {
+		loadHashJoinFile(CADASTRAL, 'pnu', INTERM_GAS, 'pnu', output: outCols,
+						type: LEFT_OUTER_JOIN, workerCount: 17)
+		update COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
+	}
+}
+deleteDataset INTERM_GAS
+
+def INTERM_ELECTRO = "tmp/anyang/pnu_electro"
+createDataset INTERM_ELECTRO, {
+	force = true
+	from plan('put_side_by_side_electro') {
+		load "tmp/anyang/electro2017"
+		defineColumn "tag:string", "'month_' + month"
+		reduceColumnsByGroup group(keys:'pnu'), outSchema, 'tag', 'usage'
+	}
+}
+createDataset 'tmp/anyang/map_electro2017', {
+	geometry GC_INFO
+	force = true
+	from plan('2017 전력사용량 연속지적도 매칭') {
+		loadHashJoinFile(CADASTRAL, 'pnu', INTERM_ELECTRO, 'pnu', output: outCols,
+							type: LEFT_OUTER_JOIN, workerCount: 17)
+		update COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
+	}
+}
+deleteDataset INTERM_ELECTRO
+					
+createDataset 'tmp/anyang/grid/grid_gas2017', {
+	geometry GC_INFO
+	force = true
+	from plan('2017 가스 사용량 격자 분석') {
+		load "tmp/anyang/map_gas2017"
+		assignGridCell('the_geom', squareGrid(dataset('tmp/anyang/map_gas2017'), size2d('1000x1000')))
+		intersection("the_geom", "cell_geom", output:"overlap")
+		defineColumn "ratio:double", "(ST_Area(overlap) /  ST_Area(the_geom))"
+		update COL_NAMES.collect { "$it *= ratio" }.join("; ")
+		aggregateByGroup(group(keys: "cell_id", tags: "cell_geom,cell_pos", workerCount: 7),
+						COL_NAMES.collect { SUM(it).as(it) })
+		expand "x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()"
+		project "cell_geom as the_geom, x, y, *-{cell_geom,x,y}"
+	}
+}
+				
+createDataset 'tmp/anyang/grid/grid_electro2017', {
+	geometry GC_INFO
+	force = true
+	from plan('2017 전기 사용량 격자 분석') {
+		load "tmp/anyang/map_electro2017"
+		assignGridCell('the_geom', squareGrid(dataset("tmp/anyang/map_electro2017"), size2d('1kmx1km')))
+		intersection("the_geom", "cell_geom", output: "overlap")
+		defineColumn "ratio:double", "(ST_Area(overlap) /  ST_Area(the_geom))"
+		update(COL_NAMES.collect { "$it *= ratio" }.join("; "))
+		aggregateByGroup(group(keys: "cell_id", tags: "cell_geom,cell_pos", workerCount: 7),
+						COL_NAMES.collect { SUM(it).as(it) })
+		expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
+		project("cell_geom as the_geom, x, y, *-{cell_geom,x,y}")
+	}
+}

@@ -1,10 +1,9 @@
 package marmot.validate;
 
-import static marmot.DataSetOption.FORCE;
-
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.optor.AggregateFunction;
 
 /**
@@ -56,7 +55,7 @@ public abstract class Node {
 							.filter(filterExpr)
 							.project(m_keyCol)
 							.build();
-		DataSet result = marmot.createDataSet(outDsId, plan, FORCE);
+		DataSet result = marmot.createDataSet(outDsId, plan, StoreDataSetOptions.create().force(true));
 		System.out.printf("%s: number of bad keys: %d%n", m_name, result.getRecordCount());
 		if ( result.getRecordCount() == 0 ) {
 			marmot.deleteDataSet(result.getId());
@@ -72,7 +71,7 @@ public abstract class Node {
 								.aggregate(AggregateFunction.COUNT())
 							.filter("count > 1")
 							.build();
-		DataSet result = marmot.createDataSet(outDsId, plan, FORCE);
+		DataSet result = marmot.createDataSet(outDsId, plan, StoreDataSetOptions.create().force(true));
 		System.out.printf("%s: number of duplicated keys: %d%n", m_name, result.getRecordCount());
 		if ( result.getRecordCount() == 0 ) {
 			marmot.deleteDataSet(result.getId());
@@ -94,7 +93,7 @@ public abstract class Node {
 							.defineColumn("ratio1:double", "Round(overlap/ST_Area(the_geom1), 3)")
 							.defineColumn("ratio2:double", "Round(overlap/ST_Area(the_geom2), 3)")
 							.build();
-		DataSet result = marmot.createDataSet(outDsId, plan, FORCE);
+		DataSet result = marmot.createDataSet(outDsId, plan, StoreDataSetOptions.create().force(true));
 		System.out.printf("%s: number of overlapping geom pairs: %d%n", m_name, result.getRecordCount());
 	}
 }

@@ -1,7 +1,5 @@
 package anyang.energe;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.JoinOptions.LEFT_OUTER_JOIN;
 
 import java.util.Arrays;
@@ -12,10 +10,10 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import io.vavr.control.Option;
 import marmot.DataSet;
-import marmot.DataSetOption;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSchema;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.type.DataType;
@@ -81,7 +79,7 @@ public class A05_MapMatchingLand {
 
 		Plan plan;
 		plan = marmot.planBuilder("개별공시지가 매핑")
-						.loadHashJoin(BASE, "pnu", INTERM, "pnu", outCols,
+						.loadHashJoinFile(BASE, "pnu", INTERM, "pnu", outCols,
 										LEFT_OUTER_JOIN(25))
 						.update(updateExpr)
 
@@ -92,7 +90,7 @@ public class A05_MapMatchingLand {
 						
 						.store(OUTPUT)
 						.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(OUTPUT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		marmot.deleteDataSet(INTERM);
 
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
@@ -115,6 +113,6 @@ public class A05_MapMatchingLand {
 							.putSideBySide(outSchema, "usage", "tag")
 						.store(INTERM)
 						.build();
-		marmot.createDataSet(INTERM, plan, DataSetOption.FORCE);
+		marmot.createDataSet(INTERM, plan, StoreDataSetOptions.create().force(true));
 	}
 }

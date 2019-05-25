@@ -4,10 +4,6 @@ import java.util.List;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import marmot.Column;
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
-import marmot.RecordSchema;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;

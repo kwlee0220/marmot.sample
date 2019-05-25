@@ -1,7 +1,5 @@
 package anyang.energe;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.optor.AggregateFunction.SUM;
 
 import java.util.List;
@@ -13,6 +11,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.SquareGrid;
@@ -69,7 +68,7 @@ public class B07_GridAnalysisElectro2017 {
 		Plan plan;
 		plan = marmot.planBuilder("2017 전기 사용량 격자 분석")
 					.load(INPUT)
-					.assignSquareGridCell("the_geom", new SquareGrid(bounds, cellSize))
+					.assignGridCell("the_geom", new SquareGrid(bounds, cellSize), false)
 					.intersection("the_geom", "cell_geom", "overlap")
 					.expand("ratio:double", "ratio = (ST_Area(overlap) /  ST_Area(the_geom))")
 					.update(updateExpr)
@@ -82,7 +81,7 @@ public class B07_GridAnalysisElectro2017 {
 					.store(OUTPUT)
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		marmot.createDataSet(OUTPUT, plan, GEOMETRY(gcInfo), FORCE);
+		marmot.createDataSet(OUTPUT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		
 		for ( int month = 1; month <= 12; ++month ) {
 			extractToMonth(marmot, month);
@@ -106,6 +105,6 @@ public class B07_GridAnalysisElectro2017 {
 					.project(projectExpr)
 					.store(output)
 					.build();
-		marmot.createDataSet(output, plan, GEOMETRY(gcInfo), FORCE);
+		marmot.createDataSet(output, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 	}
 }

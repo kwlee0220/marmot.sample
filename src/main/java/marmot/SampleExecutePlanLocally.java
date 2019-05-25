@@ -50,7 +50,7 @@ public class SampleExecutePlanLocally {
 							.store(RESULT)
 							.build();
 		RecordSchema schema = marmot.getOutputRecordSchema(plan);
-		marmot.createDataSet(RESULT, schema, DataSetOption.FORCE);
+		marmot.createDataSet(RESULT, schema, StoreDataSetOptions.create().force(true));
 		try ( RecordSet rset = marmot.executeLocally(plan) ) {
 			rset.forEach(System.out::println);
 		}
@@ -64,7 +64,7 @@ public class SampleExecutePlanLocally {
 								.filter("sub_sta_sn > 300 && sub_sta_sn < 305")
 								.project("sub_sta_sn")
 								.build();
-			DataSet result = marmot.createDataSet(RESULT, plan, rset, DataSetOption.FORCE);
+			DataSet result = marmot.createDataSet(RESULT, plan, rset, StoreDataSetOptions.create().force(true));
 			result.read().forEach(System.out::println);
 		}
 	}
@@ -76,7 +76,7 @@ public class SampleExecutePlanLocally {
 								.project("sub_sta_sn")
 								.build();
 			RecordSchema schema = marmot.getOutputRecordSchema(plan, rset.getRecordSchema());
-			marmot.createDataSet(RESULT, schema, DataSetOption.FORCE);
+			marmot.createDataSet(RESULT, schema, StoreDataSetOptions.create().force(true));
 			try ( RecordSet result = marmot.executeLocally(plan, rset) ) {
 				Record r = DefaultRecord.of(result.getRecordSchema());
 				while ( result.next(r) ) {
@@ -94,7 +94,7 @@ public class SampleExecutePlanLocally {
 								.project("the_geom,hcode")
 								.build();
 			RecordSchema schema = marmot.getOutputRecordSchema(plan, rset.getRecordSchema());
-			marmot.createDataSet(RESULT, schema, DataSetOption.FORCE);
+			marmot.createDataSet(RESULT, schema, StoreDataSetOptions.create().force(true));
 			try ( RecordSet result = marmot.executeLocally(plan, rset) ) {
 				System.out.println("count = " + result.count());
 			}

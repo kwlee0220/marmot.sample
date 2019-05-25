@@ -2,8 +2,6 @@ package marmot;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import marmot.Plan;
-import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 

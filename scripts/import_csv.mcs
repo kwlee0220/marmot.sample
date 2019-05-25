@@ -1,6 +1,6 @@
 def MARMOT_DATA = System.getenv()['MARMOT_DATA']
 
-importCsvFile "$MARMOT_DATA/공공데이터포털/주유소_가격" to 'tmp/result' options {
+importCsvFile("$MARMOT_DATA/공공데이터포털/주유소_가격", 'tmp/result') {
 	delim '|'
 	quote '"'
 	commentMarker '#'

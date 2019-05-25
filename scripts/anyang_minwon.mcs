@@ -8,7 +8,8 @@ def DS_GRID = '기타/안양대/도봉구/GRID_100'
 def GC_INFO = 'the_geom(EPSG:5186)'
 def MARMOT_DATA = System.getenv()['MARMOT_DATA']
 
-importShapefile "$MARMOT_DATA/기타/안양대제공/도봉구/공원" to DS_PARK options {
+
+importShapefile("$MARMOT_DATA/기타/안양대제공/도봉구/공원", DS_PARK) {
 	geometry GC_INFO
 	srid 'EPSG:5179'
 	charset 'euc-kr'
@@ -16,7 +17,7 @@ importShapefile "$MARMOT_DATA/기타/안양대제공/도봉구/공원" to DS_PAR
 }
 clusterDataset DS_PARK
 
-importExcelFile "$MARMOT_DATA/기타/안양대제공/도봉구/민원" to DS_MINWON options {
+importExcelFile("$MARMOT_DATA/기타/안양대제공/도봉구/민원", DS_MINWON) {
 	geometry GC_INFO
 	srid 'EPSG:5181'
 	headerFirst true
@@ -25,7 +26,7 @@ importExcelFile "$MARMOT_DATA/기타/안양대제공/도봉구/민원" to DS_MIN
 }
 clusterDataset DS_MINWON
 
-importExcelFile "$MARMOT_DATA/기타/안양대제공/도봉구/공원_민원" to DS_PARK_MINWON options {
+importExcelFile("$MARMOT_DATA/기타/안양대제공/도봉구/공원_민원", DS_PARK_MINWON) {
 	geometry GC_INFO
 	srid 'EPSG:5181'
 	headerFirst true
@@ -34,12 +35,12 @@ importExcelFile "$MARMOT_DATA/기타/안양대제공/도봉구/공원_민원" to
 }
 clusterDataset DS_PARK_MINWON
 
-importExcelFile "$MARMOT_DATA/기타/안양대제공/도봉구/공원_감성분석" to DS_EMOTION options {
+importExcelFile("$MARMOT_DATA/기타/안양대제공/도봉구/공원_감성분석", DS_EMOTION) {
 	headerFirst true
 	force true
 }
 
-importShapefile "$MARMOT_DATA/기타/안양대제공/도봉구/필지" to DS_PARCEL options {
+importShapefile("$MARMOT_DATA/기타/안양대제공/도봉구/필지", DS_PARCEL) {
 	geometry GC_INFO
 	srid 'EPSG:5179'
 	charset 'euc-kr'
@@ -47,95 +48,73 @@ importShapefile "$MARMOT_DATA/기타/안양대제공/도봉구/필지" to DS_PAR
 }
 clusterDataset DS_PARCEL
 
-importShapefile "$MARMOT_DATA/기타/안양대제공/도봉구/GRID_100" to DS_GRID options {
+importShapefile("$MARMOT_DATA/기타/안양대제공/도봉구/GRID_100", DS_GRID) {
 	geometry GC_INFO
 	srid 'EPSG:5179'
 	charset 'euc-kr'
 	force true
 }
 
-
-createDataset '분석결과/안양대/도봉구/공원_감석분석_맵' options {
+createDataset '분석결과/안양대/도봉구/공원_감석분석_맵', {
 	geometry GC_INFO
 	force = true
 	from plan('이름기반 공원 감성분석 맵매칭') {
 		load DS_PARK
 		filter "!kor_par_nm.equals('#N/A')"
-		hashJoin {
-			on columns('kor_par_nm')
-			with dataset(DS_EMOTION), columns('poi')
-			output 'the_geom,param.*-{the_geom}'
-		}
+		hashJoin('kor_par_nm', DS_EMOTION, 'poi', output: 'the_geom,param.*-{the_geom}')
 	}
 }
 
-createDataset '분석결과/안양대/도봉구/공원_감석분석_맵_ID' options {
+createDataset '분석결과/안양대/도봉구/공원_감석분석_맵_ID', {
 	geometry GC_INFO
 	force = true
 	from plan('이름기반 공원 감성분석 맵매칭_ID') {
 		load DS_PARK
-		hashJoin {
-			on columns('id')
-			with dataset(DS_EMOTION), columns('id')
-			output 'the_geom,param.*-{the_geom}'
-		}
+		hashJoin 'id', DS_EMOTION, 'id', output: 'the_geom,param.*-{the_geom}'
 		project 'the_geom,row_id,poi,id,sp,sn,언급빈도수 as mention,선호도 as preference'
 	}
 }
 
-createDataset '분석결과/안양대/도봉구/필지별_공원민원수' options {
+createDataset '분석결과/안양대/도봉구/필지별_공원민원수', {
 	geometry GC_INFO
 	force = true
 	from plan('필지별 공원관련 민원수 합계') {
 		load DS_PARK_MINWON
-		hashJoin { type rightOuter
-			on columns('all_parcel_layer_id')
-			with dataset(DS_PARCEL), columns('id')
-			output 'param.{the_geom,id},team_name'
-		}
-		aggregate { count = count() } group { keys "id"; tags "the_geom" }
+		hashJoin 'all_parcel_layer_id', DS_PARCEL, 'id', output: 'param.{the_geom,id},team_name',
+				type: RIGHT_OUTER_JOIN
+		aggregateByGroup(group(keys: 'id', tags: 'the_geom'), { count = count() })
 	}
 }
 
-createDataset '분석결과/안양대/도봉구/격자별_공원민원수' options {
+createDataset '분석결과/안양대/도봉구/격자별_공원민원수', {
 	geometry GC_INFO
 	force = true
 	from plan('격자별 공원관련 민원수 합계') {
 		load DS_GRID
-		spatialJoin {
-			type outerJoin
-			with DS_PARK_MINWON
-			output 'the_geom,spo_no_cd'
-		}
-		aggregate { count = count() } group { keys "spo_no_cd"; tags "the_geom" }
+		spatialOuterJoin 'the_geom', DS_PARK_MINWON, output: 'the_geom,spo_no_cd'
+		aggregateByGroup(group(keys: 'spo_no_cd', tags: 'the_geom'), { count = count() })
 	}
 }
 
-createDataset '분석결과/안양대/도봉구/팀별_필지별_민원수' options {
+createDataset '분석결과/안양대/도봉구/팀별_필지별_민원수', {
 	geometry GC_INFO
 	force = true
 	from plan('담당팀_필지별_민원수 합계') {
 		load DS_MINWON
 		filter "team_name != null"
-		hashJoin { type rightOuter
-			on columns('all_parcel_layer_id')
-			with dataset(DS_PARCEL), columns('id')
-			output 'param.{the_geom,id},team_name'
-		}
-		aggregate { count = count() } group { keys "team_name,id"; tags "the_geom" }
+		hashJoin 'all_parcel_layer_id', DS_PARCEL, 'id', output: 'param.{the_geom,id},team_name',
+				type: RIGHT_OUTER_JOIN
+		aggregateByGroup(group(keys: 'team_name,id', tags: 'the_geom'), { count = count() })
 	}
 }
 
-createDataset '분석결과/안양대/도봉구/격자별_팀별_민원수' options {
+createDataset '분석결과/안양대/도봉구/격자별_팀별_민원수', {
 	geometry GC_INFO
 	force = true
 	from plan('격자별_팀별_민원수') {
 		load DS_MINWON
 		filter "team_name != null"
-		spatialJoin {
-			with DS_GRID
-			output 'team_name,param.{the_geom,spo_no_cd}'
-		}
-		aggregate { count = count() } group { keys "team_name,spo_no_cd"; tags "the_geom" }
+		spatialJoin 'the_geom', DS_GRID, output: 'team_name,param.{the_geom,spo_no_cd}'
+		aggregateByGroup(group(keys: 'team_name,spo_no_cd', tags: 'the_geom'), { count = count() })
 	}
 }

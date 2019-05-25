@@ -2,7 +2,6 @@ package marmot;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;

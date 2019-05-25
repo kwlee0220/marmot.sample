@@ -1,13 +1,11 @@
 package navi_call.map;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.type.DataType;
@@ -45,7 +43,7 @@ public class S0_PrepareRoadData {
 					.expand("sub_link_no:short")
 					.store(Globals.ROADS_IDX)
 					.build();
-		DataSet result = marmot.createDataSet(Globals.ROADS_IDX, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(Globals.ROADS_IDX, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		System.out.printf("elapsed=%s (simplification)%n", watch.getElapsedMillisString());
 		
 		result.cluster();

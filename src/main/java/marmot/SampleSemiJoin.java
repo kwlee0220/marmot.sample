@@ -1,14 +1,8 @@
 package marmot;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
-import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -36,7 +30,7 @@ public class SampleSemiJoin {
 							.hashJoin("sig_cd", PARAM, "sig_cd", "param.sig_kor_nm",
 									JoinOptions.SEMI_JOIN())
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		SampleUtils.printPrefix(result, 50);
 	}
 }

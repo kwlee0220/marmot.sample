@@ -1,6 +1,5 @@
 package oldbldr;
 
-import static marmot.DataSetOption.FORCE;
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.JoinOptions.INNER_JOIN;
 
@@ -12,6 +11,7 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -65,7 +65,7 @@ public class Step4_Pop {
 						.aggregate(AVG("avg").as("pop_avg"))
 					.store(RESULT)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

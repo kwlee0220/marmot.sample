@@ -1,6 +1,6 @@
 def MARMOT_DATA = System.getenv()['MARMOT_DATA']
 
-importShapefile "$MARMOT_DATA/행자부/민원행정기관" to 'tmp/result' options {
+importShapefile ("$MARMOT_DATA/행자부/민원행정기관", 'tmp/result') {
 	geometry 'the_geom(EPSG:5186)'
 	shp_srid 'EPSG:5179'
 	charset 'euc-kr'

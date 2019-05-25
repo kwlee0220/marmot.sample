@@ -1,0 +1,63 @@
+
+def ELDERLY_CARE = "POI/노인복지시설";
+def CADASTRAL = "구역/연속지적도_2017";
+def POP_DENSITY = "주민/인구밀도_2000";
+def HDONG = "구역/행정동코드";
+	
+def ELDERLY_CARE_BUFFER = "tmp/10min/eldely_care_facilites_bufferred";
+def HIGH_DENSITY_CENTER = "tmp/10min/high_density_center";
+def HIGH_DENSITY_HDONG = "tmp/10min/high_density_hdong";
+def RESULT = "tmp/10min/elderly_care_candidates";
+
+def GC_INFO = 'the_geom(EPSG:5186)'
+
+// '노인복지시설_경로당_추출_버퍼' 추출
+createDataset ELDERLY_CARE_BUFFER, {
+	geometry GC_INFO
+	force = true
+	from plan('대도시지역 추출') {
+		load ELDERLY_CARE
+		filter "induty_nm == '경로당'"
+		project 'the_geom'
+		buffer "the_geom", 400
+	}
+}
+clusterDataset ELDERLY_CARE_BUFFER
+
+// '인구밀도_2017_중심점추출_10000이상' 추출
+createDataset HIGH_DENSITY_CENTER, {
+	geometry GC_INFO
+	force = true
+	from plan('인구밀도_2017_중심점추출_10000이상') {
+		load POP_DENSITY
+		centroid 'the_geom'
+		filter "value >= 10000"
+		project 'the_geom'
+	}
+}
+clusterDataset HIGH_DENSITY_CENTER
+
+// 인구밀도_10000이상_행정동추출
+createDataset HIGH_DENSITY_HDONG, {
+	geometry GC_INFO
+	force = true
+	from plan('인구밀도_10000이상_행정동추출') {
+		load HDONG
+		project 'the_geom'
+		spatialSemiJoin 'the_geom', HIGH_DENSITY_CENTER
+	}
+}
+clusterDataset HIGH_DENSITY_HDONG
+
+createDataset RESULT, {
+	geometry GC_INFO
+	force = true
+	from plan('경로당필요지역추출') {
+		load CADASTRAL
+		project 'the_geom,pnu'
+		spatialSemiJoin 'the_geom', ELDERLY_CARE_BUFFER, negated: true
+		clipJoin 'the_geom', HIGH_DENSITY_HDONG
+		shard 1
+	}
+}
+clusterDataset RESULT

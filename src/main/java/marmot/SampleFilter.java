@@ -1,8 +1,5 @@
 package marmot;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -31,7 +28,7 @@ public class SampleFilter {
 							.filter("휘발유 > 2000")
 							.project("THE_GEOM,상호,휘발유")
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, GEOMETRY(gcInfo), FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		SampleUtils.printPrefix(result, 5);
 	}
 }

@@ -1,15 +1,10 @@
 package marmot;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.DataSetOption.GEOMETRY;
 import static marmot.ExecutePlanOption.DISABLE_LOCAL_EXEC;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
-import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 
@@ -35,7 +30,7 @@ public class SampleSort {
 							.build();
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		DataSet result = marmot.createDataSet(RESULT, plan, DISABLE_LOCAL_EXEC,
-												GEOMETRY(gcInfo), FORCE);
+												StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		SampleUtils.printPrefix(result, 5);
 	}
 }

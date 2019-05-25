@@ -1,13 +1,5 @@
 package marmot;
 
-import static marmot.DataSetOption.FORCE;
-import static marmot.optor.AggregateFunction.AVG;
-import static marmot.optor.AggregateFunction.COUNT;
-import static marmot.optor.AggregateFunction.MAX;
-import static marmot.optor.AggregateFunction.MIN;
-import static marmot.optor.AggregateFunction.STDDEV;
-import static marmot.optor.AggregateFunction.SUM;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -36,7 +28,7 @@ public class SampleListByGroup {
 								.list()
 							.project("sig_cd, sub_sta_sn")
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
 		SampleUtils.printPrefix(result, 20);
 	}
 }

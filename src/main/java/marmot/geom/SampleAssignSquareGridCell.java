@@ -1,7 +1,5 @@
 package marmot.geom;
 
-import static marmot.DataSetOption.FORCE;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -11,6 +9,7 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.SquareGrid;
@@ -37,7 +36,7 @@ public class SampleAssignSquareGridCell {
 		
 		Plan plan = marmot.planBuilder("assign_fishnet_gridcell")
 						.load(INPUT)
-						.assignSquareGridCell("the_geom", new SquareGrid(border, cellSize))
+						.assignGridCell("the_geom", new SquareGrid(border, cellSize), false)
 						.defineColumn("count:int", "1")
 						.groupBy("cell_id")
 							.withTags("cell_geom,cell_pos")
@@ -46,7 +45,7 @@ public class SampleAssignSquareGridCell {
 						.expand("x:int,y:int", "x = cell_pos.x; y = cell_pos.y")
 						.project("cell_geom as the_geom,x,y,count")
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
 
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(result, 5);
