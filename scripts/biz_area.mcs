@@ -6,11 +6,13 @@ def CADASTRAL = "구역/연속지적도_2017"
 def BUILDINGS = "건물/통합정보"
 def CARD_SALES = "주민/카드매출/월별_시간대/2015";
 def FLOW_POP = "주민/유동인구/월별_시간대/2015";
-def TEMP_BIG_CITIES = "tmp/bizarea/big_cities"
-def TEMP_BIZ_AREA = "tmp/bizarea/area";
-def BIZ_GRID = "tmp/bizarea/grid100";
-def BIZ_GRID_SALES = "tmp/bizarea/grid100_sales"
-def BIZ_GRID_FLOW_POP = "tmp/bizarea/grid100_pop";
+
+def OUT_DIR = "tmp/bizarea"
+def TEMP_BIG_CITIES = "$OUT_DIR/big_cities"
+def TEMP_BIZ_AREA = "$OUT_DIR/area";
+def BIZ_GRID = "$OUT_DIR/grid100";
+def BIZ_GRID_SALES = "$OUT_DIR/grid100_sales"
+def BIZ_GRID_FLOW_POP = "$OUT_DIR/grid100_pop";
 
 def GC_INFO = 'the_geom(EPSG:5186)'
 def MARMOT_DATA = System.getenv()['MARMOT_DATA']
@@ -32,13 +34,11 @@ createDataset(TEMP_BIG_CITIES) {
 	}
 }
 clusterDataset TEMP_BIG_CITIES
-println "대도시 영역 추출 완료, elapsed=" + watch.getElapsedMillisString()
 
 // 용도지구에서 상업지역 추출
-watch = utils.StopWatch.start();
-initExpr = '[' + ["일반상업지역","유통상업지역","근린상업지역", "중심상업지역"].collect {"'${it}'"}.join(',') + ']'
-initExpr = "_types = $initExpr"
-
+initExpr = '_types = [' +
+			["일반상업지역","유통상업지역","근린상업지역", "중심상업지역"].collect {"'${it}'"}.join(',') +
+			']'
 createDataset(TEMP_BIZ_AREA) {
 	geometry GC_INFO
 	force = true
@@ -49,7 +49,6 @@ createDataset(TEMP_BIZ_AREA) {
 	}
 }
 clusterDataset TEMP_BIZ_AREA
-println "용도지구에서 상업지역 추출 완료, elapsed=" + watch.getElapsedMillisString()
 
 createDataset(BIZ_GRID) {
 	geometry GC_INFO
@@ -62,15 +61,15 @@ createDataset(BIZ_GRID) {
 	}
 }
 deleteDataset TEMP_BIG_CITIES, TEMP_BIZ_AREA
-println "상업지구 그리드 셀 구성 완료, elapsed=" + watch.getElapsedMillisString()
 
-createDataset("tmp/bizarea/grid100_land") {
+
+createDataset("$OUT_DIR/grid100_land") {
 	geometry GC_INFO
 	force = true
 	from plan('대도시 상업지역 구역별 건축물 수와 면적 집계') {
 		load(BUILDINGS)
 		spatialJoin('the_geom', BIZ_GRID, output: "건축물용도코드,대지면적,param.*")
-		aggregateByGroup(group(keys: 'cell_id,block_cd,건축물용도코드', tags: "the_geom,sgg_cd", workerCount:3)) {
+		aggregateByGroup('cell_id,block_cd,건축물용도코드', tags: "the_geom,sgg_cd", workerCount:3) {
 			대지면적 = sum("대지면적")
 			bld_cnt = count()
 		}
@@ -86,9 +85,9 @@ createDataset(BIZ_GRID_SALES) {
 		load CARD_SALES
 		defineColumn "daily_sales:double", sumExpr
 		project "std_ym,block_cd,daily_sales"
-		hashJoin "block_cd", BIZ_GRID, 'block_cd', output: "param.*,std_ym,daily_sales", workerCount: 64
-		aggregateByGroup group(keys: 'std_ym,cell_id', tags: "the_geom,sgg_cd", workerCount: 3),
-						{ daily_sales = sum("daily_sales") }
+		hashJoin "block_cd", BIZ_GRID, 'block_cd', output: "param.*,std_ym,daily_sales",
+					workerCount: 64
+		aggregateByGroup('std_ym,cell_id', tags: "the_geom,sgg_cd", workerCount: 3) { daily_sales = sum("daily_sales") }
 		project 'the_geom, *-{the_geom}'
 	}
 }
@@ -106,13 +105,12 @@ createDataset(BIZ_GRID_FLOW_POP) {
 		// BIZ_GRID와 소지역 코드를 이용하여 조인하여, 대도시 상업지역과 겹치는
 		// 유동인구 구역을 뽑는다.
 		hashJoin "block_cd", BIZ_GRID, 'block_cd', output: "param.*,std_ym,flow_pop", workerCount: 32
-		aggregateByGroup group(keys: 'std_ym,cell_id', tags: "the_geom,sgg_cd", workerCount: 3),
-						{ flow_pop = avg("flow_pop") }
+		aggregateByGroup('std_ym,cell_id', tags: "the_geom,sgg_cd", workerCount: 3) { flow_pop = avg("flow_pop") }
 		project 'the_geom, *-{the_geom}'
 	}
 }
 
-createDataset("tmp/bizarea/grid100_pop") {
+createDataset("$OUT_DIR/grid100_pop") {
 	geometry GC_INFO
 	force = true
 	from plan('대도시 상업지역 구역별 카드매출액 및 유동인구수 통합') {

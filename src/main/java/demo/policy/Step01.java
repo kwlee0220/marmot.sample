@@ -1,11 +1,10 @@
 package demo.policy;
 
-import static marmot.ExecutePlanOption.DISABLE_LOCAL_EXEC;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.ExecutePlanOptions;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
@@ -51,7 +50,7 @@ public class Step01 {
 						.filter("induty_nm == '경로당'")			// (1) 영역분석
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, DISABLE_LOCAL_EXEC,
+		DataSet result = marmot.createDataSet(RESULT, plan, ExecutePlanOptions.create().disableLocalExecution(true),
 												StoreDataSetOptions.create().geometryColumnInfo(info).force(true));
 		result.cluster();
 		

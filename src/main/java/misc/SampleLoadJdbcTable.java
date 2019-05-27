@@ -1,11 +1,11 @@
 package misc;
 
 
-import static marmot.ExecutePlanOption.DISABLE_LOCAL_EXEC;
 import static marmot.optor.AggregateFunction.COUNT;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import marmot.ExecutePlanOptions;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.JdbcConnectOptions;
@@ -43,7 +43,7 @@ public class SampleLoadJdbcTable {
 												.mapperCount(7))
 							.aggregate(COUNT())
 							.build();
-		long count = marmot.executeToLong(plan, DISABLE_LOCAL_EXEC).get();
+		long count = marmot.executeToLong(plan, ExecutePlanOptions.create().disableLocalExecution(true)).get();
 		System.out.println("count=" + count);
 	}
 }

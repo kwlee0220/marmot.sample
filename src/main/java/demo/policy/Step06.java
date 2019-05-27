@@ -1,11 +1,10 @@
 package demo.policy;
 
-import static marmot.ExecutePlanOption.DISABLE_LOCAL_EXEC;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.ExecutePlanOptions;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
@@ -51,7 +50,7 @@ public class Step06 {
 						.load(INPUT)
 						.spatialSemiJoin(info.name(), PARAM)	// (6) 교차분석
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, DISABLE_LOCAL_EXEC, StoreDataSetOptions.create().geometryColumnInfo(info).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, ExecutePlanOptions.create().disableLocalExecution(true), StoreDataSetOptions.create().geometryColumnInfo(info).force(true));
 		result.cluster();
 		
 		watch.stop();

@@ -48,8 +48,7 @@ public class SampleLoadLeftOuterHashJoin {
 									JoinOptions.LEFT_OUTER_JOIN())
 //					.sample(0.2)
 					.build();
-		result = marmot.createDataSet(RESULT, plan,
-									new ExecutePlanOption[] {ExecutePlanOption.DISABLE_LOCAL_EXEC},
+		result = marmot.createDataSet(RESULT, plan, ExecutePlanOptions.create().disableLocalExecution(true),
 									StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		SampleUtils.printPrefix(result, 500);
 		

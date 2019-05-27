@@ -1,0 +1,121 @@
+
+def GC_INFO = 'the_geom(EPSG:5186)'
+def OUT_DIR = "분석결과/지하철역사_추천"
+def TMP_DIR = "tmp/subway"
+def TEMP_STATIONS = "$OUT_DIR/지하철역사_100m_버퍼"
+def TEMP_FLOW_POP = "분석결과/지하철역사_추천/유동인구";
+def TEMP_TAXI_LOG = "분석결과/지하철역사_추천/택시로그";
+
+
+createDataset(TEMP_STATIONS) {
+	geometry GC_INFO
+	force = true
+	from plan("서울지역 지하철역사 1KM 버퍼") {
+		load("교통/지하철/서울역사")
+		
+		// 지하철 역사의 소속이 서울(11)인 역사만 추출함.
+		filter("sig_cd.substring(0,2) == '11'")
+		
+		// 역사 공간 정보만 추출
+		buffer('the_geom', 1000)
+	}
+}
+
+def seoulBoundary = runPlanToGeometry plan("get_seoul") {
+	// 전국 시도 행정구역 데이터세트 적재
+	load("구역/시도")
+	
+	// 행정구역 중에서 서울특별시만 선택
+	filter("ctprvn_cd == '11'")
+	
+	// 서울특별시 공간 정보만 추출
+	project("the_geom")
+}
+
+
+def avgExpr = '(' + (0..23).collect { String.format("avg_%02dtmst", it) }.join('+') + ')/24.0'
+createDataset("$OUT_DIR/역사외_지역/유동인구/격자별_집계") {
+	geometry GC_INFO
+	force = true
+	from plan("'500mX500m 격자단위 유동인구' 집계") {
+		// 전국 유동인구 데이테세트에서 서울시 영역에 속한 부분만을 추출한다.
+		query("주민/유동인구/월별_시간대/2015", seoulBoundary)
+		
+		// 모든 지하철 역사로부터 1km 이상 떨어진 로그 데이터만 선택한다.
+		spatialSemiJoin("the_geom", TEMP_STATIONS, negated: true)
+		
+		// 각 시간대의 평균 유동인구를 모두 더해 하루동안의 유동인구를 계산
+		defineColumn("day_avg:double", avgExpr)
+		
+		// 각 달의 소지역의 연간 유동인구 평균을 계산한다.
+		aggregateByGroup("block_cd", tags:'the_geom') { avg = avg('day_avg') }
+		
+		// 각 소지역이 폼함되는 사각 셀정보를 첨부 한다.
+		assignGridCell('the_geom', squareGrid(seoulBoundary.envelopeInternal, size2d(500,500)))
+		project("cell_geom as the_geom, cell_id, cell_pos, avg")
+		
+		// 사각 그리드 셀 단위로 소지역을 그룹핑하고, 각 그룹에 속한 유동인구를 모두 더한다.
+		aggregateByGroup("cell_id", tags: "the_geom") { avg = sum('avg') }
+	}
+}
+executeProcess "normalize", input_dataset: "$OUT_DIR/역사외_지역/유동인구/격자별_집계",
+				output_dataset: TEMP_FLOW_POP,
+				input_features: "avg", output_features: "normalized"
+
+
+createDataset("$OUT_DIR/역사외_지역/택시로그/격자별_집계") {
+	geometry GC_INFO
+	force = true
+	from plan("'택시 운행 로그'에서 500mX500m 격자단위 승하차 집계") {
+		// 택시 로그를  읽는다.
+		load("로그/나비콜/택시로그")
+		
+		// 승하차 로그만 선택한다.
+		filter("status == 1 || status == 2")
+		// 서울특별시 영역만의 로그만 선택한다.
+		filterSpatially('the_geom', intersects, seoulBoundary)
+		
+		// 격자 분석에 필요한  컬럼만 남기고, 불필요한 컬럼 제거
+		project("the_geom")
+		
+		// 모든 지하철 역사로부터 1km 이상 떨어진 로그 데이터만 선택한다.
+		spatialSemiJoin("the_geom", TEMP_STATIONS, negated: true)
+		
+		// 각 로그 위치가 포함된 사각 셀을  부가한다.
+		assignGridCell("the_geom", squareGrid(seoulBoundary.envelopeInternal, size2d("500x500")))
+		project("cell_geom as the_geom, cell_id, cell_pos")
+				
+		// 사각 그리드 셀 단위로 그룹핑하고, 각 그룹에 속한 레코드 수를 계산한다.
+		aggregateByGroup('cell_id', tags: 'the_geom') { count = count() }
+	}
+}
+executeProcess "normalize", input_dataset: "$OUT_DIR/역사외_지역/택시로그/격자별_집계",
+				output_dataset: TEMP_TAXI_LOG,
+				input_features: "count", output_features: "normalized"
+				
+				
+def mergeExpr = """
+if ( normalized == null ) {
+	the_geom = param_geom;
+	cell_id = param_cell_id;
+	normalized = 0;
+}
+else if ( param_normalized == null ) {
+	param_normalized = 0;
+}
+normalized = normalized + param_normalized;
+"""
+def outCols = 'the_geom,cell_id,normalized,param.{the_geom as param_geom,cell_id as param_cell_id,normalized as param_normalized}'
+
+createDataset("분석결과/지하철역사_추천/최종결과") {
+	geometry GC_INFO
+	force = true
+	from plan("그리드 셀단위 유동인구 비율과 택시 승하차 로그 비율 합계 계산") {
+		load(TEMP_FLOW_POP)
+		hashJoin("cell_id", TEMP_TAXI_LOG, "cell_id", output: outCols, joinType: FULL_OUTER_JOIN)
+		update(mergeExpr)
+		project("the_geom,cell_id,normalized as value")
+	}
+}
+
+deleteDataset TEMP_STATIONS, TEMP_FLOW_POP, TEMP_TAXI_LOG

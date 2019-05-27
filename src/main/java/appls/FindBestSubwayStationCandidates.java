@@ -52,7 +52,7 @@ public class FindBestSubwayStationCandidates {
 	private static final GeometryColumnInfo GEOM_COL_INFO = new GeometryColumnInfo(GEOM_COL, SRID);
 	private static final Size2d CELL_SIZE = new Size2d(500, 500);
 	
-	private static final String TEMP_STATIONS = "분석결과/지하철역사_추천/지하철역사_버퍼_그리드";
+	private static final String TEMP_STATIONS = "분석결과/지하철역사_추천/지하철역사_100m_버퍼";
 	private static final String TEMP_SEOUL_TAXI_LOG_GRID = "분석결과/지하철역사_추천/역사외_지역/택시로그/격자별_집계";
 	private static final String TEMP_SEOUL_FLOW_POP_GRID = "분석결과/지하철역사_추천/역사외_지역/유동인구/격자별_집계";
 	private static final String TEMP_FLOW_POP = "분석결과/지하철역사_추천/유동인구";

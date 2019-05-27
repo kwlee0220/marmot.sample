@@ -3,13 +3,25 @@ def LAND_PRICES_2017 = "토지/개별공시지가_2017";
 def LAND_PRICES = "토지/개별공시지가_2012_2016";
 def GAS = "건물/건물에너지/가스사용량";
 def ELECTRO = "건물/건물에너지/전기사용량";
-def CADASTRAL = "tmp/anyang/cadastral";
+
+def OUT_DIR = "분석결과/건물_에너지"
+def OUT_MAP_GAS2017 = "$OUT_DIR/map_gas2017"
+def OUT_MAP_ELECTRO2017 = "$OUT_DIR/map_gas2017"
+def OUT_GRID_GAS2017 = "$OUT_DIR/grid_gas2017"
+def OUT_GRID_ELECTRO2017 = "$OUT_DIR/grid_gas2017"
+
+def TEMP_DIR = "tmp/anyang/energe"
+def TEMP_CADASTRAL = "$TEMP_DIR/cadastral"
+def TEMP_GAS_2017 = "$TEMP_DIR/gas2017"
+def TEMP_ELECTRO_2017 = "$TEMP_DIR/electro2017"
+def TEMP_PNU_GAS = "$OUT_DIR/pnu_gas"
+def TEMP_PNU_ELECTRO = "$OUT_DIR/pnu_electro"
 
 def GC_INFO = 'the_geom(EPSG:5186)'
 def COL_NAMES = (1..12).collect { "month_$it" }
 
 
-createDataset(CADASTRAL) {
+createDataset(TEMP_CADASTRAL) {
 	geometry GC_INFO
 	force = true
 	from plan('연속지적도 추출') {
@@ -19,20 +31,20 @@ createDataset(CADASTRAL) {
 	}
 }
 
-createDataset("tmp/anyang/gas2017") {
+createDataset(TEMP_GAS_2017) {
 	force = true
 	from plan('2017년 월별 가스 사용량 합계') {
 		load(GAS)
 		defineColumn("year:short", "사용년월.substring(0, 4)")
-		filter "year == 2017"
-		defineColumn "month:short", "사용년월.substring(4, 6)"
-		update "사용량 = Math.max(사용량, 0)"
-		aggregateByGroup group(keys: "pnu,month", workerCount: 1), { usage = sum("사용량") }
+		filter("year == 2017")
+		defineColumn("month:short", "사용년월.substring(4, 6)")
+		update("사용량 = Math.max(사용량, 0)")
+		aggregateByGroup("pnu,month", workerCount: 1) { usage = sum("사용량") }
 		project "pnu,month,usage"
 	}
 }
 
-createDataset("tmp/anyang/electro2017") {
+createDataset(TEMP_ELECTRO_2017) {
 	force = true
 	from plan('2017년 월별 전기 사용량 합계') {
 		load ELECTRO
@@ -40,81 +52,85 @@ createDataset("tmp/anyang/electro2017") {
 		filter "year == 2017"
 		defineColumn "month:short", "사용년월.substring(4, 6)"
 		update "사용량 = Math.max(사용량, 0)"
-		aggregateByGroup group(keys: "pnu,month", workerCount: 1), { usage = sum("사용량") }
+		aggregateByGroup("pnu,month", workerCount: 1) { usage = sum("사용량") }
 		project "pnu,month,usage"
 	}
 }
 
 
-def outSchema = COL_NAMES.inject(RecordSchema.builder()) { b, n -> b.addColumn(n, DataType.LONG)}.build()
+def outSchema = COL_NAMES.inject(RecordSchema.builder()) {
+					b, n -> b.addColumn(n, DataType.LONG)
+				}.build()
 def outCols = 'left.*,right.{' + COL_NAMES.join(',') + '}'
-		
-def INTERM_GAS = "tmp/anyang/pnu_gas"
-createDataset(INTERM_GAS) {
+
+createDataset(TEMP_PNU_GAS) {
 	force = true
 	from plan('put_side_by_size_gas') {
-		load "tmp/anyang/gas2017"
+		load TEMP_GAS_2017
 		defineColumn "tag:string", "'month_' + month"
-		reduceColumnsByGroup group(keys:'pnu'), outSchema, 'tag', 'usage'
+		reduceToSingleRecordByGroup('pnu', outSchema, 'tag', 'usage')
 	}
 }
-createDataset('tmp/anyang/map_gas2017') {
+createDataset(OUT_MAP_GAS2017) {
 	geometry GC_INFO
 	force = true
 	from plan('2017 가스사용량 연속지적도 매칭') {
-		loadHashJoinFile(CADASTRAL, 'pnu', INTERM_GAS, 'pnu', output: outCols,
+		loadHashJoinFile(TEMP_CADASTRAL, 'pnu', TEMP_PNU_GAS, 'pnu', output: outCols,
 						type: LEFT_OUTER_JOIN, workerCount: 17)
 		update COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
 	}
 }
-deleteDataset INTERM_GAS
+deleteDataset TEMP_PNU_GAS
 
-def INTERM_ELECTRO = "tmp/anyang/pnu_electro"
-createDataset INTERM_ELECTRO, {
+
+
+createDataset(TEMP_PNU_ELECTRO) {
 	force = true
 	from plan('put_side_by_side_electro') {
-		load "tmp/anyang/electro2017"
+		load TEMP_ELECTRO_2017
 		defineColumn "tag:string", "'month_' + month"
-		reduceColumnsByGroup group(keys:'pnu'), outSchema, 'tag', 'usage'
+		reduceToSingleRecordByGroup('pnu', outSchema, 'tag', 'usage')
 	}
 }
-createDataset 'tmp/anyang/map_electro2017', {
+createDataset(OUT_MAP_ELECTRO2017) {
 	geometry GC_INFO
 	force = true
 	from plan('2017 전력사용량 연속지적도 매칭') {
-		loadHashJoinFile(CADASTRAL, 'pnu', INTERM_ELECTRO, 'pnu', output: outCols,
+		loadHashJoinFile(TEMP_CADASTRAL, 'pnu', TEMP_PNU_ELECTRO, 'pnu', output: outCols,
 							type: LEFT_OUTER_JOIN, workerCount: 17)
 		update COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
 	}
 }
-deleteDataset INTERM_ELECTRO
+deleteDataset TEMP_PNU_ELECTRO
+
+				
 					
-createDataset 'tmp/anyang/grid/grid_gas2017', {
+createDataset(OUT_GRID_GAS2017) {
 	geometry GC_INFO
 	force = true
 	from plan('2017 가스 사용량 격자 분석') {
-		load "tmp/anyang/map_gas2017"
-		assignGridCell('the_geom', squareGrid(dataset('tmp/anyang/map_gas2017'), size2d('1000x1000')))
+		load OUT_MAP_GAS2017
+		assignGridCell('the_geom', squareGrid(dataset(OUT_MAP_GAS2017), size2d('1000x1000')))
 		intersection("the_geom", "cell_geom", output:"overlap")
 		defineColumn "ratio:double", "(ST_Area(overlap) /  ST_Area(the_geom))"
 		update COL_NAMES.collect { "$it *= ratio" }.join("; ")
-		aggregateByGroup(group(keys: "cell_id", tags: "cell_geom,cell_pos", workerCount: 7),
+		aggregateByGroup("cell_id", tags: "cell_geom,cell_pos", workerCount: 7,
 						COL_NAMES.collect { SUM(it).as(it) })
-		expand "x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()"
-		project "cell_geom as the_geom, x, y, *-{cell_geom,x,y}"
+		expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
+		project("cell_geom as the_geom, x, y, *-{cell_geom,x,y}")
 	}
 }
 				
-createDataset 'tmp/anyang/grid/grid_electro2017', {
+createDataset(OUT_GRID_ELECTRO2017) {
 	geometry GC_INFO
 	force = true
 	from plan('2017 전기 사용량 격자 분석') {
-		load "tmp/anyang/map_electro2017"
-		assignGridCell('the_geom', squareGrid(dataset("tmp/anyang/map_electro2017"), size2d('1kmx1km')))
+		load OUT_MAP_ELECTRO2017
+		assignGridCell('the_geom', squareGrid(dataset(OUT_MAP_ELECTRO2017), size2d('1kmx1km')))
 		intersection("the_geom", "cell_geom", output: "overlap")
 		defineColumn "ratio:double", "(ST_Area(overlap) /  ST_Area(the_geom))"
 		update(COL_NAMES.collect { "$it *= ratio" }.join("; "))
-		aggregateByGroup(group(keys: "cell_id", tags: "cell_geom,cell_pos", workerCount: 7),
+		aggregateByGroup("cell_id", tags: "cell_geom,cell_pos", workerCount: 7,
 						COL_NAMES.collect { SUM(it).as(it) })
 		expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
 		project("cell_geom as the_geom, x, y, *-{cell_geom,x,y}")

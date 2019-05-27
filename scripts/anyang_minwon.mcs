@@ -55,7 +55,7 @@ importShapefile("$MARMOT_DATA/기타/안양대제공/도봉구/GRID_100", DS_GRI
 	force true
 }
 
-createDataset '분석결과/안양대/도봉구/공원_감석분석_맵', {
+createDataset('분석결과/안양대/도봉구/공원_감석분석_맵') {
 	geometry GC_INFO
 	force = true
 	from plan('이름기반 공원 감성분석 맵매칭') {
@@ -65,7 +65,7 @@ createDataset '분석결과/안양대/도봉구/공원_감석분석_맵', {
 	}
 }
 
-createDataset '분석결과/안양대/도봉구/공원_감석분석_맵_ID', {
+createDataset('분석결과/안양대/도봉구/공원_감석분석_맵_ID') {
 	geometry GC_INFO
 	force = true
 	from plan('이름기반 공원 감성분석 맵매칭_ID') {
@@ -75,28 +75,31 @@ createDataset '분석결과/안양대/도봉구/공원_감석분석_맵_ID', {
 	}
 }
 
-createDataset '분석결과/안양대/도봉구/필지별_공원민원수', {
+
+createDataset('분석결과/안양대/도봉구/필지별_공원민원수') {
 	geometry GC_INFO
 	force = true
 	from plan('필지별 공원관련 민원수 합계') {
 		load DS_PARK_MINWON
 		hashJoin 'all_parcel_layer_id', DS_PARCEL, 'id', output: 'param.{the_geom,id},team_name',
 				type: RIGHT_OUTER_JOIN
-		aggregateByGroup(group(keys: 'id', tags: 'the_geom'), { count = count() })
+		aggregateByGroup('id', tags: 'the_geom') {
+			count = count()
+		}
 	}
 }
 
-createDataset '분석결과/안양대/도봉구/격자별_공원민원수', {
+createDataset('분석결과/안양대/도봉구/격자별_공원민원수') {
 	geometry GC_INFO
 	force = true
 	from plan('격자별 공원관련 민원수 합계') {
 		load DS_GRID
 		spatialOuterJoin 'the_geom', DS_PARK_MINWON, output: 'the_geom,spo_no_cd'
-		aggregateByGroup(group(keys: 'spo_no_cd', tags: 'the_geom'), { count = count() })
+		aggregateByGroup('spo_no_cd', tags: 'the_geom') { count = count() }
 	}
 }
 
-createDataset '분석결과/안양대/도봉구/팀별_필지별_민원수', {
+createDataset('분석결과/안양대/도봉구/팀별_필지별_민원수') {
 	geometry GC_INFO
 	force = true
 	from plan('담당팀_필지별_민원수 합계') {
@@ -104,17 +107,17 @@ createDataset '분석결과/안양대/도봉구/팀별_필지별_민원수', {
 		filter "team_name != null"
 		hashJoin 'all_parcel_layer_id', DS_PARCEL, 'id', output: 'param.{the_geom,id},team_name',
 				type: RIGHT_OUTER_JOIN
-		aggregateByGroup(group(keys: 'team_name,id', tags: 'the_geom'), { count = count() })
+		aggregateByGroup('team_name,id', tags: 'the_geom') { count = count() }
 	}
 }
 
-createDataset '분석결과/안양대/도봉구/격자별_팀별_민원수', {
+createDataset('분석결과/안양대/도봉구/격자별_팀별_민원수') {
 	geometry GC_INFO
 	force = true
 	from plan('격자별_팀별_민원수') {
 		load DS_MINWON
 		filter "team_name != null"
 		spatialJoin 'the_geom', DS_GRID, output: 'team_name,param.{the_geom,spo_no_cd}'
-		aggregateByGroup(group(keys: 'team_name,spo_no_cd', tags: 'the_geom'), { count = count() })
+		aggregateByGroup('team_name,spo_no_cd', tags: 'the_geom') { count = count() }
 	}
 }
