@@ -81,7 +81,7 @@ public class PrintPlanAsJson {
 //							+ "브레이크신호,방위각,가속도x,가속도y")
 //					.defineColumn("기준년도:short", "(기준년도.length() > 0) ? 기준년도 : '2017'")
 //					.expand1("기준월:short", "(기준월.length() > 0) ? 기준월 : '01'")
-//					.expand1("개별공시지가:long")
+					.expand("개별공시지가:long")
 //					.project("고유번호,기준년도,기준월,개별공시지가")
 //					.assignUid("id")
 //					.sample(0.23)

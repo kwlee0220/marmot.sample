@@ -1,43 +1,21 @@
 
+def HOME = System.env.HOME
 def LAND_PRICES_2018 = "토지/개별공시지가_2018";
-def LAND_PRICES = "토지/개별공시지가";
-def GAS = "건물/건물에너지/가스사용량";
-def ELECTRO = "건물/건물에너지/전기사용량";
-
-def OUT_DIR = "분석결과/건물_에너지"
-def OUT_GRID_GAS2018 = "$OUT_DIR/grid_gas2018"
-def OUT_GRID_ELECTRO2018 = "$OUT_DIR/grid_gas2018"
-def OUT_GRID_LAND = "$OUT_DIR/grid_land"
-
-def TEMP_DIR = "tmp/anyang/energe"
-def TEMP_CADASTRAL = "$TEMP_DIR/cadastral"
-def TEMP_GAS_2018 = "$TEMP_DIR/gas2018"
-def TEMP_ELECTRO_2018 = "$TEMP_DIR/electro2018"
-def TEMP_LAND = "$TEMP_DIR/land"
-
-def GC_INFO = 'the_geom(EPSG:5186)'
-def CELL_SIZE = size2d(1000, 1000)
-
-def MONTH_COL_NAMES = (1..12).collect { "month_$it" }
-def MONTH_OUT_SCHEMA = schema(MONTH_COL_NAMES.collect{"$it:long"}.join(','))
-def MONTH_JOIN_OUT_COLS = 'left.*,right.{' + MONTH_COL_NAMES.join(',') + '}'
-def YEAR_COL_NAMES = (2012..2018).collect { "year_$it" }
-def YEAR_OUT_SCHEMA = schema(YEAR_COL_NAMES.collect{"$it:long"}.join(','))
-def YEAR_JOIN_OUT_COLS = "left.*,right.{" + YEAR_COL_NAMES.join(",") + "}"
+def OUTPUT = "$HOME/";
 
 
 createDataset(TEMP_CADASTRAL) {
 	geometry GC_INFO
 	force = true
-	from plan('연속지적도에 1km x 1km 격자정보 부여') {
+	from plan('연속지적도에 격자정보 부여') {
 		load(LAND_PRICES_2018)
 		
 		// 각 지적위치에 해당하는 1km 격자 정보를 첨부한다.
-		assignGridCell('the_geom', squareGrid(dataset(LAND_PRICES_2018), CELL_SIZE))
+		assignGridCell('the_geom', squareGrid(dataset(LAND_PRICES_2018), cellSize))
 		
 		// 격자와 지적 공간 정보 겹치는 영역을 계산하여, 지적에 격자가 차지하는 비율을 계산한다.
 		intersection("the_geom", "cell_geom", output:"overlap")
-		defineColumn("ratio:double", "ST_Area(overlap) /  ST_Area(the_geom)")
+		defineColumn "ratio:double", "(ST_Area(overlap) /  ST_Area(the_geom))"
 		
 		project('cell_geom as the_geom,pnu,ratio,cell_pos,cell_id')
 	}
@@ -64,8 +42,10 @@ createDataset(TEMP_GAS_2018) {
 		defineColumn("tag:string", "'month_' + month")
 		
 		// pnu별로 그룹핑을하고, 개월 태그를 기준으로 사용량('usage') 값을 병렬로 수집한다.
-		reduceToSingleRecordByGroup('pnu', MONTH_OUT_SCHEMA, 'tag', 'usage')
-		update MONTH_COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
+		reduceToSingleRecordByGroup('pnu', outSchema, 'tag', 'usage')
+		
+		// 가스 사용량 값이 0보다 작은 경우, 강제로 0으로 설정한다.
+		update COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
 	}
 }
 createDataset(OUT_GRID_GAS2018) {
@@ -73,22 +53,21 @@ createDataset(OUT_GRID_GAS2018) {
 	force = true
 	from plan('2018년도 가스 사용량 격자 분석') {
 		// 격자분석을 위해, 2018년도 월별 가스 사용량의 PNU 값을에 해당하는 연속지적도 상의 공간 정보를 첨부한다.
-		loadHashJoinFile(TEMP_CADASTRAL, 'pnu', TEMP_GAS_2018, 'pnu', output: MONTH_JOIN_OUT_COLS,
+		loadHashJoinFile(TEMP_CADASTRAL, 'pnu', TEMP_GAS_2018, 'pnu', output: outCols,
 						type: LEFT_OUTER_JOIN, workerCount: 17)
 		
 		// 비율에 따라 사용량을 곱한다.
-		update MONTH_COL_NAMES.collect { "$it *= ratio" }.join("; ")
+		update COL_NAMES.collect { "$it *= ratio" }.join("; ")
 		
 		// 각 격자별로 가스 사용량의 총합을 구한다.
 		aggregateByGroup("cell_id", tags: "the_geom,cell_pos", workerCount: 7,
-						MONTH_COL_NAMES.collect { SUM(it).as(it) })
+						COL_NAMES.collect { SUM(it).as(it) })
 		
 		expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
 		project("the_geom, x, y, *-{the_geom,x,y}")
 	}
 }
 deleteDataset TEMP_GAS_2018
-
 
 
 createDataset(TEMP_ELECTRO_2018) {
@@ -111,8 +90,10 @@ createDataset(TEMP_ELECTRO_2018) {
 		defineColumn("tag:string", "'month_' + month")
 		
 		// pnu별로 그룹핑을하고, 개월 태그를 기준으로 사용량('usage') 값을 병렬로 수집한다.
-		reduceToSingleRecordByGroup('pnu', MONTH_OUT_SCHEMA, 'tag', 'usage')
-		update MONTH_COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
+		reduceToSingleRecordByGroup('pnu', outSchema, 'tag', 'usage')
+		
+		// 가스 사용량 값이 0보다 작은 경우, 강제로 0으로 설정한다.
+		update COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
 	}
 }
 createDataset(OUT_GRID_ELECTRO2018) {
@@ -120,15 +101,15 @@ createDataset(OUT_GRID_ELECTRO2018) {
 	force = true
 	from plan('2018년도 전력 사용량 격자 분석') {
 		// 격자분석을 위해, 2018년도 월별 전력 사용량의 PNU 값을에 해당하는 연속지적도 상의 공간 정보를 첨부한다.
-		loadHashJoinFile(TEMP_CADASTRAL, 'pnu', TEMP_ELECTRO_2018, 'pnu', output: MONTH_JOIN_OUT_COLS,
+		loadHashJoinFile(TEMP_CADASTRAL, 'pnu', TEMP_ELECTRO_2018, 'pnu', output: outCols,
 						type: LEFT_OUTER_JOIN, workerCount: 17)
 		
 		// 비율에 따라 사용량을 곱한다.
-		update MONTH_COL_NAMES.collect { "$it *= ratio" }.join("; ")
+		update COL_NAMES.collect { "$it *= ratio" }.join("; ")
 		
 		// 각 격자별로 전력 사용량의 총합을 구한다.
 		aggregateByGroup("cell_id", tags: "the_geom,cell_pos", workerCount: 7,
-						MONTH_COL_NAMES.collect { SUM(it).as(it) })
+						COL_NAMES.collect { SUM(it).as(it) })
 		
 		expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
 		project("the_geom, x, y, *-{the_geom,x,y}")
@@ -137,38 +118,60 @@ createDataset(OUT_GRID_ELECTRO2018) {
 deleteDataset TEMP_ELECTRO_2018
 
 
-
+def LAND_COL_NAMES = (2012..2017).collect { "year_$it" }
+def LAND_OUT_SCHEMA = LAND_COL_NAMES.inject(RecordSchema.builder()) {
+					b, n -> b.addColumn(n, DataType.LONG)
+				}.build()
+		
 createDataset(TEMP_LAND) {
 	force = true
 	from plan('2012-2018년 연도별 개별공시지가 집계') {
-		// 2012-2018년도 개별공시지가 데이터를 적재한다.
+		// 2012~2017년도 개별공시지가 데이터를 적재한다.
 		load LAND_PRICES
 		
-		project("고유번호 as pnu, 기준년도 as year, 개별공시지가 as usage")
+		project("pnu, 기준년도 as year, 개별공시지가 as usage")
 		expand("tag:string", "tag = 'year_' + year")
 		
 		// pnu별로 그룹핑을하고, 연도태그를 기준으로 공시지가('usage') 값을 병렬로 수집한다.
-		reduceToSingleRecordByGroup('pnu', YEAR_OUT_SCHEMA, 'tag', 'usage')
-		update YEAR_COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
+		reduceToSingleRecordByGroup('pnu', LAND_OUT_SCHEMA, 'tag', 'usage')
+		
+		// 공시지가 값이 0보다 작은 경우, 강제로 0으로 설정한다.
+		update LAND_COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
 	}
 }
+
+
+def LAND_OUT_COLS = "left.{the_geom, pnu},right.{" + LAND_COL_NAMES.join(",") +
+					"},left.{개별공시지가 as year_2018}"
+def FULL_LAND_COL_NAMES = (2012..2018).collect { "year_$it" }
 createDataset(OUT_GRID_LAND) {
 	geometry GC_INFO
 	force = true
-	from plan('2012-2018년도 년도별 개별공시지가 격자 분석') {
+	from plan('2012~2018년도 년도별 개별공시지가 격자 분석') {
 		// 격자분석을 위해, 2018년도 월별 전력 사용량의 PNU 값을에 해당하는 연속지적도 상의 공간 정보를 첨부한다.
-		loadHashJoinFile(TEMP_CADASTRAL, 'pnu', TEMP_LAND, 'pnu', output: YEAR_JOIN_OUT_COLS,
+		loadHashJoinFile(LAND_PRICES_2018, 'pnu', TEMP_LAND, 'pnu', output: LAND_OUT_COLS,
 						type: LEFT_OUTER_JOIN, workerCount: 25)
-		// 비율에 따라 공시지가를 보정한다.
-		update YEAR_COL_NAMES.collect {"$it = ($it != null) ? $it * ratio : 0;"}.join(' ')
+		
+		// 가스 사용량 값이 0보다 작은 경우, 강제로 0으로 설정한다.
+		update FULL_LAND_COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
 		
 		// 공시지가는 평망미터당 지가이므로, 평당액수에 면적을 곱한다.
 		defineColumn("area:double", "ST_Area(the_geom)")
-		update(YEAR_COL_NAMES.collect { "$it *= area" }.join('; '))
+		update(FULL_LAND_COL_NAMES.collect { "$it * area" }.join('; '))
+		project("*-{area}")
+		
+		// 각 지적위치에 해당하는 1km 격자 정보를 첨부한다.
+		assignGridCell('the_geom', squareGrid(dataset(LAND_PRICES_2018), cellSize))
+		
+		// 격자와 지적 공간 정보 겹치는 영역을 계산하여, 지적에 격자가 차지하는 비율을 계산하고,
+		// 이에 따라 공시가격을 보정한다.
+		intersection("the_geom", "cell_geom", output:"overlap")
+		defineColumn "ratio:double", "(ST_Area(overlap) /  ST_Area(the_geom))"
+		update FULL_LAND_COL_NAMES.collect { "$it *= ratio" }.join("; ")
 		
 		// 각 격자별로 전력 사용량의 총합을 구한다.
 		aggregateByGroup("cell_id", tags: "the_geom,cell_pos", workerCount: 7,
-						YEAR_COL_NAMES.collect { SUM(it).as(it) })
+						FULL_LAND_COL_NAMES.collect { SUM(it).as(it) })
 		
 		expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
 		project("the_geom, x, y, *-{the_geom,x,y}")
@@ -177,4 +180,3 @@ createDataset(OUT_GRID_LAND) {
 deleteDataSet TEMP_LAND
 
 deleteDataSet TEMP_CADASTRAL
-deleteDataSet TEMP_DIR
