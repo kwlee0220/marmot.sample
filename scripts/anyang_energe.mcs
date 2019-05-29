@@ -5,35 +5,52 @@ def GAS = "건물/건물에너지/가스사용량";
 def ELECTRO = "건물/건물에너지/전기사용량";
 
 def OUT_DIR = "분석결과/건물_에너지"
-def OUT_GRID_GAS2018 = "$OUT_DIR/grid_gas2018"
-def OUT_GRID_ELECTRO2018 = "$OUT_DIR/grid_gas2018"
-def OUT_GRID_LAND = "$OUT_DIR/grid_land"
+def OUT_MAP_LAND = "$OUT_DIR/map_land_price"
+def OUT_GRID_LAND = "$OUT_DIR/grid_land_price"
+def OUT_MAP_GAS_2018 = "$OUT_DIR/map_gas_2018"
+def OUT_GRID_GAS_2018 = "$OUT_DIR/grid_gas_2018"
+def OUT_MAP_ELECTRO_2018 = "$OUT_DIR/map_electro_2018"
+def OUT_GRID_ELECTRO_2018 = "$OUT_DIR/grid_electro_2018"
+def OUT_MAP_CO2_2018 = "$OUT_DIR/map_co2_2018"
+def OUT_GRID_CO2_2018 = "$OUT_DIR/grid_co2_2018"
 
 def TEMP_DIR = "tmp/anyang/energe"
 def TEMP_CADASTRAL = "$TEMP_DIR/cadastral"
-def TEMP_GAS_2018 = "$TEMP_DIR/gas2018"
-def TEMP_ELECTRO_2018 = "$TEMP_DIR/electro2018"
-def TEMP_LAND = "$TEMP_DIR/land"
+def TEMP_GRID_CADASTRAL = "$TEMP_DIR/grid_cadastral"
+def TEMP_GAS_2018 = "$TEMP_DIR/gas_2018"
+def TEMP_ELECTRO_2018 = "$TEMP_DIR/electro_2018"
+def TEMP_LAND = "$TEMP_DIR/landprice"
+def TEMP_CO2_POOL_2018 = "$TEMP_DIR/co2_pool"
+def TEMP_CO2_2018 = "$TEMP_DIR/co2_2018"
 
 def GC_INFO = 'the_geom(EPSG:5186)'
-def CELL_SIZE = size2d(1000, 1000)
+def CELL_SIZE = Size2d(1000, 1000)
 
 def MONTH_COL_NAMES = (1..12).collect { "month_$it" }
-def MONTH_OUT_SCHEMA = schema(MONTH_COL_NAMES.collect{"$it:long"}.join(','))
+def MONTH_OUT_SCHEMA = RecordSchema(MONTH_COL_NAMES.collect{"$it:long"}.join(','))
 def MONTH_JOIN_OUT_COLS = 'left.*,right.{' + MONTH_COL_NAMES.join(',') + '}'
 def YEAR_COL_NAMES = (2012..2018).collect { "year_$it" }
-def YEAR_OUT_SCHEMA = schema(YEAR_COL_NAMES.collect{"$it:long"}.join(','))
+def YEAR_OUT_SCHEMA = RecordSchema(YEAR_COL_NAMES.collect{"$it:long"}.join(','))
 def YEAR_JOIN_OUT_COLS = "left.*,right.{" + YEAR_COL_NAMES.join(",") + "}"
 
 
-createDataset(TEMP_CADASTRAL) {
+createDataSet(TEMP_CADASTRAL) {
+	geometry GC_INFO
+	force = true
+	from plan('2018년도 개별공시지가 데이터에서 공간 정보만 추출') {
+		load(LAND_PRICES_2018)
+		project('the_geom,고유번호 as pnu')
+		shard(1)
+	}
+}
+createDataSet(TEMP_GRID_CADASTRAL) {
 	geometry GC_INFO
 	force = true
 	from plan('연속지적도에 1km x 1km 격자정보 부여') {
-		load(LAND_PRICES_2018)
+		load(TEMP_CADASTRAL)
 		
 		// 각 지적위치에 해당하는 1km 격자 정보를 첨부한다.
-		assignGridCell('the_geom', squareGrid(dataset(LAND_PRICES_2018), CELL_SIZE))
+		assignGridCell('the_geom', SquareGrid(DataSet(TEMP_CADASTRAL), CELL_SIZE))
 		
 		// 격자와 지적 공간 정보 겹치는 영역을 계산하여, 지적에 격자가 차지하는 비율을 계산한다.
 		intersection("the_geom", "cell_geom", output:"overlap")
@@ -43,8 +60,65 @@ createDataset(TEMP_CADASTRAL) {
 	}
 }
 
+//
+//
+//	연차별 개별공시지가 공간정보 매핑 및 격자 분석
+//
+//
+createDataSet(TEMP_LAND) {
+	force = true
+	from plan('2012-2018년 연도별 개별공시지가 집계') {
+		// 2012-2018년도 개별공시지가 데이터를 적재한다.
+		load LAND_PRICES
+		
+		project("고유번호 as pnu, 기준년도 as year, 개별공시지가 as usage")
+		expand("tag:string", "tag = 'year_' + year")
+		
+		// pnu별로 그룹핑을하고, 연도태그를 기준으로 공시지가('usage') 값을 병렬로 수집한다.
+		reduceToSingleRecordByGroup('pnu', YEAR_OUT_SCHEMA, 'tag', 'usage', workerCount: 17)
+		update YEAR_COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
+	}
+}
+createDataSet(OUT_MAP_LAND) {
+	force = true
+	geometry GC_INFO
+	from plan('연도별 개별공시지가에 공간정보 매핑') {
+		// 격자분석을 위해, 연도별 개별공시지가의 PNU 값을에 해당하는 연속지적도 상의 공간 정보를 첨부한다.
+		loadHashJoinFile(TEMP_CADASTRAL, 'pnu', TEMP_LAND, 'pnu', output: YEAR_JOIN_OUT_COLS,
+						type: LEFT_OUTER_JOIN, workerCount: 25)
+		update YEAR_COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
+	}
+}
+createDataSet(OUT_GRID_LAND) {
+	geometry GC_INFO
+	force = true
+	from plan('2012-2018년도 년도별 개별공시지가 격자 분석') {
+		// 격자분석을 위해, 연도별 개별공시지가의 PNU 값을에 해당하는 연속지적도 상의 공간 정보를 첨부한다.
+		loadHashJoinFile(TEMP_GRID_CADASTRAL, 'pnu', TEMP_LAND, 'pnu', output: YEAR_JOIN_OUT_COLS,
+						type: LEFT_OUTER_JOIN, workerCount: 25)
+		// 비율에 따라 공시지가를 보정한다.
+		update YEAR_COL_NAMES.collect {"$it = ($it != null) ? $it * ratio : 0;"}.join(' ')
+		
+		// 공시지가는 평망미터당 지가이므로, 평당액수에 면적을 곱한다.
+		defineColumn("area:double", "ST_Area(the_geom)")
+		update(YEAR_COL_NAMES.collect { "$it *= area" }.join('; '))
+		
+		// 각 격자별로 전력 사용량의 총합을 구한다.
+		aggregateByGroup("cell_id", tags: "the_geom,cell_pos", workerCount: 7,
+						YEAR_COL_NAMES.collect { SUM(it).as(it) })
+		
+		expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
+		project("the_geom, x, y, *-{the_geom,x,y}")
+	}
+}
 
-createDataset(TEMP_GAS_2018) {
+
+//
+//
+//	2018년도 월별 가스사용량 공간정보 매핑 및 격자 분석
+//
+//
+createDataSet(TEMP_GAS_2018) {
 	force = true
 	from plan('2018년 월별 가스 사용량 합계') {
 		// 2018년도 가스 사용량 데이터를 적재한다.
@@ -68,16 +142,26 @@ createDataset(TEMP_GAS_2018) {
 		update MONTH_COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
 	}
 }
-createDataset(OUT_GRID_GAS2018) {
+createDataSet(OUT_MAP_GAS_2018) {
 	geometry GC_INFO
 	force = true
-	from plan('2018년도 가스 사용량 격자 분석') {
+	from plan('2018년 월별 가스 사용량에 공간정보 매핑') {
 		// 격자분석을 위해, 2018년도 월별 가스 사용량의 PNU 값을에 해당하는 연속지적도 상의 공간 정보를 첨부한다.
 		loadHashJoinFile(TEMP_CADASTRAL, 'pnu', TEMP_GAS_2018, 'pnu', output: MONTH_JOIN_OUT_COLS,
 						type: LEFT_OUTER_JOIN, workerCount: 17)
+		update MONTH_COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
+	}
+}
+createDataSet(OUT_GRID_GAS_2018) {
+	geometry GC_INFO
+	force = true
+	from plan('2018년도 월별 가스 사용량 격자 분석') {
+		// 격자분석을 위해, 2018년도 월별 가스 사용량의 PNU 값을에 해당하는 연속지적도 상의 공간 정보를 첨부한다.
+		loadHashJoinFile(TEMP_GRID_CADASTRAL, 'pnu', TEMP_GAS_2018, 'pnu', output: MONTH_JOIN_OUT_COLS,
+						type: LEFT_OUTER_JOIN, workerCount: 17)
 		
 		// 비율에 따라 사용량을 곱한다.
-		update MONTH_COL_NAMES.collect { "$it *= ratio" }.join("; ")
+		update(MONTH_COL_NAMES.collect { "$it *= ratio" }.join("; "))
 		
 		// 각 격자별로 가스 사용량의 총합을 구한다.
 		aggregateByGroup("cell_id", tags: "the_geom,cell_pos", workerCount: 7,
@@ -87,11 +171,14 @@ createDataset(OUT_GRID_GAS2018) {
 		project("the_geom, x, y, *-{the_geom,x,y}")
 	}
 }
-deleteDataset TEMP_GAS_2018
 
 
-
-createDataset(TEMP_ELECTRO_2018) {
+//
+//
+//	2018년도 월별 전기사용량 공간정보 매핑 및 격자 분석
+//
+//
+createDataSet(TEMP_ELECTRO_2018) {
 	force = true
 	from plan('2018년 월별 전기 사용량 합계') {
 		// 2018년도 전기 사용량 데이터를 적재한다.
@@ -115,12 +202,22 @@ createDataset(TEMP_ELECTRO_2018) {
 		update MONTH_COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
 	}
 }
-createDataset(OUT_GRID_ELECTRO2018) {
+createDataSet(OUT_MAP_ELECTRO_2018) {
+	geometry GC_INFO
+	force = true
+	from plan('2018년 월별 전기 사용량에 공간정보 매핑') {
+		// 격자분석을 위해, 2018년도 월별 전기 사용량의 PNU 값을에 해당하는 연속지적도 상의 공간 정보를 첨부한다.
+		loadHashJoinFile(TEMP_CADASTRAL, 'pnu', TEMP_ELECTRO_2018, 'pnu', output: MONTH_JOIN_OUT_COLS,
+						type: LEFT_OUTER_JOIN, workerCount: 17)
+		update MONTH_COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
+	}
+}
+createDataSet(OUT_GRID_ELECTRO_2018) {
 	geometry GC_INFO
 	force = true
 	from plan('2018년도 전력 사용량 격자 분석') {
 		// 격자분석을 위해, 2018년도 월별 전력 사용량의 PNU 값을에 해당하는 연속지적도 상의 공간 정보를 첨부한다.
-		loadHashJoinFile(TEMP_CADASTRAL, 'pnu', TEMP_ELECTRO_2018, 'pnu', output: MONTH_JOIN_OUT_COLS,
+		loadHashJoinFile(TEMP_GRID_CADASTRAL, 'pnu', TEMP_ELECTRO_2018, 'pnu', output: MONTH_JOIN_OUT_COLS,
 						type: LEFT_OUTER_JOIN, workerCount: 17)
 		
 		// 비율에 따라 사용량을 곱한다.
@@ -134,47 +231,124 @@ createDataset(OUT_GRID_ELECTRO2018) {
 		project("the_geom, x, y, *-{the_geom,x,y}")
 	}
 }
-deleteDataset TEMP_ELECTRO_2018
 
 
-
-createDataset(TEMP_LAND) {
+//
+//
+//	2018년도 월별 전기사용량 및 전기사용량을 활용한 탄소배출량 공간정보 매핑 및 격자 분석
+//
+//
+def ELECTRO_CO2_EXPR = MONTH_COL_NAMES.collect{"$it = $it * 0.46;"}.join(';')
+createDataSet(TEMP_CO2_POOL_2018) {
 	force = true
-	from plan('2012-2018년 연도별 개별공시지가 집계') {
-		// 2012-2018년도 개별공시지가 데이터를 적재한다.
-		load LAND_PRICES
-		
-		project("고유번호 as pnu, 기준년도 as year, 개별공시지가 as usage")
-		expand("tag:string", "tag = 'year_' + year")
-		
-		// pnu별로 그룹핑을하고, 연도태그를 기준으로 공시지가('usage') 값을 병렬로 수집한다.
-		reduceToSingleRecordByGroup('pnu', YEAR_OUT_SCHEMA, 'tag', 'usage')
-		update YEAR_COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
+	from plan('2018년 월별 전기 사용량을 활용한 탄소배출량 계산') {
+		// 2018년 월별 가스 사용량 데이터를 적재한다.
+		load(TEMP_ELECTRO_2018)
+		expand(MONTH_COL_NAMES.collect{"$it:double"}.join(','), ELECTRO_CO2_EXPR)
 	}
 }
-createDataset(OUT_GRID_LAND) {
+
+def GAS_CO2_RATIO = ((40*56100) + (40*23) + (40*29.6)) / 1000000
+def GAS_CO2_EXPR = MONTH_COL_NAMES.collect{"$it = $it * $GAS_CO2_RATIO;"}.join(';')
+appendIntoDataSet(TEMP_CO2_POOL_2018) {
+	from plan('2018년 월별 가스 사용량을 활용한 탄소배출량 계산') {
+		// 2018년 월별 가스 사용량 데이터를 적재한다.
+		load(TEMP_GAS_2018)
+		expand(MONTH_COL_NAMES.collect{"$it:double"}.join(','), GAS_CO2_EXPR)
+	}
+}
+createDataSet(TEMP_CO2_2018) {
+	force = true
+	from plan('2018년 월별 전기 사용량에 공간정보 매핑') {
+		load(TEMP_CO2_POOL_2018)
+		aggregateByGroup('pnu', MONTH_COL_NAMES.collect { SUM(it).as(it) })
+		expand(MONTH_COL_NAMES.collect{"$it:float"}.join(','))
+	}
+}
+createDataSet(OUT_MAP_CO2_2018) {
 	geometry GC_INFO
 	force = true
-	from plan('2012-2018년도 년도별 개별공시지가 격자 분석') {
-		// 격자분석을 위해, 2018년도 월별 전력 사용량의 PNU 값을에 해당하는 연속지적도 상의 공간 정보를 첨부한다.
-		loadHashJoinFile(TEMP_CADASTRAL, 'pnu', TEMP_LAND, 'pnu', output: YEAR_JOIN_OUT_COLS,
+	from plan('2018년 월별 탄소 배출량에 공간정보 매핑') {
+		// 격자분석을 위해, 2018년도 월별 전기 사용량의 PNU 값을에 해당하는 연속지적도 상의 공간 정보를 첨부한다.
+		loadHashJoinFile(TEMP_CADASTRAL, 'pnu', TEMP_CO2_2018, 'pnu', output: MONTH_JOIN_OUT_COLS,
 						type: LEFT_OUTER_JOIN, workerCount: 25)
-		// 비율에 따라 공시지가를 보정한다.
-		update YEAR_COL_NAMES.collect {"$it = ($it != null) ? $it * ratio : 0;"}.join(' ')
+		update MONTH_COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
+	}
+}
+createDataSet(OUT_GRID_CO2_2018) {
+	geometry GC_INFO
+	force = true
+	from plan('2018년도 월별 탄소 배출량 격자 분석') {
+		// 격자분석을 위해, 2018년도 월별 탄소 배출량의 PNU 값을에 해당하는 연속지적도 상의 공간 정보를 첨부한다.
+		loadHashJoinFile(TEMP_GRID_CADASTRAL, 'pnu', TEMP_CO2_2018, 'pnu', output: MONTH_JOIN_OUT_COLS,
+						type: LEFT_OUTER_JOIN, workerCount: 25)
 		
-		// 공시지가는 평망미터당 지가이므로, 평당액수에 면적을 곱한다.
-		defineColumn("area:double", "ST_Area(the_geom)")
-		update(YEAR_COL_NAMES.collect { "$it *= area" }.join('; '))
+		// 비율에 따라 사용량을 곱한다.
+		update MONTH_COL_NAMES.collect { "$it *= ratio" }.join("; ")
 		
 		// 각 격자별로 전력 사용량의 총합을 구한다.
 		aggregateByGroup("cell_id", tags: "the_geom,cell_pos", workerCount: 7,
-						YEAR_COL_NAMES.collect { SUM(it).as(it) })
+						MONTH_COL_NAMES.collect { SUM(it).as(it) })
 		
 		expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
 		project("the_geom, x, y, *-{the_geom,x,y}")
 	}
 }
-deleteDataSet TEMP_LAND
 
-deleteDataSet TEMP_CADASTRAL
 deleteDataSet TEMP_DIR
+
+
+def HOME = System.env.HOME;
+def SPLIT_DIR = "tmp/anyang/energe"
+def SHP_DIR = "$HOME/tmp/anyang/energe"
+def EXPORT_SHP_OPTS = { charset 'euc-kr'; splitSize '1g'; reportInterval 1000000; force true }
+def SIDO_CODES = DataSet("구역/시도").read().collect { it.CTPRVN_CD }
+
+exportDataSetToShapefile(OUT_GRID_GAS_2018, "$SHP_DIR/grid_gas_2018", EXPORT_SHP_OPTS)
+run plan("split_gas_by_sido") {
+	load(OUT_MAP_GAS_2018)
+	defineColumn("sido:string", "pnu.substring(0,2)")
+	storeByGroup("sido", "$SPLIT_DIR/gas_2018", geometry: GC_INFO, force: true)
+}
+SIDO_CODES.each {
+	exportDataSetToShapefile("$SPLIT_DIR/gas_2018/$it", "$SHP_DIR/map_gas_2018/$it", EXPORT_SHP_OPTS)
+}
+deleteDataSet "$SPLIT_DIR/gas_2018"
+
+exportDataSetToShapefile(OUT_GRID_ELECTRO_2018, "$SHP_DIR/grid_electro_2018", EXPORT_SHP_OPTS)
+run plan("split_electro_by_sido") {
+	load(OUT_MAP_ELECTRO_2018)
+	defineColumn("sido:string", "pnu.substring(0,2)")
+	storeByGroup("sido", "$SPLIT_DIR/electro_2018", geometry: GC_INFO, force: true)
+}
+SIDO_CODES.each {
+	exportDataSetToShapefile("$SPLIT_DIR/electro_2018/$it", "$SHP_DIR/map_electro_2018/$it",
+							EXPORT_SHP_OPTS)
+}
+deleteDataSet "$SPLIT_DIR/electro_2018"
+
+exportDataSetToShapefile(OUT_GRID_CO2_2018, "$SHP_DIR/grid_co2_2018", EXPORT_SHP_OPTS)
+run plan("split_co2_by_sido") {
+	load(OUT_MAP_CO2_2018)
+	defineColumn("sido:string", "pnu.substring(0,2)")
+	storeByGroup("sido", "$SPLIT_DIR/co2_2018", geometry: GC_INFO, force: true)
+}
+SIDO_CODES.each {
+	exportDataSetToShapefile("$SPLIT_DIR/co2_2018/$it", "$SHP_DIR/map_co2_2018/$it",
+							EXPORT_SHP_OPTS)
+}
+deleteDataSet "$SPLIT_DIR/co2_2018"
+
+exportDataSetToShapefile(OUT_GRID_LAND, "$SHP_DIR/grid_land_price", EXPORT_SHP_OPTS)
+run plan("split_land_by_sido") {
+	load(OUT_MAP_LAND)
+	defineColumn("sido:string", "pnu.substring(0,2)")
+	storeByGroup("sido", "$SPLIT_DIR/land_price", geometry: GC_INFO, force: true)
+}
+SIDO_CODES.each {
+	exportDataSetToShapefile("$SPLIT_DIR/land_price/$it", "$SHP_DIR/map_land_price/$it",
+							EXPORT_SHP_OPTS)
+}
+deleteDataSet "$SPLIT_DIR/land_price"
+
+deleteDataSet "$SPLIT_DIR

@@ -23,7 +23,7 @@ def SGG_EXPR = '[' + [41115,41111,41117, 41113, 48125, 48123,48127, 48121, 48129
 def initExpr = String.format("_sid_cd=%s; _sgg_cd=%s", SIDO_EXPR, SGG_EXPR)
 
 //  연속지적도에서 대도시 영역을 추출한다.
-createDataset(TEMP_BIG_CITIES) {
+createDataSet(TEMP_BIG_CITIES) {
 	geometry GC_INFO
 	force = true
 	from plan('대도시지역 추출') {
@@ -33,13 +33,13 @@ createDataset(TEMP_BIG_CITIES) {
 		filter("_sid_cd.contains(sid_cd) || _sgg_cd.contains(sgg_cd)", initializer: initExpr)
 	}
 }
-clusterDataset TEMP_BIG_CITIES
+clusterDataSet TEMP_BIG_CITIES
 
 // 용도지구에서 상업지역 추출
 initExpr = '_types = [' +
 			["일반상업지역","유통상업지역","근린상업지역", "중심상업지역"].collect {"'${it}'"}.join(',') +
 			']'
-createDataset(TEMP_BIZ_AREA) {
+createDataSet(TEMP_BIZ_AREA) {
 	geometry GC_INFO
 	force = true
 	from plan('상업지역 추출') {
@@ -48,22 +48,22 @@ createDataset(TEMP_BIZ_AREA) {
 		project('the_geom')
 	}
 }
-clusterDataset TEMP_BIZ_AREA
+clusterDataSet TEMP_BIZ_AREA
 
-createDataset(BIZ_GRID) {
+createDataSet(BIZ_GRID) {
 	geometry GC_INFO
 	force = true
 	from plan('상업지역 추출') {
-		loadGrid(squareGrid(dataset(CADASTRAL), size2d('100x100')))
+		loadGrid(SquareGrid(DataSet(CADASTRAL), Size2d('100x100')))
 		spatialSemiJoin('the_geom', TEMP_BIZ_AREA)
 		spatialJoin('the_geom', TEMP_BIG_CITIES, output: "*-{cell_pos},param.sgg_cd")
 		spatialJoin('the_geom', BLOCK_CENTERS, output: "*-{cell_pos},param.block_cd")
 	}
 }
-deleteDataset TEMP_BIG_CITIES, TEMP_BIZ_AREA
+deleteDataSet TEMP_BIG_CITIES, TEMP_BIZ_AREA
 
 
-createDataset("$OUT_DIR/grid100_land") {
+createDataSet("$OUT_DIR/grid100_land") {
 	geometry GC_INFO
 	force = true
 	from plan('대도시 상업지역 구역별 건축물 수와 면적 집계') {
@@ -78,7 +78,7 @@ createDataset("$OUT_DIR/grid100_land") {
 }
 
 def sumExpr = (0..23).collect { String.format("sale_amt_%02dtmst", it) }.join('+')
-createDataset(BIZ_GRID_SALES) {
+createDataSet(BIZ_GRID_SALES) {
 	geometry GC_INFO
 	force = true
 	from plan('대도시 상업지역 구역별 카드 일매출 집계') {
@@ -94,7 +94,7 @@ createDataset(BIZ_GRID_SALES) {
 
 def avgExpr = (0..23).collect { String.format("avg_%02dtmst", it) }.join('+')
 avgExpr = String.format("(%s)/24", avgExpr);
-createDataset(BIZ_GRID_FLOW_POP) {
+createDataSet(BIZ_GRID_FLOW_POP) {
 	geometry GC_INFO
 	force = true
 	from plan('대도시 상업지역 구역별 유동인구수 집계') {
@@ -110,7 +110,7 @@ createDataset(BIZ_GRID_FLOW_POP) {
 	}
 }
 
-createDataset("$OUT_DIR/grid100_pop") {
+createDataSet("$OUT_DIR/grid100_pop") {
 	geometry GC_INFO
 	force = true
 	from plan('대도시 상업지역 구역별 카드매출액 및 유동인구수 통합') {

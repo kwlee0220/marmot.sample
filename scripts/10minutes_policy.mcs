@@ -12,7 +12,7 @@ def RESULT = "tmp/10min/elderly_care_candidates";
 def GC_INFO = 'the_geom(EPSG:5186)'
 
 // '노인복지시설_경로당_추출_버퍼' 추출
-createDataset ELDERLY_CARE_BUFFER, {
+createDataSet ELDERLY_CARE_BUFFER, {
 	geometry GC_INFO
 	force = true
 	from plan('대도시지역 추출') {
@@ -22,10 +22,10 @@ createDataset ELDERLY_CARE_BUFFER, {
 		buffer "the_geom", 400
 	}
 }
-clusterDataset ELDERLY_CARE_BUFFER
+clusterDataSet ELDERLY_CARE_BUFFER
 
 // '인구밀도_2017_중심점추출_10000이상' 추출
-createDataset HIGH_DENSITY_CENTER, {
+createDataSet HIGH_DENSITY_CENTER, {
 	geometry GC_INFO
 	force = true
 	from plan('인구밀도_2017_중심점추출_10000이상') {
@@ -35,10 +35,10 @@ createDataset HIGH_DENSITY_CENTER, {
 		project 'the_geom'
 	}
 }
-clusterDataset HIGH_DENSITY_CENTER
+clusterDataSet HIGH_DENSITY_CENTER
 
 // 인구밀도_10000이상_행정동추출
-createDataset HIGH_DENSITY_HDONG, {
+createDataSet HIGH_DENSITY_HDONG, {
 	geometry GC_INFO
 	force = true
 	from plan('인구밀도_10000이상_행정동추출') {
@@ -47,9 +47,9 @@ createDataset HIGH_DENSITY_HDONG, {
 		spatialSemiJoin 'the_geom', HIGH_DENSITY_CENTER
 	}
 }
-clusterDataset HIGH_DENSITY_HDONG
+clusterDataSet HIGH_DENSITY_HDONG
 
-createDataset RESULT, {
+createDataSet RESULT, {
 	geometry GC_INFO
 	force = true
 	from plan('경로당필요지역추출') {
@@ -60,4 +60,4 @@ createDataset RESULT, {
 		shard 1
 	}
 }
-clusterDataset RESULT
+clusterDataSet RESULT

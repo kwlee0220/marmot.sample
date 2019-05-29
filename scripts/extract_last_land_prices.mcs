@@ -4,14 +4,14 @@ def LAND_PRICES_2018 = "토지/개별공시지가_2018";
 def OUTPUT = "$HOME/";
 
 
-createDataset(TEMP_CADASTRAL) {
+createDataSet(TEMP_CADASTRAL) {
 	geometry GC_INFO
 	force = true
 	from plan('연속지적도에 격자정보 부여') {
 		load(LAND_PRICES_2018)
 		
 		// 각 지적위치에 해당하는 1km 격자 정보를 첨부한다.
-		assignGridCell('the_geom', squareGrid(dataset(LAND_PRICES_2018), cellSize))
+		assignGridCell('the_geom', SquareGrid(DataSet(LAND_PRICES_2018), cellSize))
 		
 		// 격자와 지적 공간 정보 겹치는 영역을 계산하여, 지적에 격자가 차지하는 비율을 계산한다.
 		intersection("the_geom", "cell_geom", output:"overlap")
@@ -22,7 +22,7 @@ createDataset(TEMP_CADASTRAL) {
 }
 
 
-createDataset(TEMP_GAS_2018) {
+createDataSet(TEMP_GAS_2018) {
 	force = true
 	from plan('2018년 월별 가스 사용량 합계') {
 		// 2018년도 가스 사용량 데이터를 적재한다.
@@ -48,7 +48,7 @@ createDataset(TEMP_GAS_2018) {
 		update COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
 	}
 }
-createDataset(OUT_GRID_GAS2018) {
+createDataSet(OUT_GRID_GAS2018) {
 	geometry GC_INFO
 	force = true
 	from plan('2018년도 가스 사용량 격자 분석') {
@@ -67,10 +67,10 @@ createDataset(OUT_GRID_GAS2018) {
 		project("the_geom, x, y, *-{the_geom,x,y}")
 	}
 }
-deleteDataset TEMP_GAS_2018
+deleteDataSet TEMP_GAS_2018
 
 
-createDataset(TEMP_ELECTRO_2018) {
+createDataSet(TEMP_ELECTRO_2018) {
 	force = true
 	from plan('2018년 월별 전기 사용량 합계') {
 		// 2018년도 전기 사용량 데이터를 적재한다.
@@ -96,7 +96,7 @@ createDataset(TEMP_ELECTRO_2018) {
 		update COL_NAMES.collect { "if ($it == null) {$it = 0}" }.join(' ')
 	}
 }
-createDataset(OUT_GRID_ELECTRO2018) {
+createDataSet(OUT_GRID_ELECTRO2018) {
 	geometry GC_INFO
 	force = true
 	from plan('2018년도 전력 사용량 격자 분석') {
@@ -115,7 +115,7 @@ createDataset(OUT_GRID_ELECTRO2018) {
 		project("the_geom, x, y, *-{the_geom,x,y}")
 	}
 }
-deleteDataset TEMP_ELECTRO_2018
+deleteDataSet TEMP_ELECTRO_2018
 
 
 def LAND_COL_NAMES = (2012..2017).collect { "year_$it" }
@@ -123,7 +123,7 @@ def LAND_OUT_SCHEMA = LAND_COL_NAMES.inject(RecordSchema.builder()) {
 					b, n -> b.addColumn(n, DataType.LONG)
 				}.build()
 		
-createDataset(TEMP_LAND) {
+createDataSet(TEMP_LAND) {
 	force = true
 	from plan('2012-2018년 연도별 개별공시지가 집계') {
 		// 2012~2017년도 개별공시지가 데이터를 적재한다.
@@ -144,7 +144,7 @@ createDataset(TEMP_LAND) {
 def LAND_OUT_COLS = "left.{the_geom, pnu},right.{" + LAND_COL_NAMES.join(",") +
 					"},left.{개별공시지가 as year_2018}"
 def FULL_LAND_COL_NAMES = (2012..2018).collect { "year_$it" }
-createDataset(OUT_GRID_LAND) {
+createDataSet(OUT_GRID_LAND) {
 	geometry GC_INFO
 	force = true
 	from plan('2012~2018년도 년도별 개별공시지가 격자 분석') {
@@ -161,7 +161,7 @@ createDataset(OUT_GRID_LAND) {
 		project("*-{area}")
 		
 		// 각 지적위치에 해당하는 1km 격자 정보를 첨부한다.
-		assignGridCell('the_geom', squareGrid(dataset(LAND_PRICES_2018), cellSize))
+		assignGridCell('the_geom', SquareGrid(DataSet(LAND_PRICES_2018), cellSize))
 		
 		// 격자와 지적 공간 정보 겹치는 영역을 계산하여, 지적에 격자가 차지하는 비율을 계산하고,
 		// 이에 따라 공시가격을 보정한다.

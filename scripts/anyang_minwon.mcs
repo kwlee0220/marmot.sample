@@ -15,7 +15,7 @@ importShapefile("$MARMOT_DATA/기타/안양대제공/도봉구/공원", DS_PARK)
 	charset 'euc-kr'
 	force true
 }
-clusterDataset DS_PARK
+clusterDataSet DS_PARK
 
 importExcelFile("$MARMOT_DATA/기타/안양대제공/도봉구/민원", DS_MINWON) {
 	geometry GC_INFO
@@ -24,7 +24,7 @@ importExcelFile("$MARMOT_DATA/기타/안양대제공/도봉구/민원", DS_MINWO
 	pointColumns 'x,y'
 	force true
 }
-clusterDataset DS_MINWON
+clusterDataSet DS_MINWON
 
 importExcelFile("$MARMOT_DATA/기타/안양대제공/도봉구/공원_민원", DS_PARK_MINWON) {
 	geometry GC_INFO
@@ -33,7 +33,7 @@ importExcelFile("$MARMOT_DATA/기타/안양대제공/도봉구/공원_민원", D
 	pointColumns 'x,y'
 	force true
 }
-clusterDataset DS_PARK_MINWON
+clusterDataSet DS_PARK_MINWON
 
 importExcelFile("$MARMOT_DATA/기타/안양대제공/도봉구/공원_감성분석", DS_EMOTION) {
 	headerFirst true
@@ -46,7 +46,7 @@ importShapefile("$MARMOT_DATA/기타/안양대제공/도봉구/필지", DS_PARCE
 	charset 'euc-kr'
 	force true
 }
-clusterDataset DS_PARCEL
+clusterDataSet DS_PARCEL
 
 importShapefile("$MARMOT_DATA/기타/안양대제공/도봉구/GRID_100", DS_GRID) {
 	geometry GC_INFO
@@ -55,7 +55,7 @@ importShapefile("$MARMOT_DATA/기타/안양대제공/도봉구/GRID_100", DS_GRI
 	force true
 }
 
-createDataset('분석결과/안양대/도봉구/공원_감석분석_맵') {
+createDataSet('분석결과/안양대/도봉구/공원_감석분석_맵') {
 	geometry GC_INFO
 	force = true
 	from plan('이름기반 공원 감성분석 맵매칭') {
@@ -65,7 +65,7 @@ createDataset('분석결과/안양대/도봉구/공원_감석분석_맵') {
 	}
 }
 
-createDataset('분석결과/안양대/도봉구/공원_감석분석_맵_ID') {
+createDataSet('분석결과/안양대/도봉구/공원_감석분석_맵_ID') {
 	geometry GC_INFO
 	force = true
 	from plan('이름기반 공원 감성분석 맵매칭_ID') {
@@ -76,7 +76,7 @@ createDataset('분석결과/안양대/도봉구/공원_감석분석_맵_ID') {
 }
 
 
-createDataset('분석결과/안양대/도봉구/필지별_공원민원수') {
+createDataSet('분석결과/안양대/도봉구/필지별_공원민원수') {
 	geometry GC_INFO
 	force = true
 	from plan('필지별 공원관련 민원수 합계') {
@@ -89,7 +89,7 @@ createDataset('분석결과/안양대/도봉구/필지별_공원민원수') {
 	}
 }
 
-createDataset('분석결과/안양대/도봉구/격자별_공원민원수') {
+createDataSet('분석결과/안양대/도봉구/격자별_공원민원수') {
 	geometry GC_INFO
 	force = true
 	from plan('격자별 공원관련 민원수 합계') {
@@ -99,7 +99,7 @@ createDataset('분석결과/안양대/도봉구/격자별_공원민원수') {
 	}
 }
 
-createDataset('분석결과/안양대/도봉구/팀별_필지별_민원수') {
+createDataSet('분석결과/안양대/도봉구/팀별_필지별_민원수') {
 	geometry GC_INFO
 	force = true
 	from plan('담당팀_필지별_민원수 합계') {
@@ -111,7 +111,7 @@ createDataset('분석결과/안양대/도봉구/팀별_필지별_민원수') {
 	}
 }
 
-createDataset('분석결과/안양대/도봉구/격자별_팀별_민원수') {
+createDataSet('분석결과/안양대/도봉구/격자별_팀별_민원수') {
 	geometry GC_INFO
 	force = true
 	from plan('격자별_팀별_민원수') {

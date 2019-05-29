@@ -12,7 +12,7 @@ def TEMP_FLOWPOP_EMD = "$TEMP_DIR/pop_emd";
 def RESULT = "tmp/oldbld/result";
 
 
-createDataset(TEMP_BLOCKS_EMD) {
+createDataSet(TEMP_BLOCKS_EMD) {
 	force = true
 	from plan("읍면동별 집계구 수집") {
 		load("구역/지오비전_집계구_Point")
@@ -39,7 +39,7 @@ if ( _date != null ) {
 else { old = 0; be5 = 0; }
 """;
 
-createDataset(TEMP_BUILDINGS_EMD) {
+createDataSet(TEMP_BUILDINGS_EMD) {
 	force = true
 	from plan("행정구역당 20년 이상된 건물 집계") {
 		load(BUILDINGS)
@@ -57,7 +57,7 @@ createDataset(TEMP_BUILDINGS_EMD) {
 
 
 def sumExpr = (0..23).collect {String.format("sale_amt_%02dtmst", it)}.join('+')
-createDataset(TEMP_CARD_SALES_EMD) {
+createDataSet(TEMP_CARD_SALES_EMD) {
 	force = true
 	from plan("읍면동별 2015년도 카드매출 집계") {
 		load(CARD_SALES)
@@ -71,7 +71,7 @@ createDataset(TEMP_CARD_SALES_EMD) {
 
 
 def avgExpr = '(' + (0..23).collect { String.format("avg_%02dtmst", it) }.join('+') + ')/24.0'
-createDataset(TEMP_FLOWPOP_EMD) {
+createDataSet(TEMP_FLOWPOP_EMD) {
 	force = true
 	from plan("읍면동별 2015년도 유동인구 집계") {
 		load(FLOW_POP)
@@ -84,7 +84,7 @@ createDataset(TEMP_FLOWPOP_EMD) {
 }
 
 
-createDataset(RESULT) {
+createDataSet(RESULT) {
 	force = true
 	from plan("결과 통합") {
 		loadHashJoinFile(TEMP_BLOCKS_EMD, "emd_cd", TEMP_CARD_SALES_EMD, "emd_cd",
@@ -95,4 +95,4 @@ createDataset(RESULT) {
 	}
 }
 
-deleteDataset TEMP_BLOCKS_EMD, TEMP_BUILDINGS_EMD, TEMP_CARD_SALES_EMD, TEMP_FLOWPOP_EMD
+deleteDataSet TEMP_BLOCKS_EMD, TEMP_BUILDINGS_EMD, TEMP_CARD_SALES_EMD, TEMP_FLOWPOP_EMD

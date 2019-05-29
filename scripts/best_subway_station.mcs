@@ -7,7 +7,7 @@ def TEMP_FLOW_POP = "분석결과/지하철역사_추천/유동인구";
 def TEMP_TAXI_LOG = "분석결과/지하철역사_추천/택시로그";
 
 
-createDataset(TEMP_STATIONS) {
+createDataSet(TEMP_STATIONS) {
 	geometry GC_INFO
 	force = true
 	from plan("서울지역 지하철역사 1KM 버퍼") {
@@ -34,7 +34,7 @@ def seoulBoundary = runPlanToGeometry plan("get_seoul") {
 
 
 def avgExpr = '(' + (0..23).collect { String.format("avg_%02dtmst", it) }.join('+') + ')/24.0'
-createDataset("$OUT_DIR/역사외_지역/유동인구/격자별_집계") {
+createDataSet("$OUT_DIR/역사외_지역/유동인구/격자별_집계") {
 	geometry GC_INFO
 	force = true
 	from plan("'500mX500m 격자단위 유동인구' 집계") {
@@ -51,7 +51,7 @@ createDataset("$OUT_DIR/역사외_지역/유동인구/격자별_집계") {
 		aggregateByGroup("block_cd", tags:'the_geom') { avg = avg('day_avg') }
 		
 		// 각 소지역이 폼함되는 사각 셀정보를 첨부 한다.
-		assignGridCell('the_geom', squareGrid(seoulBoundary.envelopeInternal, size2d(500,500)))
+		assignGridCell('the_geom', SquareGrid(seoulBoundary.envelopeInternal, Size2d(500,500)))
 		project("cell_geom as the_geom, cell_id, cell_pos, avg")
 		
 		// 사각 그리드 셀 단위로 소지역을 그룹핑하고, 각 그룹에 속한 유동인구를 모두 더한다.
@@ -63,7 +63,7 @@ executeProcess "normalize", input_dataset: "$OUT_DIR/역사외_지역/유동인�
 				input_features: "avg", output_features: "normalized"
 
 
-createDataset("$OUT_DIR/역사외_지역/택시로그/격자별_집계") {
+createDataSet("$OUT_DIR/역사외_지역/택시로그/격자별_집계") {
 	geometry GC_INFO
 	force = true
 	from plan("'택시 운행 로그'에서 500mX500m 격자단위 승하차 집계") {
@@ -82,7 +82,7 @@ createDataset("$OUT_DIR/역사외_지역/택시로그/격자별_집계") {
 		spatialSemiJoin("the_geom", TEMP_STATIONS, negated: true)
 		
 		// 각 로그 위치가 포함된 사각 셀을  부가한다.
-		assignGridCell("the_geom", squareGrid(seoulBoundary.envelopeInternal, size2d("500x500")))
+		assignGridCell("the_geom", SquareGrid(seoulBoundary.envelopeInternal, Size2d("500x500")))
 		project("cell_geom as the_geom, cell_id, cell_pos")
 				
 		// 사각 그리드 셀 단위로 그룹핑하고, 각 그룹에 속한 레코드 수를 계산한다.
@@ -107,7 +107,7 @@ normalized = normalized + param_normalized;
 """
 def outCols = 'the_geom,cell_id,normalized,param.{the_geom as param_geom,cell_id as param_cell_id,normalized as param_normalized}'
 
-createDataset("분석결과/지하철역사_추천/최종결과") {
+createDataSet("분석결과/지하철역사_추천/최종결과") {
 	geometry GC_INFO
 	force = true
 	from plan("그리드 셀단위 유동인구 비율과 택시 승하차 로그 비율 합계 계산") {
@@ -118,4 +118,4 @@ createDataset("분석결과/지하철역사_추천/최종결과") {
 	}
 }
 
-deleteDataset TEMP_STATIONS, TEMP_FLOW_POP, TEMP_TAXI_LOG
+deleteDataSet TEMP_STATIONS, TEMP_FLOW_POP, TEMP_TAXI_LOG
