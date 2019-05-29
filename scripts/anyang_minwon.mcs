@@ -11,7 +11,7 @@ def MARMOT_DATA = System.getenv()['MARMOT_DATA']
 
 importShapefile("$MARMOT_DATA/기타/안양대제공/도봉구/공원", DS_PARK) {
 	geometry GC_INFO
-	srid 'EPSG:5179'
+	shpSrid 'EPSG:5179'
 	charset 'euc-kr'
 	force true
 }
@@ -42,7 +42,7 @@ importExcelFile("$MARMOT_DATA/기타/안양대제공/도봉구/공원_감성분�
 
 importShapefile("$MARMOT_DATA/기타/안양대제공/도봉구/필지", DS_PARCEL) {
 	geometry GC_INFO
-	srid 'EPSG:5179'
+	shpSrid 'EPSG:5179'
 	charset 'euc-kr'
 	force true
 }
@@ -50,7 +50,7 @@ clusterDataSet DS_PARCEL
 
 importShapefile("$MARMOT_DATA/기타/안양대제공/도봉구/GRID_100", DS_GRID) {
 	geometry GC_INFO
-	srid 'EPSG:5179'
+	shpSrid 'EPSG:5179'
 	charset 'euc-kr'
 	force true
 }
