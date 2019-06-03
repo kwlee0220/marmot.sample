@@ -13,6 +13,7 @@ import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.geo.GeoClientUtils;
 import marmot.geo.command.ClusterDataSetOptions;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -64,10 +65,9 @@ public class SplitDtgByCadastral {
 					.filterSpatially("the_geom", INTERSECTS, validBounds)
 					
 					.spatialJoin("the_geom", TEMP_POLITICAL, "*-{the_geom},param.sig_cd")
-					
-					.groupBy("sig_cd")
-						.workerCount(nworkers)
-						.storeEachGroup(RESULT, StoreDataSetOptions.create())
+
+					.storeByGroup(Group.ofKeys("sig_cd").workerCount(nworkers), RESULT,
+									StoreDataSetOptions.create())
 					.build();
 		marmot.deleteDir(RESULT);
 		marmot.execute(plan);

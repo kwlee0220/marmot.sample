@@ -40,7 +40,7 @@ public class SampleCreateDataSet {
 		ds = marmot.createDataSet("tmp/result", schema, StoreDataSetOptions.create().force(true));
 		System.out.printf("block_size=%d, compression=%s(=false)%n", ds.getBlockSize(), ds.isCompressed());
 		
-		ds = marmot.createDataSet("tmp/result", schema, StoreDataSetOptions.create().blockSize(64).compress(true).force(true));
+		ds = marmot.createDataSet("tmp/result", schema, StoreDataSetOptions.create().blockSize(64).compression(true).force(true));
 		System.out.printf("block_size=%d(=64), compression=%s(=true)%n", ds.getBlockSize(), ds.isCompressed());
 		
 		// 생성할 데이터세트에 저장될 레코드들의 리스트를 생성.

@@ -9,6 +9,7 @@ import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
+import marmot.plan.Group;
 import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -41,12 +42,10 @@ public class A03_CountDtgByRoad {
 					.filter("운행속도 > 0")
 					.spatialJoin("the_geom", ROADS, "param.*,차량번호,ts",
 								SpatialJoinOptions.create().withinDistance(15))
-					.groupBy("db_id,차량번호")
-						.withTags("the_geom,id")
-						.run(aggrPlan)
-					.groupBy("db_id")
-						.withTags("the_geom,id")
-						.aggregate(AggregateFunction.SUM("count").as("count"))
+					.runPlanByGroup(Group.ofKeys("db_id,차량번호")
+										.tags("the_geom,id"), aggrPlan)
+					.aggregateByGroup(Group.ofKeys("db_id").tags("the_geom,id"),
+							AggregateFunction.SUM("count").as("count"))
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(ROADS).getGeometryColumnInfo();
 		DataSet result = marmot.createDataSet(OUTPUT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));

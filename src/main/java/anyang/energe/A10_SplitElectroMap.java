@@ -6,6 +6,7 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -44,8 +45,8 @@ public class A10_SplitElectroMap {
 		Plan plan = marmot.planBuilder("2017 전기사용량 연속지적도 매칭 분할")
 						.load(INPUT)
 						.defineColumn("sido:string", "pnu.substring(0, 2)")
-						.groupBy("sido")
-							.storeEachGroup(OUTPUT, StoreDataSetOptions.create().geometryColumnInfo(info))
+						.storeByGroup(Group.ofKeys("sido"), OUTPUT,
+										StoreDataSetOptions.create().geometryColumnInfo(info))
 						.build();
 		
 		marmot.deleteDir(OUTPUT);

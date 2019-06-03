@@ -1,0 +1,44 @@
+
+def DTG = "교통/dtg_t";
+def EMD = "구역/읍면동";
+
+def OUT_DIR = "분석결과/안양대/네트워크분석"
+def OUT_DTG_BY_EMD = "$OUT_DIR/dtg_by_emd"
+
+def TEMP_DIR = "tmp/anyang/dtg"
+def TEMP_EMD_WGS84 = "$TEMP_DIR/emd_wgs84"
+
+def INFO_WGS84 = 'the_geom(EPSG:4326)'
+
+
+createDataSet(TEMP_EMD_WGS84) {
+	geometry INFO_WGS84
+	force = true
+	from plan('읍면동 데이터 좌표계 변환') {
+		load(EMD)
+		transformCrs('the_geom', 'EPSG:5186', 'EPSG:4326')
+		project("the_geom,emd_cd")
+	}
+}
+clusterDataSet TEMP_EMD_WGS84
+
+
+createDataSet(OUT_DTG_BY_EMD) {
+	geometry INFO_WGS84
+	force = true
+	from plan('읍면동별 DTG 데이터 수 합계') {
+		load(DTG)
+		filter("운행속도 > 0")
+		spatialJoin("the_geom", TEMP_EMD_WGS84, output: "param.{emd_cd},차량번호 as car_no,ts")
+		
+		// Group-By 성능을 위해 emd_cd 의 자료형을 int로 변환
+		defineColumn("emd_cd:int")
+		
+		aggregateByGroup("emd_cd", workerCount: 57) { count = COUNT() }
+		
+		// emd_cd의 자료형을 원래대로 String으로 바꾸고, 읍면동 정보를 붙이기 위해
+		// '읍면동' 데이터와 조인을 수행
+		defineColumn("emd_cd:string")
+		hashJoin("emd_cd", EMD, "emd_cd", output: "param.{the_geom,emd_cd,emd_kor_nm},count", workerCount: 1)
+	}
+}

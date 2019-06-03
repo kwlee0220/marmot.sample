@@ -14,6 +14,7 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -62,11 +63,11 @@ public class Step1Building {
 							// 대도시 상업지역과 겹치는 건축물 구역을 뽑는다. 
 							.spatialJoin("the_geom", BIZ_GRID, "건축물용도코드,대지면적,param.*")
 							// 그리드 셀, 건축물 용도별로 건물 수와 총 면점을 집계한다. 
-							.groupBy("cell_id,block_cd,건축물용도코드")
-								.withTags(geomCol + ",sgg_cd")
-								.workerCount(3)
-								.aggregate(SUM("대지면적").as("대지면적"),
-											COUNT().as("bld_cnt"))
+							.aggregateByGroup(Group.ofKeys("cell_id,block_cd,건축물용도코드")
+													.tags(geomCol + ",sgg_cd")
+													.workerCount(3),
+												SUM("대지면적").as("대지면적"),
+												COUNT().as("bld_cnt"))
 							.project(String.format("%s,*-{%s}", geomCol, geomCol))
 							.store(RESULT)
 							.build();

@@ -13,6 +13,7 @@ import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.geo.advanced.Power;
 import marmot.optor.geo.advanced.WeightFunction;
+import marmot.plan.Group;
 import marmot.process.geo.E2SFCAParameters;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -97,10 +98,9 @@ public class SampleE2SFCA {
 		
 		plan = marmot.planBuilder("combine two results")
 					.load(RESULT_CONCAT)
-					.groupBy("block_cd")
-						.withTags("the_geom")
-						.aggregate(SUM("index_08").as("index_08"),
-									SUM("index_15").as("index_15"))
+					.aggregateByGroup(Group.ofKeys("block_cd").tags("the_geom"),
+										SUM("index_08").as("index_08"),
+										SUM("index_15").as("index_15"))
 					.build();
 		result = marmot.createDataSet(RESULT, plan,
 							StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));

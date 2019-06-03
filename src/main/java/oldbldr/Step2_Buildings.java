@@ -11,6 +11,7 @@ import marmot.Plan;
 import marmot.RecordScript;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -66,10 +67,9 @@ public class Step2_Buildings {
 					.defineColumn("emd_cd:string", "pnu.substring(0,8)")
 					.expand("old:byte,be5:byte", RecordScript.of(init, trans))
 					.project("emd_cd,old,be5")
-					.groupBy("emd_cd")
-						.workerCount(1)
-						.aggregate(SUM("old").as("old_cnt"), SUM("be5").as("be5_cnt"),
-									COUNT().as("bld_cnt"))
+					.aggregateByGroup(Group.ofKeys("emd_cd").workerCount(1),
+										SUM("old").as("old_cnt"), SUM("be5").as("be5_cnt"),
+										COUNT().as("bld_cnt"))
 					.defineColumn("old_ratio:double", "(double)old_cnt/bld_cnt")
 					.store(RESULT)
 					.build();

@@ -81,7 +81,7 @@ public class BuildTenMinutePolicyFull {
 						.project("the_geom,pnu")
 						.spatialSemiJoin(gcInfo.name(), ELDERLY_CARE_BUFFER,
 										SpatialJoinOptions.create().negated(true))
-						.clipJoin(gcInfo.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석
+						.arcClip(gcInfo.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석
 						.shard(1)
 						.store(RESULT)
 						.build();

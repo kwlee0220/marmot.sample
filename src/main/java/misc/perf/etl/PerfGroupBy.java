@@ -1,6 +1,8 @@
 package misc.perf.etl;
 
 
+import static marmot.optor.AggregateFunction.COUNT;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
@@ -9,6 +11,7 @@ import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 import utils.UnitUtils;
@@ -85,8 +88,7 @@ public class PerfGroupBy {
 							.filter("운행속도 > 80")
 							.defineColumn("hour:byte", "DateTimeGetHour(ts)")
 							.filter("hour >= 8 && hour <= 10")
-							.groupBy("차량번호")
-								.aggregate(AggregateFunction.MAX("운행속도"))
+							.aggregateByGroup(Group.ofKeys("차량번호"), AggregateFunction.MAX("운행속도"))
 							.build();
 
 		StopWatch watch = StopWatch.start();

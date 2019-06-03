@@ -19,6 +19,7 @@ import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
 import marmot.geo.command.ClusterDataSetOptions;
 import marmot.plan.GeomOpOptions;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -72,11 +73,10 @@ public class FindUnsafeChildZone {
 					.transformCrs("the_geom", "EPSG:4326", "EPSG:5186")
 					
 					.spatialJoin("the_geom", TEMP_ZONE, "param.*,운행속도")
-					
-					.groupBy("id")
-						.withTags("the_geom,대상시설명")
-						.workerCount(WORKER_COUNT)
-						.aggregate(AVG("운행속도"), COUNT())
+
+					.aggregateByGroup(Group.ofKeys("id").tags("the_geom,대상시설명")
+											.workerCount(WORKER_COUNT), AVG("운행속도"),
+										COUNT())
 					.filter("count > 10000")	
 						
 					.defineColumn("speed:int", "avg")
@@ -111,7 +111,7 @@ public class FindUnsafeChildZone {
 		Plan plan;
 		plan = marmot.planBuilder("buffer child zones")
 					.load(CHILD_ZONE)
-					.buffer("the_geom", DISTANCE, GeomOpOptions.create().outputColumn("area"))
+					.buffer("the_geom", DISTANCE, GeomOpOptions.OUTPUT("area"))
 					.project("the_geom,id,대상시설명,area")
 					.store(outDsId)
 					.build();

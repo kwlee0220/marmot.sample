@@ -4,6 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -23,9 +24,8 @@ public class SampleTakeByGroup {
 		Plan plan = marmot.planBuilder("group_by")
 							.load(INPUT)
 							.filter("sig_cd.startsWith('11')")
-							.groupBy("sig_cd")
-								.orderBy("sub_sta_sn:A")
-								.take(2)
+							.takeByGroup(Group.ofKeys("sig_cd")
+											.orderBy("sub_sta_sn:A"), 2)
 							.project("sig_cd, sub_sta_sn")
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));

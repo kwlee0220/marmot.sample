@@ -76,9 +76,9 @@ public class WeakFireDeathArea {
 		// 화재피해 영역 중에서 서울 읍면동과 겹치는 부분을 clip 하고, 각 피해 영역의 중심점을 구한다.
 		Plan plan2 = marmot.planBuilder("clip_bad_area")
 								.load(LAYER_SEOUL)
-								.clipJoin("the_geom", "tmp/종합병원_위치_추천/서울_화재")
+								.arcClip("the_geom", "tmp/종합병원_위치_추천/서울_화재")
 								.centroid("the_geom")
-								.clipJoin("the_geom", "tmp/종합병원_위치_추천/병원_원거리_영역")
+								.arcClip("the_geom", "tmp/종합병원_위치_추천/병원_원거리_영역")
 								.store("tmp/종합병원_위치_추천/분석결과")
 								.build();
 		result = marmot.createDataSet("tmp/종합병원_위치_추천/분석결과", plan2, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));

@@ -9,7 +9,7 @@ def TEMP_BLOCKS_EMD = "$TEMP_DIR/blocks_emd"
 def TEMP_BUILDINGS_EMD = "$TEMP_DIR/buildings_emd";
 def TEMP_CARD_SALES_EMD = "$TEMP_DIR/card_sale_emd";
 def TEMP_FLOWPOP_EMD = "$TEMP_DIR/pop_emd";
-def RESULT = "tmp/oldbld/result";
+def RESULT = "분석결과/건물재생/result";
 
 
 createDataSet(TEMP_BLOCKS_EMD) {
@@ -44,12 +44,12 @@ createDataSet(TEMP_BUILDINGS_EMD) {
 	from plan("행정구역당 20년 이상된 건물 집계") {
 		load(BUILDINGS)
 		defineColumn("emd_cd:string", "pnu.substring(0,8)")
-		expand("old:byte,be5:byte", RecordScript.of(init, trans))
+		expand("old:byte,be5:byte", RecordScript(init, trans))
 		project("emd_cd,old,be5")
 		aggregateByGroup('emd_cd', workerCount: 1) {
-			old_cnt = sum('old')
-			be5_cnt = sum('be5')
-			bld_cnt = count()
+			old_cnt = SUM('old')
+			be5_cnt = SUM('be5')
+			bld_cnt = COUNT()
 		}
 		defineColumn("old_ratio:double", "(double)old_cnt/bld_cnt")
 	}
@@ -63,9 +63,9 @@ createDataSet(TEMP_CARD_SALES_EMD) {
 		load(CARD_SALES)
 		defineColumn("sale_amt:double", sumExpr)
 		project("block_cd,sale_amt")
-		aggregateByGroup('block_cd') { sale_amt = sum('sale_amt') }
+		aggregateByGroup('block_cd') { sale_amt = SUM('sale_amt') }
 		hashJoin("block_cd", TEMP_BLOCKS_EMD, "block_cd", output: "*,param.{emd_cd}")
-		aggregateByGroup('emd_cd') { sale_amt = sum('sale_amt') }
+		aggregateByGroup('emd_cd') { sale_amt = SUM('sale_amt') }
 	}
 }
 
@@ -77,9 +77,9 @@ createDataSet(TEMP_FLOWPOP_EMD) {
 		load(FLOW_POP)
 		defineColumn("avg:double", avgExpr)
 		project("block_cd,avg")
-		aggregateByGroup('block_cd') { avg = avg('avg') }
+		aggregateByGroup('block_cd') { avg = AVG('avg') }
 		hashJoin("block_cd", TEMP_BLOCKS_EMD, "block_cd", output: "*,param.{emd_cd}")
-		aggregateByGroup('emd_cd', workerCount: 1) { pop_avg = avg('avg') }
+		aggregateByGroup('emd_cd', workerCount: 1) { pop_avg = AVG('avg') }
 	}
 }
 
@@ -96,3 +96,4 @@ createDataSet(RESULT) {
 }
 
 deleteDataSet TEMP_BLOCKS_EMD, TEMP_BUILDINGS_EMD, TEMP_CARD_SALES_EMD, TEMP_FLOWPOP_EMD
+deleteDataSet TEMP_DIR

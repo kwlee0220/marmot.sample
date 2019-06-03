@@ -81,7 +81,7 @@ public class BuildTenMinutePolicy {
 						.spatialSemiJoin(gcInfo.name(), ELDERLY_CARE_BUFFER,	// (3) 교차반전
 										SpatialJoinOptions.create().negated(true)
 																.clusterOuterRecords(true))
-						.clipJoin(gcInfo.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석
+						.arcClip(gcInfo.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석
 						.shard(1)
 						.store(RESULT)
 						.build();

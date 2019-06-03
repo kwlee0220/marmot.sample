@@ -11,6 +11,7 @@ import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.JoinOptions;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 
@@ -49,11 +50,10 @@ public class C03_CountDtgByRoad {
 					.transformCrs(dtgInfo.name(), dtgInfo.srid(), gcInfo.srid())
 					.knnJoin("the_geom", ROADS, 1, RADIUS,
 							"param.{link_id},차량번호 as car_no,ts")
-					.groupBy("link_id,car_no")
-						.workerCount(37)
-						.run(aggrPlan)
-					.groupBy("link_id")
-						.aggregate(AggregateFunction.SUM("count").as("count"))
+					.runPlanByGroup(Group.ofKeys("link_id,car_no")
+										.workerCount(37), aggrPlan)
+					.aggregateByGroup(Group.ofKeys("link_id"),
+									AggregateFunction.SUM("count").as("count"))
 					.hashJoin("link_id", ROADS, "link_id", "param.{the_geom,link_id,road_name},count",
 							JoinOptions.INNER_JOIN(1))
 					.build();

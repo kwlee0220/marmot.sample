@@ -9,6 +9,8 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.optor.AggregateFunction;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 
 
@@ -30,10 +32,9 @@ public class SampleStoreKeyedDataSet {
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		Plan plan = marmot.planBuilder("test StoreKeyedDataSet")
 						.load(INPUT)
-						.groupBy("sig_cd")
-							.count()
-//							.storeEachGroup(RESULT, DataSetOption.FORCE,
-//											DataSetOption.GEOMETRY(gcInfo))
+						.aggregateByGroup(Group.ofKeys("sig_cd"), AggregateFunction.COUNT())
+//						.storeEachGroup(RESULT, DataSetOption.FORCE,
+//										DataSetOption.GEOMETRY(gcInfo))
 						.build();
 //		marmot.execute(plan, ExecutePlanOption.DISABLE_LOCAL_EXEC);
 		DataSet result = marmot.createDataSet(RESULT, plan, ExecutePlanOptions.create().disableLocalExecution(true),

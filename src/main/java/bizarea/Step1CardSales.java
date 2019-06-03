@@ -14,6 +14,7 @@ import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -68,10 +69,10 @@ public class Step1CardSales {
 									new JoinOptions().workerCount(64))
 							// 한 그리드 셀에 여러 소지역 매출액 정보가 존재하면,
 							// 해당 매출액은 모두 더한다. 
-							.groupBy("std_ym,cell_id")
-								.withTags(geomCol + ",sgg_cd")
-								.workerCount(3)
-								.aggregate(SUM("daily_sales").as("daily_sales"))
+							.aggregateByGroup(Group.ofKeys("std_ym,cell_id")
+													.tags(geomCol + ",sgg_cd")
+													.workerCount(3),
+												SUM("daily_sales").as("daily_sales"))
 							.project(String.format("%s,*-{%s}", geomCol, geomCol))
 							.store(RESULT)
 							.build();

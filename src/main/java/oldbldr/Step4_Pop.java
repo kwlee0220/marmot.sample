@@ -13,6 +13,7 @@ import marmot.DataSet;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -57,12 +58,9 @@ public class Step4_Pop {
 					.load(FLOW_POP)
 					.defineColumn("avg:double", avgExpr)
 					.project("block_cd,avg")
-					.groupBy("block_cd")
-						.aggregate(AVG("avg").as("avg"))
+					.aggregateByGroup(Group.ofKeys("block_cd"), AVG("avg").as("avg"))
 					.hashJoin("block_cd", BLOCKS, "block_cd", "*,param.{emd_cd}", INNER_JOIN())
-					.groupBy("emd_cd")
-						.workerCount(1)
-						.aggregate(AVG("avg").as("pop_avg"))
+					.aggregateByGroup(Group.ofKeys("emd_cd").workerCount(1), AVG("avg").as("pop_avg"))
 					.store(RESULT)
 					.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));

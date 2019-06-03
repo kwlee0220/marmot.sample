@@ -19,6 +19,7 @@ import marmot.command.MarmotClientCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
 import marmot.optor.geo.SquareGrid;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -85,11 +86,10 @@ public class TagDtgWithGrid {
 					.assignGridCell("the_geom", new SquareGrid(bounds, CELL_SIZE), false)
 					.centroid("cell_geom")
 					.filterSpatially("the_geom", INTERSECTS, kyounggiGeom)
-					
-					.groupBy("cell_id")
-						.withTags("the_geom,cell_pos")
-						.workerCount(WORKER_COUNT)
-						.aggregate(COUNT())
+
+					.aggregateByGroup(Group.ofKeys("cell_id").tags("the_geom,cell_pos")
+											.workerCount(WORKER_COUNT),
+										COUNT())
 						
 					.expand("grid_x:int,grid_y:int", "grid_x = cell_pos.x; grid_y = cell_pos.y")
 					.project("the_geom,grid_x,grid_y,count")

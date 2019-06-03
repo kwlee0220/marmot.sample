@@ -13,6 +13,7 @@ import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.SquareGrid;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.Size2d;
 
@@ -38,10 +39,9 @@ public class SampleAssignSquareGridCell {
 						.load(INPUT)
 						.assignGridCell("the_geom", new SquareGrid(border, cellSize), false)
 						.defineColumn("count:int", "1")
-						.groupBy("cell_id")
-							.withTags("cell_geom,cell_pos")
-							.workerCount(11)
-							.aggregate(AggregateFunction.SUM("count").as("count"))
+						.aggregateByGroup(Group.ofKeys("cell_id").tags("cell_geom,cell_pos")
+												.workerCount(11),
+											AggregateFunction.SUM("count").as("count"))
 						.expand("x:int,y:int", "x = cell_pos.x; y = cell_pos.y")
 						.project("cell_geom as the_geom,x,y,count")
 						.build();

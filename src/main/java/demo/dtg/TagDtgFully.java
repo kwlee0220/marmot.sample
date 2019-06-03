@@ -92,7 +92,7 @@ public class TagDtgFully {
 					.knnOuterJoin("the_geom", ROAD, 1, DIST, "*-{x좌표,y좌표},param.{link_id}")
 					
 					.assignGridCell("the_geom", new SquareGrid(bounds, CELL_SIZE), true)
-					.centroid("cell_geom", GeomOpOptions.create().outputColumn("grid"))
+					.centroid("cell_geom", false, GeomOpOptions.OUTPUT("grid"))
 					
 					.store(RESULT)
 					.build();

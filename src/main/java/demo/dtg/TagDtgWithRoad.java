@@ -18,6 +18,8 @@ import marmot.command.MarmotClientCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
 import marmot.geo.command.ClusterDataSetOptions;
+import marmot.optor.AggregateFunction;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -82,11 +84,10 @@ public class TagDtgWithRoad {
 					
 					.transformCrs("the_geom", "EPSG:4326", "EPSG:5186")
 					.knnJoin("the_geom", TEMP_ROAD, 1, DIST, "param.{the_geom, link_id, road_name}")
-					
-					.groupBy("link_id")
-						.withTags("the_geom")
-						.workerCount(WORKER_COUNT)
-						.aggregate(COUNT())
+
+					.aggregateByGroup(Group.ofKeys("link_id").tags("the_geom")
+											.workerCount(WORKER_COUNT),
+										COUNT())
 					
 					.store(RESULT)
 					.build();

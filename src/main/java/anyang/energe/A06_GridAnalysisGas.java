@@ -1,5 +1,6 @@
 package anyang.energe;
 
+import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.SUM;
 
 import java.util.Arrays;
@@ -17,6 +18,7 @@ import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.SquareGrid;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -71,10 +73,8 @@ public class A06_GridAnalysisGas {
 					.intersection("the_geom", "cell_geom", "overlap")
 					.defineColumn("ratio:double", "(ST_Area(overlap) /  ST_Area(the_geom))")
 					.update(updateExpr)
-					.groupBy("cell_id")
-						.withTags("cell_geom,cell_pos")
-						.workerCount(17)
-						.aggregate(aggrs)
+					.aggregateByGroup(Group.ofKeys("cell_id").withTags("cell_geom,cell_pos")
+											.workerCount(17), aggrs)
 					.expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
 					.project("cell_geom as the_geom, x, y, *-{cell_geom,x,y}")
 					.store(OUTPUT)

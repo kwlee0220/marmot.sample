@@ -9,6 +9,7 @@ import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 import utils.UnitUtils;
@@ -88,10 +89,8 @@ public class PerfSpatialJoin {
 							.spatialJoin("the_geom", ELDERLY,
 										"param.{the_geom,bplc_nm,row_num},hour,운행속도")
 							.spatialJoin("the_geom", HJD, "*-{the_geom},param.hcode")
-							.groupBy("bplc_nm,hour")
-								.withTags("hcode")
-								.workerCount(nworkers)
-								.aggregate(AggregateFunction.MAX("운행속도"))
+							.aggregateByGroup(Group.ofKeys("bplc_nm,hour").withTags("hcode"),
+												AggregateFunction.MAX("운행속도"))
 							.project("bplc_nm,hcode,hour,max")
 							.build();
 

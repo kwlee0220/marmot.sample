@@ -14,6 +14,7 @@ import marmot.Plan;
 import marmot.RecordSchema;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.type.DataType;
 import utils.CommandLine;
@@ -90,8 +91,7 @@ public class A03_MapMatchingGas {
 		Plan plan = marmot.planBuilder("put_side_by_size_gas")
 						.load(INPUT)
 						.expand("tag:string", "tag = 'gas_' + year")
-						.groupBy("pnu")
-							.putSideBySide(outSchema, "usage", "tag")
+						.reduceToSingleRecordByGroup(Group.ofKeys("pnu"), outSchema, "tag", "usage")
 						.store(INTERM)
 						.build();
 		marmot.createDataSet(INTERM, plan, StoreDataSetOptions.create().force(true));

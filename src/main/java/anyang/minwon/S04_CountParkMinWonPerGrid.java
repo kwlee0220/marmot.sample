@@ -8,6 +8,8 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.optor.AggregateFunction;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 
@@ -32,9 +34,8 @@ public class S04_CountParkMinWonPerGrid {
 		plan = marmot.planBuilder("격자별 공원관련 민원수 합계")
 					.load(GRID)
 					.spatialOuterJoin("the_geom", PARK_MINWON, "the_geom,spo_no_cd")
-					.groupBy("spo_no_cd")
-						.withTags("the_geom")
-						.count()
+					.aggregateByGroup(Group.ofKeys("spo_no_cd").tags("the_geom"),
+										AggregateFunction.COUNT())
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(GRID).getGeometryColumnInfo();
 		DataSet result = marmot.createDataSet(OUTPUT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));

@@ -11,6 +11,7 @@ import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.JoinOptions;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 
@@ -46,11 +47,10 @@ public class C02_CountDtgByEMD {
 					.defineColumn("ts:datetime", script)
 					.spatialJoin("the_geom", EMD_WGS84, "param.{emd_cd},차량번호 as car_no,ts")
 					.expand("emd_cd:int")
-					.groupBy("emd_cd,car_no")
-						.workerCount(57)
-						.run(aggrPlan)
-					.groupBy("emd_cd")
-						.aggregate(AggregateFunction.SUM("count").as("count"))
+					.runPlanByGroup(Group.ofKeys("emd_cd,car_no")
+										.workerCount(57), aggrPlan)
+					.aggregateByGroup(Group.ofKeys("emd_cd"),
+									AggregateFunction.SUM("count").as("count"))
 					.expand("emd_cd:string")
 					.hashJoin("emd_cd", EMD, "emd_cd", "param.{the_geom,emd_kor_nm},count",
 							JoinOptions.INNER_JOIN(1))

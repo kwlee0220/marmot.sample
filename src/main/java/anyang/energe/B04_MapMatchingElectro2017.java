@@ -13,6 +13,7 @@ import marmot.Plan;
 import marmot.RecordSchema;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.type.DataType;
 import utils.CommandLine;
@@ -90,8 +91,7 @@ public class B04_MapMatchingElectro2017 {
 		Plan plan = marmot.planBuilder("put_side_by_side_electro")
 						.load(INPUT)
 						.expand("tag:string", "tag = 'month_' + month")
-						.groupBy("pnu")
-							.putSideBySide(outSchema, "usage", "tag")
+						.reduceToSingleRecordByGroup(Group.ofKeys("pnu"), outSchema, "tag", "usage")
 						.store(outDsId)
 						.build();
 		marmot.createDataSet(outDsId, plan, StoreDataSetOptions.create().force(true));

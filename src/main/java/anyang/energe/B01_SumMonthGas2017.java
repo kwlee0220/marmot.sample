@@ -9,6 +9,7 @@ import marmot.DataSet;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -49,9 +50,8 @@ public class B01_SumMonthGas2017 {
 					.filter("year == 2017")
 					.defineColumn("month:short", "사용년월.substring(4, 6)")
 					.update("사용량 = Math.max(사용량, 0)")
-					.groupBy("pnu,month")
-						.workerCount(1)
-						.aggregate(SUM("사용량").as("usage"))
+					.aggregateByGroup(Group.ofKeys("pnu,month\"").workerCount(1),
+									SUM("사용량").as("usage"))
 					.project("pnu, month,  usage")
 					.store(OUTPUT)
 					.build();

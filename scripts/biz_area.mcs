@@ -22,6 +22,7 @@ def SIDO_EXPR = '[' + [11,26,27, 28, 29, 30, 31].collect {"'${it}'"}.join(',') +
 def SGG_EXPR = '[' + [41115,41111,41117, 41113, 48125, 48123,48127, 48121, 48129,41281, 41285, 41287].collect {"'${it}'"}.join(',') + ']'
 def initExpr = String.format("_sid_cd=%s; _sgg_cd=%s", SIDO_EXPR, SGG_EXPR)
 
+
 //  연속지적도에서 대도시 영역을 추출한다.
 createDataSet(TEMP_BIG_CITIES) {
 	geometry GC_INFO
@@ -34,6 +35,7 @@ createDataSet(TEMP_BIG_CITIES) {
 	}
 }
 clusterDataSet TEMP_BIG_CITIES
+
 
 // 용도지구에서 상업지역 추출
 initExpr = '_types = [' +
@@ -49,6 +51,7 @@ createDataSet(TEMP_BIZ_AREA) {
 	}
 }
 clusterDataSet TEMP_BIZ_AREA
+
 
 createDataSet(BIZ_GRID) {
 	geometry GC_INFO
@@ -70,8 +73,8 @@ createDataSet("$OUT_DIR/grid100_land") {
 		load(BUILDINGS)
 		spatialJoin('the_geom', BIZ_GRID, output: "건축물용도코드,대지면적,param.*")
 		aggregateByGroup('cell_id,block_cd,건축물용도코드', tags: "the_geom,sgg_cd", workerCount:3) {
-			대지면적 = sum("대지면적")
-			bld_cnt = count()
+			대지면적 = SUM("대지면적")
+			bld_cnt = COUNT()
 		}
 		project 'the_geom, *-{the_geom}'
 	}
@@ -87,7 +90,7 @@ createDataSet(BIZ_GRID_SALES) {
 		project "std_ym,block_cd,daily_sales"
 		hashJoin "block_cd", BIZ_GRID, 'block_cd', output: "param.*,std_ym,daily_sales",
 					workerCount: 64
-		aggregateByGroup('std_ym,cell_id', tags: "the_geom,sgg_cd", workerCount: 3) { daily_sales = sum("daily_sales") }
+		aggregateByGroup('std_ym,cell_id', tags: "the_geom,sgg_cd", workerCount: 3) { daily_sales = SUM("daily_sales") }
 		project 'the_geom, *-{the_geom}'
 	}
 }
@@ -105,7 +108,7 @@ createDataSet(BIZ_GRID_FLOW_POP) {
 		// BIZ_GRID와 소지역 코드를 이용하여 조인하여, 대도시 상업지역과 겹치는
 		// 유동인구 구역을 뽑는다.
 		hashJoin "block_cd", BIZ_GRID, 'block_cd', output: "param.*,std_ym,flow_pop", workerCount: 32
-		aggregateByGroup('std_ym,cell_id', tags: "the_geom,sgg_cd", workerCount: 3) { flow_pop = avg("flow_pop") }
+		aggregateByGroup('std_ym,cell_id', tags: "the_geom,sgg_cd", workerCount: 3) { flow_pop = AVG("flow_pop") }
 		project 'the_geom, *-{the_geom}'
 	}
 }

@@ -14,6 +14,7 @@ import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -73,10 +74,10 @@ public class Step1FlowPop {
 									new JoinOptions().workerCount(32))
 							// 한 그리드 셀에 여러 소지역 유동인구 정보가 존재하면,
 							// 해당 유동인구들의 평균을 구한다.
-							.groupBy("std_ym,cell_id")
-								.withTags(geomCol + ",sgg_cd")
-								.workerCount(3)
-								.aggregate(AVG("flow_pop").as("flow_pop"))
+							.aggregateByGroup(Group.ofKeys("std_ym,cell_id")
+													.tags(geomCol + ",sgg_cd")
+													.workerCount(3),
+												AVG("flow_pop").as("flow_pop"))
 							.project(String.format("%s,*-{%s}", geomCol, geomCol))
 							.store(RESULT)
 							.build();

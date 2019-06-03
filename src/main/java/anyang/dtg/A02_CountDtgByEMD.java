@@ -1,5 +1,7 @@
 package anyang.dtg;
 
+import static marmot.optor.AggregateFunction.COUNT;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -9,6 +11,7 @@ import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 
@@ -40,12 +43,10 @@ public class A02_CountDtgByEMD {
 					.filter("운행속도 > 0")
 					.spatialJoin("the_geom", EMD,
 								"param.*-{행정동},param.행정동 as hdong,차량번호 as car_no,ts")
-					.groupBy("db_id,car_no")
-						.withTags("the_geom,hdong")
-						.run(aggrPlan)
-					.groupBy("db_id")
-						.withTags("the_geom,hdong")
-						.aggregate(AggregateFunction.SUM("count").as("count"))
+					.runPlanByGroup(Group.ofKeys("db_id,car_no")
+										.tags("the_geom,hdong"), aggrPlan)
+					.aggregateByGroup(Group.ofKeys("db_id").tags("the_geom,hdong"),
+									AggregateFunction.SUM("count").as("count"))
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(EMD).getGeometryColumnInfo();
 		DataSet result = marmot.createDataSet(OUTPUT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));

@@ -11,6 +11,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -30,8 +31,8 @@ public class SampleAggregateByGroup {
 		Plan plan = marmot.planBuilder("group_by")
 							.load(INPUT)
 							.filter("sig_cd.startsWith('11')")
-							.groupBy("sig_cd")
-								.aggregate(COUNT(), MAX("sub_sta_sn"), MIN("sub_sta_sn"),
+							.aggregateByGroup(Group.ofKeys("sig_cd"),
+											COUNT(), MAX("sub_sta_sn"), MIN("sub_sta_sn"),
 											SUM("sub_sta_sn"), AVG("sub_sta_sn"),
 											STDDEV("sub_sta_sn"))
 							.build();

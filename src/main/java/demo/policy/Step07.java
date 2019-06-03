@@ -47,7 +47,7 @@ public class Step07 {
 
 		Plan plan = marmot.planBuilder("경로당필요지역추출")
 						.load(INPUT)
-						.clipJoin(gcInfo.name(), PARAM)				// (7) 클립분석
+						.arcClip(gcInfo.name(), PARAM)				// (7) 클립분석
 						.shard(1)
 						.store(RESULT)
 						.build();

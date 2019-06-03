@@ -8,6 +8,8 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.optor.AggregateFunction;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 
@@ -34,9 +36,8 @@ public class S06_CountMinWonPerTeamGrid {
 					.filter("team_name != null")
 					.spatialJoin("the_geom", GRID,
 									"team_name,param.{the_geom,spo_no_cd}")
-					.groupBy("team_name,spo_no_cd")
-						.withTags("the_geom")
-						.count()
+					.aggregateByGroup(Group.ofKeys("team_name,spo_no_cd").tags("the_geom"),
+										AggregateFunction.COUNT())
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(MINWON).getGeometryColumnInfo();
 		DataSet result = marmot.createDataSet(OUTPUT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));

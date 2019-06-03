@@ -15,6 +15,7 @@ import marmot.Plan;
 import marmot.RecordSchema;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.type.DataType;
 import utils.CommandLine;
@@ -109,8 +110,7 @@ public class A05_MapMatchingLand {
 						.load(INPUT)
 						.project("pnu, 기준년도 as year, 개별공시지가 as usage")
 						.expand("tag:string", "tag = 'land_' + year")
-						.groupBy("pnu")
-							.putSideBySide(outSchema, "usage", "tag")
+						.reduceToSingleRecordByGroup(Group.ofKeys("pnu"), outSchema, "tag", "usage")
 						.store(INTERM)
 						.build();
 		marmot.createDataSet(INTERM, plan, StoreDataSetOptions.create().force(true));

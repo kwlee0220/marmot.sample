@@ -27,6 +27,7 @@ import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
 import marmot.optor.geo.SquareGrid;
+import marmot.plan.Group;
 import marmot.plan.SpatialJoinOptions;
 import marmot.process.NormalizeParameters;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -179,18 +180,15 @@ public class FindBestSubwayStationCandidates {
 					.defineColumn("day_total:double", sumExpr)
 					
 					// 각 달의 소지역의 연간 유동인구 평균을 계산한다.
-					.groupBy("block_cd")
-						.withTags(geomCol)
-						.aggregate(AVG("day_total"))
+					.aggregateByGroup(Group.ofKeys("block_cd").tags(geomCol), AVG("day_total"))
 						
 					// 각 소지역이 폼함되는 사각 셀을  부가한다.
 					.assignGridCell(geomCol, new SquareGrid(bounds, CELL_SIZE), false)
 					.project("cell_geom as the_geom, cell_id, cell_pos, avg")
 					
 					// 사각 그리드 셀 단위로 그룹핑하고, 각 그룹에 속한 유동인구를 모두 더한다.
-					.groupBy("cell_id")
-						.withTags("the_geom")
-						.aggregate(SUM("avg").as("avg"))
+					.aggregateByGroup(Group.ofKeys("cell_id").withTags("the_geom"),
+										SUM("avg").as("avg"))
 						
 					.store(TEMP_SEOUL_FLOW_POP_GRID)
 					.build();
@@ -258,9 +256,7 @@ public class FindBestSubwayStationCandidates {
 					.project("cell_geom as the_geom, cell_id, cell_pos")
 					
 					// 사각 그리드 셀 단위로 그룹핑하고, 각 그룹에 속한 레코드 수를 계산한다.
-					.groupBy("cell_id")
-						.withTags("the_geom")
-						.aggregate(COUNT())
+					.aggregateByGroup(Group.ofKeys("cell_id").tags("the_geom"), COUNT())
 					
 					.store(TEMP_SEOUL_TAXI_LOG_GRID)
 					.build();

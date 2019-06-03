@@ -7,6 +7,7 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.type.DataType;
 import navi_call.Globals;
@@ -38,8 +39,7 @@ public class S0_PrepareRoadData {
 					.load(Globals.ROADS)
 					.flattenGeometry(geomCol, DataType.LINESTRING)
 					.breakLineString(geomCol)
-					.groupBy("link_id")
-						.run(subPlan)
+					.runPlanByGroup(Group.ofKeys("link_id"), subPlan)
 					.expand("sub_link_no:short")
 					.store(Globals.ROADS_IDX)
 					.build();

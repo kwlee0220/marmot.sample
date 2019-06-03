@@ -48,14 +48,14 @@ createDataSet("$OUT_DIR/역사외_지역/유동인구/격자별_집계") {
 		defineColumn("day_avg:double", avgExpr)
 		
 		// 각 달의 소지역의 연간 유동인구 평균을 계산한다.
-		aggregateByGroup("block_cd", tags:'the_geom') { avg = avg('day_avg') }
+		aggregateByGroup("block_cd", tags:'the_geom') { avg = AVG('day_avg') }
 		
 		// 각 소지역이 폼함되는 사각 셀정보를 첨부 한다.
 		assignGridCell('the_geom', SquareGrid(seoulBoundary.envelopeInternal, Size2d(500,500)))
 		project("cell_geom as the_geom, cell_id, cell_pos, avg")
 		
 		// 사각 그리드 셀 단위로 소지역을 그룹핑하고, 각 그룹에 속한 유동인구를 모두 더한다.
-		aggregateByGroup("cell_id", tags: "the_geom") { avg = sum('avg') }
+		aggregateByGroup("cell_id", tags: "the_geom") { avg = SUM('avg') }
 	}
 }
 executeProcess "normalize", input_dataset: "$OUT_DIR/역사외_지역/유동인구/격자별_집계",
@@ -86,7 +86,7 @@ createDataSet("$OUT_DIR/역사외_지역/택시로그/격자별_집계") {
 		project("cell_geom as the_geom, cell_id, cell_pos")
 				
 		// 사각 그리드 셀 단위로 그룹핑하고, 각 그룹에 속한 레코드 수를 계산한다.
-		aggregateByGroup('cell_id', tags: 'the_geom') { count = count() }
+		aggregateByGroup('cell_id', tags: 'the_geom') { count = COUNT() }
 	}
 }
 executeProcess "normalize", input_dataset: "$OUT_DIR/역사외_지역/택시로그/격자별_집계",

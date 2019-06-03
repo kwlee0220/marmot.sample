@@ -14,10 +14,10 @@ import marmot.remote.protobuf.PBMarmotClient;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleClipJoin {
+public class SampleArcSpatialJoin {
 	private static final String RESULT = "tmp/result";
-	private static final String INPUT = "POI/주유소_가격";
-	private static final String PARAM = "tmp/서울특별시";
+	private static final String BIZ_AREA = "POI/주요상권";
+	private static final String EMD = "구역/읍면동";
 
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -25,17 +25,16 @@ public class SampleClipJoin {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
-		SampleUtils.writeSeoul(marmot, PARAM);
-		
-		GeometryColumnInfo gcInfo = marmot.getDataSet(INPUT).getGeometryColumnInfo();
-		Plan plan = marmot.planBuilder("sample_clip_join")
-								.load(INPUT)
-								.arcClip("the_geom", PARAM)
-								.build();
+		Plan plan = marmot.planBuilder("spatial_join")
+							.load(BIZ_AREA)
+							.buffer("the_geom", 300)
+							.project("the_geom,TRDAR_NO,TRDAR_NM,TRDAR_AR")
+							.arcSpatialJoin("the_geom", EMD, false, true)
+							.build();
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
-		marmot.deleteDataSet(PARAM);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		SampleUtils.printPrefix(result, 5);
+		SampleUtils.printPrefix(result, 10);
 	}
 }

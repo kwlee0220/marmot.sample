@@ -1,10 +1,13 @@
 package marmot.validate;
 
+import static marmot.optor.AggregateFunction.COUNT;
+
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.optor.AggregateFunction;
+import marmot.plan.Group;
 
 /**
  * 
@@ -67,8 +70,7 @@ public abstract class Node {
 		
 		Plan plan = marmot.planBuilder("find duplicated keys")
 							.load(getIdDataSet())
-							.groupBy(m_keyCol)
-								.aggregate(AggregateFunction.COUNT())
+							.aggregateByGroup(Group.ofKeys(m_keyCol), COUNT())
 							.filter("count > 1")
 							.build();
 		DataSet result = marmot.createDataSet(outDsId, plan, StoreDataSetOptions.create().force(true));

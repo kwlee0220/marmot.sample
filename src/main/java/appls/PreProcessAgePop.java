@@ -8,6 +8,7 @@ import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -50,13 +51,11 @@ public class PreProcessAgePop {
 					.load(INPUT)
 					.defineColumn("base_year:int")
 					.defineColumn("age_intvl:int", "(item_name.substring(7) / 10) * 10")
-					.groupBy("tot_oa_cd,base_year,age_intvl")
-						.withTags("the_geom")
-						.aggregate(AggregateFunction.SUM("value").as("total"))
+					.aggregateByGroup(Group.ofKeys("tot_oa_cd,base_year,age_intvl").tags("the_geom"),
+									AggregateFunction.SUM("value").as("total"))
 					.project("the_geom,tot_oa_cd,base_year,age_intvl,total")
-					.groupBy("base_year")
-//						.count()
-						.storeEachGroup(RESULT, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true))
+					.storeByGroup(Group.ofKeys("base_year"), RESULT,
+									StoreDataSetOptions.create().geometryColumnInfo(gcInfo))
 					.build();
 		marmot.execute(plan);
 //		marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);

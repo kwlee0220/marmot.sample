@@ -10,6 +10,7 @@ import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -50,10 +51,9 @@ public class BuildGridCellHistogram {
 		Plan plan;
 		plan = marmot.planBuilder("build_histogram_grid")
 					.load(TAGGED)
-					.groupBy("cell_id")
-						.withTags("grid")
-						.workerCount(WORKER_COUNT)
-						.aggregate(COUNT())
+					.aggregateByGroup(Group.ofKeys("cell_id").tags("grid")
+											.workerCount(WORKER_COUNT),
+										COUNT())
 					.project("grid as the_geom,count")
 					.store(RESULT)
 					.build();

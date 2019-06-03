@@ -1,6 +1,7 @@
 package marmot.geom.advanced;
 
 import static marmot.optor.AggregateFunction.AVG;
+import static marmot.optor.AggregateFunction.COUNT;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -14,6 +15,7 @@ import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -55,10 +57,9 @@ public class SampleE2SFCASetup {
 		plan = marmot.planBuilder("강남구 영역 유동인구 정보 추출")
 						.query(FLOW_POP, gangnaum)
 						.expand("year:int", "year = std_ym.substring(0,4)")
-						.groupBy("block_cd,year")
-							.withTags("the_geom")
-							.aggregate(AVG("avg_08tmst").as("avg_08tmst"),
-										AVG("avg_15tmst").as("avg_15tmst"))
+						.aggregateByGroup(Group.ofKeys("block_cd,year").tags("the_geom"),
+											AVG("avg_08tmst").as("avg_08tmst"),
+											AVG("avg_15tmst").as("avg_15tmst"))
 						.project("*-{year}")
 						.build();
 		GeometryColumnInfo gcInfo = flowPop.getGeometryColumnInfo();

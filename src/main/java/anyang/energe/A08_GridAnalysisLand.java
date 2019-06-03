@@ -17,6 +17,7 @@ import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.SquareGrid;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -71,9 +72,7 @@ public class A08_GridAnalysisLand {
 					.intersection("the_geom", "cell_geom", "overlap")
 					.defineColumn("ratio:double", "(ST_Area(overlap) /  ST_Area(the_geom))")
 					.update(updateExpr)
-					.groupBy("cell_id")
-						.withTags("cell_geom,cell_pos")
-						.aggregate(aggrs)
+					.aggregateByGroup(Group.ofKeys("cell_id").withTags("cell_geom,cell_pos"), aggrs)
 					.expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
 					.project("cell_geom as the_geom, x, y, *-{cell_geom,x,y}")
 					.store(OUTPUT)
