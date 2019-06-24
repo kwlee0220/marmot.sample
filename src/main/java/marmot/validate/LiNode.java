@@ -27,7 +27,7 @@ public class LiNode extends NonRootNode {
 		try {
 			String outCols = String.format("right.{%s,emd_kor_nm}", m_parent.m_keyCol);
 			Plan plan = marmot.planBuilder("adjust empty childs")
-							.loadHashJoinFile(m_prefix + "__tmp", m_parent.m_keyCol,
+							.loadHashJoin(m_prefix + "__tmp", m_parent.m_keyCol,
 											m_parent.m_dsId, m_parent.m_keyCol,
 											outCols, INNER_JOIN())
 							.filter("emd_kor_nm.endsWith('읍')")

@@ -3,7 +3,6 @@ package appls;
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.SUM;
-import static marmot.optor.JoinType.FULL_OUTER_JOIN;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import java.util.stream.Collectors;
@@ -33,8 +32,6 @@ import marmot.process.NormalizeParameters;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.support.DefaultRecord;
 import marmot.type.DataType;
-import utils.CommandLine;
-import utils.CommandLineParser;
 import utils.Size2d;
 import utils.StopWatch;
 
@@ -62,23 +59,11 @@ public class FindBestSubwayStationCandidates {
 	public static final void main(String... args) throws Exception {
 //		PropertyConfigurator.configure("log4j.properties");
 		LogManager.getRootLogger().setLevel(Level.OFF);
-		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
-		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
-		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
-		
-		CommandLine cl = parser.parseArgs(args);
-		if ( cl.hasOption("help") ) {
-			cl.exitWithUsage(0);
-		}
 
-		String host = MarmotClientCommands.getMarmotHost(cl);
-		int port = MarmotClientCommands.getMarmotPort(cl);
+		// 원격 MarmotServer에 접속.
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		StopWatch totalElapsed = StopWatch.start();
-		
-		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		DataSet result;
 
@@ -171,7 +156,7 @@ public class FindBestSubwayStationCandidates {
 					
 					// 모든 지하철 역사로부터 1km 이상 떨어진 로그 데이터만 선택한다.
 					.spatialSemiJoin("the_geom", TEMP_STATIONS,
-									SpatialJoinOptions.create().negated(true))
+									SpatialJoinOptions.NEGATED)
 					
 					// 일부 시간대 유동인구가 null인 경우 0으로 치환한다.
 					.update(expr)
@@ -249,7 +234,7 @@ public class FindBestSubwayStationCandidates {
 					
 					// 모든 지하철 역사로부터 1km 이상 떨어진 로그 데이터만 선택한다.
 					.spatialSemiJoin("the_geom", TEMP_STATIONS,
-										SpatialJoinOptions.create().negated(true))
+										SpatialJoinOptions.NEGATED)
 					
 					// 각 로그 위치가 포함된 사각 셀을  부가한다.
 					.assignGridCell(geomCol, new SquareGrid(bounds, CELL_SIZE), false)
@@ -310,7 +295,7 @@ public class FindBestSubwayStationCandidates {
 							"the_geom,cell_id,normalized,"
 							+ "param.{the_geom as param_geom,cell_id as param_cell_id,"
 							+ "normalized as param_normalized}",
-							new JoinOptions().joinType(FULL_OUTER_JOIN))
+							JoinOptions.FULL_OUTER_JOIN())
 					.update(expr)
 					.project("the_geom,cell_id,normalized as value")
 					.store(output)

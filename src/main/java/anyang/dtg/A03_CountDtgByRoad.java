@@ -41,7 +41,7 @@ public class A03_CountDtgByRoad {
 					.load(DTG)
 					.filter("운행속도 > 0")
 					.spatialJoin("the_geom", ROADS, "param.*,차량번호,ts",
-								SpatialJoinOptions.create().withinDistance(15))
+								SpatialJoinOptions.WITHIN_DISTANCE(15))
 					.runPlanByGroup(Group.ofKeys("db_id,차량번호")
 										.tags("the_geom,id"), aggrPlan)
 					.aggregateByGroup(Group.ofKeys("db_id").tags("the_geom,id"),

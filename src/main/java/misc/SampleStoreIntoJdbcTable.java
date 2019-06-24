@@ -5,11 +5,11 @@ import java.sql.ResultSet;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import io.vavr.control.Try;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.JdbcConnectOptions;
 import marmot.remote.protobuf.PBMarmotClient;
+import utils.func.Try;
 import utils.jdbc.JdbcProcessor;
 
 /**

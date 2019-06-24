@@ -227,7 +227,7 @@ public class CreateSampleDataSet {
 			--m_remains;
 			double v = m_rand.nextDouble();
 			Density density = FStream.from(m_distribution)
-									.findNext(d -> d.m_range.contains(v))
+									.findFirst(d -> d.m_range.contains(v))
 									.get();
 			++m_counts[density.m_idx];
 			return FOption.of(density.m_center);

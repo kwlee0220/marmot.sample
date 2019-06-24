@@ -113,7 +113,7 @@ public class NonRootNode extends Node {
 		String tempDsId = m_prefix + "id_pairs";
 		
 		Plan plan = marmot.planBuilder("build id pairs")
-					.loadHashJoinFile(getIdDataSet(), "parent_key",
+					.loadHashJoin(getIdDataSet(), "parent_key",
 									m_parent.getIdDataSet(), m_parent.m_keyCol,
 									outCols, FULL_OUTER_JOIN())
 					.filter(filterExpr)
@@ -129,7 +129,7 @@ public class NonRootNode extends Node {
 			Plan plan;
 			
 			plan = marmot.planBuilder("find uncovered geoms")
-						.loadHashJoinFile(tempId, "parent_key", m_parent.m_dsId, m_parent.m_keyCol,
+						.loadHashJoin(tempId, "parent_key", m_parent.m_dsId, m_parent.m_keyCol,
 										"left.*,right.the_geom as parent_geom",
 										INNER_JOIN(nworkers))
 						.filter("!ST_Contains(parent_geom, the_geom)")

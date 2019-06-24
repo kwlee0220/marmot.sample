@@ -43,7 +43,7 @@ public class SampleLoadLeftOuterHashJoin {
 		marmot.createDataSet(TMP_SGG, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		
 		plan = marmot.planBuilder("test left_outer_equi_join")
-					.loadHashJoinFile(TMP_SGG, "sido_cd", TMP_SIDO, "ctprvn_cd",
+					.loadHashJoin(TMP_SGG, "sido_cd", TMP_SIDO, "ctprvn_cd",
 									"left.the_geom,right.ctp_kor_nm,left.sig_kor_nm,left.sig_cd",
 									JoinOptions.LEFT_OUTER_JOIN())
 //					.sample(0.2)

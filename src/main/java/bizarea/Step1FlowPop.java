@@ -16,8 +16,6 @@ import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.CommandLine;
-import utils.CommandLineParser;
 import utils.StopWatch;
 
 /**
@@ -31,23 +29,11 @@ public class Step1FlowPop {
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
-		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
-		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
-		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
-		
-		CommandLine cl = parser.parseArgs(args);
-		if ( cl.hasOption("help") ) {
-			cl.exitWithUsage(0);
-		}
 
-		String host = MarmotClientCommands.getMarmotHost(cl);
-		int port = MarmotClientCommands.getMarmotPort(cl);
+		// 원격 MarmotServer에 접속.
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		StopWatch watch = StopWatch.start();
-		
-		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		String handleNull = IntStream.range(0, 24)
 				.mapToObj(idx -> String.format("if ( avg_%02dtmst == null ) { avg_%02dtmst = 0; }%n", idx, idx))
@@ -70,8 +56,7 @@ public class Step1FlowPop {
 							// BIZ_GRID와 소지역 코드를 이용하여 조인하여, 대도시 상업지역과 겹치는
 							// 유동인구 구역을 뽑는다. 
 							.hashJoin("block_cd", BIZ_GRID, "block_cd",
-									"param.*,std_ym,flow_pop",
-									new JoinOptions().workerCount(32))
+									"param.*,std_ym,flow_pop", JoinOptions.INNER_JOIN(32))
 							// 한 그리드 셀에 여러 소지역 유동인구 정보가 존재하면,
 							// 해당 유동인구들의 평균을 구한다.
 							.aggregateByGroup(Group.ofKeys("std_ym,cell_id")

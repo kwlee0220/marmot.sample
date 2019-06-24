@@ -16,8 +16,6 @@ import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.CommandLine;
-import utils.CommandLineParser;
 import utils.StopWatch;
 
 /**
@@ -31,23 +29,11 @@ public class Step1CardSales {
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
-		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
-		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
-		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
-		
-		CommandLine cl = parser.parseArgs(args);
-		if ( cl.hasOption("help") ) {
-			cl.exitWithUsage(0);
-		}
 
-		String host = MarmotClientCommands.getMarmotHost(cl);
-		int port = MarmotClientCommands.getMarmotPort(cl);
+		// 원격 MarmotServer에 접속.
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		StopWatch watch = StopWatch.start();
-		
-		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		String sumExpr = IntStream.range(0, 24)
 								.mapToObj(idx -> String.format("sale_amt_%02dtmst", idx))
@@ -66,7 +52,7 @@ public class Step1CardSales {
 							// 매출액 구역을 뽑는다.
 							.hashJoin("block_cd", BIZ_GRID, "block_cd",
 									"param.*,std_ym,daily_sales",
-									new JoinOptions().workerCount(64))
+									JoinOptions.INNER_JOIN(64))
 							// 한 그리드 셀에 여러 소지역 매출액 정보가 존재하면,
 							// 해당 매출액은 모두 더한다. 
 							.aggregateByGroup(Group.ofKeys("std_ym,cell_id")

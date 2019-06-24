@@ -44,7 +44,7 @@ public class SampleEstimateIDW {
 		
 		plan = marmot.planBuilder("sample_estimate_idw")
 						.load(tempPath)
-						.estimateIDW("the_geom", tempPath, VALUE_COLUMN, RADIUS,
+						.estimateIdw("the_geom", tempPath, VALUE_COLUMN, RADIUS,
 										TOP_K, "value", FOption.empty())
 						.build();
 		result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(info).force(true));

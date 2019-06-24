@@ -67,9 +67,9 @@ public class JoinWithoutGroup {
 		
 		Plan plan;
 		plan = marmot.planBuilder(planName)
-					.load(dsId, LoadOptions.create().splitCount(2))
+					.load(dsId, LoadOptions.SPLIT_COUNT(2))
 					.spatialJoin("the_geom", INPUT, "the_geom,param.출입구일련번호",
-								SpatialJoinOptions.create().clusterOuterRecords(false))
+								SpatialJoinOptions.EMPTY.clusterOuterRecords(false))
 					.build();
 
 		StopWatch watch = StopWatch.start();

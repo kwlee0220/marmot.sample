@@ -38,23 +38,11 @@ public class B04_MapMatchingElectro2017 {
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
-		
-		CommandLineParser parser = new CommandLineParser("mc_list_records ");
-		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
-		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
-		
-		CommandLine cl = parser.parseArgs(args);
-		if ( cl.hasOption("help") ) {
-			cl.exitWithUsage(0);
-		}
 
-		String host = MarmotClientCommands.getMarmotHost(cl);
-		int port = MarmotClientCommands.getMarmotPort(cl);
+		// 원격 MarmotServer에 접속.
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		StopWatch watch = StopWatch.start();
-		
-		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 
 		putSideBySide(marmot, INTERM);
 		
@@ -67,7 +55,7 @@ public class B04_MapMatchingElectro2017 {
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
 		Plan plan = marmot.planBuilder("2017 전기사용량 연속지적도 매칭")
-						.loadHashJoinFile(CADASTRAL, "pnu", INTERM, "pnu",
+						.loadHashJoin(CADASTRAL, "pnu", INTERM, "pnu",
 									"left.*," + rightCols, LEFT_OUTER_JOIN(17))
 						.update(updateExpr)
 						.store(OUTPUT)

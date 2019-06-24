@@ -30,7 +30,7 @@ public class SampleSpatialSemiJoin {
 		Plan plan = marmot.planBuilder("within_distance")
 							.load(INPUT)
 							.spatialSemiJoin("the_geom", PARAMS,
-											SpatialJoinOptions.create().withinDistance(30))
+											SpatialJoinOptions.WITHIN_DISTANCE(30))
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
 		

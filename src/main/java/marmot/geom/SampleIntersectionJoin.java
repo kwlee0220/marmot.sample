@@ -30,7 +30,7 @@ public class SampleIntersectionJoin {
 		Plan plan = marmot.planBuilder("sample_intersection_join")
 							.load(OUTER)
 							.buffer("the_geom", 50)
-							.intersectionJoin("the_geom", INNER, SpatialJoinOptions.create())
+							.intersectionJoin("the_geom", INNER, SpatialJoinOptions.EMPTY)
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
 		marmot.deleteDataSet(INNER);

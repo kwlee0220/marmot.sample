@@ -38,7 +38,7 @@ public class D03_CountCarAccidentsByRoad {
 		plan = marmot.planBuilder("도로별 사망사고 빈도집계")
 					.load(ROADS)
 					.spatialAggregateJoin("the_geom", ACCIDENT, aggrs,
-										SpatialJoinOptions.create().withinDistance(15))
+										SpatialJoinOptions.WITHIN_DISTANCE(15))
 					.project("the_geom,link_id,road_name,count")
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(ACCIDENT).getGeometryColumnInfo();
