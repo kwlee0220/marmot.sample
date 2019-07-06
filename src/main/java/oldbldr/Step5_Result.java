@@ -1,5 +1,6 @@
 package oldbldr;
 
+import static marmot.StoreDataSetOptions.*;
 import static marmot.optor.JoinOptions.FULL_OUTER_JOIN;
 import static marmot.optor.JoinOptions.INNER_JOIN;
 
@@ -57,7 +58,7 @@ public class Step5_Result {
 					.store(RESULT)
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(EMD).getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		watch.stop();
 		
 		marmot.deleteDataSet(BLOCKS);

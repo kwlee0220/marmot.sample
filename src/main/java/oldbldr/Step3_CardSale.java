@@ -58,12 +58,12 @@ public class Step3_CardSale {
 					.defineColumn("sale_amt:double", sumExpr)
 					.project("block_cd,sale_amt")
 					.aggregateByGroup(Group.ofKeys("block_cd"), SUM("sale_amt").as("sale_amt"))
-					.hashJoin("block_cd", BLOCKS, "block_cd", "*,param.{emd_cd}", INNER_JOIN())
+					.hashJoin("block_cd", BLOCKS, "block_cd", "*,param.{emd_cd}", INNER_JOIN)
 					.aggregateByGroup(Group.ofKeys("emd_cd").workerCount(1),
 										SUM("sale_amt").as("sale_amt"))
 					.store(RESULT)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

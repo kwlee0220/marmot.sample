@@ -27,7 +27,7 @@ public class SampleFindFirstByGroup {
 							.takeByGroup(Group.ofKeys("sig_cd"), 1)
 							.project("* - {the_geom}")
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		SampleUtils.printPrefix(result, 10);
 	}
 }

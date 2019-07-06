@@ -1,5 +1,7 @@
 package anyang.energe;
 
+import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.JoinOptions.LEFT_OUTER_JOIN;
 
 import java.util.List;
@@ -11,13 +13,10 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSchema;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.type.DataType;
-import utils.CommandLine;
-import utils.CommandLineParser;
 import utils.StopWatch;
 import utils.stream.FStream;
 
@@ -25,11 +24,11 @@ import utils.stream.FStream;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class B04_MapMatchingElectro2017 {
+public class B04_MapMatchingElectroYear {
 	private static final String CADASTRAL = Globals.CADASTRAL;
-	private static final String INPUT = "tmp/anyang/electro2017";
+	private static final String INPUT = "tmp/anyang/electro" + Globals.YEAR;
 	private static final String INTERM = "tmp/anyang/pnu_electro";
-	private static final String OUTPUT = "tmp/anyang/map_electro2017";
+	private static final String OUTPUT = "tmp/anyang/map_electro" + Globals.YEAR;
 
 	private static final List<String> COL_NAMES = FStream.rangeClosed(1, 12)
 													.map(i -> "month_" + i)
@@ -53,15 +52,15 @@ public class B04_MapMatchingElectro2017 {
 		
 		DataSet ds = marmot.getDataSet(CADASTRAL);
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-		
-		Plan plan = marmot.planBuilder("2017 전기사용량 연속지적도 매칭")
+
+		String planName = String.format("%d 전기사용량 연속지적도 매칭", Globals.YEAR);
+		Plan plan = marmot.planBuilder(planName)
 						.loadHashJoin(CADASTRAL, "pnu", INTERM, "pnu",
 									"left.*," + rightCols, LEFT_OUTER_JOIN(17))
 						.update(updateExpr)
 						.store(OUTPUT)
 						.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan,
-										StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
 		marmot.deleteDataSet(INTERM);
 
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
@@ -82,6 +81,6 @@ public class B04_MapMatchingElectro2017 {
 						.reduceToSingleRecordByGroup(Group.ofKeys("pnu"), outSchema, "tag", "usage")
 						.store(outDsId)
 						.build();
-		marmot.createDataSet(outDsId, plan, StoreDataSetOptions.create().force(true));
+		marmot.createDataSet(outDsId, plan, FORCE);
 	}
 }

@@ -31,7 +31,7 @@ public class SampleFindGetisOrdGiStar {
 								.project("UID,gi_zscore,gi_pvalue")
 								.sort("UID")
 								.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		SampleUtils.printPrefix(result, 5);
 	}
 }

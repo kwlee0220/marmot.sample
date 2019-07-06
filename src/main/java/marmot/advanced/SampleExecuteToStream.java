@@ -61,7 +61,7 @@ public class SampleExecuteToStream {
 		
 		StopWatch watch = StopWatch.start();	
 
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		try ( RecordSet rset = result.read() ) {
 			Record output = DefaultRecord.of(rset.getRecordSchema());
 			rset.next(output);
@@ -110,7 +110,7 @@ public class SampleExecuteToStream {
 		
 		StopWatch watch = StopWatch.start();	
 
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		try ( RecordSet rset = result.read() ) {
 			Record output = DefaultRecord.of(rset.getRecordSchema());
 			rset.next(output);
@@ -150,7 +150,7 @@ public class SampleExecuteToStream {
 		
 		StopWatch watch = StopWatch.start();	
 
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		try ( RecordSet rset = result.read() ) {
 			Record output = DefaultRecord.of(rset.getRecordSchema());
 			rset.next(output);
@@ -190,7 +190,7 @@ public class SampleExecuteToStream {
 		
 		StopWatch watch = StopWatch.start();	
 
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		try ( RecordSet rset = result.read() ) {
 			Record output = DefaultRecord.of(rset.getRecordSchema());
 			rset.next(output);

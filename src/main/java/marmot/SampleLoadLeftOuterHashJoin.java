@@ -1,10 +1,13 @@
 package marmot;
 
+import static marmot.ExecutePlanOptions.DISABLE_LOCAL_EXEC;
+import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.optor.JoinOptions.LEFT_OUTER_JOIN;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.command.MarmotClientCommands;
-import marmot.optor.JoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -34,22 +37,22 @@ public class SampleLoadLeftOuterHashJoin {
 					.load(SIDO)
 					.filter("ctprvn_cd < 40")
 					.build();
-		marmot.createDataSet(TMP_SIDO, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		marmot.createDataSet(TMP_SIDO, plan, FORCE(gcInfo));
 		
 		plan = marmot.planBuilder("drop some sgg")
 					.load(SGG)
 					.defineColumn("sido_cd:string", "sig_cd.substring(0,2)")
 					.build();
-		marmot.createDataSet(TMP_SGG, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		marmot.createDataSet(TMP_SGG, plan, FORCE(gcInfo));
 		
 		plan = marmot.planBuilder("test left_outer_equi_join")
 					.loadHashJoin(TMP_SGG, "sido_cd", TMP_SIDO, "ctprvn_cd",
 									"left.the_geom,right.ctp_kor_nm,left.sig_kor_nm,left.sig_cd",
-									JoinOptions.LEFT_OUTER_JOIN())
+									LEFT_OUTER_JOIN)
 //					.sample(0.2)
 					.build();
-		result = marmot.createDataSet(RESULT, plan, ExecutePlanOptions.create().disableLocalExecution(true),
-									StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		result = marmot.createDataSet(RESULT, plan, DISABLE_LOCAL_EXEC,
+									FORCE(gcInfo));
 		SampleUtils.printPrefix(result, 500);
 		
 //		marmot.deleteDataSet(TMP_SGG);

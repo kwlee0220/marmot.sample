@@ -1,13 +1,14 @@
 package misc.perf.etl;
 
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordScript;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.ParseCsvOptions;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -54,9 +55,9 @@ public class PerfTransform {
 	
 	private static final long process(MarmotRuntime marmot, String input) {
 		String planName = "perf_transform_" + input.replaceAll("/", ".");
-		ParseCsvOptions opts = ParseCsvOptions.create();
-		opts.header("운행일자,운송사코드,차량번호,운행시분초,일일주행거리,누적주행거리,"
-					+ "운행속도,RPM,브레이크신호,X좌표,Y좌표,방위각,가속도X,가속도Y");
+		ParseCsvOptions opts = ParseCsvOptions.DEFAULT()
+									.header("운행일자,운송사코드,차량번호,운행시분초,일일주행거리,누적주행거리,"
+											+ "운행속도,RPM,브레이크신호,X좌표,Y좌표,방위각,가속도X,가속도Y");
 		RecordScript tsExpr = RecordScript.of("$pat = DateTimePattern('yyyyMMddkkmmss')",
 												"DateTimeParseLE(운행일자 + 운행시분초.substring(0,6), $pat)");
 		Plan plan = marmot.planBuilder(planName)
@@ -75,8 +76,7 @@ public class PerfTransform {
 						.build();
 
 		StopWatch watch = StopWatch.start();
-		DataSet result = marmot.createDataSet("tmp/" + input, plan,
-												StoreDataSetOptions.create().blockSize("64mb").force(true));
+		DataSet result = marmot.createDataSet("tmp/" + input, plan, FORCE.blockSize("64mb"));
 		watch.stop();
 		System.out.printf("\tcount=%d, elapsed=%s%n",
 							result.getRecordCount(), watch.getElapsedSecondString());

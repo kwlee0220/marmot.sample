@@ -1,5 +1,6 @@
 package marmot.geom;
 
+import static marmot.StoreDataSetOptions.*;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -38,7 +39,7 @@ public class SampleIndexedRangeQuery {
 							.query(BUILDINGS, key)
 							.project("the_geom,시군구코드,건물명")
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(result, 5);

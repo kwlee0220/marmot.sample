@@ -1,5 +1,7 @@
 package marmot.geom.advanced;
 
+import static marmot.StoreDataSetOptions.APPEND;
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.SUM;
 
 import org.apache.log4j.Level;
@@ -9,7 +11,6 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.geo.advanced.Power;
 import marmot.optor.geo.advanced.WeightFunction;
@@ -86,15 +87,13 @@ public class SampleE2SFCA {
 					.load(RESULT_BUS)
 					.project("the_geom,block_cd,index_08,index_15")
 					.build();
-		marmot.createDataSet(RESULT_CONCAT, plan,
-							StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		marmot.createDataSet(RESULT_CONCAT, plan, FORCE(gcInfo));
 		
 		plan = marmot.planBuilder("append subway result")
 					.load(RESULT_SUBWAY)
 					.project("the_geom,block_cd,index_08,index_15")
 					.build();
-		marmot.createDataSet(RESULT_CONCAT, plan,
-							StoreDataSetOptions.create().geometryColumnInfo(gcInfo).append(true));
+		marmot.createDataSet(RESULT_CONCAT, plan, APPEND(gcInfo));
 		
 		plan = marmot.planBuilder("combine two results")
 					.load(RESULT_CONCAT)
@@ -102,8 +101,7 @@ public class SampleE2SFCA {
 										SUM("index_08").as("index_08"),
 										SUM("index_15").as("index_15"))
 					.build();
-		result = marmot.createDataSet(RESULT, plan,
-							StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

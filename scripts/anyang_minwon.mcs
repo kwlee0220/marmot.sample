@@ -1,9 +1,12 @@
-def DS_PARK = '기타/안양대/도봉구/공원'
-def DS_PARK_MINWON = '기타/안양대/도봉구/공원_민원'
-def DS_MINWON = "기타/안양대/도봉구/민원"
-def DS_EMOTION = '기타/안양대/도봉구/공원_감성분석'
-def DS_PARCEL = '기타/안양대/도봉구/필지'
-def DS_GRID = '기타/안양대/도봉구/GRID_100'
+
+def DS_BASE = "기타/안양대/도봉구";
+
+def DS_PARK = "${DS_BASE}/공원"
+def DS_PARK_MINWON = "${DS_BASE}/공원_민원"
+def DS_MINWON = "${DS_BASE}/민원"
+def DS_EMOTION = "${DS_BASE}/공원_감성분석"
+def DS_PARCEL = "${DS_BASE}/필지"
+def DS_GRID = "${DS_BASE}/GRID_100"
 
 def GC_INFO = 'the_geom(EPSG:5186)'
 def MARMOT_DATA = System.getenv()['MARMOT_DATA']
@@ -83,9 +86,7 @@ createDataSet('분석결과/안양대/도봉구/필지별_공원민원수') {
 		load DS_PARK_MINWON
 		hashJoin 'all_parcel_layer_id', DS_PARCEL, 'id', output: 'param.{the_geom,id},team_name',
 				type: RIGHT_OUTER_JOIN
-		aggregateByGroup('id', tags: 'the_geom') {
-			count = count()
-		}
+		aggregateByGroup('id', tags: 'the_geom') { count = COUNT() }
 	}
 }
 
@@ -95,7 +96,7 @@ createDataSet('분석결과/안양대/도봉구/격자별_공원민원수') {
 	from plan('격자별 공원관련 민원수 합계') {
 		load DS_GRID
 		spatialOuterJoin 'the_geom', DS_PARK_MINWON, output: 'the_geom,spo_no_cd'
-		aggregateByGroup('spo_no_cd', tags: 'the_geom') { count = count() }
+		aggregateByGroup('spo_no_cd', tags: 'the_geom') { count = COUNT() }
 	}
 }
 
@@ -107,7 +108,7 @@ createDataSet('분석결과/안양대/도봉구/팀별_필지별_민원수') {
 		filter "team_name != null"
 		hashJoin 'all_parcel_layer_id', DS_PARCEL, 'id', output: 'param.{the_geom,id},team_name',
 				type: RIGHT_OUTER_JOIN
-		aggregateByGroup('team_name,id', tags: 'the_geom') { count = count() }
+		aggregateByGroup('team_name,id', tags: 'the_geom') { count = COUNT() }
 	}
 }
 
@@ -118,6 +119,6 @@ createDataSet('분석결과/안양대/도봉구/격자별_팀별_민원수') {
 		load DS_MINWON
 		filter "team_name != null"
 		spatialJoin 'the_geom', DS_GRID, output: 'team_name,param.{the_geom,spo_no_cd}'
-		aggregateByGroup('team_name,spo_no_cd', tags: 'the_geom') { count = count() }
+		aggregateByGroup('team_name,spo_no_cd', tags: 'the_geom') { count = COUNT() }
 	}
 }

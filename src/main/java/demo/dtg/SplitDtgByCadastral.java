@@ -1,5 +1,6 @@
 package demo.dtg;
 
+import static marmot.StoreDataSetOptions.*;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -52,8 +53,7 @@ public class SplitDtgByCadastral {
 					
 					.spatialJoin("the_geom", TEMP_POLITICAL, "*-{the_geom},param.sig_cd")
 
-					.storeByGroup(Group.ofKeys("sig_cd").workerCount(nworkers), RESULT,
-									StoreDataSetOptions.create())
+					.storeByGroup(Group.ofKeys("sig_cd").workerCount(nworkers), RESULT, EMPTY)
 					.build();
 		marmot.deleteDir(RESULT);
 		marmot.execute(plan);
@@ -71,10 +71,9 @@ public class SplitDtgByCadastral {
 					.store(outDsId)
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:4326");
-		DataSet output = marmot.createDataSet(outDsId, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet output = marmot.createDataSet(outDsId, plan, FORCE(gcInfo));
 		
-		ClusterDataSetOptions opts = ClusterDataSetOptions.create().workerCount(1);
-		output.cluster(opts);
+		output.cluster(ClusterDataSetOptions.WORKER_COUNT(1));
 		
 		return output;
 	}

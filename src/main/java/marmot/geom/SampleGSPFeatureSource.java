@@ -44,7 +44,7 @@ public class SampleGSPFeatureSource {
 		
 		RecordSet rset;
 //		GSPFeatureSource src = (GSPFeatureSource)store.getFeatureSource("주소.건물POI");
-		GSPFeatureSource src = (GSPFeatureSource)store.getFeatureSource("건물.건물통합정보마스터");
+		GSPFeatureSource src = (GSPFeatureSource)store.getFeatureSource("건물.건물통합정보마스터.201809");
 		
 //		rset = src.query(bounds);
 //		SampleUtils.printPrefix(rset, 3);

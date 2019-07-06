@@ -1,10 +1,12 @@
 package marmot.advanced;
 
+
+import static marmot.ExecutePlanOptions.DISABLE_LOCAL_EXEC;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.ExecutePlanOptions;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
@@ -37,8 +39,8 @@ public class SampleStoreKeyedDataSet {
 //										DataSetOption.GEOMETRY(gcInfo))
 						.build();
 //		marmot.execute(plan, ExecutePlanOption.DISABLE_LOCAL_EXEC);
-		DataSet result = marmot.createDataSet(RESULT, plan, ExecutePlanOptions.create().disableLocalExecution(true),
-												StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, DISABLE_LOCAL_EXEC,
+												StoreDataSetOptions.FORCE);
 		SampleUtils.printPrefix(result, 500);
 	}
 }

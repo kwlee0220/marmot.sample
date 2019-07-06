@@ -27,7 +27,7 @@ public class SampleListByGroup {
 							.listByGroup(Group.ofKeys("sig_cd").orderBy("sub_sta_sn:A"))
 							.project("sig_cd, sub_sta_sn")
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		SampleUtils.printPrefix(result, 20);
 	}
 }

@@ -1,5 +1,8 @@
 package common;
 
+import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
+
 import java.util.UUID;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -42,7 +45,7 @@ public class BuildJinBunPOI {
 					.distinct("건물관리번호", 11) 
 					.store(tempDs)
 					.build();
-		result = marmot.createDataSet(tempDs, plan, StoreDataSetOptions.create().force(true));
+		result = marmot.createDataSet(tempDs, plan, StoreDataSetOptions.FORCE);
 
 		try {
 			DataSet ds = marmot.getDataSet(BUILD_POI);
@@ -57,12 +60,12 @@ public class BuildJinBunPOI {
 									JoinOptions.INNER_JOIN(23))
 							.hashJoin("건물관리번호", tempDs, "건물관리번호",
 									"*,param.{법정동코드,지번본번,지번부번,산여부}",
-									JoinOptions.INNER_JOIN())
+									JoinOptions.INNER_JOIN)
 							.distinct("건물관리번호,법정동코드,지번본번,지번부번,산여부")
 							.store(RESULT)
 							.build();
 			GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-			result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+			result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 			System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 			
 			SampleUtils.printPrefix(result, 5);

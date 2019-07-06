@@ -1,16 +1,16 @@
 package misc;
 
-
+import static marmot.ExecutePlanOptions.DISABLE_LOCAL_EXEC;
 import static marmot.optor.AggregateFunction.COUNT;
+import static marmot.plan.LoadJdbcTableOptions.SELECT;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import marmot.ExecutePlanOptions;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.JdbcConnectOptions;
-import marmot.plan.LoadJdbcTableOptions;
 import marmot.remote.protobuf.PBMarmotClient;
+
 
 /**
  * 
@@ -31,19 +31,15 @@ public class SampleLoadJdbcTable {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
-		JdbcConnectOptions jdbcOpts = JdbcConnectOptions.create()
-														.jdbcUrl(JDBC_URL)
-														.user(USER)
-														.passwd(PASSWD)
-														.driverClassName(DRIVER_CLASS);
+		JdbcConnectOptions jdbcOpts
+			= JdbcConnectOptions.POSTGRES_SQL("129.254.82.95", 5433, "sbdata", USER, PASSWD);
 		Plan plan = marmot.planBuilder("test")
 							.loadJdbcTable(TABLE_NAME, jdbcOpts,
-											LoadJdbcTableOptions.create()
-												.selectExpr("ST_AsBinary(the_geom) as the_geom")
+											SELECT("ST_AsBinary(the_geom) as the_geom")
 												.mapperCount(7))
 							.aggregate(COUNT())
 							.build();
-		long count = marmot.executeToLong(plan, ExecutePlanOptions.create().disableLocalExecution(true)).get();
+		long count = marmot.executeToLong(plan, DISABLE_LOCAL_EXEC).get();
 		System.out.println("count=" + count);
 	}
 }

@@ -1,5 +1,6 @@
 package demo.dtg;
 
+import static marmot.StoreDataSetOptions.*;
 import static marmot.optor.JoinOptions.LEFT_OUTER_JOIN;
 
 import java.util.Map;
@@ -83,7 +84,7 @@ public class TagDtgFully {
 					.store(RESULT)
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		output = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		output = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		
 		watch.stop();
 		System.out.printf("count=%d, total elapsed time=%s%n",

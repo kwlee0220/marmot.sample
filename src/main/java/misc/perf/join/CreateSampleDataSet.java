@@ -1,5 +1,8 @@
 package misc.perf.join;
 
+import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -18,7 +21,6 @@ import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.geo.GeoClientUtils;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -84,7 +86,7 @@ public class CreateSampleDataSet {
 		RecordSet input = new RecordPopulator(centers, schema, dist, COUNT);
 		GeometryColumnInfo gcInfo = marmot.getDataSet(INPUT).getGeometryColumnInfo();
 		String outDsId = String.format("%s_%d", SAMPLE, dist.length);
-		DataSet ds = marmot.createDataSet(outDsId, input.getRecordSchema(), StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet ds = marmot.createDataSet(outDsId, input.getRecordSchema(), FORCE(gcInfo));
 		ds.append(input);
 		
 		System.out.printf("created dataset: %s%n", outDsId);
@@ -98,7 +100,7 @@ public class CreateSampleDataSet {
 					.project("center")
 					.build();
 		return marmot.executeLocally(plan)
-					.stream()
+					.fstream()
 					.map(r -> r.getGeometry(0))
 					.cast(Point.class)
 					.toList();

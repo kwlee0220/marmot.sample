@@ -59,11 +59,11 @@ public class Step4_Pop {
 					.defineColumn("avg:double", avgExpr)
 					.project("block_cd,avg")
 					.aggregateByGroup(Group.ofKeys("block_cd"), AVG("avg").as("avg"))
-					.hashJoin("block_cd", BLOCKS, "block_cd", "*,param.{emd_cd}", INNER_JOIN())
+					.hashJoin("block_cd", BLOCKS, "block_cd", "*,param.{emd_cd}", INNER_JOIN)
 					.aggregateByGroup(Group.ofKeys("emd_cd").workerCount(1), AVG("avg").as("pop_avg"))
 					.store(RESULT)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

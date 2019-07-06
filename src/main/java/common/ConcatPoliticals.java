@@ -1,14 +1,16 @@
 package common;
 
+import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.optor.JoinOptions.INNER_JOIN;
+import static marmot.optor.JoinOptions.RIGHT_OUTER_JOIN;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
-import marmot.optor.JoinType;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 
@@ -46,9 +48,8 @@ public class ConcatPoliticals {
 					   + "}";
 		
 		DataSet ds = marmot.getDataSet(SGG);
-		JoinOptions outerJoinOpts = new JoinOptions().joinType(JoinType.RIGHT_OUTER_JOIN)
-														.workerCount(1);
-		JoinOptions jopts = new JoinOptions().workerCount(1);
+		JoinOptions outerJoinOpts = RIGHT_OUTER_JOIN(1);
+		JoinOptions jopts = INNER_JOIN(1);
 
 		Plan plan;
 		plan = marmot.planBuilder("merge_politicals")
@@ -75,7 +76,7 @@ public class ConcatPoliticals {
 						.store(POLITICAL)
 						.build();
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(POLITICAL, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(POLITICAL, plan, FORCE(gcInfo));
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 //		result.cluster();

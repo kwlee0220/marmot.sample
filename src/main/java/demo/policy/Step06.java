@@ -1,13 +1,14 @@
 package demo.policy;
 
+import static marmot.ExecutePlanOptions.DISABLE_LOCAL_EXEC;
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.ExecutePlanOptions;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -30,13 +31,13 @@ public class Step06 {
 		StopWatch watch = StopWatch.start();
 		
 		DataSet ds = marmot.getDataSet(INPUT);
-		GeometryColumnInfo info = ds.getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
 		Plan plan = marmot.planBuilder("인구밀도_10000이상_행정동추출")
 						.load(INPUT)
-						.spatialSemiJoin(info.name(), PARAM)	// (6) 교차분석
+						.spatialSemiJoin(gcInfo.name(), PARAM)	// (6) 교차분석
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, ExecutePlanOptions.create().disableLocalExecution(true), StoreDataSetOptions.create().geometryColumnInfo(info).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, DISABLE_LOCAL_EXEC, FORCE(gcInfo));
 		result.cluster();
 		
 		watch.stop();

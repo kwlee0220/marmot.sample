@@ -29,10 +29,10 @@ public class LiNode extends NonRootNode {
 			Plan plan = marmot.planBuilder("adjust empty childs")
 							.loadHashJoin(m_prefix + "__tmp", m_parent.m_keyCol,
 											m_parent.m_dsId, m_parent.m_keyCol,
-											outCols, INNER_JOIN())
+											outCols, INNER_JOIN)
 							.filter("emd_kor_nm.endsWith('읍')")
 							.build();
-			DataSet result = marmot.createDataSet(m_prefix + SUFFIX_EMPTY_PARENT, plan, StoreDataSetOptions.create().force(true));
+			DataSet result = marmot.createDataSet(m_prefix + SUFFIX_EMPTY_PARENT, plan, StoreDataSetOptions.FORCE);
 			System.out.printf("%s: number of empty parents (revised): %d%n", m_name, result.getRecordCount());
 			if ( result.getRecordCount() == 0 ) {
 				marmot.deleteDataSet(result.getId());

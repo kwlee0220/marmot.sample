@@ -1,5 +1,6 @@
 package bizarea;
 
+import static marmot.StoreDataSetOptions.*;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -55,7 +56,7 @@ public class Step2 {
 							.store(RESULT)
 							.build();
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

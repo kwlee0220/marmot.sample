@@ -1,5 +1,6 @@
 package anyang.energe;
 
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.SUM;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -7,7 +8,6 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -17,9 +17,9 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class B01_SumMonthGas2017 {
-	private static final String INPUT = Globals.GAS;
-	private static final String OUTPUT = "tmp/anyang/gas2017";
+public class B02_SumMonthElectroYear {
+	private static final String INPUT = Globals.ELECTRO;
+	private static final String OUTPUT = String.format("tmp/anyang/electro%d", Globals.YEAR);
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -28,23 +28,26 @@ public class B01_SumMonthGas2017 {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		StopWatch watch = StopWatch.start();
+		
+		String planName = String.format("%d년 월별 전기 사용량 합계", Globals.YEAR);
+		String filterPred = String.format("year == %d", Globals.YEAR);
 
 		Plan plan;
-		plan = marmot.planBuilder("2017년 월별 가스 사용량 합계")
+		plan = marmot.planBuilder(planName)
 					.load(INPUT)
 					.defineColumn("year:short", "사용년월.substring(0, 4)")
-					.filter("year == 2017")
+					.filter(filterPred)
 					.defineColumn("month:short", "사용년월.substring(4, 6)")
 					.update("사용량 = Math.max(사용량, 0)")
-					.aggregateByGroup(Group.ofKeys("pnu,month\"").workerCount(1),
+					.aggregateByGroup(Group.ofKeys("pnu,month").workerCount(1),
 									SUM("사용량").as("usage"))
 					.project("pnu, month,  usage")
 					.store(OUTPUT)
 					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
-		SampleUtils.printPrefix(result, 30);
+		SampleUtils.printPrefix(result, 10);
 		
 		marmot.disconnect();
 	}

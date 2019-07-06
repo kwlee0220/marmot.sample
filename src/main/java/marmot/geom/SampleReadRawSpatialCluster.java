@@ -17,7 +17,7 @@ import marmot.remote.protobuf.PBMarmotClient;
  */
 public class SampleReadRawSpatialCluster {
 //	private static final String INPUT = "주소/건물POI";
-	private static final String INPUT = "건물/건물통합정보마스터";
+	private static final String INPUT = "건물/건물통합정보마스터/201809";
 	private static final String SIDO = "구역/시도";
 	private static final String SGG = "구역/시군구";
 	private static final String EMD = "구역/읍면동";
@@ -32,10 +32,10 @@ public class SampleReadRawSpatialCluster {
 		DataSet ds = marmot.getDataSet(INPUT);
 		
 		try ( RecordSet rset = ds.readSpatialCluster("13211032233") ) {
-			rset.stream().count();
+			rset.fstream().count();
 		}
 		try ( RecordSet rset = ds.readSpatialCluster("13211210100") ) {
-			rset.stream().count();
+			rset.fstream().count();
 		}
 		
 //		rangfg

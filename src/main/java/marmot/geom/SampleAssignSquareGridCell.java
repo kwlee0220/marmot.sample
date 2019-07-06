@@ -45,7 +45,7 @@ public class SampleAssignSquareGridCell {
 						.expand("x:int,y:int", "x = cell_pos.x; y = cell_pos.y")
 						.project("cell_geom as the_geom,x,y,count")
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(result, 5);

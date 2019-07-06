@@ -1,4 +1,4 @@
-def YEAR = 2017
+def YEAR = 2018
 
 def LAND_PRICES_YEAR = "토지/개별공시지가_$YEAR";
 def LAND_PRICES = "토지/개별공시지가";
@@ -38,7 +38,7 @@ def YEAR_JOIN_OUT_COLS = "left.*,right.{" + YEAR_COL_NAMES.join(",") + "}"
 createDataSet(TEMP_CADASTRAL) {
 	geometry GC_INFO
 	force = true
-	from plan("$YEAR년도 개별공시지가 데이터에서 공간 정보만 추출") {
+	from plan("${YEAR}년도 개별공시지가 데이터에서 공간 정보만 추출") {
 		load(LAND_PRICES_YEAR)
 		project('the_geom,고유번호 as pnu')
 		shard(1)
@@ -206,7 +206,7 @@ createDataSet(TEMP_ELECTRO_YEAR) {
 createDataSet(OUT_MAP_ELECTRO_YEAR) {
 	geometry GC_INFO
 	force = true
-	from plan("${YEAR}년 월별 전기 사용량에 공간정보 매"') {
+	from plan("${YEAR}년 월별 전기 사용량에 공간정보 매핑") {
 		// 격자분석을 위해, 2018년도 월별 전기 사용량의 PNU 값을에 해당하는 연속지적도 상의 공간 정보를 첨부한다.
 		loadHashJoinFile(TEMP_CADASTRAL, 'pnu', TEMP_ELECTRO_YEAR, 'pnu', output: MONTH_JOIN_OUT_COLS,
 						type: LEFT_OUTER_JOIN, workerCount: 17)

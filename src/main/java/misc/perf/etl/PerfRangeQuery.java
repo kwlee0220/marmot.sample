@@ -80,7 +80,7 @@ public class PerfRangeQuery {
 							.build();
 
 		StopWatch watch = StopWatch.start();
-		DataSet result = marmot.createDataSet("tmp/result", plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet("tmp/result", plan, StoreDataSetOptions.FORCE);
 		watch.stop();
 		System.out.printf("\tcount=%d, elapsed=%s%n",
 							result.getRecordCount(), watch.getElapsedSecondString());
@@ -95,7 +95,7 @@ public class PerfRangeQuery {
 							.project("the_geom")
 							.build();
 		try ( RecordSet rset = marmot.executeLocally(plan) ) {
-			return rset.stream().map(r -> r.getGeometry("the_geom"))
+			return rset.fstream().map(r -> r.getGeometry("the_geom"))
 						.map(g -> g.getEnvelopeInternal())
 						.collectLeft(new Envelope(), (c,v) -> c.expandToInclude(v));
 		}

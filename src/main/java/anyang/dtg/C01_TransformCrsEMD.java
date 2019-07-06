@@ -1,11 +1,13 @@
 package anyang.dtg;
 
+import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.geo.command.ClusterDataSetOptions;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -39,8 +41,8 @@ public class C01_TransformCrsEMD {
 					.transformCrs("the_geom", gcInfo.srid(), dtgInfo.srid())
 					.project("the_geom,emd_cd,emd_kor_nm")
 					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, StoreDataSetOptions.create().geometryColumnInfo(dtgInfo).force(true));
-		result.cluster(ClusterDataSetOptions.create().workerCount(1));
+		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		result.cluster(ClusterDataSetOptions.WORKER_COUNT(1));
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		marmot.disconnect();

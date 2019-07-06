@@ -1,5 +1,6 @@
 package anyang.energe;
 
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.SUM;
 
 import java.util.Arrays;
@@ -13,7 +14,6 @@ import com.vividsolutions.jts.geom.Envelope;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.SquareGrid;
@@ -64,7 +64,7 @@ public class A07_GridAnalysisElectro {
 					.store(OUTPUT)
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		DataSet result = marmot.createDataSet(OUTPUT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
 		
 		for ( int year: years ) {
 			extractToYear(marmot, year);
@@ -88,7 +88,7 @@ public class A07_GridAnalysisElectro {
 					.project(projectExpr)
 					.store(output)
 					.build();
-		DataSet result = marmot.createDataSet(output, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(output, plan, FORCE(gcInfo));
 	}
 	
 //	private static void writeAsRaster(DataSet ds, File file, Envelope bounds, Size2d cellSize)

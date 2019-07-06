@@ -29,7 +29,7 @@ public class SampleMarmotClient {
 //		ds = marmot.getDataSet("교통/지하철/서울역사");
 		ds = marmot.getDataSet("주소/건물POI");
 		try ( RecordSet rset = ds.read() ) {
-			rset.stream().take(5).forEach(System.out::println);
+			rset.fstream().take(5).forEach(System.out::println);
 //			rset.stream().limit(50000000).count();
 		}
 		

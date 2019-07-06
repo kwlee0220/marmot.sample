@@ -1,12 +1,13 @@
 package marmot.geom;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.geo.SquareGrid;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -33,10 +34,10 @@ public class SampleLoadSquareGridFile {
 		Size2d dim = new Size2d(SIDE_LEN, SIDE_LEN);
 
 		Plan plan = marmot.planBuilder("sample_load_squaregrid")
-							.loadGrid(new SquareGrid(INPUT, dim), -1)
+							.loadGrid(new SquareGrid(INPUT, dim))
 							.spatialSemiJoin("the_geom", INPUT)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(result, 5);

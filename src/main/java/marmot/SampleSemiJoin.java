@@ -1,10 +1,12 @@
 package marmot;
 
+import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.optor.JoinOptions.SEMI_JOIN;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.command.MarmotClientCommands;
-import marmot.optor.JoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -27,10 +29,9 @@ public class SampleSemiJoin {
 		
 		Plan plan = marmot.planBuilder("test semi_join")
 							.load(INPUT)
-							.hashJoin("sig_cd", PARAM, "sig_cd", "param.sig_kor_nm",
-									JoinOptions.SEMI_JOIN())
+							.hashJoin("sig_cd", PARAM, "sig_cd", "param.sig_kor_nm", SEMI_JOIN)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		SampleUtils.printPrefix(result, 50);
 	}
 }

@@ -1,5 +1,7 @@
 package anyang.energe;
 
+import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.JoinOptions.LEFT_OUTER_JOIN;
 
 import java.util.List;
@@ -12,7 +14,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSchema;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -58,7 +59,7 @@ public class A03_MapMatchingGas {
 										"left.*," + rightCols, LEFT_OUTER_JOIN(17))
 						.update(updateExpr)
 						.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
 		marmot.deleteDataSet(INTERM);
 		marmot.deleteDataSet(INPUT);
 
@@ -80,6 +81,6 @@ public class A03_MapMatchingGas {
 						.reduceToSingleRecordByGroup(Group.ofKeys("pnu"), outSchema, "tag", "usage")
 						.store(INTERM)
 						.build();
-		marmot.createDataSet(INTERM, plan, StoreDataSetOptions.create().force(true));
+		marmot.createDataSet(INTERM, plan, FORCE);
 	}
 }

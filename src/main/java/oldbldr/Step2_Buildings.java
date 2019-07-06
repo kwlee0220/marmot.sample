@@ -73,7 +73,7 @@ public class Step2_Buildings {
 					.defineColumn("old_ratio:double", "(double)old_cnt/bld_cnt")
 					.store(RESULT)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		watch.stop();
 		
 		SampleUtils.printPrefix(result, 5);

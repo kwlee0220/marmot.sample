@@ -1,10 +1,14 @@
 package marmot;
 
+import static marmot.StoreDataSetOptions.*;
+import static marmot.ExecutePlanOptions.DISABLE_LOCAL_EXEC;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
+
 
 /**
  * 
@@ -27,8 +31,8 @@ public class SampleSort {
 							.project("the_geom,관리기관명,보관일수,카메라대수")
 							.build();
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(RESULT, plan, ExecutePlanOptions.create().disableLocalExecution(true),
-												StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, DISABLE_LOCAL_EXEC,
+												FORCE(gcInfo));
 		SampleUtils.printPrefix(result, 5);
 	}
 }

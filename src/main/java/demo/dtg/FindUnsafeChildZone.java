@@ -1,5 +1,6 @@
 package demo.dtg;
 
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
@@ -13,7 +14,6 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
@@ -71,7 +71,7 @@ public class FindUnsafeChildZone {
 					.store(RESULT)
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(CHILD_ZONE).getGeometryColumnInfo();
-		output = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		output = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		
 		watch.stop();
 		System.out.printf("count=%d, total elapsed time=%s%n",
@@ -101,10 +101,9 @@ public class FindUnsafeChildZone {
 					.project("the_geom,id,대상시설명,area")
 					.store(outDsId)
 					.build();
-		DataSet output = marmot.createDataSet(outDsId, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet output = marmot.createDataSet(outDsId, plan, FORCE(gcInfo));
 		
-		ClusterDataSetOptions opts = ClusterDataSetOptions.create().workerCount(1);
-		output.cluster(opts);
+		output.cluster(ClusterDataSetOptions.WORKER_COUNT(1));
 		
 		return output;
 	}

@@ -37,7 +37,7 @@ public class SampleBuildThumbnail {
 		StopWatch watch = StopWatch.start();
 		
 		try ( RecordSet rset = new RecordSetImpl(marmot, ds, SAMPLE_SIZE) ) {
-			long count = rset.stream()
+			long count = rset.fstream()
 				.zipWithIndex()
 //				.peek(t -> System.out.println(t._2))
 				.count();
@@ -105,7 +105,7 @@ public class SampleBuildThumbnail {
 				
 				if ( topK > 0 ) {
 					try ( RecordSet rset = m_source.readSpatialCluster(quadKey) ) {
-						FStream<Record> selecteds = rset.stream()
+						FStream<Record> selecteds = rset.fstream()
 							.takeTopK(topK, SampleBuildThumbnail::compare)
 							.zipWithIndex()
 							.map(t -> attachInfo(t._1, quadKey, topK, t._2));

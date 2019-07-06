@@ -1,5 +1,6 @@
 package marmot.geom;
 
+import static marmot.StoreDataSetOptions.*;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -30,7 +31,7 @@ public class SampleSpatialJoin {
 							.spatialJoin("the_geom", EMD, "*,param.emd_kor_nm as emd_name")
 							.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(result, 10);

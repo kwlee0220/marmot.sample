@@ -38,7 +38,7 @@ public class SidoNode extends RootNode {
 					.load(getIdDataSet())
 					.filter(RecordScript.of(filterInitExpr, filterExpr))
 					.build();
-		result = marmot.createDataSet(m_prefix + "bad_keys", plan, StoreDataSetOptions.create().force(true));
+		result = marmot.createDataSet(m_prefix + "bad_keys", plan, StoreDataSetOptions.FORCE);
 		System.out.printf("number of invalid keys: %d%n", result.getRecordCount());
 		if ( result.getRecordCount() == 0 ) {
 			marmot.deleteDataSet(result.getId());

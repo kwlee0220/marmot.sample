@@ -1,5 +1,6 @@
 package demo.dtg;
 
+import static marmot.StoreDataSetOptions.*;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.JoinOptions.SEMI_JOIN;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
@@ -77,7 +78,7 @@ public class TagDtgWithRoad {
 					.store(RESULT)
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		output = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		output = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		
 		watch.stop();
 		System.out.printf("count=%d, total elapsed time=%s%n",
@@ -109,10 +110,9 @@ public class TagDtgWithRoad {
 					.project("the_geom,link_id,road_name")
 					.store(outDsId)
 					.build();
-		DataSet output = marmot.createDataSet(outDsId, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet output = marmot.createDataSet(outDsId, plan, FORCE(gcInfo));
 		
-		ClusterDataSetOptions opts = ClusterDataSetOptions.create().workerCount(1);
-		output.cluster(opts);
+		output.cluster(ClusterDataSetOptions.WORKER_COUNT(1));
 	}
 	
 	private static DataSet filterCargo(PBMarmotClient marmot, String output) {
@@ -123,6 +123,6 @@ public class TagDtgWithRoad {
 					.store(output)
 					.build();
 
-		return marmot.createDataSet(output, plan, StoreDataSetOptions.create().force(true));
+		return marmot.createDataSet(output, plan, StoreDataSetOptions.FORCE);
 	}
 }

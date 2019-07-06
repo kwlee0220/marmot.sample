@@ -1,5 +1,6 @@
 package bizarea;
 
+import static marmot.StoreDataSetOptions.*;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -69,7 +70,7 @@ public class Step0 {
 							.store(BIZ_GRID)
 							.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
-		result = marmot.createDataSet(BIZ_GRID, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		result = marmot.createDataSet(BIZ_GRID, plan, FORCE(gcInfo));
 		
 		marmot.deleteDataSet(TEMP_BIG_CITIES);
 		marmot.deleteDataSet(TEMP_BIZ_AREA);
@@ -106,7 +107,7 @@ public class Step0 {
 								.store(result)
 								.build();
 		GeometryColumnInfo gcInfo = political.getGeometryColumnInfo();
-		DataSet ds = marmot.createDataSet(result, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet ds = marmot.createDataSet(result, plan, FORCE(gcInfo));
 		return ds;
 	}
 
@@ -124,7 +125,7 @@ public class Step0 {
 								.store(result)
 								.build();
 		GeometryColumnInfo gcInfo = political.getGeometryColumnInfo();
-		return marmot.createDataSet(result, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		return marmot.createDataSet(result, plan, FORCE(gcInfo));
 	}
 
 	private static final DataSet filterBizArea(MarmotRuntime marmot, String result)
@@ -143,6 +144,6 @@ public class Step0 {
 							.store(TEMP_BIZ_AREA)
 							.build();
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-		return marmot.createDataSet(result, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		return marmot.createDataSet(result, plan, FORCE(gcInfo));
 	}
 }

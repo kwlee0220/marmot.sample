@@ -38,12 +38,10 @@ public class SampleStoreIntoJdbcTable {
 		builder.append("sig_cd varchar");
 		builder.append(")");
 		jdbc.executeUpdate(builder.toString());
-		
-		JdbcConnectOptions jdbcOpts = JdbcConnectOptions.create()
-											.jdbcUrl("jdbc:postgresql://129.254.82.95:5433/sbdata")
-											.user("sbdata")
-											.passwd("urc2004")
-											.driverClassName("org.postgresql.Driver");
+
+		JdbcConnectOptions jdbcOpts
+						= JdbcConnectOptions.POSTGRES_SQL("129.254.82.95", 5433, "sbdata",
+															"sbdata", "urc2004");
 		Plan plan = marmot.planBuilder("test")
 							.load("교통/지하철/서울역사")
 							.project("the_geom,sig_cd")

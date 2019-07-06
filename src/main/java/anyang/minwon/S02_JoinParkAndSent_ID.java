@@ -1,12 +1,13 @@
 package anyang.minwon;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -36,11 +37,11 @@ public class S02_JoinParkAndSent_ID {
 		plan = marmot.planBuilder("이름기반 공원 감성분석 맵매칭_ID")
 					.load(PARK)
 					.hashJoin("id", EMOTION, "id", "the_geom,param.*-{the_geom}",
-							JoinOptions.INNER_JOIN())
+							JoinOptions.INNER_JOIN)
 					.project(prjExpr)
 					.build();
 		GeometryColumnInfo gcInfo = marmot.getDataSet(PARK).getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

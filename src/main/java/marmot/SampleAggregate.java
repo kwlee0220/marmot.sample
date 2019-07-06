@@ -33,7 +33,7 @@ public class SampleAggregate {
 							.aggregate(COUNT(), MAX("휘발유"), MIN("휘발유"), AVG("휘발유"), STDDEV("휘발유"),
 										ENVELOPE("the_geom"))
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		SampleUtils.printPrefix(result, 5);
 	}
 }

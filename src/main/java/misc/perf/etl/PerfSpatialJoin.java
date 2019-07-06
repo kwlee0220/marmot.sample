@@ -95,7 +95,7 @@ public class PerfSpatialJoin {
 							.build();
 
 		StopWatch watch = StopWatch.start();
-		DataSet result = marmot.createDataSet("tmp/result", plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet("tmp/result", plan, StoreDataSetOptions.FORCE);
 		watch.stop();
 		System.out.printf("\tcount=%d, elapsed=%s%n",
 							result.getRecordCount(), watch.getElapsedSecondString());

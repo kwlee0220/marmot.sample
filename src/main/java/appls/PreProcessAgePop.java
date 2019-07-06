@@ -1,10 +1,11 @@
 package appls;
 
+import static marmot.StoreDataSetOptions.GEOMETRY;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.plan.Group;
@@ -38,8 +39,7 @@ public class PreProcessAgePop {
 					.aggregateByGroup(Group.ofKeys("tot_oa_cd,base_year,age_intvl").tags("the_geom"),
 									AggregateFunction.SUM("value").as("total"))
 					.project("the_geom,tot_oa_cd,base_year,age_intvl,total")
-					.storeByGroup(Group.ofKeys("base_year"), RESULT,
-									StoreDataSetOptions.create().geometryColumnInfo(gcInfo))
+					.storeByGroup(Group.ofKeys("base_year"), RESULT, GEOMETRY(gcInfo))
 					.build();
 		marmot.execute(plan);
 //		marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);

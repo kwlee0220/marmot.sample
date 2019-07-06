@@ -1,5 +1,6 @@
 package anyang.energe;
 
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.SUM;
 
 import java.util.List;
@@ -11,7 +12,6 @@ import com.vividsolutions.jts.geom.Envelope;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.SquareGrid;
@@ -25,9 +25,9 @@ import utils.stream.FStream;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class B06_GridAnalysisGas2017 {
-	private static final String INPUT = "tmp/anyang/map_gas2017";
-	private static final String OUTPUT = "tmp/anyang/grid/grid_gas2017";
+public class B07_GridAnalysisElectroYear {
+	private static final String INPUT = "tmp/anyang/map_electro" + Globals.YEAR;
+	private static final String OUTPUT = "tmp/anyang/grid/grid_electro" + Globals.YEAR;
 	
 	private static final List<String> COL_NAMES = FStream.rangeClosed(1, 12)
 														.map(i -> "month_" + i)
@@ -53,11 +53,12 @@ public class B06_GridAnalysisGas2017 {
 												.toList();
 		
 		Plan plan;
-		plan = marmot.planBuilder("2017 가스 사용량 격자 분석")
+		String planName = String.format("%d 전기 사용량 격자 분석", Globals.YEAR);
+		plan = marmot.planBuilder(planName)
 					.load(INPUT)
 					.assignGridCell("the_geom", new SquareGrid(bounds, cellSize), false)
 					.intersection("the_geom", "cell_geom", "overlap")
-					.defineColumn("ratio:double", "(ST_Area(overlap) /  ST_Area(the_geom))")
+					.expand("ratio:double", "ratio = (ST_Area(overlap) /  ST_Area(the_geom))")
 					.update(updateExpr)
 					.aggregateByGroup(Group.ofKeys("cell_id").withTags("cell_geom,cell_pos")
 											.workerCount(7),
@@ -67,7 +68,7 @@ public class B06_GridAnalysisGas2017 {
 					.store(OUTPUT)
 					.build();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		marmot.createDataSet(OUTPUT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
 		
 		for ( int month = 1; month <= 12; ++month ) {
 			extractToMonth(marmot, month);
@@ -91,6 +92,6 @@ public class B06_GridAnalysisGas2017 {
 					.project(projectExpr)
 					.store(output)
 					.build();
-		marmot.createDataSet(output, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		marmot.createDataSet(output, plan, FORCE(gcInfo));
 	}
 }

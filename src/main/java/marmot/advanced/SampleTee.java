@@ -39,7 +39,7 @@ public class SampleTee {
 							.build();
 		
 		DataSet result;
-		result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.DEFAULT(gcInfo));
+		result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE(gcInfo));
 		SampleUtils.printPrefix(result, 5);
 		
 		result = marmot.bindExternalDataSet(RESULT2, "tmp/temp", DataSetType.FILE,

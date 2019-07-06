@@ -1,8 +1,10 @@
 package appls;
 
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.SUM;
+import static marmot.optor.JoinOptions.FULL_OUTER_JOIN;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import java.util.stream.Collectors;
@@ -22,9 +24,7 @@ import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
-import marmot.optor.JoinOptions;
 import marmot.optor.geo.SquareGrid;
 import marmot.plan.Group;
 import marmot.plan.SpatialJoinOptions;
@@ -122,7 +122,7 @@ public class FindBestSubwayStationCandidates {
 					.buffer(gcInfo.name(), 1000)
 					.store(output)
 					.build();
-		DataSet result = marmot.createDataSet(output, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(output, plan, FORCE(gcInfo));
 		
 		System.out.printf("%s(%d건), 소요시간=%s%n",
 							output, result.getRecordCount(), watch.getElapsedMillisString());
@@ -180,8 +180,7 @@ public class FindBestSubwayStationCandidates {
 		
 		try {
 			GeometryColumnInfo gcInfo = new GeometryColumnInfo(GEOM_COL, srid);
-			DataSet result = marmot.createDataSet(TEMP_SEOUL_FLOW_POP_GRID, plan,
-													StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+			DataSet result = marmot.createDataSet(TEMP_SEOUL_FLOW_POP_GRID, plan, FORCE(gcInfo));
 			System.out.printf("%s(%d건), 소요시간=%s%n",
 								TEMP_SEOUL_FLOW_POP_GRID, result.getRecordCount(),
 								watch.getElapsedMillisString());
@@ -247,8 +246,7 @@ public class FindBestSubwayStationCandidates {
 					.build();
 		try {
 			GeometryColumnInfo gcInfo = new GeometryColumnInfo(GEOM_COL, srid);
-			DataSet result = marmot.createDataSet(TEMP_SEOUL_TAXI_LOG_GRID, plan,
-													StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+			DataSet result = marmot.createDataSet(TEMP_SEOUL_TAXI_LOG_GRID, plan, FORCE(gcInfo));
 			System.out.printf("%s(%d건), 소요시간=%s%n", TEMP_SEOUL_TAXI_LOG_GRID,
 								result.getRecordCount(), watch.getElapsedMillisString());
 
@@ -294,13 +292,12 @@ public class FindBestSubwayStationCandidates {
 					.hashJoin("cell_id", TEMP_TAXI_LOG, "cell_id",
 							"the_geom,cell_id,normalized,"
 							+ "param.{the_geom as param_geom,cell_id as param_cell_id,"
-							+ "normalized as param_normalized}",
-							JoinOptions.FULL_OUTER_JOIN())
+							+ "normalized as param_normalized}", FULL_OUTER_JOIN)
 					.update(expr)
 					.project("the_geom,cell_id,normalized as value")
 					.store(output)
 					.build();
-		DataSet result = marmot.createDataSet(output, plan, StoreDataSetOptions.create().geometryColumnInfo(GEOM_COL_INFO).force(true));
+		DataSet result = marmot.createDataSet(output, plan, FORCE(GEOM_COL_INFO));
 		System.out.printf("%s(%d건), 소요시간=%s%n",
 							output, result.getRecordCount(), watch.getElapsedMillisString());
 		
@@ -316,7 +313,7 @@ public class FindBestSubwayStationCandidates {
 		RecordSet rset = RecordSet.of(record);
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		marmot.createDataSet("분석결과/서울지역", rset.getRecordSchema(), StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true))
+		marmot.createDataSet("분석결과/서울지역", rset.getRecordSchema(), FORCE(gcInfo))
 				.append(rset);
 	}
 }

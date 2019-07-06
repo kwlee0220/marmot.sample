@@ -1,12 +1,13 @@
 package marmot.geom.advanced;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.func.FOption;
@@ -30,7 +31,7 @@ public class SampleEstimateIDW {
 		
 		Plan plan;
 		DataSet result;
-		GeometryColumnInfo info = new GeometryColumnInfo("the_geom", "EPSG:5186");
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		
 		String tempPath = "tmp/points";
 		
@@ -39,7 +40,7 @@ public class SampleEstimateIDW {
 						.centroid("the_geom")
 						.project("the_geom, big_sq, value")
 						.build();
-		result = marmot.createDataSet(tempPath, plan, StoreDataSetOptions.create().geometryColumnInfo(info).force(true));
+		result = marmot.createDataSet(tempPath, plan, FORCE(gcInfo));
 		result.cluster();
 		
 		plan = marmot.planBuilder("sample_estimate_idw")
@@ -47,7 +48,7 @@ public class SampleEstimateIDW {
 						.estimateIdw("the_geom", tempPath, VALUE_COLUMN, RADIUS,
 										TOP_K, "value", FOption.empty())
 						.build();
-		result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(info).force(true));
+		result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		marmot.deleteDataSet(tempPath);
 		
 		SampleUtils.printPrefix(result, 5);

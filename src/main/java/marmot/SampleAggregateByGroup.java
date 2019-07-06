@@ -36,7 +36,7 @@ public class SampleAggregateByGroup {
 											SUM("sub_sta_sn"), AVG("sub_sta_sn"),
 											STDDEV("sub_sta_sn"))
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		SampleUtils.printPrefix(result, 5);
 	}
 }

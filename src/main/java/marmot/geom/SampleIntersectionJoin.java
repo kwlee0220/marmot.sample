@@ -32,7 +32,7 @@ public class SampleIntersectionJoin {
 							.buffer("the_geom", 50)
 							.intersectionJoin("the_geom", INNER, SpatialJoinOptions.EMPTY)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		marmot.deleteDataSet(INNER);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

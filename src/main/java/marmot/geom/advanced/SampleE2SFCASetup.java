@@ -1,5 +1,6 @@
 package marmot.geom.advanced;
 
+import static marmot.StoreDataSetOptions.*;
 import static marmot.optor.AggregateFunction.AVG;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -47,7 +48,7 @@ public class SampleE2SFCASetup {
 						.project("*-{year}")
 						.build();
 		GeometryColumnInfo gcInfo = flowPop.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

@@ -34,7 +34,7 @@ public class SampleLoadSpatialIndexJoin {
 								.project("*-{the_geom2}")
 								.store(RESULT)
 								.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(result, 10);

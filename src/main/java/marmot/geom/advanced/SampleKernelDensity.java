@@ -1,12 +1,13 @@
 package marmot.geom.advanced;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.geo.SquareGrid;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -28,13 +29,13 @@ public class SampleKernelDensity {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
-		GeometryColumnInfo info = new GeometryColumnInfo("the_geom", "EPSG:5186");
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		SquareGrid grid = new SquareGrid(INPUT, new Size2d(1000, 1000));
 		Plan plan = marmot.planBuilder("sample_estimate_kernel_density")
-						.loadGrid(grid, -1)
+						.loadGrid(grid)
 						.estimateKernelDensity("the_geom", INPUT, VALUE_COLUMN, RADIUS, VALUE_COLUMN)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(info).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		SampleUtils.printPrefix(result, 5);
 	}
 }

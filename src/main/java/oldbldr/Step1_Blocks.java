@@ -47,7 +47,7 @@ public class Step1_Blocks {
 					.spatialJoin("the_geom", EMD, "param.emd_cd,block_cd")
 					.store(RESULT)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

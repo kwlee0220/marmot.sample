@@ -19,6 +19,6 @@ public class RootNode extends Node {
 						.load(m_dsId)
 						.project(m_keyCol)
 						.build();
-		marmot.createDataSet(getIdDataSet(), plan, StoreDataSetOptions.create().force(true));
+		marmot.createDataSet(getIdDataSet(), plan, StoreDataSetOptions.FORCE);
 	}
 }

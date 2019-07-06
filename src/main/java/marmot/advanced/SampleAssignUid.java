@@ -1,5 +1,7 @@
 package marmot.advanced;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -33,7 +35,7 @@ public class SampleAssignUid {
 							.assignUid("guid")
 							.project("the_geom,guid,출입구일련번호")
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().geometryColumnInfo(gcInfo).force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		SampleUtils.printPrefix(result, 5);
 	}
 }

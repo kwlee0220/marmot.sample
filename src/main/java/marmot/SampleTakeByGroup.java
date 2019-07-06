@@ -28,7 +28,7 @@ public class SampleTakeByGroup {
 											.orderBy("sub_sta_sn:A"), 2)
 							.project("sig_cd, sub_sta_sn")
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.create().force(true));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		SampleUtils.printPrefix(result, 20);
 	}
 }
