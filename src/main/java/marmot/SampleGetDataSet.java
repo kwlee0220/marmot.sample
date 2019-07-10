@@ -2,7 +2,6 @@ package marmot;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import common.SampleUtils;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 
@@ -19,13 +18,20 @@ public class SampleGetDataSet {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
-		DataSet input = marmot.getDataSet(INPUT);
-		int cnt = (int)input.getRecordCount();
-
-		SampleUtils.printPrefix(input, 5);
-		
 		for ( DataSet ds: marmot.getDataSetAllInDir("구역", true) ) {
 			System.out.println(ds.getId());
+		}
+		
+		DataSet input = marmot.getDataSet(INPUT);
+		int cnt = (int)input.getRecordCount();
+		
+		try ( RecordSet rset = input.read() ) {
+			Record record;
+			while ( (record = rset.nextCopy()) != null ) {
+				System.out.printf("도서관 이름: %s, 시도: %s%n",
+									record.getString("NAME"),
+									record.getString("SGG"));
+			}
 		}
 	}
 }
