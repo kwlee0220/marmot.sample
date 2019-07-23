@@ -18,11 +18,9 @@ import marmot.remote.protobuf.PBMarmotClient;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleArcSplit {
-	private static final String GAS_STATIONS = "POI/주유소_가격";
-	private static final String SGG = "구역/시군구";
-	private static final String EMD = "구역/읍면동";
-	private static final String ANYANG_EMD = "tmp/anyang_emd";
-	private static final String RESULT = "tmp/gas_station_splits";
+	private static final String INPUT = "안양대/공간연산/split/input";
+	private static final String PARAM = "안양대/공간연산/split/param";
+	private static final String RESULT = "tmp/result_splits";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -32,21 +30,10 @@ public class SampleArcSplit {
 		
 		Plan plan;
 		DataSet result;
-
-		GeometryColumnInfo gcInfo = marmot.getDataSet(EMD).getGeometryColumnInfo();
-		plan = marmot.planBuilder("test")
-					.load(EMD)
-					.defineColumn("SIG_CD:string", "EMD_CD.substring(0, 5)")
-					.hashJoin("SIG_CD", SGG, "SIG_CD", "*,param.{SIG_KOR_NM}", INNER_JOIN)
-					.filter("SIG_KOR_NM.contains('안양시')")
-					.project("the_geom,EMD_KOR_NM")
-					.build();
-		result = marmot.createDataSet(ANYANG_EMD, plan, FORCE(gcInfo));
-		result.cluster();
 		
 		ArcSplitParameters params = new ArcSplitParameters();
-		params.setInputDataset(GAS_STATIONS);
-		params.setSplitDataset(ANYANG_EMD);
+		params.setInputDataset(INPUT);
+		params.setSplitDataset(PARAM);
 		params.setSplitKey("EMD_KOR_NM");
 		params.setOutputDataset(RESULT);
 		params.setForce(true);
