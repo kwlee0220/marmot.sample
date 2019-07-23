@@ -36,7 +36,7 @@ public class Step04 {
 							.load(INPUT)
 							.centroid(gcInfo.name())		// (4) 중심점 추출
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, DISABLE_LOCAL_EXEC, FORCE(gcInfo));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		System.out.printf("elapsed time=%s (processing)%n", watch.getElapsedMillisString());
 		
 		result.cluster();

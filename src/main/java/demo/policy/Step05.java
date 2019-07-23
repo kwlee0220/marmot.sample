@@ -37,7 +37,7 @@ public class Step05 {
 							.load(INPUT)
 							.filter("value >= 10000")							// (5) 영역분석
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, DISABLE_LOCAL_EXEC, FORCE(gcInfo));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		result.cluster();
 		
 		watch.stop();

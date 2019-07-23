@@ -1,6 +1,5 @@
 package demo.policy;
 
-import static marmot.ExecutePlanOptions.DISABLE_LOCAL_EXEC;
 import static marmot.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -36,7 +35,7 @@ public class Step02 {
 						.load(INPUT)
 						.buffer(gcInfo.name(), 400)	// (2) 버퍼추정
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, DISABLE_LOCAL_EXEC, FORCE(gcInfo));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		result.cluster();
 		
 		watch.stop();

@@ -38,7 +38,7 @@ public class Step01 {
 						.filter("induty_nm == '경로당'")			// (1) 영역분석
 						.store(RESULT)
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, DISABLE_LOCAL_EXEC, FORCE(gcInfo));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		result.cluster();
 		
 		watch.stop();

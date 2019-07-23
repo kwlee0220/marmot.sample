@@ -37,7 +37,7 @@ public class Step06 {
 						.load(INPUT)
 						.spatialSemiJoin(gcInfo.name(), PARAM)	// (6) 교차분석
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, DISABLE_LOCAL_EXEC, FORCE(gcInfo));
+		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		result.cluster();
 		
 		watch.stop();
