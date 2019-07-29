@@ -1,13 +1,9 @@
 package marmot.geom.advanced;
 
-import static marmot.StoreDataSetOptions.FORCE;
-import static marmot.optor.JoinOptions.INNER_JOIN;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.process.geo.arc.ArcSplitParameters;

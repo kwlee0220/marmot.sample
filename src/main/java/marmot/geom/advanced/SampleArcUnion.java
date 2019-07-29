@@ -13,8 +13,8 @@ import marmot.remote.protobuf.PBMarmotClient;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleArcUnion {
-	private static final String LAND_TYPE = "토지/용도지역지구";
-	private static final String BISINESS_AREA = "POI/주요상권";
+	private static final String INPUT = "안양대/공간연산/union/input";
+	private static final String PARAM = "안양대/공간연산/union/param";
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
@@ -24,10 +24,8 @@ public class SampleArcUnion {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		ArcUnionParameters params = new ArcUnionParameters();
-		params.setLeftDataSet(LAND_TYPE);
-		params.setRightDataSet(BISINESS_AREA);
-		params.setLeftKeyColumns("PRESENT_SN");
-		params.setRightKeyColumns("TRDAR_NO");
+		params.setLeftDataSet(INPUT);
+		params.setRightDataSet(PARAM);
 		params.setOutputDataset(RESULT);
 		params.setForce(true);
 		

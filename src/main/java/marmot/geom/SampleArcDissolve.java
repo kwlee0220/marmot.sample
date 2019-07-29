@@ -16,9 +16,8 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleArcSpatialJoin {
-	private static final String INPUT = "안양대/공간연산/spatial_join/input";
-	private static final String PARAM = "안양대/공간연산/spatial_join/param";
+public class SampleArcDissolve {
+	private static final String INPUT = "안양대/공간연산/dissolve/input";
 	private static final String RESULT = "tmp/result";
 
 	public static final void main(String... args) throws Exception {
@@ -29,15 +28,15 @@ public class SampleArcSpatialJoin {
 		
 		StopWatch watch = StopWatch.start();
 		
-		Plan plan = marmot.planBuilder("spatial_join")
+		GeometryColumnInfo gcInfo = marmot.getDataSet(INPUT).getGeometryColumnInfo();
+		Plan plan = marmot.planBuilder("sample_arc_dissolve")
 							.load(INPUT)
-							.arcSpatialJoin("the_geom", PARAM, false, true)
+							.dissolve("sido", "the_geom")
 							.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		SampleUtils.printPrefix(result, 10);
+		SampleUtils.printPrefix(result, 5);
 	}
 }

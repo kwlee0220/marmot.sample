@@ -1,14 +1,13 @@
 package marmot.geom;
 
-import static marmot.StoreDataSetOptions.FORCE;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.Plan;
+import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 
@@ -16,9 +15,9 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleArcSpatialJoin {
-	private static final String INPUT = "안양대/공간연산/spatial_join/input";
-	private static final String PARAM = "안양대/공간연산/spatial_join/param";
+public class SampleArcIntersect {
+	private static final String INPUT = "안양대/공간연산/intersect/input";
+	private static final String PARAM = "안양대/공간연산/intersect/param";
 	private static final String RESULT = "tmp/result";
 
 	public static final void main(String... args) throws Exception {
@@ -29,15 +28,14 @@ public class SampleArcSpatialJoin {
 		
 		StopWatch watch = StopWatch.start();
 		
-		Plan plan = marmot.planBuilder("spatial_join")
+		Plan plan = marmot.planBuilder("sample_intersection_join")
 							.load(INPUT)
-							.arcSpatialJoin("the_geom", PARAM, false, true)
+							.intersectionJoin("the_geom", PARAM, SpatialJoinOptions.EMPTY)
 							.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		SampleUtils.printPrefix(result, 10);
+		SampleUtils.printPrefix(result, 5);
 	}
 }
