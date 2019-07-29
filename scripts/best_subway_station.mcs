@@ -1,4 +1,9 @@
 
+def SIDO = "구역/시도"
+def SUBWAY_STATIONS = "교통/지하철/서울역사"
+def FLOWPOP_2015 = "주민/유동인구/월별_시간대/2015"
+def TAXI = "로그/나비콜/택시로그"
+
 def GC_INFO = 'the_geom(EPSG:5186)'
 def OUT_DIR = "분석결과/지하철역사_추천"
 def TMP_DIR = "tmp/subway"
@@ -6,12 +11,11 @@ def TEMP_STATIONS = "$OUT_DIR/지하철역사_100m_버퍼"
 def TEMP_FLOW_POP = "분석결과/지하철역사_추천/유동인구";
 def TEMP_TAXI_LOG = "분석결과/지하철역사_추천/택시로그";
 
-
 createDataSet(TEMP_STATIONS) {
 	geometry GC_INFO
 	force = true
 	from plan("서울지역 지하철역사 1KM 버퍼") {
-		load("교통/지하철/서울역사")
+		load(SUBWAY_STATIONS)
 		
 		// 지하철 역사의 소속이 서울(11)인 역사만 추출함.
 		filter("sig_cd.substring(0,2) == '11'")
@@ -23,7 +27,7 @@ createDataSet(TEMP_STATIONS) {
 
 def seoulBoundary = runPlanToGeometry plan("get_seoul") {
 	// 전국 시도 행정구역 데이터세트 적재
-	load("구역/시도")
+	load(SIDO)
 	
 	// 행정구역 중에서 서울특별시만 선택
 	filter("ctprvn_cd == '11'")
@@ -39,7 +43,7 @@ createDataSet("$OUT_DIR/역사외_지역/유동인구/격자별_집계") {
 	force = true
 	from plan("'500mX500m 격자단위 유동인구' 집계") {
 		// 전국 유동인구 데이테세트에서 서울시 영역에 속한 부분만을 추출한다.
-		query("주민/유동인구/월별_시간대/2015", seoulBoundary)
+		query(FLOWPOP_2015, seoulBoundary)
 		
 		// 모든 지하철 역사로부터 1km 이상 떨어진 로그 데이터만 선택한다.
 		spatialSemiJoin("the_geom", TEMP_STATIONS, negated: true)
@@ -68,7 +72,7 @@ createDataSet("$OUT_DIR/역사외_지역/택시로그/격자별_집계") {
 	force = true
 	from plan("'택시 운행 로그'에서 500mX500m 격자단위 승하차 집계") {
 		// 택시 로그를  읽는다.
-		load("로그/나비콜/택시로그")
+		load(TAXI)
 		
 		// 승하차 로그만 선택한다.
 		filter("status == 1 || status == 2")
