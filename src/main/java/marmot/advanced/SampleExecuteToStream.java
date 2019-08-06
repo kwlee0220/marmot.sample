@@ -4,7 +4,7 @@ import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Envelope;
 
 import marmot.DataSet;
 import marmot.MarmotRuntime;
@@ -35,7 +35,7 @@ public class SampleExecuteToStream {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
-		Geometry range = getRange(marmot);
+		Envelope range = getRange(marmot);
 
 		perfBatchTiny(marmot);
 		perfStreamTiny(marmot);
@@ -93,15 +93,15 @@ public class SampleExecuteToStream {
 	
 
 	
-	private static final Geometry getRange(MarmotRuntime marmot) {
+	private static final Envelope getRange(MarmotRuntime marmot) {
 		Plan plan;
 		plan = marmot.planBuilder("range")
 					.load(RANGE)
 					.filter("hdong_name == '행궁동'")
 					.build();
-		return marmot.executeToGeometry(plan).get();
+		return marmot.executeToGeometry(plan).get().getEnvelopeInternal();
 	}
-	private static final void perfBatchSmall(MarmotRuntime marmot, Geometry range) {
+	private static final void perfBatchSmall(MarmotRuntime marmot, Envelope range) {
 		Plan plan;
 		plan = marmot.planBuilder("test batch_medium")
 					.load(SMALL)
@@ -121,7 +121,7 @@ public class SampleExecuteToStream {
 			System.out.printf("elapsed (small,batch): first=%s last=%s%n", firstRecTime, lastRecTime);
 		}
 	}
-	private static final void perfStreamSmall(MarmotRuntime marmot, Geometry range) {
+	private static final void perfStreamSmall(MarmotRuntime marmot, Envelope range) {
 		Plan plan;
 		plan = marmot.planBuilder("test SampleGetStream")
 					.load(SMALL)

@@ -24,9 +24,9 @@ public class SampleGeoServer {
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
-		DataSet ds = marmot.getDataSet(CHILDREN);
+		DataSet ds = marmot.getDataSet(HOSPITAL);
 		
-		GeoServer server = GeoServer.create("localhost", 8080, "admin", "geoserver");
+		GeoServer server = GeoServer.create("220.74.32.5", 9987, "admin", "geoserver");
 		
 		System.out.println("before remove layer: " + server.listLayers());
 

@@ -6,12 +6,10 @@ import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Polygon;
 
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.geo.CoordinateTransform;
-import marmot.geo.GeoClientUtils;
 import marmot.plan.PredicateOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -33,7 +31,7 @@ public class CountInvalidGeoms {
 		
 		StopWatch watch = StopWatch.start();
 		
-		Polygon bounds = getValidWgsBounds(marmot);
+		Envelope bounds = getValidWgsBounds(marmot);
 
 		Plan plan;
 		plan = marmot.planBuilder("count invalid geometry records")
@@ -50,13 +48,11 @@ public class CountInvalidGeoms {
 							count, watch.getElapsedMillisString());
 	}
 	
-	private static Polygon getValidWgsBounds(PBMarmotClient marmot) {
+	private static Envelope getValidWgsBounds(PBMarmotClient marmot) {
 		Envelope bounds = marmot.getDataSet(POLITICAL).getBounds();
 		bounds.expandBy(1);
 		
 		CoordinateTransform trans = CoordinateTransform.get("EPSG:5186", "EPSG:4326");
-		Envelope wgs84Bounds = trans.transform(bounds);
-		
-		return GeoClientUtils.toPolygon(wgs84Bounds);
+		return trans.transform(bounds);
 	}
 }
