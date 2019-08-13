@@ -1,7 +1,6 @@
 package marmot;
 
 import static marmot.StoreDataSetOptions.FORCE;
-import static marmot.StoreDataSetOptions.FORCE;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,10 +40,19 @@ public class SampleCreateDataSet {
 		
 		DataSet ds;
 		ds = marmot.createDataSet("tmp/result", schema, FORCE);
-		System.out.printf("block_size=%d, compression=%s(=false)%n", ds.getBlockSize(), ds.isCompressed());
+		System.out.printf("block_size=%d%s%n",
+							ds.getBlockSize(),
+							ds.getCompressionCodecName()
+								.map(name -> ", compression=" + name)
+								.getOrElse(""));
 		
-		ds = marmot.createDataSet("tmp/result", schema, FORCE.blockSize(64).compression(true));
-		System.out.printf("block_size=%d(=64), compression=%s(=true)%n", ds.getBlockSize(), ds.isCompressed());
+		ds = marmot.createDataSet("tmp/result", schema, FORCE.blockSize(64)
+															.compressionCodecName("snappy"));
+		System.out.printf("block_size=%d(=64)%s%n",
+							ds.getBlockSize(),
+							ds.getCompressionCodecName()
+								.map(name -> ", compression=" + name)
+								.getOrElse(""));
 		
 		// 생성할 데이터세트에 저장될 레코드들의 리스트를 생성.
 		List<Record> recordList = Lists.newArrayList();
@@ -75,8 +83,11 @@ public class SampleCreateDataSet {
 		// 데이터세트를 생성하고, 레코드 세트를 저장한다.
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		ds = marmot.createDataSet("tmp/result2", schema, FORCE(gcInfo));
-		System.out.printf("geometry=%s, block_size=%d, compression=%s(=false)%n",
-							ds.getGeometryColumnInfo(), ds.getBlockSize(), ds.isCompressed());
+		System.out.printf("geometry=%s, block_size=%d%s%n",
+							ds.getGeometryColumnInfo(), ds.getBlockSize(),
+							ds.getCompressionCodecName()
+								.map(name -> ", compression=" + name)
+								.getOrElse(""));
 		ds.append(rset);
 		
 		ds = marmot.getDataSet("tmp/result2");
