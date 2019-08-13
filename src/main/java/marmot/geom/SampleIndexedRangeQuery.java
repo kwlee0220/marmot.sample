@@ -1,6 +1,7 @@
 package marmot.geom;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -11,7 +12,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.geo.GeoClientUtils;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -32,11 +32,11 @@ public class SampleIndexedRangeQuery {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		Envelope bounds = GeoClientUtils.expandBy(getBorder(marmot).getEnvelopeInternal(), -14000);
-		Geometry key = GeoClientUtils.toPolygon(bounds);
+//		Geometry key = GeoClientUtils.toPolygon(bounds);
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		Plan plan = marmot.planBuilder("sample_indexed_rangequery")
-							.query(BUILDINGS, key)
+							.query(BUILDINGS, bounds)
 							.project("the_geom,시군구코드,건물명")
 							.build();
 		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));

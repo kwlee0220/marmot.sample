@@ -1,0 +1,179 @@
+
+### 시군구 데이터 기반 1kmX1km 격자 데이터세트 생성
+
+mc_copy "구역/읍면동_2019" "tmp/dtg/emd_grid" -assign_grid '구역/읍면동_2019:1000x1000'
+
+	private static final String REFERENCE = "구역/읍면동_2019";
+		DataSet ds = marmot.getDataSet(REFERENCE);
+		
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
+		Envelope bounds = ds.getBounds();
+		SquareGrid grid = new SquareGrid(bounds, new Size2d(1000, 1000));
+		
+		String prjExpr = String.format("cell_geom as %s,cell_id,cell_pos", gcInfo.name());
+		GeometryColumnInfo outGcInfo = new  GeometryColumnInfo(gcInfo.name(), "EPSG:4326");
+		
+		Plan plan;
+		plan = marmot.planBuilder("build_square_grid")
+					.load(REFERENCE)
+					.assignGridCell(gcInfo.name(), grid, false)
+					.project(prjExpr)
+					.distinct("cell_id")
+					// DTG 데이터가 방대하기 때문에, 구역 데이터의 좌표계를 DTG 좌표계인 EPSG:4326으로 변경시킨다.
+					.transformCrs(outGcInfo.name(), gcInfo.srid(), outGcInfo.srid())
+					.build();
+		return marmot.createDataSet(TEMP_GRID, plan, StoreDataSetOptions.FORCE(outGcInfo));
+
+# 도봉구 전첵 영역 적재
+mc_import_shapefile $MARMOT_DATA/기타/안양대제공/도봉구/전체구역 -dataset 기타/안양대/도봉구/전체구역	\
+				-shp_srid EPSG:5179 -srid EPSG:5186 -charset euc-kr -f
+
+# 도봉구내 행정동 구역 정보 적재
+mc_import_shapefile $MARMOT_DATA/기타/안양대제공/도봉구/행정동_구역 -dataset 기타/안양대/도봉구/행정동_구역	\
+				-shp_srid EPSG:5179 -srid EPSG:5186 -charset euc-kr -f
+
+# 도봉구내 필지 구역 정보 적재
+mc_import_shapefile $MARMOT_DATA/기타/안양대제공/도봉구/필지 -dataset 기타/안양대/도봉구/필지	\
+				-shp_srid EPSG:5179 -srid EPSG:5186 -charset euc-kr -f
+cluster_dataset 기타/안양대/도봉구/필지
+
+# 도봉구내 도로망 정보 적재
+mc_import_shapefile $MARMOT_DATA/기타/안양대제공/도봉구/도로망 -dataset 기타/안양대/도봉구/도로망	\
+				-shp_srid EPSG:5179 -srid EPSG:5186 -charset euc-kr -f
+cluster_dataset 기타/안양대/도봉구/도로망
+
+# 도봉구내 100단위 격자 구역 정보 적재
+import_shapefile $MARMOT_DATA/기타/안양대제공/도봉구/GRID_100 -dataset 기타/안양대/도봉구/GRID_100	\
+				-shp_srid EPSG:5179 -srid EPSG:5186 -charset euc-kr -f
+
+########################################
+########################################
+### 도봉구 공원 감성 분석
+########################################
+########################################
+
+# 도봉구 공원 정보 적재
+mc_import_shapefile $MARMOT_DATA/기타/안양대제공/도봉구/공원 -dataset 기타/안양대/도봉구/공원	\
+					-shp_srid EPSG:5179 -srid EPSG:5186 -charset euc-kr -f
+cluster_dataset 기타/안양대/도봉구/공원
+
+# 도봉구 공원 감성분석 결과 적재
+mc_import_excel $MARMOT_DATA/기타/안양대제공/도봉구/공원_감성분석 -dataset 기타/안양대/도봉구/공원_감성분석	\
+				-header_first -null_string '#N/A' -geom_col the_geom -srid EPSG:5186 -f
+
+# 공원 이름 기반 감성분석 맵매칭
+mc_copy 기타/안양대/도봉구/공원 분석결과/안양대/도봉구/공원_감석분석_맵 -filter '!kor_par_nm.equals("#N/A")' \
+	-join 'kor_par_nm:기타/안양대/도봉구/공원_감성분석:poi' \
+	-join_output_cols 'the_geom,param.*-{the_geom}' -f
+	
+# 공원 식별자 기반 감성분석 맵매칭
+mc_copy 기타/안양대/도봉구/공원 분석결과/안양대/도봉구/공원_감석분석_맵_ID \
+	-join 'id:기타/안양대/도봉구/공원_감성분석:id' -join_output_cols 'the_geom,param.*-{the_geom}' \
+	-project 'the_geom,row_id,poi,id,sp,sn,언급빈도수 as mention,선호도 as preference' -f
+
+
+
+########################################
+########################################
+### 도봉구 공원 관련 민원 분포 분석
+########################################
+########################################
+
+# 공원 관련 민원 데이터 적재
+mc_import_excel $MARMOT_DATA/기타/안양대제공/도봉구/공원_민원 -dataset 기타/안양대/도봉구/공원_민원 -header_first -point_col 'x,y'  \
+                -excel_srid EPSG:5181 -geom_col the_geom -srid EPSG:5186 -f
+cluster_dataset 기타/안양대/도봉구/공원_민원
+
+# 필지별 공원관련 민원수 합계
+mc_copy 기타/안양대/도봉구/공원_민원 분석결과/안양대/도봉구/필지별_공원민원수 -f	\
+	-join 'all_parcel_layer_id:기타/안양대/도봉구/필지:id'	\
+	-join_output_cols 'param.{the_geom,id},team_name' -join_type "right_outer"	\
+	-group_by 'id:the_geom' -aggregate 'count'
+
+# 격자별 공원관련 민원수 합계
+mc_copy 기타/안양대/도봉구/GRID_100 분석결과/안양대/도봉구/격자별_공원민원수 -f	\
+	-spatial_outer_join 'the_geom:기타/안양대/도봉구/공원_민원' -join_output_cols 'the_geom,spo_no_cd'	\
+	-group_by 'spo_no_cd:the_geom' -aggregate 'count'
+
+
+
+########################################
+########################################
+### 도봉구 민원 분포 분석
+########################################
+########################################
+
+# 도봉구 지역 민원 데이터 적재
+mc_import_excel $MARMOT_DATA/기타/안양대제공/도봉구/민원 -dataset 기타/안양대/도봉구/민원 -header_first	\
+				-point_col 'x,y' -excel_srid EPSG:5181 -geom_col the_geom -srid EPSG:5186 -f
+cluster_dataset 기타/안양대/도봉구/민원
+
+# 담당팀_필지별_민원수 합계
+mc_copy 기타/안양대/도봉구/민원 분석결과/안양대/도봉구/팀별_필지별_민원수 -f -filter 'team_name != null'	\
+	-join 'all_parcel_layer_id:기타/안양대/도봉구/필지:id'	\
+	-join_output_cols 'param.{the_geom,id},team_name' -join_type "right_outer"	\
+	-group_by 'team_name,id:the_geom' -aggregate 'count'
+
+# 담당팀_격자별_민원수 합계
+mc_copy 기타/안양대/도봉구/민원 분석결과/안양대/도봉구/팀별_격자별_민원수 -f -filter 'team_name != null'	\
+	-spatial_join 'the_geom:기타/안양대/도봉구/GRID_100'	\
+	-join_output_cols 'team_name,param.{the_geom,spo_no_cd}'	\
+	-group_by 'team_name,spo_no_cd:the_geom' -aggregate 'count'
+
+
+
+########################################
+########################################
+### 도봉구 통행량 분석
+########################################
+########################################
+
+# 도봉부 지역 DTG 데이터 적재
+mc_import_csv $MARMOT_DATA/기타/안양대제공/도봉구/DTG -dataset 기타/안양대/도봉구/DTG -charset euc-kr -header_first	\
+			-point_col 'x,y' -geom_col the_geom -srid EPSG:5186 -f -report_interval 1000000
+
+
+
+########################################
+########################################
+### 도봉구 교통사망사고 분포 분석
+########################################
+########################################
+
+# 전국 교통사망사고 데이터 적재
+import_csv $MARMOT_DATA/기타/안양대제공/교통사고/사망교통사고 -dataset 교통/교통사고/사망사고 -quote '"' -header_first	\
+			-point_col '경도,위도' -csv_srid EPSG:4326 -geom_col the_geom -srid EPSG:5186 -f
+cluster_dataset 교통/교통사고/사망사고
+
+# 읍면동별 사망사고 빈도집계
+mc_copy 기타/안양대/도봉구/행정동_구역 분석결과/안양대/도봉구/읍면동별_사망사고_빈도 -f	\
+	-spatial_join 'the_geom:분석결과/안양대/도봉구/사망사고' -join_type aggregate -aggregate 'count'	\
+	-project 'the_geom,db_id,행정동 as name,count'	
+
+# 읍면동별 사망사고 빈도집계
+mc_copy 기타/안양대/도봉구/도로망 분석결과/안양대/도봉구/도로별_사망사고_빈도 -f	\
+	-spatial_join 'the_geom:분석결과/안양대/도봉구/사망사고' -join_type aggregate -aggregate 'count'	\
+	-join_expr 'within_distance(15)'
+
+
+
+########################################
+########################################
+### 전국 교통사망사고 분포 분석
+########################################
+########################################
+
+# 전국 교통사망사고 데이터 적재
+import_csv $MARMOT_DATA/기타/안양대제공/교통사고/사망교통사고 -dataset 교통/교통사고/사망사고 -quote '"' -header_first	\
+			-point_col '경도,위도' -csv_srid EPSG:4326 -geom_col the_geom -srid EPSG:5186 -f
+cluster_dataset 교통/교통사고/사망사고
+
+# 전국 도로망 데이터 적재
+import_shapefile $MARMOT_DATA/기타/표준노드링크/20180531/LINK.shp -dataset 교통/도로/링크 -srid EPSG:5186 -charset euc-kr -f
+cluster_dataset 교통/도로/링크 -workers 3
+
+
+# 전국 읍면동별 사망사고 빈도집계
+mc_copy 구역/읍면동 분석결과/안양대/네트워크/읍면동별_사망사고_분포 -f	\
+	-spatial_join 'the_geom:교통/교통사고/사망사고' -join_type aggregate -aggregate 'count'	\
+	-project 'the_geom,emd_cd,emd_kor_nm,count'	

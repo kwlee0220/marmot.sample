@@ -12,8 +12,7 @@ import marmot.remote.protobuf.PBMarmotClient;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleLoadText {
-//	private static final String PATH = "data/로그/나비콜";
-	private static final String PATH = "data/로그/dtg_test";
+	private static final String PATH = "data/로그/dtg_201809";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
