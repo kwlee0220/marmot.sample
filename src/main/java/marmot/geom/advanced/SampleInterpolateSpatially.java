@@ -25,6 +25,9 @@ public class SampleInterpolateSpatially {
 
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
+		
+		System.out.println(IDWInterpolation.ofPower(2));
+		System.exit(1);
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();

@@ -15,7 +15,7 @@ import marmot.remote.protobuf.PBMarmotClient;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleLoadThumbnail {
+public class SampleReadThumbnail {
 //	private static final String INPUT = "건물/건물통합정보마스터";
 	private static final String INPUT = "주소/건물POI";
 	private static final int SAMPLE_SIZE = 50000;

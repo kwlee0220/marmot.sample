@@ -10,7 +10,7 @@ import marmot.remote.protobuf.PBMarmotClient;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleGetDataSet {
-	private static final String INPUT = "POI/전국도서관";
+	private static final String INPUT = "POI/주유소_가격";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -28,9 +28,9 @@ public class SampleGetDataSet {
 		try ( RecordSet rset = input.read() ) {
 			Record record;
 			while ( (record = rset.nextCopy()) != null ) {
-				System.out.printf("도서관 이름: %s, 시도: %s%n",
-									record.getString("NAME"),
-									record.getString("SGG"));
+				System.out.printf("상호: %s, 휘발유: %s%n",
+									record.getString("상호"),
+									record.getString("휘발유"));
 			}
 		}
 	}
