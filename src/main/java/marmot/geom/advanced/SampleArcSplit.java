@@ -4,7 +4,6 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
-import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.process.geo.arc.ArcSplitParameters;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -23,9 +22,6 @@ public class SampleArcSplit {
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
-		
-		Plan plan;
-		DataSet result;
 		
 		ArcSplitParameters params = new ArcSplitParameters();
 		params.setInputDataset(INPUT);
