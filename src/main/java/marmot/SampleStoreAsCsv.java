@@ -14,6 +14,7 @@ import marmot.remote.protobuf.PBMarmotClient;
 public class SampleStoreAsCsv {
 	private static final String INPUT = "교통/지하철/서울역사";
 	private static final String RESULT = "tmp/result";
+	private static final String RESULT2 = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -34,7 +35,7 @@ public class SampleStoreAsCsv {
 					.load(INPUT)
 					.filter("sub_sta_sn > 320")
 					.project("kor_sub_nm,sub_sta_sn,sig_cd")
-					.storeAsCsv(RESULT, DEFAULT(',').compressionCodecName("gzip"))
+					.storeAsCsv(RESULT2, DEFAULT(',').compressionCodecName("gzip"))
 					.build();
 		marmot.execute(plan);
 	}
