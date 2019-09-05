@@ -1,6 +1,7 @@
 package common;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
+
 import java.io.File;
 import java.util.Map;
 
@@ -15,7 +16,6 @@ import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
-import marmot.StoreDataSetOptions;
 import marmot.support.DefaultRecord;
 
 /**

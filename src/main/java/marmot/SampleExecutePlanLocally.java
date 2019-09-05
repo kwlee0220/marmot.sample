@@ -63,9 +63,9 @@ public class SampleExecutePlanLocally {
 			Plan plan = marmot.planBuilder("test")
 								.filter("sub_sta_sn > 300 && sub_sta_sn < 305")
 								.project("sub_sta_sn")
+								.store(RESULT, StoreDataSetOptions.FORCE)
 								.build();
-			DataSet result = marmot.createDataSet(RESULT, plan, rset, StoreDataSetOptions.FORCE);
-			result.read().forEach(System.out::println);
+			marmot.executeLocally(plan, rset).forEach(System.out::println);
 		}
 	}
 	

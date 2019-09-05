@@ -1,6 +1,7 @@
 package marmot;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -31,8 +32,10 @@ public class SampleDefineColumn {
 							.defineColumn("the_geom:point", "ST_Centroid(the_geom)")
 							.defineColumn("sig_cd:int")
 							.project("the_geom,area,SIG_CD")
+							.store(RESULT, FORCE(gcInfo))
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
-		SampleUtils.printPrefix(result, 5);
+		marmot.execute(plan);
+		
+		SampleUtils.printPrefix(marmot.getDataSet(RESULT), 5);
 	}
 }

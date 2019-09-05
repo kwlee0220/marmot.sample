@@ -1,5 +1,6 @@
 package marmot;
 
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.ENVELOPE;
@@ -32,8 +33,11 @@ public class SampleAggregate {
 							.filter("휘발유 > 0")
 							.aggregate(COUNT(), MAX("휘발유"), MIN("휘발유"), AVG("휘발유"), STDDEV("휘발유"),
 										ENVELOPE("the_geom"))
+							.store(RESULT, FORCE)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(RESULT);
 		SampleUtils.printPrefix(result, 5);
 	}
 }

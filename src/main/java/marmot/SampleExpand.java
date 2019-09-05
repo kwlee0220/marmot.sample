@@ -36,8 +36,10 @@ public class SampleExpand {
 										+ "eng_sub_nm = kor_sub_nm + '_ENG'")
 							.expand("sig_cd:int")
 							.project("the_geom,area,SIG_CD,kor_sub_nm")
+							.store(RESULT, FORCE(gcInfo))
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

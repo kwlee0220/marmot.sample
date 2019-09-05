@@ -32,8 +32,11 @@ public class SampleHashJoin {
 							.hashJoin("sig_cd", PARAM, "ctprvn_cd",
 									"the_geom,param.ctp_kor_nm,sig_kor_nm",
 									JoinOptions.INNER_JOIN)
+							.store(RESULT, FORCE(gcInfo))
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(RESULT);
 		System.out.printf("should: %d == %d%n", result.getRecordCount(), input.getRecordCount());
 		SampleUtils.printPrefix(result, 5);
 	}

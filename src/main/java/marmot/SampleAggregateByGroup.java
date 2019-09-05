@@ -1,5 +1,6 @@
 package marmot;
 
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.MAX;
@@ -35,8 +36,11 @@ public class SampleAggregateByGroup {
 											COUNT(), MAX("sub_sta_sn"), MIN("sub_sta_sn"),
 											SUM("sub_sta_sn"), AVG("sub_sta_sn"),
 											STDDEV("sub_sta_sn"))
+							.store(RESULT, FORCE)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(RESULT);
 		SampleUtils.printPrefix(result, 5);
 	}
 }

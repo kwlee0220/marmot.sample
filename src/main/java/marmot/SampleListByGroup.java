@@ -1,5 +1,7 @@
 package marmot;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -26,8 +28,11 @@ public class SampleListByGroup {
 							.filter("sig_cd.startsWith('11')")
 							.listByGroup(Group.ofKeys("sig_cd").orderBy("sub_sta_sn:A"))
 							.project("sig_cd, sub_sta_sn")
+							.store(RESULT, FORCE)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(RESULT);
 		SampleUtils.printPrefix(result, 20);
 	}
 }

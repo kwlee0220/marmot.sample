@@ -50,9 +50,11 @@ public class SampleLoadLeftOuterHashJoin {
 									"left.the_geom,right.ctp_kor_nm,left.sig_kor_nm,left.sig_cd",
 									LEFT_OUTER_JOIN)
 //					.sample(0.2)
+					.store(RESULT, FORCE(gcInfo))
 					.build();
-		result = marmot.createDataSet(RESULT, plan, DISABLE_LOCAL_EXEC,
-									FORCE(gcInfo));
+		marmot.execute(plan, DISABLE_LOCAL_EXEC);
+
+		result = marmot.getDataSet(RESULT);
 		SampleUtils.printPrefix(result, 500);
 		
 //		marmot.deleteDataSet(TMP_SGG);
