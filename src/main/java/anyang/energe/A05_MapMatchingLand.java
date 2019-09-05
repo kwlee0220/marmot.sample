@@ -1,7 +1,6 @@
 package anyang.energe;
 
 import static marmot.StoreDataSetOptions.FORCE;
-import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.JoinOptions.LEFT_OUTER_JOIN;
 
 import java.util.Arrays;
@@ -76,9 +75,11 @@ public class A05_MapMatchingLand {
 						.update(updatePriceExpr)
 						.project("*-{area}")
 						
-						.store(OUTPUT)
+						.store(OUTPUT, FORCE(gcInfo))
 						.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(OUTPUT);
 		marmot.deleteDataSet(INTERM);
 
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
@@ -98,8 +99,8 @@ public class A05_MapMatchingLand {
 						.project("pnu, 기준년도 as year, 개별공시지가 as usage")
 						.expand("tag:string", "tag = 'land_' + year")
 						.reduceToSingleRecordByGroup(Group.ofKeys("pnu"), outSchema, "tag", "usage")
-						.store(INTERM)
+						.store(INTERM, FORCE)
 						.build();
-		marmot.createDataSet(INTERM, plan, FORCE);
+		marmot.execute(plan);
 	}
 }

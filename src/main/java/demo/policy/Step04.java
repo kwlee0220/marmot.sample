@@ -1,6 +1,5 @@
 package demo.policy;
 
-import static marmot.ExecutePlanOptions.DISABLE_LOCAL_EXEC;
 import static marmot.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -35,8 +34,10 @@ public class Step04 {
 		Plan plan = marmot.planBuilder("인구밀도_2017_중심점추출")
 							.load(INPUT)
 							.centroid(gcInfo.name())		// (4) 중심점 추출
+							.store(RESULT, FORCE(gcInfo))
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		System.out.printf("elapsed time=%s (processing)%n", watch.getElapsedMillisString());
 		
 		result.cluster();

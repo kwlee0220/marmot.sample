@@ -1,5 +1,6 @@
 package marmot.advanced;
 
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -57,11 +58,13 @@ public class SampleExecuteToStream {
 		plan = marmot.planBuilder("perf_batch_tiny")
 					.load(TINY)
 					.filter("trnsit_yn == 1")
+					.store(RESULT, FORCE)
 					.build();
 		
-		StopWatch watch = StopWatch.start();	
-
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
+		StopWatch watch = StopWatch.start();
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(RESULT);
 		try ( RecordSet rset = result.read() ) {
 			Record output = DefaultRecord.of(rset.getRecordSchema());
 			rset.next(output);
@@ -106,11 +109,13 @@ public class SampleExecuteToStream {
 		plan = marmot.planBuilder("test batch_medium")
 					.load(SMALL)
 					.filterSpatially("the_geom", INTERSECTS, range)
+					.store(RESULT, FORCE)
 					.build();
 		
 		StopWatch watch = StopWatch.start();	
-
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(RESULT);
 		try ( RecordSet rset = result.read() ) {
 			Record output = DefaultRecord.of(rset.getRecordSchema());
 			rset.next(output);
@@ -146,11 +151,13 @@ public class SampleExecuteToStream {
 		plan = marmot.planBuilder("perf_batch_medium")
 					.load(MEDIUM)
 					.filter("grnd_flr >= 20")
+					.store(RESULT, FORCE)
 					.build();
 		
-		StopWatch watch = StopWatch.start();	
-
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
+		StopWatch watch = StopWatch.start();
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(RESULT);
 		try ( RecordSet rset = result.read() ) {
 			Record output = DefaultRecord.of(rset.getRecordSchema());
 			rset.next(output);
@@ -186,11 +193,13 @@ public class SampleExecuteToStream {
 		plan = marmot.planBuilder("perf_batch_large")
 					.load(LARGE)
 					.filter("운행속도 == 1 && rpm > 1000")
+					.store(RESULT, FORCE)
 					.build();
 		
 		StopWatch watch = StopWatch.start();	
-
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(RESULT);
 		try ( RecordSet rset = result.read() ) {
 			Record output = DefaultRecord.of(rset.getRecordSchema());
 			rset.next(output);

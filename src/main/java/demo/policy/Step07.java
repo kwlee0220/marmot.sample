@@ -1,13 +1,13 @@
 package demo.policy;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -36,9 +36,10 @@ public class Step07 {
 						.load(INPUT)
 						.arcClip(gcInfo.name(), PARAM)				// (7) 클립분석
 						.shard(1)
-						.store(RESULT)
+						.store(RESULT, FORCE(gcInfo))
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		result.cluster();
 		
 		watch.stop();

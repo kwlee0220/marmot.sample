@@ -34,8 +34,10 @@ public class Step02 {
 		Plan plan = marmot.planBuilder("노인복지시설_경로당_추출_버퍼")
 						.load(INPUT)
 						.buffer(gcInfo.name(), 400)	// (2) 버퍼추정
+						.store(RESULT, FORCE(gcInfo))
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		result.cluster();
 		
 		watch.stop();

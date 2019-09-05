@@ -1,6 +1,5 @@
 package common;
 
-import static marmot.StoreDataSetOptions.*;
 import static marmot.StoreDataSetOptions.FORCE;
 
 import java.util.UUID;
@@ -11,7 +10,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSchema;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -43,13 +41,15 @@ public class BuildJinBunPOI {
 		plan = marmot.planBuilder("distinct_jibun")
 					.load(JIBUN)
 					.distinct("건물관리번호", 11) 
-					.store(tempDs)
+					.store(tempDs, FORCE)
 					.build();
-		result = marmot.createDataSet(tempDs, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		result = marmot.getDataSet(tempDs);
 
 		try {
 			DataSet ds = marmot.getDataSet(BUILD_POI);
 			String geomCol = ds.getGeometryColumn();
+			GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 			
 			plan = marmot.planBuilder("build_jibun_poi")
 							.load(BUILD_POI)
@@ -62,10 +62,11 @@ public class BuildJinBunPOI {
 									"*,param.{법정동코드,지번본번,지번부번,산여부}",
 									JoinOptions.INNER_JOIN)
 							.distinct("건물관리번호,법정동코드,지번본번,지번부번,산여부")
-							.store(RESULT)
+							.store(RESULT, FORCE(gcInfo))
 							.build();
-			GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-			result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+			marmot.execute(plan);
+			
+			result = marmot.getDataSet(RESULT);
 			System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 			
 			SampleUtils.printPrefix(result, 5);

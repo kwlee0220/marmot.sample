@@ -1,11 +1,11 @@
 package marmot.validate;
 
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.JoinOptions.FULL_OUTER_JOIN;
 
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.optor.JoinOptions;
 import utils.func.FOption;
 
@@ -61,8 +61,9 @@ public class NonRootNode extends Node {
 							.load(m_dsId)
 							.defineColumn("parent_key:string", getParentKeyExpr())
 							.project(projExpr)
+							.store(getIdDataSet(), FORCE)
 							.build();
-		marmot.createDataSet(getIdDataSet(), plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
 	}
 	
 	protected void findInvalidLinks(MarmotRuntime marmot) {
@@ -78,13 +79,17 @@ public class NonRootNode extends Node {
 			Plan plan;
 			DataSet result;
 	
+			String output = m_prefix + "orphans";
 			String danglingExpr = String.format("%s == null", m_parent.m_keyCol);
 			plan = marmot.planBuilder("find orphan ids")
 							.load(temp.getId())
 							.filter(danglingExpr)
 							.project(m_keyCol)
+							.store(output, FORCE)
 							.build();
-			result = marmot.createDataSet(m_prefix + "orphans", plan, StoreDataSetOptions.FORCE);
+			marmot.execute(plan);
+			
+			result = marmot.getDataSet(output);
 			System.out.printf("%s: number of orphans: %d%n", m_name, result.getRecordCount());
 			if ( result.getRecordCount() == 0 ) {
 				marmot.deleteDataSet(result.getId());
@@ -94,8 +99,11 @@ public class NonRootNode extends Node {
 							.load(temp.getId())
 							.filter("parent_key == null")
 							.project(m_parent.m_keyCol)
+							.store(m_parent.m_keyCol, FORCE)
 							.build();
-			result = marmot.createDataSet(m_prefix + SUFFIX_EMPTY_PARENT, plan, StoreDataSetOptions.FORCE);
+			marmot.execute(plan);
+			
+			result = marmot.getDataSet(m_prefix + SUFFIX_EMPTY_PARENT);
 			System.out.printf("%s: number of no-child parents (%s): %d%n",
 								m_name, m_parent.m_name, result.getRecordCount());
 			if ( result.getRecordCount() == 0 ) {
@@ -117,8 +125,11 @@ public class NonRootNode extends Node {
 									m_parent.getIdDataSet(), m_parent.m_keyCol,
 									outCols, FULL_OUTER_JOIN)
 					.filter(filterExpr)
+					.store(tempDsId, FORCE)
 					.build();
-		return marmot.createDataSet(tempDsId, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		
+		return marmot.getDataSet(tempDsId);
 	}
 	
 	private void findUncoveredGeoms(MarmotRuntime marmot, FOption<Integer> nworkers) {
@@ -128,6 +139,7 @@ public class NonRootNode extends Node {
 		try {
 			Plan plan;
 			
+			String output = m_prefix + "uncovered_geoms";
 			plan = marmot.planBuilder("find uncovered geoms")
 						.loadHashJoin(tempId, "parent_key", m_parent.m_dsId, m_parent.m_keyCol,
 										"left.*,right.the_geom as parent_geom",
@@ -140,8 +152,11 @@ public class NonRootNode extends Node {
 						.defineColumn("ratio:double", "Round(uncover_area/ST_Area(the_geom),3)")
 						.project("the_geom," + m_keyCol + ",uncover,uncover_area,ratio")
 //						.sort("ratio:DESC")
+						.store(output, FORCE)
 						.build();
-			DataSet result = marmot.createDataSet(m_prefix + "uncovered_geoms", plan, StoreDataSetOptions.FORCE);
+			marmot.execute(plan);
+			
+			DataSet result = marmot.getDataSet(output);
 			System.out.printf("%s: number of un-covered geoms: %d%n", m_name, result.getRecordCount());
 			if ( result.getRecordCount() == 0 ) {
 				marmot.deleteDataSet(result.getId());
@@ -155,10 +170,13 @@ public class NonRootNode extends Node {
 	private DataSet createParentBindings(MarmotRuntime marmot, String outDsId) {
 		String joinExpr = String.format("the_geom, %s, parent_key", m_keyCol);
 		Plan plan = marmot.planBuilder("create a parent bindings")
-					.load(m_dsId)
-					.defineColumn("parent_key:string", getParentKeyExpr())
-					.project(joinExpr)
-					.build();
-		return marmot.createDataSet(outDsId, plan, StoreDataSetOptions.FORCE);
+							.load(m_dsId)
+							.defineColumn("parent_key:string", getParentKeyExpr())
+							.project(joinExpr)
+							.store(outDsId, FORCE)
+							.build();
+		marmot.execute(plan);
+		
+		return marmot.getDataSet(outDsId);
 	}
 }

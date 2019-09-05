@@ -1,10 +1,11 @@
 package marmot.validate;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordScript;
-import marmot.StoreDataSetOptions;
 import utils.stream.IntFStream;
 
 /**
@@ -37,8 +38,11 @@ public class SidoNode extends RootNode {
 		plan = marmot.planBuilder("validate sido id")
 					.load(getIdDataSet())
 					.filter(RecordScript.of(filterInitExpr, filterExpr))
+					.store(m_prefix + "bad_keys", FORCE)
 					.build();
-		result = marmot.createDataSet(m_prefix + "bad_keys", plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		
+		result = marmot.getDataSet(m_prefix + "bad_keys");
 		System.out.printf("number of invalid keys: %d%n", result.getRecordCount());
 		if ( result.getRecordCount() == 0 ) {
 			marmot.deleteDataSet(result.getId());

@@ -36,14 +36,16 @@ public class SampleLoadLeftOuterHashJoin {
 		plan = marmot.planBuilder("drop some sido")
 					.load(SIDO)
 					.filter("ctprvn_cd < 40")
+					.store(TMP_SIDO, FORCE(gcInfo))
 					.build();
-		marmot.createDataSet(TMP_SIDO, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 		
 		plan = marmot.planBuilder("drop some sgg")
 					.load(SGG)
 					.defineColumn("sido_cd:string", "sig_cd.substring(0,2)")
+					.store(TMP_SGG, FORCE(gcInfo))
 					.build();
-		marmot.createDataSet(TMP_SGG, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 		
 		plan = marmot.planBuilder("test left_outer_equi_join")
 					.loadHashJoin(TMP_SGG, "sido_cd", TMP_SIDO, "ctprvn_cd",

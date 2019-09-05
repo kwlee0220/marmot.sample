@@ -50,6 +50,7 @@ public class A06_GridAnalysisGas {
 		List<AggregateFunction> aggrs = Arrays.stream(years)
 											.mapToObj(year -> SUM("gas_"+year).as("value_" + year))
 											.collect(Collectors.toList());
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		
 		Plan plan;
 		plan = marmot.planBuilder("가스 사용량 격자 분석")
@@ -62,10 +63,9 @@ public class A06_GridAnalysisGas {
 											.workerCount(17), aggrs)
 					.expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
 					.project("cell_geom as the_geom, x, y, *-{cell_geom,x,y}")
-					.store(OUTPUT)
+					.store(OUTPUT, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 		
 		for ( int year: years ) {
 			extractToYear(marmot, year);
@@ -87,9 +87,9 @@ public class A06_GridAnalysisGas {
 		plan = marmot.planBuilder("연도별 격자 분석 추출")
 					.load(OUTPUT)
 					.project(projectExpr)
-					.store(output)
+					.store(output, FORCE(gcInfo))
 					.build();
-		marmot.createDataSet(output, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 	}
 	
 //	private static void writeAsRaster(DataSet ds, File file, Envelope bounds, Size2d cellSize)

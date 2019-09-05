@@ -39,16 +39,20 @@ public class SampleEstimateIDW {
 						.load(INPUT)
 						.centroid("the_geom")
 						.project("the_geom, big_sq, value")
+						.store(RESULT, FORCE(gcInfo))
 						.build();
-		result = marmot.createDataSet(tempPath, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		result = marmot.getDataSet(RESULT);
 		result.cluster();
 		
 		plan = marmot.planBuilder("sample_estimate_idw")
 						.load(tempPath)
 						.estimateIdw("the_geom", tempPath, VALUE_COLUMN, RADIUS,
 										TOP_K, "value", FOption.empty())
+						.store(RESULT, FORCE(gcInfo))
 						.build();
-		result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		result = marmot.getDataSet(RESULT);
 		marmot.deleteDataSet(tempPath);
 		
 		SampleUtils.printPrefix(result, 5);

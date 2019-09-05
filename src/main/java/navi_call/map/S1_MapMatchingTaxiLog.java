@@ -42,9 +42,10 @@ public class S1_MapMatchingTaxiLog {
 					.knnJoin(geomCol, PARAM, Globals.MAX_CANDIDATES, Globals.DISTANCE,
 							"*,param.{the_geom as link_geom, link_id}")
 //					.update(script)
-					.store(RESULT)
+					.store(RESULT, FORCE(gcInfo))
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

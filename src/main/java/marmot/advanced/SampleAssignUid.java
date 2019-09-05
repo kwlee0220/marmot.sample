@@ -8,7 +8,6 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 
@@ -34,8 +33,10 @@ public class SampleAssignUid {
 							.filter("(long)출입구일련번호 % 119999 == 3")
 							.assignUid("guid")
 							.project("the_geom,guid,출입구일련번호")
+							.store(RESULT, FORCE(gcInfo))
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		SampleUtils.printPrefix(result, 5);
 	}
 }

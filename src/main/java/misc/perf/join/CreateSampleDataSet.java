@@ -1,7 +1,6 @@
 package misc.perf.join;
 
-import static marmot.StoreDataSetOptions.*;
-import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.CreateDataSetOptions.FORCE;
 
 import java.util.Arrays;
 import java.util.List;

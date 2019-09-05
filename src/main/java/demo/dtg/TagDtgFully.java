@@ -1,6 +1,6 @@
 package demo.dtg;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.JoinOptions.LEFT_OUTER_JOIN;
 
 import java.util.Map;
@@ -16,7 +16,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordScript;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
@@ -61,6 +60,7 @@ public class TagDtgFully {
 		arguments.put("bounds", GeoClientUtils.toPolygon(wgs84Bounds));
 		
 		DataSet dtg = marmot.getDataSet(DTG);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		int joinWorkers = (int)(dtg.length() / UnitUtils.parseByteSize("20gb"));
 		
 		DataSet output;
@@ -80,11 +80,11 @@ public class TagDtgFully {
 					
 					.assignGridCell("the_geom", new SquareGrid(bounds, CELL_SIZE), true)
 					.centroid("cell_geom", false, GeomOpOptions.OUTPUT("grid"))
-					
-					.store(RESULT)
+
+					.store(RESULT, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		output = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		output = marmot.getDataSet(RESULT);
 		
 		watch.stop();
 		System.out.printf("count=%d, total elapsed time=%s%n",

@@ -1,6 +1,5 @@
 package demo.policy;
 
-import static marmot.ExecutePlanOptions.DISABLE_LOCAL_EXEC;
 import static marmot.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -36,8 +35,10 @@ public class Step06 {
 		Plan plan = marmot.planBuilder("인구밀도_10000이상_행정동추출")
 						.load(INPUT)
 						.spatialSemiJoin(gcInfo.name(), PARAM)	// (6) 교차분석
+						.store(RESULT, FORCE(gcInfo))
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		result.cluster();
 		
 		watch.stop();

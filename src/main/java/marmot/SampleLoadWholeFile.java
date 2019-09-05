@@ -1,5 +1,7 @@
 package marmot;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -25,8 +27,10 @@ public class SampleLoadWholeFile {
 					.loadWholeFile(PATH, LoadOptions.SPLIT_COUNT(16))
 					.defineColumn("length:long", "length = bytes.length")
 					.project("path,length")
+					.store("tmp/result", FORCE)
 					.build();
-		DataSet result = marmot.createDataSet("tmp/result", plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet("tmp/result");
 		SampleUtils.printPrefix(result, 5);
 	}
 }

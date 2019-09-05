@@ -1,6 +1,5 @@
 package marmot.geom.advanced;
 
-import static marmot.StoreDataSetOptions.APPEND;
 import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.SUM;
 
@@ -86,22 +85,28 @@ public class SampleE2SFCA {
 		plan = marmot.planBuilder("append bus result")
 					.load(RESULT_BUS)
 					.project("the_geom,block_cd,index_08,index_15")
+					.store(RESULT_CONCAT, FORCE(gcInfo))
 					.build();
-		marmot.createDataSet(RESULT_CONCAT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		result = marmot.getDataSet(RESULT_CONCAT);
 		
 		plan = marmot.planBuilder("append subway result")
 					.load(RESULT_SUBWAY)
 					.project("the_geom,block_cd,index_08,index_15")
+					.store(RESULT_CONCAT)
 					.build();
-		marmot.createDataSet(RESULT_CONCAT, plan, APPEND(gcInfo));
+		marmot.execute(plan);
+		result = marmot.getDataSet(RESULT_CONCAT);
 		
 		plan = marmot.planBuilder("combine two results")
 					.load(RESULT_CONCAT)
 					.aggregateByGroup(Group.ofKeys("block_cd").tags("the_geom"),
 										SUM("index_08").as("index_08"),
 										SUM("index_15").as("index_15"))
+					.store(RESULT, FORCE(gcInfo))
 					.build();
-		result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		result = marmot.getDataSet(RESULT);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

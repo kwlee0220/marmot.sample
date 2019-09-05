@@ -38,9 +38,11 @@ public class A00_ExtractCadastral {
 					.load(INPUT)
 					.project("the_geom,고유번호 as pnu")
 					.shard(1)
+					.store(OUTPUT, FORCE(gcInfo).blockSize(blockSize))
 					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo).blockSize(blockSize));
+		marmot.execute(plan);
 		
+		DataSet result = marmot.getDataSet(OUTPUT);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

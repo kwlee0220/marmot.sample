@@ -1,12 +1,13 @@
 package misc.perf.etl;
 
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.plan.Group;
@@ -92,10 +93,13 @@ public class PerfSpatialJoin {
 							.aggregateByGroup(Group.ofKeys("bplc_nm,hour").withTags("hcode"),
 												AggregateFunction.MAX("운행속도"))
 							.project("bplc_nm,hcode,hour,max")
+							.store("tmp/result", FORCE)
 							.build();
 
 		StopWatch watch = StopWatch.start();
-		DataSet result = marmot.createDataSet("tmp/result", plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet("tmp/result");
 		watch.stop();
 		System.out.printf("\tcount=%d, elapsed=%s%n",
 							result.getRecordCount(), watch.getElapsedSecondString());

@@ -42,9 +42,10 @@ public class S0_PrepareRoadData {
 					.breakLineString(geomCol)
 					.runPlanByGroup(Group.ofKeys("link_id"), subPlan)
 					.expand("sub_link_no:short")
-					.store(Globals.ROADS_IDX)
+					.store(Globals.ROADS_IDX, FORCE(gcInfo))
 					.build();
-		DataSet result = marmot.createDataSet(Globals.ROADS_IDX, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(Globals.ROADS_IDX);
 		System.out.printf("elapsed=%s (simplification)%n", watch.getElapsedMillisString());
 		
 		result.cluster();

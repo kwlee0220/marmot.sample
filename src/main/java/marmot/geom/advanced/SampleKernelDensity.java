@@ -34,8 +34,10 @@ public class SampleKernelDensity {
 		Plan plan = marmot.planBuilder("sample_estimate_kernel_density")
 						.loadGrid(grid)
 						.estimateKernelDensity("the_geom", INPUT, VALUE_COLUMN, RADIUS, VALUE_COLUMN)
+						.store(RESULT, FORCE(gcInfo))
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		SampleUtils.printPrefix(result, 5);
 	}
 }

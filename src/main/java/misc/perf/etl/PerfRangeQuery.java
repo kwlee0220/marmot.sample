@@ -1,6 +1,8 @@
 package misc.perf.etl;
 
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -9,7 +11,6 @@ import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordSet;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -77,10 +78,13 @@ public class PerfRangeQuery {
 		Plan plan = marmot.planBuilder(planName)
 							.query(input, range)
 							.buffer("the_geom", 100)
+							.store("tmp/result", FORCE)
 							.build();
 
 		StopWatch watch = StopWatch.start();
-		DataSet result = marmot.createDataSet("tmp/result", plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet("tmp/result");
 		watch.stop();
 		System.out.printf("\tcount=%d, elapsed=%s%n",
 							result.getRecordCount(), watch.getElapsedSecondString());

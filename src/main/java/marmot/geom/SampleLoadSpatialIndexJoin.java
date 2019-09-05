@@ -1,11 +1,12 @@
 package marmot.geom;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -32,9 +33,10 @@ public class SampleLoadSpatialIndexJoin {
 													"left.*,right.{the_geom as the_geom2}")
 								.intersection("the_geom", "the_geom2", "the_geom")
 								.project("*-{the_geom2}")
-								.store(RESULT)
+								.store(RESULT, FORCE)
 								.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(result, 10);

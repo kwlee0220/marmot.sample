@@ -69,9 +69,10 @@ public class BuildTenMinutePolicy {
 										SpatialJoinOptions.NEGATED.clusterOuterRecords(true))
 						.arcClip(gcInfo.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석
 						.shard(1)
-						.store(RESULT)
+						.store(RESULT, FORCE(gcInfo))
 						.build();
-		output = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		output = marmot.getDataSet(RESULT);
 		output.cluster();
 		System.out.println("완료: '경로당필요지역' 추출, elapsed="
 							+ watch2.stopAndGetElpasedTimeString());
@@ -93,9 +94,11 @@ public class BuildTenMinutePolicy {
 					.load(ELDERLY_CARE)
 					.filter("induty_nm == '경로당'")			// (1) 영역분석
 					.buffer(gcInfo.name(), 400)	// (2) 버퍼추정
-					.store(ELDERLY_CARE_BUFFER)
+					.store(ELDERLY_CARE_BUFFER, FORCE(gcInfo))
 					.build();
-		return marmot.createDataSet(ELDERLY_CARE_BUFFER, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		return marmot.getDataSet(ELDERLY_CARE_BUFFER);
 	}
 	
 	private static DataSet findHighPopulationDensity(PBMarmotClient marmot) {
@@ -106,10 +109,11 @@ public class BuildTenMinutePolicy {
 		plan = marmot.planBuilder("인구밀도_2017_중심점추출_10000이상")
 					.load(POP_DENSITY)
 					.centroid(gcInfo.name())						// (4) 중심점 추출
-					.filter("value >= 10000")								// (5) 영역분석
-					.store(HIGH_DENSITY_CENTER)
+					.filter("value >= 10000")						// (5) 영역분석
+					.store(HIGH_DENSITY_CENTER, FORCE(gcInfo))
 					.build();
-		return marmot.createDataSet(HIGH_DENSITY_CENTER, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		return marmot.getDataSet(HIGH_DENSITY_CENTER);
 	}
 	
 	private static DataSet findHighPopulationHDong(PBMarmotClient marmot) {
@@ -120,8 +124,9 @@ public class BuildTenMinutePolicy {
 		plan = marmot.planBuilder("인구밀도_10000이상_행정동추출")
 					.load(HDONG)
 					.spatialSemiJoin(gcInfo.name(), HIGH_DENSITY_CENTER)	// (6) 교차분석
-					.store(HIGH_DENSITY_HDONG)
+					.store(HIGH_DENSITY_HDONG, FORCE(gcInfo))
 					.build();
-		return marmot.createDataSet(HIGH_DENSITY_HDONG, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		return marmot.getDataSet(HIGH_DENSITY_HDONG);
 	}
 }

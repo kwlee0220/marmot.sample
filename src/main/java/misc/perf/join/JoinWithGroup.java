@@ -1,6 +1,5 @@
 package misc.perf.join;
 
-import static marmot.StoreDataSetOptions.*;
 import static marmot.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -70,10 +69,13 @@ public class JoinWithGroup {
 		plan = marmot.planBuilder(planName)
 					.load(dsId, LoadOptions.SPLIT_COUNT(2))
 					.spatialJoin("the_geom", INPUT, "the_geom,param.출입구일련번호")
+					.store("tmp/result", FORCE(gcInfo))
 					.build();
 
 		StopWatch watch = StopWatch.start();
-		DataSet result = marmot.createDataSet("tmp/result", plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet("tmp/result");
 		watch.stop();
 		System.out.printf("\tcount=%d, elapsed=%s%n",
 							result.getRecordCount(), watch.getElapsedSecondString());

@@ -30,6 +30,8 @@ public class S04_CountParkMinWonPerGrid {
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
+		
+		GeometryColumnInfo gcInfo = marmot.getDataSet(GRID).getGeometryColumnInfo();
 
 		Plan plan;
 		plan = marmot.planBuilder("격자별 공원관련 민원수 합계")
@@ -37,9 +39,11 @@ public class S04_CountParkMinWonPerGrid {
 					.spatialOuterJoin("the_geom", PARK_MINWON, "the_geom,spo_no_cd")
 					.aggregateByGroup(Group.ofKeys("spo_no_cd").tags("the_geom"),
 										AggregateFunction.COUNT())
+					.store(OUTPUT, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = marmot.getDataSet(GRID).getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(OUTPUT);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

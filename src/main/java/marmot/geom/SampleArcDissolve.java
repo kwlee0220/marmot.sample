@@ -32,8 +32,10 @@ public class SampleArcDissolve {
 		Plan plan = marmot.planBuilder("sample_arc_dissolve")
 							.load(INPUT)
 							.dissolve("sido", "the_geom")
+							.store(RESULT, FORCE(gcInfo))
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

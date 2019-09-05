@@ -1,6 +1,5 @@
 package anyang.dtg;
 
-import static marmot.StoreDataSetOptions.*;
 import static marmot.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -30,15 +29,19 @@ public class D02_CountCarAccidentsByEMD {
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
+		
+		GeometryColumnInfo gcInfo = marmot.getDataSet(ACCIDENT).getGeometryColumnInfo();
 
 		Plan plan;
 		plan = marmot.planBuilder("읍면동별_사망사고_분포")
 						.load(EMD)
 						.spatialAggregateJoin("the_geom", ACCIDENT, AggregateFunction.COUNT())
 						.project("the_geom,emd_cd,emd_kor_nm,count")
+						.store(OUTPUT, FORCE(gcInfo))
 						.build();
-		GeometryColumnInfo gcInfo = marmot.getDataSet(ACCIDENT).getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(OUTPUT);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

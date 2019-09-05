@@ -1,6 +1,5 @@
 package demo.dtg;
 
-import static marmot.StoreDataSetOptions.*;
 import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.COUNT;
 
@@ -34,6 +33,7 @@ public class BuildGridCellHistogram {
 		StopWatch watch = StopWatch.start();
 		
 		DataSet output;
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 
 		Plan plan;
 		plan = marmot.planBuilder("build_histogram_grid")
@@ -42,10 +42,10 @@ public class BuildGridCellHistogram {
 											.workerCount(WORKER_COUNT),
 										COUNT())
 					.project("grid as the_geom,count")
-					.store(RESULT)
+					.store(RESULT, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		output = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		output = marmot.getDataSet(RESULT);
 		
 		watch.stop();
 		System.out.printf("count=%d, total elapsed time=%s%n",

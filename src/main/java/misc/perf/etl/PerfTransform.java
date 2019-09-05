@@ -73,10 +73,13 @@ public class PerfTransform {
 						.toPoint("X좌표", "Y좌표", "the_geom")
 						.project("the_geom, ts, *-{the_geom,X좌표,Y좌표,운행일자,운행시분초,ts}")
 						.shard(1)
+						.store("tmp/" + input, FORCE.blockSize("64mb"))
 						.build();
 
 		StopWatch watch = StopWatch.start();
-		DataSet result = marmot.createDataSet("tmp/" + input, plan, FORCE.blockSize("64mb"));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet("tmp/" + input);
 		watch.stop();
 		System.out.printf("\tcount=%d, elapsed=%s%n",
 							result.getRecordCount(), watch.getElapsedSecondString());

@@ -1,6 +1,6 @@
 package marmot.geom.advanced;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.AVG;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -12,7 +12,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -39,6 +38,7 @@ public class SampleE2SFCASetup {
 		Geometry gangnaum = getGangnamGu(marmot);
 		
 		DataSet flowPop = marmot.getDataSet(FLOW_POP);
+		GeometryColumnInfo gcInfo = flowPop.getGeometryColumnInfo();
 		plan = marmot.planBuilder("강남구 영역 유동인구 정보 추출")
 						.query(FLOW_POP, gangnaum)
 						.expand("year:int", "year = std_ym.substring(0,4)")
@@ -46,9 +46,10 @@ public class SampleE2SFCASetup {
 											AVG("avg_08tmst").as("avg_08tmst"),
 											AVG("avg_15tmst").as("avg_15tmst"))
 						.project("*-{year}")
+						.store(RESULT, FORCE(gcInfo))
 						.build();
-		GeometryColumnInfo gcInfo = flowPop.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		watch.stop();
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

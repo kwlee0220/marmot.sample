@@ -31,7 +31,8 @@ public class D03_CountCarAccidentsByRoad {
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
-		
+
+		GeometryColumnInfo gcInfo = marmot.getDataSet(ACCIDENT).getGeometryColumnInfo();
 		AggregateFunction[] aggrs = new AggregateFunction[]{ COUNT() };
 
 		Plan plan;
@@ -40,9 +41,11 @@ public class D03_CountCarAccidentsByRoad {
 					.spatialAggregateJoin("the_geom", ACCIDENT, aggrs,
 										SpatialJoinOptions.WITHIN_DISTANCE(15))
 					.project("the_geom,link_id,road_name,count")
+					.store(OUTPUT, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = marmot.getDataSet(ACCIDENT).getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(OUTPUT);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

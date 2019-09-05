@@ -41,8 +41,11 @@ public class SampleUtils {
 		Plan plan = marmot.planBuilder("extract_seoul")
 						.load("구역/시도")
 						.filter("ctprvn_cd == '11'")
+						.store(dsId, FORCE(gcInfo))
 						.build();
-		return marmot.createDataSet(dsId, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		return marmot.getDataSet(dsId);
 	}
 	
 	public static void printPrefix(DataSet dataset, int count) {

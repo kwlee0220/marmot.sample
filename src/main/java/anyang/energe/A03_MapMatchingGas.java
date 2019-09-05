@@ -1,7 +1,6 @@
 package anyang.energe;
 
 import static marmot.StoreDataSetOptions.FORCE;
-import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.JoinOptions.LEFT_OUTER_JOIN;
 
 import java.util.List;
@@ -58,8 +57,11 @@ public class A03_MapMatchingGas {
 						.loadHashJoin(CADASTRAL, "pnu", INTERM, "pnu",
 										"left.*," + rightCols, LEFT_OUTER_JOIN(17))
 						.update(updateExpr)
+						.store(OUTPUT, FORCE(gcInfo))
 						.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(OUTPUT);
 		marmot.deleteDataSet(INTERM);
 		marmot.deleteDataSet(INPUT);
 
@@ -79,8 +81,8 @@ public class A03_MapMatchingGas {
 						.load(INPUT)
 						.expand("tag:string", "tag = 'gas_' + year")
 						.reduceToSingleRecordByGroup(Group.ofKeys("pnu"), outSchema, "tag", "usage")
-						.store(INTERM)
+						.store(INTERM, FORCE)
 						.build();
-		marmot.createDataSet(INTERM, plan, FORCE);
+		marmot.execute(plan);
 	}
 }

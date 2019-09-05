@@ -38,8 +38,10 @@ public class SampleIndexedRangeQuery {
 		Plan plan = marmot.planBuilder("sample_indexed_rangequery")
 							.query(BUILDINGS, bounds)
 							.project("the_geom,시군구코드,건물명")
+							.store(RESULT, FORCE(gcInfo))
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(result, 5);

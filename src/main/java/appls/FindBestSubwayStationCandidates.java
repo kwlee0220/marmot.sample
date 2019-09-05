@@ -17,6 +17,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
 import common.SampleUtils;
+import marmot.CreateDataSetOptions;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
@@ -120,10 +121,11 @@ public class FindBestSubwayStationCandidates {
 					.load(STATIONS)
 					.filter("sig_cd.substring(0,2) == '11'")
 					.buffer(gcInfo.name(), 1000)
-					.store(output)
+					.store(output, FORCE(gcInfo))
 					.build();
-		DataSet result = marmot.createDataSet(output, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 		
+		DataSet result = marmot.getDataSet(output);
 		System.out.printf("%s(%d건), 소요시간=%s%n",
 							output, result.getRecordCount(), watch.getElapsedMillisString());
 		
@@ -149,6 +151,7 @@ public class FindBestSubwayStationCandidates {
 		String expr = IntStream.range(0, 24)
 								.mapToObj(idx -> String.format(tmplt, idx, idx))
 								.collect(Collectors.joining());
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo(GEOM_COL, srid);
 		
 		plan = marmot.planBuilder("'500mX500m 격자단위 유동인구' 집계")
 					// 서울시 영역만 추출한다.
@@ -175,12 +178,13 @@ public class FindBestSubwayStationCandidates {
 					.aggregateByGroup(Group.ofKeys("cell_id").withTags("the_geom"),
 										SUM("avg").as("avg"))
 						
-					.store(TEMP_SEOUL_FLOW_POP_GRID)
+					.store(TEMP_SEOUL_FLOW_POP_GRID, FORCE(gcInfo))
 					.build();
 		
 		try {
-			GeometryColumnInfo gcInfo = new GeometryColumnInfo(GEOM_COL, srid);
-			DataSet result = marmot.createDataSet(TEMP_SEOUL_FLOW_POP_GRID, plan, FORCE(gcInfo));
+			marmot.execute(plan);
+			
+			DataSet result = marmot.getDataSet(TEMP_SEOUL_FLOW_POP_GRID);
 			System.out.printf("%s(%d건), 소요시간=%s%n",
 								TEMP_SEOUL_FLOW_POP_GRID, result.getRecordCount(),
 								watch.getElapsedMillisString());
@@ -216,6 +220,7 @@ public class FindBestSubwayStationCandidates {
 		DataSet taxi = marmot.getDataSet(TAXI_LOG);
 		String geomCol = taxi.getGeometryColumn();
 		String srid = taxi.getGeometryColumnInfo().srid();
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo(GEOM_COL, srid);
 		
 		// 택시 운행 로그 기록에서 성울시 영역부분에서 승하차 로그 데이터만 추출한다.
 		Envelope bounds = seoul.getEnvelopeInternal();
@@ -242,11 +247,12 @@ public class FindBestSubwayStationCandidates {
 					// 사각 그리드 셀 단위로 그룹핑하고, 각 그룹에 속한 레코드 수를 계산한다.
 					.aggregateByGroup(Group.ofKeys("cell_id").tags("the_geom"), COUNT())
 					
-					.store(TEMP_SEOUL_TAXI_LOG_GRID)
+					.store(TEMP_SEOUL_TAXI_LOG_GRID, FORCE(gcInfo))
 					.build();
 		try {
-			GeometryColumnInfo gcInfo = new GeometryColumnInfo(GEOM_COL, srid);
-			DataSet result = marmot.createDataSet(TEMP_SEOUL_TAXI_LOG_GRID, plan, FORCE(gcInfo));
+			marmot.execute(plan);
+			
+			DataSet result = marmot.getDataSet(TEMP_SEOUL_TAXI_LOG_GRID);
 			System.out.printf("%s(%d건), 소요시간=%s%n", TEMP_SEOUL_TAXI_LOG_GRID,
 								result.getRecordCount(), watch.getElapsedMillisString());
 
@@ -295,9 +301,11 @@ public class FindBestSubwayStationCandidates {
 							+ "normalized as param_normalized}", FULL_OUTER_JOIN)
 					.update(expr)
 					.project("the_geom,cell_id,normalized as value")
-					.store(output)
+					.store(output, FORCE(GEOM_COL_INFO))
 					.build();
-		DataSet result = marmot.createDataSet(output, plan, FORCE(GEOM_COL_INFO));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(output);
 		System.out.printf("%s(%d건), 소요시간=%s%n",
 							output, result.getRecordCount(), watch.getElapsedMillisString());
 		
@@ -313,7 +321,7 @@ public class FindBestSubwayStationCandidates {
 		RecordSet rset = RecordSet.of(record);
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		marmot.createDataSet("분석결과/서울지역", rset.getRecordSchema(), FORCE(gcInfo))
+		marmot.createDataSet("분석결과/서울지역", rset.getRecordSchema(), CreateDataSetOptions.FORCE(gcInfo))
 				.append(rset);
 	}
 }

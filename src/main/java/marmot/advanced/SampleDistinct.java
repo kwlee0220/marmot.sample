@@ -1,13 +1,13 @@
 package marmot.advanced;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 
@@ -31,8 +31,10 @@ public class SampleDistinct {
 		Plan plan = marmot.planBuilder("test_distinct")
 							.load(INPUT)
 							.distinct("sig_cd")
+							.store(RESULT, FORCE(gcInfo))
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		SampleUtils.printPrefix(result, 5);
 	}
 }

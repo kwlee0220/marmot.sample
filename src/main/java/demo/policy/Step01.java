@@ -1,6 +1,5 @@
 package demo.policy;
 
-import static marmot.ExecutePlanOptions.DISABLE_LOCAL_EXEC;
 import static marmot.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -36,9 +35,10 @@ public class Step01 {
 		Plan plan = marmot.planBuilder("노인복지시설_경로당_추출")
 						.load(INPUT)
 						.filter("induty_nm == '경로당'")			// (1) 영역분석
-						.store(RESULT)
+						.store(RESULT, FORCE(gcInfo))
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		result.cluster();
 		
 		watch.stop();

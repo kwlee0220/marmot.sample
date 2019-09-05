@@ -1,11 +1,12 @@
 package oldbldr;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
@@ -45,9 +46,10 @@ public class Step1_Blocks {
 		plan = marmot.planBuilder("읍면동별 집계구 수집")
 					.load(BLOCKS)
 					.spatialJoin("the_geom", EMD, "param.emd_cd,block_cd")
-					.store(RESULT)
+					.store(RESULT, FORCE)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

@@ -1,7 +1,6 @@
 package anyang.energe;
 
 import static marmot.StoreDataSetOptions.FORCE;
-import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.JoinOptions.LEFT_OUTER_JOIN;
 
 import java.util.List;
@@ -58,9 +57,11 @@ public class B04_MapMatchingElectroYear {
 						.loadHashJoin(CADASTRAL, "pnu", INTERM, "pnu",
 									"left.*," + rightCols, LEFT_OUTER_JOIN(17))
 						.update(updateExpr)
-						.store(OUTPUT)
+						.store(OUTPUT, FORCE(gcInfo))
 						.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(OUTPUT);
 		marmot.deleteDataSet(INTERM);
 
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
@@ -79,8 +80,8 @@ public class B04_MapMatchingElectroYear {
 						.load(INPUT)
 						.expand("tag:string", "tag = 'month_' + month")
 						.reduceToSingleRecordByGroup(Group.ofKeys("pnu"), outSchema, "tag", "usage")
-						.store(outDsId)
+						.store(outDsId, FORCE)
 						.build();
-		marmot.createDataSet(outDsId, plan, FORCE);
+		marmot.execute(plan);
 	}
 }

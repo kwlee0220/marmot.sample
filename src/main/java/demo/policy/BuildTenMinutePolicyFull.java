@@ -70,9 +70,10 @@ public class BuildTenMinutePolicyFull {
 										SpatialJoinOptions.NEGATED)
 						.arcClip(gcInfo.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석
 						.shard(1)
-						.store(RESULT)
+						.store(RESULT, FORCE(gcInfo))
 						.build();
-		output = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		output = marmot.getDataSet(RESULT);
 		output.cluster();
 		System.out.println("완료: '경로당필요지역' 추출, elapsed="
 							+ watch2.stopAndGetElpasedTimeString());
@@ -95,9 +96,11 @@ public class BuildTenMinutePolicyFull {
 					.filter("induty_nm == '경로당'")			// (1) 영역분석
 					.project("the_geom")
 					.buffer("the_geom", 400)	// (2) 버퍼추정
-					.store(ELDERLY_CARE_BUFFER)
+					.store(ELDERLY_CARE_BUFFER, FORCE(gcInfo))
 					.build();
-		return marmot.createDataSet(ELDERLY_CARE_BUFFER, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		return marmot.getDataSet(ELDERLY_CARE_BUFFER);
 	}
 	
 	private static DataSet findHighPopulationDensity(PBMarmotClient marmot) {
@@ -110,9 +113,11 @@ public class BuildTenMinutePolicyFull {
 					.centroid("the_geom")						// (4) 중심점 추출
 					.filter("value >= 10000")								// (5) 영역분석
 					.project("the_geom")
-					.store(HIGH_DENSITY_CENTER)
+					.store(HIGH_DENSITY_CENTER, FORCE(gcInfo))
 					.build();
-		return marmot.createDataSet(HIGH_DENSITY_CENTER, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		return marmot.getDataSet(HIGH_DENSITY_CENTER);
 	}
 	
 	private static DataSet findHighPopulationHDong(PBMarmotClient marmot) {
@@ -125,8 +130,10 @@ public class BuildTenMinutePolicyFull {
 					.project("the_geom")
 					.spatialSemiJoin("the_geom", HIGH_DENSITY_CENTER)	// (6) 교차분석
 					.project("the_geom")
-					.store(HIGH_DENSITY_HDONG)
+					.store(HIGH_DENSITY_HDONG, FORCE(gcInfo))
 					.build();
-		return marmot.createDataSet(HIGH_DENSITY_HDONG, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		return marmot.getDataSet(HIGH_DENSITY_HDONG);
 	}
 }

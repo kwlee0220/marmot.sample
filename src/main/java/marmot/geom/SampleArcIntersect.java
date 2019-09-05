@@ -1,11 +1,12 @@
 package marmot.geom;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -31,8 +32,10 @@ public class SampleArcIntersect {
 		Plan plan = marmot.planBuilder("sample_intersection_join")
 							.load(INPUT)
 							.intersectionJoin("the_geom", PARAM, SpatialJoinOptions.EMPTY)
+							.store(RESULT, FORCE)
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

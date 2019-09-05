@@ -1,6 +1,5 @@
 package anyang.dtg;
 
-import static marmot.StoreDataSetOptions.*;
 import static marmot.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -41,6 +40,7 @@ public class C02_CountDtgByEMD {
 								.clusterChronicles("ts", "interval", "10m")
 								.aggregate(AggregateFunction.COUNT())
 								.build();
+		GeometryColumnInfo gcInfo = marmot.getDataSet(EMD).getGeometryColumnInfo();
 
 		Plan plan;
 		plan = marmot.planBuilder("전국_읍면동별_통행량")
@@ -56,9 +56,11 @@ public class C02_CountDtgByEMD {
 					.expand("emd_cd:string")
 					.hashJoin("emd_cd", EMD, "emd_cd", "param.{the_geom,emd_kor_nm},count",
 							JoinOptions.INNER_JOIN(1))
+					.store(OUTPUT, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = marmot.getDataSet(EMD).getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(OUTPUT);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

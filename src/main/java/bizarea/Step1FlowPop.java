@@ -1,6 +1,6 @@
 package bizarea;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.AVG;
 
 import java.util.stream.Collectors;
@@ -12,7 +12,6 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
 import marmot.plan.Group;
@@ -47,6 +46,7 @@ public class Step1FlowPop {
 		
 		DataSet ds = marmot.getDataSet(BIZ_GRID);
 		String geomCol = ds.getGeometryColumn();
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
 		Plan plan = marmot.planBuilder("대도시 상업지역 구역별 유동인구수 집계")
 							.load(FLOW_POP)
@@ -65,10 +65,11 @@ public class Step1FlowPop {
 													.workerCount(3),
 												AVG("flow_pop").as("flow_pop"))
 							.project(String.format("%s,*-{%s}", geomCol, geomCol))
-							.store(RESULT)
+							.store(RESULT, FORCE(gcInfo))
 							.build();
-		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(RESULT);
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

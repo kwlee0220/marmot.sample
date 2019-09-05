@@ -57,8 +57,11 @@ public class C03_CountDtgByRoad {
 									AggregateFunction.SUM("count").as("count"))
 					.hashJoin("link_id", ROADS, "link_id", "param.{the_geom,link_id,road_name},count",
 							JoinOptions.INNER_JOIN(1))
+					.store(OUTPUT, FORCE(gcInfo))
 					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(OUTPUT);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

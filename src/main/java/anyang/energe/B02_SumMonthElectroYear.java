@@ -42,9 +42,11 @@ public class B02_SumMonthElectroYear {
 					.aggregateByGroup(Group.ofKeys("pnu,month").workerCount(1),
 									SUM("사용량").as("usage"))
 					.project("pnu, month,  usage")
-					.store(OUTPUT)
+					.store(OUTPUT, FORCE)
 					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE);
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(OUTPUT);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 10);

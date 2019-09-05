@@ -1,13 +1,13 @@
 package bizarea;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.JoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -33,6 +33,7 @@ public class Step2 {
 		
 		DataSet ds = marmot.getDataSet(BIZ_GRID_SALES);
 		String geomCol = ds.getGeometryColumn();
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
 		String script = "if ( std_ym == null ) {std_ym = param_std_ym;}"
 						+ "if ( cell_id == null ) {cell_id = param_cell_id;}"
@@ -53,10 +54,11 @@ public class Step2 {
 							// 최종 결과에 행정도 코드를 부여한다.
 							.spatialJoin("the_geom", POLITICAL,
 										"*-{cell_pos},param.*-{the_geom,sgg_cd}")
-							.store(RESULT)
+							.store(RESULT, FORCE(gcInfo))
 							.build();
-		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(RESULT);
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

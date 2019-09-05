@@ -50,6 +50,7 @@ public class A07_GridAnalysisElectro {
 		List<AggregateFunction> aggrs = Arrays.stream(years)
 											.mapToObj(year -> SUM("electro_"+year).as("value_" + year))
 											.collect(Collectors.toList());
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		
 		Plan plan;
 		plan = marmot.planBuilder("전기 사용량 격자 분석")
@@ -61,10 +62,9 @@ public class A07_GridAnalysisElectro {
 					.aggregateByGroup(Group.ofKeys("cell_id").withTags("cell_geom,cell_pos"), aggrs)
 					.expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
 					.project("cell_geom as the_geom, x, y, *-{cell_geom,x,y}")
-					.store(OUTPUT)
+					.store(OUTPUT, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 		
 		for ( int year: years ) {
 			extractToYear(marmot, year);
@@ -87,8 +87,9 @@ public class A07_GridAnalysisElectro {
 					.load(OUTPUT)
 					.project(projectExpr)
 					.store(output)
+					.store(output, FORCE(gcInfo))
 					.build();
-		DataSet result = marmot.createDataSet(output, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 	}
 	
 //	private static void writeAsRaster(DataSet ds, File file, Envelope bounds, Size2d cellSize)

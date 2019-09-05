@@ -1,5 +1,6 @@
 package demo.dtg;
 
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.COUNT;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -9,7 +10,6 @@ import com.vividsolutions.jts.geom.Envelope;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.geo.SquareGrid;
 import marmot.plan.SpatialJoinOptions;
@@ -70,7 +70,9 @@ public class FilterOutInvalidDTG {
 					.distinct("cell_id")
 					// DTG 데이터가 방대하기 때문에, 구역 데이터의 좌표계를 DTG 좌표계인 EPSG:4326으로 변경시킨다.
 					.transformCrs(outGcInfo.name(), gcInfo.srid(), outGcInfo.srid())
+					.store(TEMP_GRID, FORCE(outGcInfo))
 					.build();
-		return marmot.createDataSet(TEMP_GRID, plan, StoreDataSetOptions.FORCE(outGcInfo));
+		marmot.execute(plan);
+		return marmot.getDataSet(TEMP_GRID);
 	}
 }

@@ -1,6 +1,5 @@
 package anyang.dtg;
 
-import static marmot.StoreDataSetOptions.*;
 import static marmot.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -12,7 +11,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -45,14 +43,17 @@ public class B01_FilterDoBongGuCarAccident {
 						+ "도로형태_대분류 as road_major, 도로형태 as road_type,"
 						+ "당사자종별_1당_대분류 as type_1_major, 당사자종별_1당 as type_1,"
 						+ "당사자종별_2당_대분류 as type_2_major, 당사자종별_2당 as type_2";
+		GeometryColumnInfo gcInfo = marmot.getDataSet(DEATH_ACCIDENT).getGeometryColumnInfo();
 
 		Plan plan;
 		plan = marmot.planBuilder("도봉구_사망교통사고_추출")
 						.query(DEATH_ACCIDENT, dobong)
 						.project(prjExpr)
+						.store(OUTPUT, FORCE(gcInfo))
 						.build();
-		GeometryColumnInfo gcInfo = marmot.getDataSet(DEATH_ACCIDENT).getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(OUTPUT);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

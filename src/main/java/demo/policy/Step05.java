@@ -1,6 +1,5 @@
 package demo.policy;
 
-import static marmot.ExecutePlanOptions.DISABLE_LOCAL_EXEC;
 import static marmot.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -9,7 +8,6 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -35,9 +33,11 @@ public class Step05 {
 
 		Plan plan = marmot.planBuilder("인구밀도_2017_중심점추출_10000이상")
 							.load(INPUT)
-							.filter("value >= 10000")							// (5) 영역분석
+							.filter("value >= 10000")				// (5) 영역분석
+							.store(RESULT, FORCE(gcInfo))
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		result.cluster();
 		
 		watch.stop();

@@ -1,6 +1,6 @@
 package bizarea;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.SUM;
 
@@ -13,7 +13,6 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -43,6 +42,7 @@ public class Step1Building {
 		
 		DataSet ds = marmot.getDataSet(BIZ_GRID);
 		String geomCol = ds.getGeometryColumn();
+		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
 		Plan plan = marmot.planBuilder("대도시 상업지역 구역별 건축물 수와 면적 집계")
 							.load(BUILDINGS)
@@ -56,10 +56,11 @@ public class Step1Building {
 												SUM("대지면적").as("대지면적"),
 												COUNT().as("bld_cnt"))
 							.project(String.format("%s,*-{%s}", geomCol, geomCol))
-							.store(RESULT)
+							.store(RESULT, FORCE(gcInfo))
 							.build();
-		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(RESULT);
 		System.out.printf("elapsed: %s%n", watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

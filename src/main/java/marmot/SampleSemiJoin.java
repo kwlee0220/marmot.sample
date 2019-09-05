@@ -30,8 +30,10 @@ public class SampleSemiJoin {
 		Plan plan = marmot.planBuilder("test semi_join")
 							.load(INPUT)
 							.hashJoin("sig_cd", PARAM, "sig_cd", "param.sig_kor_nm", SEMI_JOIN)
+							.store(RESULT, FORCE(gcInfo))
 							.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		SampleUtils.printPrefix(result, 50);
 	}
 }

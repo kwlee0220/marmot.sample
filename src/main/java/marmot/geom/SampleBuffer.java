@@ -29,8 +29,10 @@ public class SampleBuffer {
 		Plan plan = marmot.planBuilder("buffer")
 						.load(INPUT)
 						.buffer("the_geom", 50)
+						.store(RESULT, FORCE(gcInfo))
 						.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(result, 5);

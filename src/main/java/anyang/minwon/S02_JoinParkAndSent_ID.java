@@ -29,7 +29,8 @@ public class S02_JoinParkAndSent_ID {
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
-		
+
+		GeometryColumnInfo gcInfo = marmot.getDataSet(PARK).getGeometryColumnInfo();
 		String prjExpr = "the_geom,row_id,poi,id,sp,sn,언급빈도수 as mention,"
 						+ "선호도 as preference";
 
@@ -39,9 +40,11 @@ public class S02_JoinParkAndSent_ID {
 					.hashJoin("id", EMOTION, "id", "the_geom,param.*-{the_geom}",
 							JoinOptions.INNER_JOIN)
 					.project(prjExpr)
+					.store(OUTPUT, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = marmot.getDataSet(PARK).getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(OUTPUT);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

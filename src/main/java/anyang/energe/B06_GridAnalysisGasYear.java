@@ -51,6 +51,7 @@ public class B06_GridAnalysisGasYear {
 		List<AggregateFunction> aggrs = FStream.from(COL_NAMES)
 												.map(c -> SUM(c).as(c))
 												.toList();
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		
 		Plan plan;
 		String planName = String.format("%d 가스 사용량 격자 분석", Globals.YEAR);
@@ -65,10 +66,9 @@ public class B06_GridAnalysisGasYear {
 										aggrs)
 					.expand("x:long,y:long", "x = cell_pos.getX(); y = cell_pos.getY()")
 					.project("cell_geom as the_geom, x, y, *-{cell_geom,x,y}")
-					.store(OUTPUT)
+					.store(OUTPUT, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 		
 		for ( int month = 1; month <= 12; ++month ) {
 			extractToMonth(marmot, month);
@@ -90,8 +90,8 @@ public class B06_GridAnalysisGasYear {
 		plan = marmot.planBuilder("월별 격자 분석 추출")
 					.load(OUTPUT)
 					.project(projectExpr)
-					.store(output)
+					.store(output, FORCE(gcInfo))
 					.build();
-		marmot.createDataSet(output, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 	}
 }

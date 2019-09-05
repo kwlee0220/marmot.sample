@@ -32,6 +32,8 @@ public class S05_CountMinWonPerTeamParcel {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
+		GeometryColumnInfo gcInfo = marmot.getDataSet(PARCEL).getGeometryColumnInfo();
+		
 		Plan plan;		
 		plan = marmot.planBuilder("담당팀_필지별_민원수 합계")
 					.load(MINWON)
@@ -40,9 +42,11 @@ public class S05_CountMinWonPerTeamParcel {
 							"param.{the_geom,id},team_name", RIGHT_OUTER_JOIN)
 					.aggregateByGroup(Group.ofKeys("team_name,id").tags("the_geom"),
 										AggregateFunction.COUNT())
+					.store(OUTPUT, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = marmot.getDataSet(PARCEL).getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(OUTPUT);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

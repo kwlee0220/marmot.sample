@@ -1,6 +1,5 @@
 package anyang.dtg;
 
-import static marmot.StoreDataSetOptions.*;
 import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.plan.SpatialJoinOptions.WITHIN_DISTANCE;
@@ -32,7 +31,8 @@ public class B03_CountCarAccidentsByRoad {
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
-		
+
+		GeometryColumnInfo gcInfo = marmot.getDataSet(ACCIDENT).getGeometryColumnInfo();
 		AggregateFunction[] aggrs = new AggregateFunction[]{ COUNT() };
 
 		Plan plan;
@@ -40,9 +40,11 @@ public class B03_CountCarAccidentsByRoad {
 					.load(ROADS)
 					.spatialAggregateJoin("the_geom", ACCIDENT, aggrs,
 											WITHIN_DISTANCE(15))
+					.store(OUTPUT, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = marmot.getDataSet(ACCIDENT).getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(OUTPUT);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);

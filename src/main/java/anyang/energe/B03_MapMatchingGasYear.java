@@ -12,7 +12,6 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSchema;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -58,9 +57,11 @@ public class B03_MapMatchingGasYear {
 						.loadHashJoin(CADASTRAL, "pnu", INTERM, "pnu",
 									"left.*," + rightCols, LEFT_OUTER_JOIN(17))
 						.update(updateExpr)
-						.store(OUTPUT)
+						.store(OUTPUT, FORCE(gcInfo))
 						.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(OUTPUT);
 		marmot.deleteDataSet(INTERM);
 
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
@@ -79,8 +80,8 @@ public class B03_MapMatchingGasYear {
 						.load(INPUT)
 						.expand("tag:string", "tag = 'month_' + month")
 						.reduceToSingleRecordByGroup(Group.ofKeys("pnu"), outSchema, "tag", "usage")
-						.store(outDsId)
+						.store(outDsId, FORCE)
 						.build();
-		marmot.createDataSet(outDsId, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
 	}
 }

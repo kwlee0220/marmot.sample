@@ -42,8 +42,10 @@ public class SampleInterpolateSpatially {
 						.load(INPUT)
 						.centroid("the_geom")
 						.project("the_geom, big_sq, value")
+						.store(tempPath, FORCE(gcInfo))
 						.build();
-		result = marmot.createDataSet(tempPath, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		result = marmot.getDataSet(tempPath);
 		result.cluster();
 		
 		String interpolator = "def interpolate(factors) { "
@@ -60,8 +62,10 @@ public class SampleInterpolateSpatially {
 					.load(tempPath)
 					.interpolateSpatially("the_geom", tempPath, VALUE_COLUMN, RADIUS,
 											"value", IDWInterpolation.ofPower(1))
+					.store(RESULT, FORCE(gcInfo))
 					.build();
-		result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		result = marmot.getDataSet(RESULT);
 		marmot.deleteDataSet(tempPath);
 		
 		SampleUtils.printPrefix(result, 5);

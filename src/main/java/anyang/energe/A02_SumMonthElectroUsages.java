@@ -36,8 +36,11 @@ public class A02_SumMonthElectroUsages {
 					.update("사용량 = Math.max(사용량, 0)")
 					.aggregateByGroup(Group.ofKeys("pnu,year"), SUM("사용량").as("usage"))
 					.project("pnu, year, usage")
+					.store(OUTPUT, FORCE)
 					.build();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE);
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(OUTPUT);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 10);

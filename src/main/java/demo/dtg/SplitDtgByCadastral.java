@@ -1,6 +1,7 @@
 package demo.dtg;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.EMPTY;
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -10,7 +11,6 @@ import com.vividsolutions.jts.geom.Polygon;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.geo.GeoClientUtils;
 import marmot.geo.command.ClusterDataSetOptions;
@@ -63,16 +63,17 @@ public class SplitDtgByCadastral {
 	}
 	
 	private static DataSet getWgsPolitical(PBMarmotClient marmot, String outDsId) {
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:4326");
 		
 		Plan plan;
 		plan = marmot.planBuilder("to_wgs84_political")
 					.load(POLITICAL)
 					.transformCrs("the_geom", "EPSG:5186", "EPSG:4326")
-					.store(outDsId)
+					.store(outDsId, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:4326");
-		DataSet output = marmot.createDataSet(outDsId, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 		
+		DataSet output = marmot.getDataSet(outDsId);
 		output.cluster(ClusterDataSetOptions.WORKER_COUNT(1));
 		
 		return output;

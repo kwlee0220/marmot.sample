@@ -1,5 +1,7 @@
 package marmot.advanced;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -8,7 +10,6 @@ import marmot.DataSet;
 import marmot.DataSetType;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 
@@ -36,10 +37,11 @@ public class SampleTee {
 							.filter("휘발유 > 2000")
 							.tee("tmp/temp")
 							.project("THE_GEOM,상호,휘발유")
+							.store(RESULT, FORCE(gcInfo))
 							.build();
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		
-		DataSet result;
-		result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE(gcInfo));
 		SampleUtils.printPrefix(result, 5);
 		
 		result = marmot.bindExternalDataSet(RESULT2, "tmp/temp", DataSetType.FILE,

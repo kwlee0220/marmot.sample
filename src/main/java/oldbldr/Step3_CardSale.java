@@ -1,5 +1,6 @@
 package oldbldr;
 
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.SUM;
 import static marmot.optor.JoinOptions.INNER_JOIN;
 
@@ -11,7 +12,6 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -61,9 +61,10 @@ public class Step3_CardSale {
 					.hashJoin("block_cd", BLOCKS, "block_cd", "*,param.{emd_cd}", INNER_JOIN)
 					.aggregateByGroup(Group.ofKeys("emd_cd").workerCount(1),
 										SUM("sale_amt").as("sale_amt"))
-					.store(RESULT)
+					.store(RESULT, FORCE)
 					.build();
-		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		DataSet result = marmot.getDataSet(RESULT);
 		watch.stop();
 
 		SampleUtils.printPrefix(result, 5);

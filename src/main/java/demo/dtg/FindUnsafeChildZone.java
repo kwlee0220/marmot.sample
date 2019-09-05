@@ -46,6 +46,7 @@ public class FindUnsafeChildZone {
 
 		DataSet schools = bufferChildZone(marmot, TEMP_ZONE);
 		Polygon key = getValidWgsBounds(schools.getBounds());
+		GeometryColumnInfo gcInfo = marmot.getDataSet(CHILD_ZONE).getGeometryColumnInfo();
 		
 		DataSet output;
 
@@ -67,11 +68,11 @@ public class FindUnsafeChildZone {
 						
 					.defineColumn("speed:int", "avg")
 					.project("the_geom,id,대상시설명 as name,speed,count")
-					
-					.store(RESULT)
+
+					.store(RESULT, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = marmot.getDataSet(CHILD_ZONE).getGeometryColumnInfo();
-		output = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		output = marmot.getDataSet(RESULT);
 		
 		watch.stop();
 		System.out.printf("count=%d, total elapsed time=%s%n",
@@ -99,10 +100,11 @@ public class FindUnsafeChildZone {
 					.load(CHILD_ZONE)
 					.buffer("the_geom", DISTANCE, GeomOpOptions.OUTPUT("area"))
 					.project("the_geom,id,대상시설명,area")
-					.store(outDsId)
+					.store(outDsId, FORCE(gcInfo))
 					.build();
-		DataSet output = marmot.createDataSet(outDsId, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 		
+		DataSet output = marmot.getDataSet(outDsId);
 		output.cluster(ClusterDataSetOptions.WORKER_COUNT(1));
 		
 		return output;

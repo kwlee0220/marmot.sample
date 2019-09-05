@@ -1,6 +1,6 @@
 package demo.dtg;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.JoinOptions.SEMI_JOIN;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
@@ -14,7 +14,6 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
@@ -54,6 +53,7 @@ public class TagDtgWithRoad {
 		filterCargo(marmot, TEMP_CARGOS);
 		
 		DataSet ds = marmot.getDataSet(DTG);
+		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		int nworkers = (int)(ds.length() / UnitUtils.parseByteSize("20gb"));
 		
 		DataSet output;
@@ -74,11 +74,11 @@ public class TagDtgWithRoad {
 					.aggregateByGroup(Group.ofKeys("link_id").tags("the_geom")
 											.workerCount(WORKER_COUNT),
 										COUNT())
-					
-					.store(RESULT)
+
+					.store(RESULT, FORCE(gcInfo))
 					.build();
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		output = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		output = marmot.getDataSet(RESULT);
 		
 		watch.stop();
 		System.out.printf("count=%d, total elapsed time=%s%n",
@@ -108,10 +108,11 @@ public class TagDtgWithRoad {
 					.filter("road_type == '000' || road_type == '003'")
 					.filter("road_use == '0'")
 					.project("the_geom,link_id,road_name")
-					.store(outDsId)
+					.store(outDsId, FORCE(gcInfo))
 					.build();
-		DataSet output = marmot.createDataSet(outDsId, plan, FORCE(gcInfo));
+		marmot.execute(plan);
 		
+		DataSet output = marmot.getDataSet(outDsId);
 		output.cluster(ClusterDataSetOptions.WORKER_COUNT(1));
 	}
 	
@@ -120,9 +121,10 @@ public class TagDtgWithRoad {
 		plan = marmot.planBuilder("find cargos")
 					.load(DTG_COMPANY)
 					.filter("업종코드 == 31 || 업종코드 == 32")
-					.store(output)
+					.store(output, FORCE)
 					.build();
-
-		return marmot.createDataSet(output, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		
+		return marmot.getDataSet(output);
 	}
 }

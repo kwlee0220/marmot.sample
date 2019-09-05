@@ -1,5 +1,7 @@
 package marmot.geom.advanced;
 
+import static marmot.StoreDataSetOptions.FORCE;
+
 import java.util.Map;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -11,7 +13,6 @@ import marmot.DataSet;
 import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSet;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.advanced.LISAWeight;
@@ -60,9 +61,10 @@ public class SampleFindLocalMoranI {
 												LISAWeight.FIXED_DISTANCE_BAND)
 								.project("uid,moran_i,moran_zscore,moran_pvalue")
 								.sort("UID")
-								.store(RESULT)
+								.store(RESULT, FORCE)
 								.build();
-		DataSet result3 = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE);
+		marmot.execute(plan);
+		DataSet result3 = marmot.getDataSet(RESULT);
 		SampleUtils.printPrefix(result3, 5);
 	}
 }

@@ -1,6 +1,5 @@
 package anyang.dtg;
 
-import static marmot.StoreDataSetOptions.*;
 import static marmot.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -39,6 +38,8 @@ public class A01_FilterDoBongGuDTG {
 //						+ "누적주행거리 as accum_mile, 운행속도 as speed, rpm,"
 //						+ "브레이크신호 as brake, x좌표 as x_coord, y좌표 as y_coord,"
 //						+ "방위각 as heading, 가속도x as acc_x, 가속도y as acc_y";
+
+		GeometryColumnInfo gcInfo = marmot.getDataSet(DOBONG_GU).getGeometryColumnInfo();
 		
 		Plan plan;
 		plan = marmot.planBuilder("도봉구_영역_DTG 추출")
@@ -46,9 +47,11 @@ public class A01_FilterDoBongGuDTG {
 //						.project(prjExpr)
 						.transformCrs("the_geom", "EPSG:4326", "EPSG:5186")
 						.shard(7)
+						.store(OUTPUT, FORCE(gcInfo))
 						.build();
-		GeometryColumnInfo gcInfo = marmot.getDataSet(DOBONG_GU).getGeometryColumnInfo();
-		DataSet result = marmot.createDataSet(OUTPUT, plan, FORCE(gcInfo));
+		marmot.execute(plan);
+		
+		DataSet result = marmot.getDataSet(OUTPUT);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		SampleUtils.printPrefix(result, 5);
