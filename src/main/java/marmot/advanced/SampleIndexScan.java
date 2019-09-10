@@ -30,7 +30,7 @@ public class SampleIndexScan {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		File cacheDir = new File("/tmp/marmot_geoserver_cache");
-		DataSetPartitionCache cache = new DataSetPartitionCache(marmot, cacheDir, true);
+		DataSetPartitionCache cache = new DataSetPartitionCache(marmot, cacheDir);
 		
 		DataSet input = marmot.getDataSet(INPUT);
 		Envelope range = getSeoChoGu(marmot);
