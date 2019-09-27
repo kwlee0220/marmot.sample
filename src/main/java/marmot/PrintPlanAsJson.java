@@ -10,6 +10,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.optor.ParseCsvOptions;
+import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -71,9 +72,11 @@ public class PrintPlanAsJson {
 										"ST_DTParseLE(운행일자 + 운행시분초.substring(0,6), $pat)");
 		Plan plan;
 		plan = marmot.planBuilder("import_plan")
+					.load("/POI/주유소_가격")
+					.spatialJoin("the_geom", "/구역/읍면동", SpatialJoinOptions.OUTPUT("the_geom"))
 //					.parseCsv("text", ',', ParseCsvOption.HEADER(header),
 //											ParseCsvOption.NULL_VALUE(""))
-					.parseCsv("text", ParseCsvOptions.DEFAULT(',').header(header))
+//					.parseCsv("text", ParseCsvOptions.DEFAULT(',').header(header))
 //					.parseCsv("text", ParseCsvOptions.DEFAULT('|').header(header))
 //					.filter("sp != null && sn != null")
 //					.expand1("ts:datetime", script2)
@@ -81,7 +84,7 @@ public class PrintPlanAsJson {
 //							+ "브레이크신호,방위각,가속도x,가속도y")
 //					.defineColumn("기준년도:short", "(기준년도.length() > 0) ? 기준년도 : '2017'")
 //					.expand1("기준월:short", "(기준월.length() > 0) ? 기준월 : '01'")
-					.expand("개별공시지가:long")
+//					.expand("개별공시지가:long")
 //					.project("고유번호,기준년도,기준월,개별공시지가")
 //					.assignUid("id")
 //					.sample(0.23)
@@ -118,7 +121,7 @@ public class PrintPlanAsJson {
 //					.join("col1,col2", "ds_id", "jcols", "out_cols", JoinOptions.SEMI_JOIN())
 //					.join("emd_cd,name", "EMD", "emd_cd,age", "param.{the_geom,emd_kor_nm},count",
 //							JoinOptions.FULL_OUTER_JOIN(1))
-					.aggregate(AggregateFunction.SUM("aaa"), AggregateFunction.MAX("bbb").as("ccc"))
+//					.aggregate(AggregateFunction.SUM("aaa"), AggregateFunction.MAX("bbb").as("ccc"))
 //					.groupBy("aaa,bbb")
 //						.aggregate(AggregateFunction.SUM("cc"), AggregateFunction.COUNT())
 //					.groupBy("block_cd")
