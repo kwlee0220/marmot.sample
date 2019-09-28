@@ -42,6 +42,6 @@ public class B09_SplitGasMapYear {
 
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
-		marmot.disconnect();
+		marmot.shutdown();
 	}
 }

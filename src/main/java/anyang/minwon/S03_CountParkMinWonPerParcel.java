@@ -50,6 +50,6 @@ public class S03_CountParkMinWonPerParcel {
 		
 		SampleUtils.printPrefix(result, 5);
 		
-		marmot.disconnect();
+		marmot.shutdown();
 	}
 }

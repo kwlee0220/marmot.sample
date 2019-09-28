@@ -45,6 +45,6 @@ public class A02_SumMonthElectroUsages {
 		
 		SampleUtils.printPrefix(result, 10);
 		
-		marmot.disconnect();
+		marmot.shutdown();
 	}
 }

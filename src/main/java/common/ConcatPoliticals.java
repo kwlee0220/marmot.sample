@@ -83,6 +83,6 @@ public class ConcatPoliticals {
 //		result.cluster();
 		SampleUtils.printPrefix(result, 5);
 		
-		marmot.disconnect();
+		marmot.shutdown();
 	}
 }

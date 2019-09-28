@@ -41,6 +41,6 @@ public class A09_SplitGasMap {
 
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
-		marmot.disconnect();
+		marmot.shutdown();
 	}
 }

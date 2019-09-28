@@ -51,6 +51,6 @@ public class B02_SumMonthElectroYear {
 		
 		SampleUtils.printPrefix(result, 10);
 		
-		marmot.disconnect();
+		marmot.shutdown();
 	}
 }

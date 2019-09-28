@@ -67,7 +67,7 @@ public class B04_MapMatchingElectroYear {
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		SampleUtils.printPrefix(result, 10);
 		
-		marmot.disconnect();
+		marmot.shutdown();
 	}
 
 	private static void putSideBySide(PBMarmotClient marmot, String outDsId) {

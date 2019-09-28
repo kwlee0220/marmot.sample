@@ -51,6 +51,6 @@ public class B01_SumMonthGasYear {
 		
 		SampleUtils.printPrefix(result, 30);
 		
-		marmot.disconnect();
+		marmot.shutdown();
 	}
 }

@@ -58,7 +58,7 @@ public class B01_FilterDoBongGuCarAccident {
 		
 		SampleUtils.printPrefix(result, 5);
 		
-		marmot.disconnect();
+		marmot.shutdown();
 	}
 	
 	private static Geometry getDoBongGuRegion(MarmotRuntime marmot) {

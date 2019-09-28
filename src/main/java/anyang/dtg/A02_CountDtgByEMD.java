@@ -56,6 +56,6 @@ public class A02_CountDtgByEMD {
 		
 		SampleUtils.printPrefix(result, 5);
 		
-		marmot.disconnect();
+		marmot.shutdown();
 	}
 }

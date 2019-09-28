@@ -70,7 +70,7 @@ public class A07_GridAnalysisElectro {
 			extractToYear(marmot, year);
 		}
 		marmot.deleteDataSet(OUTPUT);
-		marmot.disconnect();
+		marmot.shutdown();
 		
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 	}

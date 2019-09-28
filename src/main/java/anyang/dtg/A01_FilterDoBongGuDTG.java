@@ -56,7 +56,7 @@ public class A01_FilterDoBongGuDTG {
 		
 		SampleUtils.printPrefix(result, 5);
 		
-		marmot.disconnect();
+		marmot.shutdown();
 	}
 	
 	private static Geometry getDoBongGuRegion(MarmotRuntime marmot) {

@@ -57,6 +57,6 @@ public class A03_CountDtgByRoad {
 		
 		SampleUtils.printPrefix(result, 5);
 		
-		marmot.disconnect();
+		marmot.shutdown();
 	}
 }

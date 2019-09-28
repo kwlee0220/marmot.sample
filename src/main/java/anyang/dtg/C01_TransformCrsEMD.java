@@ -47,6 +47,6 @@ public class C01_TransformCrsEMD {
 		result.cluster(ClusterDataSetOptions.WORKER_COUNT(1));
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
-		marmot.disconnect();
+		marmot.shutdown();
 	}
 }
