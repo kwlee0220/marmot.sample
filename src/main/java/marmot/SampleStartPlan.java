@@ -6,9 +6,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import common.SampleUtils;
 import marmot.command.MarmotClientCommands;
 import marmot.exec.MarmotExecution;
+import marmot.exec.PlanAnalysis;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -36,7 +36,7 @@ public class SampleStartPlan {
 							.store(RESULT, FORCE(gcInfo))
 							.build();
 		
-		MarmotExecution exec = marmot.start(plan);
+		MarmotExecution exec = marmot.start(new PlanAnalysis("noname", plan));
 		System.out.println(exec.getState());
 		exec.waitForFinished(1, TimeUnit.SECONDS);
 		System.out.println(exec.getState());

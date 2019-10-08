@@ -51,7 +51,7 @@ public class SampleRegisterPlanAnalytics {
 		Utilities.checkState(analytics2.getId().equals(ANA_ID));
 		Utilities.checkState(analytics2.getType() == Type.PLAN);
 		
-		MarmotExecution exec = marmot.startAnalysis(ANA_ID);
+		MarmotExecution exec = marmot.start(analytics2);
 		System.out.println(exec.getState());
 		exec.waitForFinished(1, TimeUnit.SECONDS);
 		System.out.println(exec.getState());
