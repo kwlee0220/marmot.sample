@@ -45,6 +45,6 @@ public class A01_SumMonthGasUsages {
 		
 		SampleUtils.printPrefix(result, 10);
 		
-		marmot.shutdown();
+		marmot.close();
 	}
 }

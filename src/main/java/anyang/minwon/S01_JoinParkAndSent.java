@@ -47,6 +47,6 @@ public class S01_JoinParkAndSent {
 		
 		SampleUtils.printPrefix(result, 5);
 		
-		marmot.shutdown();
+		marmot.close();
 	}
 }

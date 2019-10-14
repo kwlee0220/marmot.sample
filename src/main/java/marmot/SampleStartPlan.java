@@ -36,7 +36,7 @@ public class SampleStartPlan {
 							.store(RESULT, FORCE(gcInfo))
 							.build();
 		
-		MarmotExecution exec = marmot.start(new PlanAnalysis("noname", plan));
+		MarmotExecution exec = marmot.startAnalysis(new PlanAnalysis("noname", plan));
 		System.out.println(exec.getState());
 		exec.waitForFinished(1, TimeUnit.SECONDS);
 		System.out.println(exec.getState());

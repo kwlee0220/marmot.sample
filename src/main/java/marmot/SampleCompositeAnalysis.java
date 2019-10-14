@@ -31,7 +31,7 @@ public class SampleCompositeAnalysis {
 		DataSet ds;
 		GeometryColumnInfo gcInfo;
 		
-		marmot.deleteMarmotAnalysisAll("10min");
+		marmot.deleteAnalysis("10min", true);
 		
 		gcInfo = marmot.getDataSet("POI/노인복지시설").getGeometryColumnInfo();
 		plan = marmot.planBuilder("노인복지시설_경로당_버퍼")
@@ -41,8 +41,8 @@ public class SampleCompositeAnalysis {
 						.buffer("the_geom", 400)
 						.store("/tmp/10min/노인복지시설_경로당_버퍼", FORCE(gcInfo))
 						.build();
-		marmot.addMarmotAnalysis(new PlanAnalysis("10min/노인복지시설_경로당_버퍼", plan));
-		marmot.addMarmotAnalysis(SystemAnalysis.clusterDataSet("10min/노인복지시설_경로당_버퍼_색인",
+		marmot.addAnalysis(new PlanAnalysis("10min/노인복지시설_경로당_버퍼", plan));
+		marmot.addAnalysis(SystemAnalysis.clusterDataSet("10min/노인복지시설_경로당_버퍼_색인",
 															"/tmp/10min/노인복지시설_경로당_버퍼"));
 
 		gcInfo = marmot.getDataSet("주민/인구밀도_2000").getGeometryColumnInfo();
@@ -53,8 +53,8 @@ public class SampleCompositeAnalysis {
 						.project("the_geom")
 						.store("/tmp/10min/10000이상_인구밀도_중심점", FORCE(gcInfo))
 						.build();
-		marmot.addMarmotAnalysis(new PlanAnalysis("10min/10000이상_인구밀도_중심점_추출", plan));
-		marmot.addMarmotAnalysis(SystemAnalysis.clusterDataSet("10min/10000이상_인구밀도_중심점_색인",
+		marmot.addAnalysis(new PlanAnalysis("10min/10000이상_인구밀도_중심점_추출", plan));
+		marmot.addAnalysis(SystemAnalysis.clusterDataSet("10min/10000이상_인구밀도_중심점_색인",
 															"/tmp/10min/10000이상_인구밀도_중심점"));
 		
 		gcInfo = marmot.getDataSet("구역/행정동코드").getGeometryColumnInfo();
@@ -64,8 +64,8 @@ public class SampleCompositeAnalysis {
 						.spatialSemiJoin("the_geom", "/tmp/10min/10000이상_인구밀도_중심점")
 						.store("/tmp/10min/10000이상_인구밀도_행정동", FORCE(gcInfo))
 						.build();
-		marmot.addMarmotAnalysis(new PlanAnalysis("10min/10000이상_인구밀도_행정동_추출", plan));
-		marmot.addMarmotAnalysis(SystemAnalysis.clusterDataSet("10min/10000이상_인구밀도_행정동_색인",
+		marmot.addAnalysis(new PlanAnalysis("10min/10000이상_인구밀도_행정동_추출", plan));
+		marmot.addAnalysis(SystemAnalysis.clusterDataSet("10min/10000이상_인구밀도_행정동_색인",
 																"/tmp/10min/10000이상_인구밀도_행정동"));
 		
 		gcInfo = marmot.getDataSet("구역/연속지적도_2017").getGeometryColumnInfo();
@@ -78,15 +78,15 @@ public class SampleCompositeAnalysis {
 						.shard(1)
 						.store("/분석결과/10min/경로당필요지역", FORCE(gcInfo))
 						.build();
-		marmot.addMarmotAnalysis(new PlanAnalysis("10min/경로당필요지역_추출", plan));
-		marmot.addMarmotAnalysis(SystemAnalysis.clusterDataSet("10min/경로당필요지역_색인",
+		marmot.addAnalysis(new PlanAnalysis("10min/경로당필요지역_추출", plan));
+		marmot.addAnalysis(SystemAnalysis.clusterDataSet("10min/경로당필요지역_색인",
 																"/분석결과/10min/경로당필요지역"));
 		
-		marmot.addMarmotAnalysis(SystemAnalysis.deleteDataSet("10min/임시파일 제거",
+		marmot.addAnalysis(SystemAnalysis.deleteDataSet("10min/임시파일 제거",
 															"/tmp/10min/노인복지시설_경로당_버퍼",
 															"/tmp/10min/10000이상_인구밀도_중심점",
 															"/tmp/10min/10000이상_인구밀도_행정동"));
-		marmot.addMarmotAnalysis(new CompositeAnalysis("10min",
+		marmot.addAnalysis(new CompositeAnalysis("10min",
 														"10min/노인복지시설_경로당_버퍼",
 														"10min/노인복지시설_경로당_버퍼_색인",
 														"10min/10000이상_인구밀도_중심점_추출",
@@ -97,15 +97,15 @@ public class SampleCompositeAnalysis {
 														"10min/경로당필요지역_색인",
 														"10min/임시파일 제거"));
 		
-		MarmotAnalysis anal = marmot.getMarmotAnalysis("10min");
+		MarmotAnalysis anal = marmot.getAnalysis("10min");
 		System.out.println(anal);
 		CompositeAnalysis composite = (CompositeAnalysis)anal;
 		
-		MarmotAnalysisExecution exec = marmot.start(composite);
+		MarmotAnalysisExecution exec = marmot.startAnalysis(composite);
 		while ( exec.isRunning() ) {
 			System.out.printf("state=%s, index=%d%n",
 							exec.getState(),  exec.getCurrentExecutionIndex());
-			Thread.sleep(1000);
+			Thread.sleep(5000);
 		}
 		System.out.printf("state=%s, index=%d%n",
 						exec.getState(),  exec.getCurrentExecutionIndex());

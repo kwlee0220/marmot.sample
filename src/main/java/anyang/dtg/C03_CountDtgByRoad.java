@@ -66,6 +66,6 @@ public class C03_CountDtgByRoad {
 		
 		SampleUtils.printPrefix(result, 5);
 		
-		marmot.shutdown();
+		marmot.close();
 	}
 }

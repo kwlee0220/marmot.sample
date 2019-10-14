@@ -50,6 +50,6 @@ public class S06_CountMinWonPerTeamGrid {
 		
 		SampleUtils.printPrefix(result, 5);
 		
-		marmot.shutdown();
+		marmot.close();
 	}
 }

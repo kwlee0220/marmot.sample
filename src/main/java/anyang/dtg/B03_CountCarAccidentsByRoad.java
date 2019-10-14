@@ -49,6 +49,6 @@ public class B03_CountCarAccidentsByRoad {
 		
 		SampleUtils.printPrefix(result, 5);
 		
-		marmot.shutdown();
+		marmot.close();
 	}
 }

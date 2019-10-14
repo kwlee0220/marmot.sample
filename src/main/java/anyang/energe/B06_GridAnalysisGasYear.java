@@ -74,7 +74,7 @@ public class B06_GridAnalysisGasYear {
 			extractToMonth(marmot, month);
 		}
 		marmot.deleteDataSet(OUTPUT);
-		marmot.shutdown();
+		marmot.close();
 		
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 	}

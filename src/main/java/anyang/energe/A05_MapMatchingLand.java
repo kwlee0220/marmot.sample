@@ -85,7 +85,7 @@ public class A05_MapMatchingLand {
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		SampleUtils.printPrefix(result, 10);
 		
-		marmot.shutdown();
+		marmot.close();
 	}
 	
 	private static void putSideBySide(PBMarmotClient marmot) {

@@ -46,6 +46,6 @@ public class B02_CountCarAccidentsByEMD {
 		
 		SampleUtils.printPrefix(result, 5);
 		
-		marmot.shutdown();
+		marmot.close();
 	}
 }

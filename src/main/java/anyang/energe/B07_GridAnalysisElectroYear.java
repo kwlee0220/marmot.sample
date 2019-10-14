@@ -74,7 +74,7 @@ public class B07_GridAnalysisElectroYear {
 			extractToMonth(marmot, month);
 		}
 		marmot.deleteDataSet(OUTPUT);
-		marmot.shutdown();
+		marmot.close();
 		
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 	}

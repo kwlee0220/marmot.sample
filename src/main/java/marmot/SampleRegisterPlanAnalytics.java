@@ -40,18 +40,18 @@ public class SampleRegisterPlanAnalytics {
 							.store(RESULT, FORCE(gcInfo))
 							.build();
 		
-		marmot.deleteMarmotAnalysis(ANA_ID);
+		marmot.deleteAnalysis(ANA_ID, true);
 		
 		PlanAnalysis analytics = new PlanAnalysis(ANA_ID, plan);
 		Utilities.checkState(analytics.getId().equals(ANA_ID));
 		Utilities.checkState(analytics.getType() == Type.PLAN);
-		marmot.addMarmotAnalysis(analytics);
+		marmot.addAnalysis(analytics);
 		
-		MarmotAnalysis analytics2 = marmot.getMarmotAnalysis(ANA_ID);
+		MarmotAnalysis analytics2 = marmot.getAnalysis(ANA_ID);
 		Utilities.checkState(analytics2.getId().equals(ANA_ID));
 		Utilities.checkState(analytics2.getType() == Type.PLAN);
 		
-		MarmotExecution exec = marmot.start(analytics2);
+		MarmotExecution exec = marmot.startAnalysis(analytics2);
 		System.out.println(exec.getState());
 		exec.waitForFinished(1, TimeUnit.SECONDS);
 		System.out.println(exec.getState());

@@ -59,6 +59,6 @@ public class SampleMarmotClient {
 //			}
 //		}
 		
-		marmot.shutdown();
+		marmot.close();
 	}
 }
