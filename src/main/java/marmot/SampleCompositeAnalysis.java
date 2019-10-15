@@ -7,7 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 import marmot.command.MarmotClientCommands;
 import marmot.exec.CompositeAnalysis;
 import marmot.exec.MarmotAnalysis;
-import marmot.exec.MarmotAnalysisExecution;
+import marmot.exec.MarmotExecution;
 import marmot.exec.PlanAnalysis;
 import marmot.exec.SystemAnalysis;
 import marmot.plan.SpatialJoinOptions;
@@ -101,7 +101,7 @@ public class SampleCompositeAnalysis {
 		System.out.println(anal);
 		CompositeAnalysis composite = (CompositeAnalysis)anal;
 		
-		MarmotAnalysisExecution exec = marmot.startAnalysis(composite);
+		MarmotExecution exec = marmot.startAnalysis(composite);
 		while ( exec.isRunning() ) {
 			System.out.printf("state=%s, index=%d%n",
 							exec.getState(),  exec.getCurrentExecutionIndex());
