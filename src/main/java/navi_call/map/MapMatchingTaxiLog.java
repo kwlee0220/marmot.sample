@@ -4,13 +4,12 @@ import static marmot.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
-import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import marmot.type.DataType;
 import navi_call.Globals;
 import utils.StopWatch;
 
@@ -18,7 +17,7 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class S0_PrepareRoadData {
+public class MapMatchingTaxiLog {
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 		
@@ -27,30 +26,23 @@ public class S0_PrepareRoadData {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
-		DataSet input = marmot.getDataSet(Globals.ROADS);
+		DataSet input = marmot.getDataSet(Globals.TAXI_LOG);
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		String geomCol = gcInfo.name();
 		
-		Plan subPlan = marmot.planBuilder("서브 링크 순차번호 부여")
-							.assignUid("sub_link_no")
-							.build();
+//		String script = String.format("%s = ST_ClosestPointOnLine(%s, line)", geomCol, geomCol);
 		
 		Plan plan;
-		plan = marmot.planBuilder("도로 링크 단순화")
-					.load(Globals.ROADS)
-					.flattenGeometry(geomCol, DataType.LINESTRING)
-					.breakLineString(geomCol)
-					.runPlanByGroup(Group.ofKeys("link_id"), subPlan)
-					.expand("sub_link_no:short")
-					.store(Globals.ROADS_IDX, FORCE(gcInfo))
+		plan = marmot.planBuilder("택시로그_맵_매핑_org_road")
+					.load(Globals.TAXI_LOG)
+					.knnJoin(geomCol, Globals.ROADS, 1, 10, "*,param.{link_id,road_name}")
+					.store(Globals.TAXI_LOG_MAP, FORCE(gcInfo))
 					.build();
 		marmot.execute(plan);
-		DataSet result = marmot.getDataSet(Globals.ROADS_IDX);
-		System.out.printf("elapsed=%s (simplification)%n", watch.getElapsedMillisString());
-		
-		result.cluster();
-		
+		DataSet result = marmot.getDataSet(Globals.TAXI_LOG_MAP);
 		watch.stop();
+
+		SampleUtils.printPrefix(result, 5);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 }

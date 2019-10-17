@@ -4,6 +4,7 @@ import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.AggregateFunction.SUM;
 import static marmot.optor.JoinOptions.FULL_OUTER_JOIN;
+import static marmot.optor.JoinOptions.INNER_JOIN;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,6 @@ import marmot.exec.ModuleAnalysis;
 import marmot.exec.PlanAnalysis;
 import marmot.exec.SystemAnalysis;
 import marmot.optor.AggregateFunction;
-import marmot.optor.JoinOptions;
 import marmot.optor.geo.SquareGrid;
 import marmot.plan.Group;
 import marmot.process.NormalizeParameters;
@@ -153,8 +153,8 @@ public class CreateBestSubwayAnalysis {
 					.differenceJoin(gcInfo.name(), TEMP_STATIONS)
 					.assignGridCell(gcInfo.name(), GRID, false)
 					.intersection(gcInfo.name(), "cell_geom", "overlap")
-					.defineColumn("ratio:double", "ratio = ST_Area(overlap) / ST_Area(cell_geom)")
-					.project("cell_geom as the_geom, cell_id, cell_pos, block_cd, ratio")
+					.defineColumn("portion:double", "portion = ST_Area(overlap) / ST_Area(cell_geom)")
+					.project("overlap as the_geom, cell_id, cell_pos, block_cd, portion")
 					.store(TEMP_BLOCK_RATIO, FORCE(gcInfo))
 					.build();
 		components.add(new PlanAnalysis(TEMP_BLOCK_RATIO, plan));
@@ -179,13 +179,10 @@ public class CreateBestSubwayAnalysis {
 					.spatialJoin("the_geom", TEMP_BLOCK_RATIO, "param.*,*-{the_geom}")
 
 					// 격자별로 택시 승하차 로그수를 계산한다.
-					.aggregateByGroup(Group.ofKeys("cell_id").tags("the_geom,ratio"),
+					.aggregateByGroup(Group.ofKeys("cell_id").tags("the_geom,cell_pos,portion"),
 										AggregateFunction.COUNT())
 					
-					// 각 격자에 배정된 비율만큼 로그 수를 보정함
-					.defineColumn("count:double", "count * ratio")
-					
-					.project("the_geom, cell_id, count")
+					.project("the_geom, cell_id, cell_pos, count")
 					
 					.store(TEMP_TAXI_LOG_GRID, FORCE(gcInfo))
 					.build();
@@ -220,22 +217,24 @@ public class CreateBestSubwayAnalysis {
 					// 서울지역 데이터만 선택
 					.filter("block_cd.startsWith('11')")
 					
-					// 하루동안의 평균 유동인구를 계산
+					// 하루동안의 시간대별 평균 유동인구를 계산
 					.defineColumn("daily_avg:double", avgExpr)
+					
+					// 집계구별 평균 일간 유동인구 평균 계산
+					.aggregateByGroup(Group.ofKeys("block_cd").workerCount(17), AVG("daily_avg"))
 
 					// 격자 정보 부가함
-					.hashJoin("block_cd", TEMP_BLOCK_RATIO, "block_cd", "param.*,daily_avg",
-								JoinOptions.INNER_JOIN(23))
-					
-					// 격자별 평균 유동인구을 계산한다.
-					.aggregateByGroup(Group.ofKeys("block_cd")
-											.tags(String.format("%s,ratio,cell_id", gcInfo.name())),
-										AVG("daily_avg").as("avg"))
+					.hashJoin("block_cd", TEMP_BLOCK_RATIO, "block_cd", "param.*,avg", INNER_JOIN)
 					
 					// 비율 값 반영
-					.update("avg *= ratio")
+					.update("avg *= portion")
+					
+					// 격자별 평균 유동인구을 계산한다.
+					.aggregateByGroup(Group.ofKeys("cell_id")
+											.tags(String.format("%s,cell_pos", gcInfo.name())),
+										SUM("avg").as("avg"))
 						
-					.project("the_geom, cell_id, avg")
+					.project("the_geom, cell_id, cell_pos, avg")
 						
 					.store(TEMP_FLOW_POP_GRID, FORCE(gcInfo))
 					.build();
@@ -270,21 +269,24 @@ public class CreateBestSubwayAnalysis {
 					.filter("block_cd.startsWith('11')")
 					
 					// 하루동안의 카드매출 합계를 계산
-					.defineColumn("daily_sum:double", sumExpr)
+					.defineColumn("amount:double", sumExpr)
+					
+					// 집계구별 일간 카드매출 합계 계산
+					.aggregateByGroup(Group.ofKeys("block_cd").workerCount(51),
+										AVG("amount").as("amount"))
 
 					// 격자 정보 부가함
-					.hashJoin("block_cd", TEMP_BLOCK_RATIO, "block_cd", "param.*,daily_sum",
-								JoinOptions.INNER_JOIN(51))
+					.hashJoin("block_cd", TEMP_BLOCK_RATIO, "block_cd", "param.*,amount", INNER_JOIN)
+
+					// 비율 값 반영
+					.update("amount *= portion")
 					
 					// 격자별 평균 유동인구을 계산한다.
-					.aggregateByGroup(Group.ofKeys("block_cd")
-											.tags(String.format("%s,cell_id,ratio", gcInfo.name())),
-										SUM("daily_sum").as("amount"))
-					
-					// 비율 값 반영
-					.update("amount *= ratio")
+					.aggregateByGroup(Group.ofKeys("cell_id")
+											.tags(String.format("%s,cell_pos", gcInfo.name())),
+										SUM("amount").as("amount"))
 						
-					.project("the_geom, cell_id, amount")
+					.project("the_geom, cell_id, cell_pos, amount")
 						
 					.store(TEMP_CARD_GRID, FORCE(gcInfo))
 					.build();
