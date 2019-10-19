@@ -45,7 +45,7 @@ public class SampleRegisterPlanAnalytics {
 		PlanAnalysis analytics = new PlanAnalysis(ANA_ID, plan);
 		Utilities.checkState(analytics.getId().equals(ANA_ID));
 		Utilities.checkState(analytics.getType() == Type.PLAN);
-		marmot.addAnalysis(analytics);
+		marmot.addAnalysis(analytics, true);
 		
 		MarmotAnalysis analytics2 = marmot.getAnalysis(ANA_ID);
 		Utilities.checkState(analytics2.getId().equals(ANA_ID));

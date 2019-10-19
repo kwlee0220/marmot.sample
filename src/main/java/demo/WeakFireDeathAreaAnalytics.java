@@ -4,7 +4,6 @@ import static marmot.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import common.SampleUtils;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
@@ -42,7 +41,7 @@ public class WeakFireDeathAreaAnalytics {
 								.store("tmp/종합병원_위치_추천/병원_3km버퍼", FORCE(gcInfo))
 								.build();
 		PlanAnalysis analytics = new PlanAnalysis("/사업단/화재취약지구/서울시 종합병원 위치에서 3km 버퍼 연산", plan0);
-		marmot.addAnalysis(analytics);
+		marmot.addAnalysis(analytics, true);
 
 		// 서울시 지도에서 종합병원 3km 이내 영역과 겹치지 않은 영역을 계산한다.
 		Plan plan1 = marmot.planBuilder("종합병원 3km 밖의 서울시 영역 계산")
@@ -51,7 +50,7 @@ public class WeakFireDeathAreaAnalytics {
 								.store("tmp/종합병원_위치_추천/병원_원거리_영역", FORCE(gcInfo))
 								.build();
 		analytics = new PlanAnalysis("/사업단/화재취약지구/종합병원 3km 밖의 서울시 영역 계산", plan1);
-		marmot.addAnalysis(analytics);
+		marmot.addAnalysis(analytics, true);
 		
 		// 화재패해 영역에서 서울 지역 부분만 선택한다.
 		plan = marmot.planBuilder("seoul_fire_death")
@@ -60,7 +59,7 @@ public class WeakFireDeathAreaAnalytics {
 					.store("tmp/종합병원_위치_추천/서울_화재", FORCE(gcInfo))
 					.build();
 		analytics = new PlanAnalysis("/사업단/화재취약지구/seoul_fire_death", plan);
-		marmot.addAnalysis(analytics);
+		marmot.addAnalysis(analytics, true);
 
 		// 화재피해 영역 중에서 서울 읍면동과 겹치는 부분을 clip 하고, 각 피해 영역의 중심점을 구한다.
 		Plan plan2 = marmot.planBuilder("clip_bad_area")
@@ -71,7 +70,7 @@ public class WeakFireDeathAreaAnalytics {
 								.store("tmp/종합병원_위치_추천/분석결과", FORCE(gcInfo))
 								.build();
 		analytics = new PlanAnalysis("/사업단/화재취약지구/clip_bad_area", plan2);
-		marmot.addAnalysis(analytics);
+		marmot.addAnalysis(analytics, true);
 		
 //		result = marmot.getDataSet("tmp/종합병원_위치_추천/분석결과");
 //		System.out.println("완료: 종합병원 3km 밖의 서울시 영역과 화재피해 영역과 교차부분 검색");

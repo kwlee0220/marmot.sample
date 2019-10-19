@@ -41,7 +41,7 @@ public class SampleSimpleAnalysis {
 					.store(RESULT, StoreDataSetOptions.FORCE)
 					.build();
 		PlanAnalysis test1 = new PlanAnalysis("test1", plan);
-		marmot.addAnalysis(test1);
+		marmot.addAnalysis(test1, true);
 		
 		MarmotAnalysis anal;
 		ModuleAnalysis module;
@@ -56,7 +56,7 @@ public class SampleSimpleAnalysis {
 		margs.put("arg2", "value2");
 		
 		ModuleAnalysis test2 = new ModuleAnalysis("test2", "normalize", margs);
-		marmot.addAnalysis(test2);
+		marmot.addAnalysis(test2, true);
 		module = (ModuleAnalysis)marmot.getAnalysis("test2");
 		Utilities.checkState(module.getId().equals("test2"));
 		Utilities.checkState(module.getType() == Type.MODULE);
@@ -64,7 +64,7 @@ public class SampleSimpleAnalysis {
 		Utilities.checkState(margs.get("arg2").equals("value2"));
 		
 		CompositeAnalysis test5 = new CompositeAnalysis("test5", "test1", "test2");
-		marmot.addAnalysis(test5);
+		marmot.addAnalysis(test5, true);
 		composite = (CompositeAnalysis)marmot.getAnalysis("test5");
 		Utilities.checkState(composite.getId().equals("test5"));
 		Utilities.checkState(composite.getComponents().size() == 2);
@@ -79,7 +79,7 @@ public class SampleSimpleAnalysis {
 		marmot.deleteAnalysis("test5", false);
 		anal = marmot.getAnalysis("test1");
 		anal = marmot.getAnalysis("test2");
-		marmot.addAnalysis(test5);
+		marmot.addAnalysis(test5, true);
 		
 		marmot.deleteAnalysis("test5", true);
 		Utilities.checkState(marmot.findAnalysis("test1") == null);
@@ -87,22 +87,22 @@ public class SampleSimpleAnalysis {
 		
 		boolean failed = false;
 		try {
-			marmot.addAnalysis(test5);
+			marmot.addAnalysis(test5, true);
 		}
 		catch ( AnalysisNotFoundException expected ) {
 			failed = true;
 		}
 		Utilities.checkState(failed);
 
-		marmot.addAnalysis(test1);
-		marmot.addAnalysis(test2);
-		marmot.addAnalysis(test5);
+		marmot.addAnalysis(test1, true);
+		marmot.addAnalysis(test2, true);
+		marmot.addAnalysis(test5, true);
 		
 		SystemAnalysis test3 = SystemAnalysis.deleteDataSet("test3", "xxx");
-		marmot.addAnalysis(test3);
+		marmot.addAnalysis(test3, true);
 		
 		CompositeAnalysis test6 = new CompositeAnalysis("test6", "test5", "test3");
-		marmot.addAnalysis(test6);
+		marmot.addAnalysis(test6, true);
 		anal = marmot.findParentAnalysis("test1");
 		Utilities.checkState(anal.getId().equals("test5"));
 		anal = marmot.findParentAnalysis("test5");

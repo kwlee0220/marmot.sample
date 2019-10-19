@@ -42,13 +42,8 @@ public class PreProcessAgePop {
 					.storeByGroup(Group.ofKeys("base_year"), RESULT, GEOMETRY(gcInfo))
 					.build();
 		marmot.execute(plan);
-//		marmot.createDataSet(RESULT, plan, DataSetOption.FORCE);
-//		marmot.createDataSet(RESULT, plan, DataSetOption.GEOMETRY(gcInfo), DataSetOption.FORCE);
 		watch.stop();
 		
-//		for ( DataSet result: marmot.getDataSetAllInDir(RESULT, true) ) {
-//			SampleUtils.printPrefix(result, 5);
-//		}
 		System.out.println("elapsed: " + watch.getElapsedMillisString());
 	}
 }
