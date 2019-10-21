@@ -205,7 +205,7 @@ public class CreateBestSubwayAnalysis {
 					.spatialJoin("the_geom", OUTPUT(ANALY_BLOCK_RATIO), "param.*,*-{the_geom}")
 
 					// 격자별로 택시 승하차 로그수를 계산한다.
-					.aggregateByGroup(Group.ofKeys("cell_id").tags("the_geom,cell_pos,portion"),
+					.aggregateByGroup(Group.ofKeys("cell_id").tags("the_geom,cell_pos"),
 										AggregateFunction.COUNT())
 					
 					.project("the_geom, cell_id, cell_pos, count")
