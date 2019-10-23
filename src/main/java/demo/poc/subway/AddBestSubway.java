@@ -1,4 +1,4 @@
-package appls;
+package demo.poc.subway;
 
 import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.AVG;
@@ -37,7 +37,7 @@ import utils.Size2d;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class CreateBestSubwayAnalysis {
+public class AddBestSubway {
 	private static final String SID = "구역/시도";
 	private static final String STATIONS = "교통/지하철/역사";
 	private static final String TAXI_LOG = "로그/나비콜/택시로그";
@@ -94,12 +94,6 @@ public class CreateBestSubwayAnalysis {
 		compIdList.add(delDir.getId());
 
 		marmot.addAnalysis(new CompositeAnalysis("지하철역사_추천", compIdList), true);
-	}
-	
-	private static String createDeleteDataSet(MarmotRuntime marmot, String analyId, String... args) {
-		SystemAnalysis anal = SystemAnalysis.deleteDataSet(analyId, args);
-		marmot.addAnalysis(anal, true);
-		return anal.getId();
 	}
 
 	private static void createSubwayBuffer(MarmotRuntime marmot, List<String> compIdList) {
@@ -225,9 +219,9 @@ public class CreateBestSubwayAnalysis {
 		marmot.addAnalysis(anal2, true);
 		subCompIdList.add(anal2.getId());
 
-		SystemAnalysis anal3 = SystemAnalysis.deleteDataSet(analyId + "/집계삭제", tempOutDsId);
-		marmot.addAnalysis(anal3, true);
-		subCompIdList.add(anal3.getId());
+//		SystemAnalysis anal3 = SystemAnalysis.deleteDataSet(analyId + "/집계삭제", tempOutDsId);
+//		marmot.addAnalysis(anal3, true);
+//		subCompIdList.add(anal3.getId());
 		
 		CompositeAnalysis anal = new CompositeAnalysis(analyId, subCompIdList);
 		marmot.addAnalysis(anal, true);
@@ -256,9 +250,9 @@ public class CreateBestSubwayAnalysis {
 		marmot.addAnalysis(panal, true);
 		subCompIdList.add(panal.getId());
 		
-		SystemAnalysis sanal = SystemAnalysis.deleteDataSet(ANALY_FLOW_POP + "/년도별_표준값_삭제", DS_IDS);
-		marmot.addAnalysis(sanal, true);
-		subCompIdList.add(sanal.getId());
+//		SystemAnalysis sanal = SystemAnalysis.deleteDataSet(ANALY_FLOW_POP + "/년도별_표준값_삭제", DS_IDS);
+//		marmot.addAnalysis(sanal, true);
+//		subCompIdList.add(sanal.getId());
 		
 		CompositeAnalysis anal = new CompositeAnalysis(ANALY_FLOW_POP, subCompIdList);
 		marmot.addAnalysis(anal, true);
@@ -325,9 +319,9 @@ public class CreateBestSubwayAnalysis {
 		marmot.addAnalysis(anal2, true);
 		subCompos.add(anal2.getId());
 				
-		SystemAnalysis anal3 = SystemAnalysis.deleteDataSet(analyId + "/집계삭제", tempOutDsId);
-		marmot.addAnalysis(anal3, true);
-		subCompos.add(anal3.getId());
+//		SystemAnalysis anal3 = SystemAnalysis.deleteDataSet(analyId + "/집계삭제", tempOutDsId);
+//		marmot.addAnalysis(anal3, true);
+//		subCompos.add(anal3.getId());
 		
 		CompositeAnalysis anal = new CompositeAnalysis(analyId, subCompos);
 		marmot.addAnalysis(anal, true);
@@ -355,10 +349,10 @@ public class CreateBestSubwayAnalysis {
 		marmot.addAnalysis(panal, true);
 		subCompIdList.add(panal.getId());
 		
-		SystemAnalysis sanal = SystemAnalysis.deleteDataSet(ANALY_CARD + "/년도별_표준값_삭제",
-															DS_IDS);
-		marmot.addAnalysis(sanal, true);
-		subCompIdList.add(sanal.getId());
+//		SystemAnalysis sanal = SystemAnalysis.deleteDataSet(ANALY_CARD + "/년도별_표준값_삭제",
+//															DS_IDS);
+//		marmot.addAnalysis(sanal, true);
+//		subCompIdList.add(sanal.getId());
 		
 		CompositeAnalysis anal = new CompositeAnalysis(ANALY_CARD, subCompIdList);
 		marmot.addAnalysis(anal, true);
@@ -425,9 +419,9 @@ public class CreateBestSubwayAnalysis {
 		marmot.addAnalysis(anal2, true);
 		subCompos.add(anal2.getId());
 		
-		SystemAnalysis anal3 = SystemAnalysis.deleteDataSet(analyId + "/집계삭제", tempOutDsId);
-		marmot.addAnalysis(anal3, true);
-		subCompos.add(anal3.getId());
+//		SystemAnalysis anal3 = SystemAnalysis.deleteDataSet(analyId + "/집계삭제", tempOutDsId);
+//		marmot.addAnalysis(anal3, true);
+//		subCompos.add(anal3.getId());
 		
 		CompositeAnalysis anal = new CompositeAnalysis(analyId, subCompos);
 		marmot.addAnalysis(anal, true);

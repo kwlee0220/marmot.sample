@@ -1,4 +1,4 @@
-package appls;
+package demo.poc.age;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +23,8 @@ import marmot.type.DataType;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class CreateAgeIntervalPopulation {
-	private static final String ANALYSIS = "도시공간구조";
+public class AddAgeInterval1 {
+	private static final String ANALYSIS = "도시공간구조1";
 	
 	public static final void main(String... args) throws Exception {
 //		PropertyConfigurator.configure("log4j.properties");
