@@ -45,6 +45,17 @@ artifacts {
 	archives javadocJar
 }
 
+ext.distDir = "${System.env.HOME}/etc/marmot/marmot.sample.dist"
+task distributeBinary(type:Copy) {
+	dependsOn assemble
+	into "${distDir}"
+	from ("${projectDir}") {
+		include 'bin/**'
+		include 'log4j.properties'
+		include '.gitignore'
+	}
+}
+
 apply plugin: 'eclipse'
 eclipse {
 	classpath {
