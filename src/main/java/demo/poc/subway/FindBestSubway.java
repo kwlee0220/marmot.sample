@@ -6,7 +6,6 @@ import static marmot.optor.AggregateFunction.SUM;
 import static marmot.optor.JoinOptions.FULL_OUTER_JOIN;
 import static marmot.optor.JoinOptions.INNER_JOIN;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -21,10 +20,6 @@ import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
-import marmot.exec.CompositeAnalysis;
-import marmot.exec.ModuleAnalysis;
-import marmot.exec.PlanAnalysis;
-import marmot.exec.SystemAnalysis;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.SquareGrid;
 import marmot.plan.Group;
@@ -32,18 +27,19 @@ import marmot.plan.LoadOptions;
 import marmot.process.NormalizeParameters;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.Size2d;
+import utils.StopWatch;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class AddBestSubway {
+public class FindBestSubway {
 	private static final String SID = "구역/시도";
 	private static final String STATIONS = "교통/지하철/역사";
-	private static final String TAXI_LOG = "로그/나비콜/택시로그";
-	private static final String BLOCKS = "구역/지오비전_집계구";
-	private static final String FLOW_POP_BYTIME = "주민/유동인구/%d/월별_시간대";
-	private static final String CARD_BYTIME = "주민/카드매출/%d/월별_시간대";
+	private static final String TAXI_LOG = "나비콜/택시로그";
+	private static final String BLOCKS = "지오비전/집계구/2015";
+	private static final String FLOW_POP_BYTIME = "지오비전/유동인구/%d/월별_시간대";
+	private static final String CARD_BYTIME = "지오비전/카드매출/%d/일별_시간대";
 	private static final String RESULT = "분석결과/지하철역사_추천/최종결과";
 	private static final int[] YEARS = new int[] {2015, 2016, 2017};
 //	private static final int[] YEARS = new int[] {2015};
@@ -59,133 +55,132 @@ public class AddBestSubway {
 	public static final void main(String... args) throws Exception {
 //		PropertyConfigurator.configure("log4j.properties");
 		LogManager.getRootLogger().setLevel(Level.OFF);
+		
+		StopWatch watch = StopWatch.start();
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
-		marmot.deleteAnalysis("지하철역사_추천", true);
-	
-		List<String> compIdList = new ArrayList<>();
-		
 		// 서울지역 지하철 역사의 버퍼 작업을 수행한다.
-		createSubwayBuffer(marmot, compIdList);
+		DataSet subway = bufferSubway(marmot, OUTPUT(ANAL_STATIONS));
 		
 		// 전국 시도 행정구역 데이터에서 서울특별시 영역만을 추출한다.
-		createSeoulBoundary(marmot, compIdList);
+		DataSet seoul = getSeoulBoundary(marmot, OUTPUT(ANALY_SEOUL));
 		
 		// 격자별 집계구 비율 계산
-		calcBlockRatio(marmot, compIdList);
+		DataSet blocks = calcBlockRatio(marmot, seoul, subway, OUTPUT(ANALY_BLOCK_RATIO));
 		
 		// 격자별 택시 승하차 수 집계
-		gridTaxiLog(marmot, compIdList);
+		gridTaxiLog(marmot, blocks, OUTPUT(ANALY_TAXI_LOG));
 		
 		// 격자별 유동인구 집계
-		gridFlowPopulation(marmot, compIdList);
+		gridFlowPopulation(marmot, blocks, OUTPUT(ANALY_FLOW_POP));
 		
 		// 격자별 카드매출 집계
-		gridCardSales(marmot, compIdList);
+		gridCardSales(marmot, blocks, OUTPUT(ANALY_CARD));
 		
 		// 격자별_유동인구_카드매출_택시승하차_비율 합계
-		mergeAll(marmot, compIdList);
+		mergeAll(marmot, OUTPUT(ANALY_TAXI_LOG), OUTPUT(ANALY_FLOW_POP), OUTPUT(ANALY_CARD), RESULT);
 		
-		SystemAnalysis delDir = SystemAnalysis.deleteDir(ANALY_TAXI_LOG + "_임시파일들_삭제",
-														OUTPUT(ANALY));
-		marmot.addAnalysis(delDir, true);
-		compIdList.add(delDir.getId());
-
-		marmot.addAnalysis(new CompositeAnalysis("지하철역사_추천", compIdList), true);
+		marmot.deleteDir(OUTPUT(ANALY));
+		
+		DataSet ds = marmot.getDataSet(RESULT);
+		System.out.printf("종료: %s(%d건), 소요시간=%ss%n",
+							ds.getId(), ds.getRecordCount(), watch.getElapsedMillisString());
 	}
 
-	private static void createSubwayBuffer(MarmotRuntime marmot, List<String> compIdList) {
-		String analyId = ANAL_STATIONS;
-		String outDsId = "/tmp/" + analyId;
+	private static DataSet bufferSubway(MarmotRuntime marmot, String outDsId) {
+		System.out.print("분석 단계: '전국_지하쳘_역사' 중 서울 소재 역사 추출 후 1KM 버퍼 계산 -> ");
 		
-		DataSet stations = marmot.getDataSet(STATIONS);
-		GeometryColumnInfo gcInfo = stations.getGeometryColumnInfo();
-		
-		Plan plan;
+		StopWatch watch = StopWatch.start();
 		
 		// 서울지역 지하철 역사를 구하고 1km 버퍼를 구한다.
-		plan = marmot.planBuilder("서울지역_지하철역사_버퍼")
+		DataSet stations = marmot.getDataSet(STATIONS);
+		GeometryColumnInfo gcInfo = stations.getGeometryColumnInfo();
+
+		Plan plan;
+		plan = marmot.planBuilder("서울지역 지하철역사 1KM 버퍼")
 					.load(STATIONS)
 					.filter("sig_cd.substring(0,2) == '11'")
 					.buffer(gcInfo.name(), 1000)
 					.project("the_geom")
 					.store(outDsId, FORCE(gcInfo))
 					.build();
-		PlanAnalysis anal1 = new PlanAnalysis(analyId, plan);
-		marmot.addAnalysis(anal1, true);
-		compIdList.add(anal1.getId());
+		marmot.execute(plan);
 
 		// 서울지역 지하철 역사에 대한 공간색인을 생성한다.
-		SystemAnalysis anal2 = SystemAnalysis.clusterDataSet(analyId + "_색인", outDsId);
-		marmot.addAnalysis(anal2, true);
-		compIdList.add(anal2.getId());
+		DataSet ds = marmot.getDataSet(outDsId);
+		ds.cluster();
+		
+		System.out.printf("%s(%d건), 소요시간=%ss%n",
+							outDsId, ds.getRecordCount(), watch.getElapsedMillisString());
+		
+		return ds;
 	}
 	
-	private static void createSeoulBoundary(MarmotRuntime marmot, List<String> compIdList) {
-		String analyId = ANALY_SEOUL;
-		String outDsId = "/tmp/" + analyId;
-		
-		DataSet stations = marmot.getDataSet(SID);
-		GeometryColumnInfo gcInfo = stations.getGeometryColumnInfo();
+	private static DataSet getSeoulBoundary(MarmotRuntime marmot, String outDsId) {
+		StopWatch watch = StopWatch.start();
 
-		// 전국 시도 행정구역 데이터에서 서울특별시 영역만을 추출한다.
+		System.out.print("분석 단계: '전국_법정시도경계'에서 서울특별시 영역 추출 -> ");
+		
+		GeometryColumnInfo gcInfo = marmot.getDataSet(SID).getGeometryColumnInfo();
+		
 		Plan plan;
-		plan = marmot.planBuilder("서울특별시_영역_추출")
+		plan = marmot.planBuilder("get_seoul")
 					.load(SID)
 					.filter("ctprvn_cd == '11'")
 					.store(outDsId, FORCE(gcInfo))
 					.build();
-		PlanAnalysis anal1 = new PlanAnalysis(analyId, plan);
-		marmot.addAnalysis(anal1, true);
-		compIdList.add(anal1.getId());
+		marmot.execute(plan);
 		
 		// 서울지역 버퍼에 대한 공간색인을 생성한다.
-		SystemAnalysis anal2 = SystemAnalysis.clusterDataSet(analyId + "_색인", outDsId);
-		marmot.addAnalysis(anal2, true);
-		compIdList.add(anal2.getId());
+		DataSet ds = marmot.getDataSet(outDsId);
+		ds.cluster();
+		
+		System.out.printf("1건, 소요시간=%ss%n", watch.getElapsedMillisString());
+		return marmot.getDataSet(outDsId);
 	}
 	
-	private static void calcBlockRatio(MarmotRuntime marmot, List<String> compIdList) {
-		String analyId = ANALY_BLOCK_RATIO;
-		String outDsId = "/tmp/" + analyId;
+	private static DataSet calcBlockRatio(MarmotRuntime marmot, DataSet seoul, DataSet subway,
+										String outDsId) {
+		StopWatch watch = StopWatch.start();
+		System.out.print("분석 단계: '지오비전_집계구'와 격자 겹치는 영역 비율 계산 -> ");
 		
 		DataSet stations = marmot.getDataSet(BLOCKS);
 		GeometryColumnInfo gcInfo = stations.getGeometryColumnInfo();
-		
-		SquareGrid grid = new SquareGrid("/tmp/" + ANALY_SEOUL, new Size2d(300, 300));
+		SquareGrid grid = new SquareGrid(seoul.getId(), new Size2d(300, 300));
 		
 		Plan plan;
 		plan = marmot.planBuilder("격자별_집계구_비율")
 					.load(BLOCKS)
 					.filter("block_cd.substring(0,2) == '11'")
-					.differenceJoin(gcInfo.name(), "/tmp/" + ANAL_STATIONS)
+					.differenceJoin(gcInfo.name(), subway.getId())
 					.assignGridCell(gcInfo.name(), grid, false)
 					.intersection(gcInfo.name(), "cell_geom", "overlap")
 					.defineColumn("portion:double", "portion = ST_Area(overlap) / ST_Area(cell_geom)")
 					.project("overlap as the_geom, cell_id, cell_pos, block_cd, portion")
 					.store(outDsId, FORCE(gcInfo))
 					.build();
-		PlanAnalysis anal1 = new PlanAnalysis(analyId, plan);
-		marmot.addAnalysis(anal1, true);
-		compIdList.add(anal1.getId());
+		marmot.execute(plan);
 		
 		// 격자별_집계구_비율에 대한 공간색인을 생성한다.
-		SystemAnalysis anal2 = SystemAnalysis.clusterDataSet(analyId + "_색인", outDsId);
-		marmot.addAnalysis(anal2, true);
-		compIdList.add(anal2.getId());
+		DataSet ds = marmot.getDataSet(outDsId);
+		ds.cluster();
+
+		System.out.printf("%s(%d건), 소요시간=%ss%n",
+							outDsId, ds.getRecordCount(), watch.getElapsedMillisString());
+		
+		return ds;
 	}
 
-	private static void gridTaxiLog(MarmotRuntime marmot, List<String> compIdList) {
-		String analyId = ANALY_TAXI_LOG;
-		String outDsId = OUTPUT(ANALY_TAXI_LOG);
+	private static void gridTaxiLog(MarmotRuntime marmot, DataSet blocks, String outDsId) {
+		StopWatch watch = StopWatch.start();
+		
+		System.out.print("분석 단계: 격자별 택시승하차 집계 후 정규화 -> ");
 		String tempOutDsId = TEMP_OUTPUT(ANALY_TAXI_LOG);
 		
-		List<String> subCompIdList = Lists.newArrayList();
-		
-		DataSet stations = marmot.getDataSet(TAXI_LOG);
-		GeometryColumnInfo gcInfo = stations.getGeometryColumnInfo();
+		DataSet taxi = marmot.getDataSet(TAXI_LOG);
+		GeometryColumnInfo gcInfo = taxi.getGeometryColumnInfo();
 		
 		Plan plan;
 		plan = marmot.planBuilder("격자별_택시승하차_집계")
@@ -196,8 +191,8 @@ public class AddBestSubway {
 					.filter("status == 1 || status == 2")
 					
 					// 로그에 격자 정보 부가함
-					.spatialJoin("the_geom", OUTPUT(ANALY_BLOCK_RATIO), "param.*,*-{the_geom}")
-
+					.spatialJoin("the_geom", blocks.getId(), "param.*,*-{the_geom}")
+	
 					// 격자별로 택시 승하차 로그수를 계산한다.
 					.aggregateByGroup(Group.ofKeys("cell_id").tags("the_geom,cell_pos"),
 										AggregateFunction.COUNT())
@@ -206,35 +201,29 @@ public class AddBestSubway {
 					
 					.store(tempOutDsId, FORCE(gcInfo))
 					.build();
-		PlanAnalysis anal1 = new PlanAnalysis(analyId + "/집계", plan);
-		marmot.addAnalysis(anal1, true);
-		subCompIdList.add(anal1.getId());
+		marmot.execute(plan);
 
 		NormalizeParameters params = new NormalizeParameters();
 		params.inputDataset(tempOutDsId);
 		params.outputDataset(outDsId);
 		params.inputFeatureColumns("count");
 		params.outputFeatureColumns("normalized");
-		ModuleAnalysis anal2 = new ModuleAnalysis(analyId + "/표준화", "normalize", params.toMap());
-		marmot.addAnalysis(anal2, true);
-		subCompIdList.add(anal2.getId());
+		marmot.executeProcess("normalize", params.toMap());
 
-//		SystemAnalysis anal3 = SystemAnalysis.deleteDataSet(analyId + "/집계삭제", tempOutDsId);
-//		marmot.addAnalysis(anal3, true);
-//		subCompIdList.add(anal3.getId());
-		
-		CompositeAnalysis anal = new CompositeAnalysis(analyId, subCompIdList);
-		marmot.addAnalysis(anal, true);
-		compIdList.add(anal.getId());
+		DataSet ds = marmot.getDataSet(outDsId);
+		System.out.printf("%s(%d건), 소요시간=%ss%n", tempOutDsId, ds.getRecordCount(),
+														watch.getElapsedMillisString());
 	}
 
 	private static final GeometryColumnInfo GC_INFO = new GeometryColumnInfo("the_geom", "EPSG:5186");
-	private static void gridFlowPopulation(MarmotRuntime marmot, List<String> compIdList) {
-		List<String> subCompIdList = Lists.newArrayList();
+	private static void gridFlowPopulation(MarmotRuntime marmot, DataSet blocks,
+											String outDsId) {
+		StopWatch watch = StopWatch.start();
+		System.out.printf(String.format("분석 단계: 연차별로 격자단위 유동인구 수집 -> %n"));
 		
 		List<String> DS_IDS = Lists.newArrayList();
 		for ( int year: YEARS ) {
-			gridFlowPopulation(marmot, year, subCompIdList);
+			gridFlowPopulation(marmot, year, blocks, OUTPUT(ANALY_FLOW_POP, year));
 			DS_IDS.add(OUTPUT(ANALY_FLOW_POP, year));
 		}
 		
@@ -246,33 +235,27 @@ public class AddBestSubway {
 					.update("normalized = normalized / " + YEARS.length)
 					.store(OUTPUT(ANALY_FLOW_POP), FORCE(GC_INFO))
 					.build();
-		PlanAnalysis panal = new PlanAnalysis(ANALY_FLOW_POP + "/년도별_표준값_병합", plan);
-		marmot.addAnalysis(panal, true);
-		subCompIdList.add(panal.getId());
+		marmot.execute(plan);
 		
-//		SystemAnalysis sanal = SystemAnalysis.deleteDataSet(ANALY_FLOW_POP + "/년도별_표준값_삭제", DS_IDS);
-//		marmot.addAnalysis(sanal, true);
-//		subCompIdList.add(sanal.getId());
-		
-		CompositeAnalysis anal = new CompositeAnalysis(ANALY_FLOW_POP, subCompIdList);
-		marmot.addAnalysis(anal, true);
-		compIdList.add(anal.getId());
+		DataSet ds = marmot.getDataSet(outDsId);
+		System.out.printf("%s(%d건), 소요시간=%s%n",
+							ds.getId(), ds.getRecordCount(), watch.getElapsedMillisString());
 	}
 	
-	private static void gridFlowPopulation(MarmotRuntime marmot, int year, List<String> compIdList) {
-		String analyId = ANALY_FLOW_POP + "/" + year;
+	private static void gridFlowPopulation(MarmotRuntime marmot, int year, DataSet blocks,
+											String outDsId) {
+		StopWatch watch = StopWatch.start();
+		System.out.printf(String.format("\t분석 단계: %d년도 격자별 유동인구수 정규화 -> ", year));
+		
 		String planName = String.format("%d년도_격자별_유동인구_수집", year);
 		String inDsId = String.format(FLOW_POP_BYTIME, year);
-		String outDsId = OUTPUT(ANALY_FLOW_POP, year);
-		String tempOutDsId = TEMP_OUTPUT(ANALY_FLOW_POP, year);
-		
-		List<String> subCompos = Lists.newArrayList();
+		String tempOutDsId = outDsId + "_집계";
 
 		String sumExpr = IntStream.range(0, 24)
 									.mapToObj(idx -> String.format("avg_%02dtmst", idx))
 									.collect(Collectors.joining("+"));
 		String avgExpr = String.format("(%s) / 24", sumExpr);
-		GeometryColumnInfo gcInfo = marmot.getDataSet(OUTPUT(ANALY_BLOCK_RATIO)).getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = marmot.getDataSet(inDsId).getGeometryColumnInfo();
 
 		Plan plan;
 		plan = marmot.planBuilder(planName)
@@ -289,8 +272,7 @@ public class AddBestSubway {
 					.aggregateByGroup(Group.ofKeys("block_cd").workerCount(17), AVG("daily_avg"))
 
 					// 격자 정보 부가함
-					.hashJoin("block_cd", OUTPUT(ANALY_BLOCK_RATIO), "block_cd",
-								"param.*,avg", INNER_JOIN)
+					.hashJoin("block_cd", blocks.getId(), "block_cd", "param.*,avg", INNER_JOIN)
 					
 					// 비율 값 반영
 					.update("avg *= portion")
@@ -304,34 +286,27 @@ public class AddBestSubway {
 						
 					.store(tempOutDsId, FORCE(gcInfo))
 					.build();
-		PlanAnalysis anal1 = new PlanAnalysis(analyId + "/집계", plan);
-		marmot.addAnalysis(anal1, true);
-		subCompos.add(anal1.getId());
+		marmot.execute(plan);
 
 		NormalizeParameters params = new NormalizeParameters();
 		params.inputDataset(tempOutDsId);
 		params.outputDataset(outDsId);
 		params.inputFeatureColumns("avg");
 		params.outputFeatureColumns("normalized");
-		ModuleAnalysis anal2 = new ModuleAnalysis(analyId + "/표준화", "normalize", params.toMap());
-		marmot.addAnalysis(anal2, true);
-		subCompos.add(anal2.getId());
-				
-//		SystemAnalysis anal3 = SystemAnalysis.deleteDataSet(analyId + "/집계삭제", tempOutDsId);
-//		marmot.addAnalysis(anal3, true);
-//		subCompos.add(anal3.getId());
+		marmot.executeProcess("normalize", params.toMap());
 		
-		CompositeAnalysis anal = new CompositeAnalysis(analyId, subCompos);
-		marmot.addAnalysis(anal, true);
-		compIdList.add(anal.getId());
+		DataSet ds = marmot.getDataSet(outDsId);
+		System.out.printf("%s(%d건), 소요시간=%s%n", ds.getId(), ds.getRecordCount(),
+														watch.getElapsedMillisString());
 	}
 
-	private static void gridCardSales(MarmotRuntime marmot, List<String> compIdList) {
-		List<String> subCompIdList = Lists.newArrayList();
+	private static void gridCardSales(MarmotRuntime marmot, DataSet blocks, String outDsId) {
+		StopWatch watch = StopWatch.start();
+		System.out.printf(String.format("분석 단계: 연차별로 격자단위 카드매출액 수집 -> %n"));
 		
 		List<String> DS_IDS = Lists.newArrayList();
 		for ( int year: YEARS ) {
-			gridCardSales(marmot, year, subCompIdList);
+			gridCardSales(marmot, year, blocks, OUTPUT(ANALY_CARD, year));
 			DS_IDS.add(OUTPUT(ANALY_CARD, year));
 		}
 		
@@ -343,32 +318,23 @@ public class AddBestSubway {
 					.update("normalized = normalized / " + YEARS.length)
 					.store(OUTPUT(ANALY_CARD), FORCE(GC_INFO))
 					.build();
-		PlanAnalysis panal = new PlanAnalysis(ANALY_CARD + "/년도별_표준값_병합", plan);
-		marmot.addAnalysis(panal, true);
-		subCompIdList.add(panal.getId());
+		marmot.execute(plan);
 		
-//		SystemAnalysis sanal = SystemAnalysis.deleteDataSet(ANALY_CARD + "/년도별_표준값_삭제",
-//															DS_IDS);
-//		marmot.addAnalysis(sanal, true);
-//		subCompIdList.add(sanal.getId());
-		
-		CompositeAnalysis anal = new CompositeAnalysis(ANALY_CARD, subCompIdList);
-		marmot.addAnalysis(anal, true);
-		compIdList.add(anal.getId());
+		DataSet ds = marmot.getDataSet(outDsId);
+		System.out.printf("%s(%d건), 소요시간=%s%n",
+							ds.getId(), ds.getRecordCount(), watch.getElapsedMillisString());
 	}
 	
-	private static void gridCardSales(MarmotRuntime marmot, int year, List<String> compIdList) {
-		String analyId = ANALY_CARD + "/" + year;
+	private static void gridCardSales(MarmotRuntime marmot, int year, DataSet blocks,
+										String outDsId) {
+		StopWatch watch = StopWatch.start();
+		System.out.printf(String.format("\t분석 단계: %d년도 격자별 카드매출액 정규화 -> ", year));
+		
 		String planName = String.format("%d년도 격자별_카드매출 집계", year);
 		String inDsId = String.format(CARD_BYTIME, year);
-		String outDsId = OUTPUT(ANALY_CARD, year);
-		String tempOutDsId = TEMP_OUTPUT(ANALY_CARD, year);
+		String tempOutDsId = outDsId + "_집계";
 		
-		List<String> subCompos = Lists.newArrayList();
-		
-		DataSet ds = marmot.getDataSet(BLOCKS);
-		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-
+		GeometryColumnInfo gcInfo = blocks.getGeometryColumnInfo();
 		String sumExpr = IntStream.range(0, 24)
 									.mapToObj(idx -> String.format("sale_amt_%02dtmst", idx))
 									.collect(Collectors.joining("+"));
@@ -385,12 +351,11 @@ public class AddBestSubway {
 					.defineColumn("amount:double", sumExpr)
 					
 					// 집계구별 일간 카드매출 합계 계산
-					.aggregateByGroup(Group.ofKeys("block_cd").workerCount(51),
+					.aggregateByGroup(Group.ofKeys("block_cd").workerCount(31),
 										AVG("amount").as("amount"))
 
 					// 격자 정보 부가함
-					.hashJoin("block_cd", OUTPUT(ANALY_BLOCK_RATIO),
-								"block_cd", "param.*,amount", INNER_JOIN)
+					.hashJoin("block_cd", blocks.getId(), "block_cd", "param.*,amount", INNER_JOIN)
 
 					// 비율 값 반영
 					.update("amount *= portion")
@@ -404,29 +369,25 @@ public class AddBestSubway {
 						
 					.store(tempOutDsId, FORCE(gcInfo))
 					.build();
-		PlanAnalysis anal1 = new PlanAnalysis(analyId + "/집계", plan);
-		marmot.addAnalysis(anal1, true);
-		subCompos.add(anal1.getId());
+		marmot.execute(plan);
 
 		NormalizeParameters params = new NormalizeParameters();
 		params.inputDataset(tempOutDsId);
 		params.outputDataset(outDsId);
 		params.inputFeatureColumns("amount");
 		params.outputFeatureColumns("normalized");
-		ModuleAnalysis anal2 = new ModuleAnalysis(analyId + "/표준화", "normalize", params.toMap());
-		marmot.addAnalysis(anal2, true);
-		subCompos.add(anal2.getId());
+		marmot.executeProcess("normalize", params.toMap());
 		
-//		SystemAnalysis anal3 = SystemAnalysis.deleteDataSet(analyId + "/집계삭제", tempOutDsId);
-//		marmot.addAnalysis(anal3, true);
-//		subCompos.add(anal3.getId());
-		
-		CompositeAnalysis anal = new CompositeAnalysis(analyId, subCompos);
-		marmot.addAnalysis(anal, true);
-		compIdList.add(anal.getId());
+		DataSet ds = marmot.getDataSet(outDsId);
+		System.out.printf("%s(%d건), 소요시간=%s%n", ds.getId(), ds.getRecordCount(),
+														watch.getElapsedMillisString());
 	}
 	
-	private static void mergeAll(MarmotRuntime marmot, List<String> components) {
+	private static void mergeAll(MarmotRuntime marmot, String taxiDsId, String flowpopDsId,
+									String cardDsId, String outDsId) {
+		StopWatch watch = StopWatch.start();
+		System.out.printf(String.format("분석 단계: 격자별_유동인구_카드매출_택시승하차_표준값_합계 -> "));
+		
 		String merge1 = "if ( normalized == null ) {"
 					+ "		the_geom = right_geom;"
 					+ "		cell_id = right_cell_id;"
@@ -443,27 +404,30 @@ public class AddBestSubway {
 					+ "		param_normalized = 0;"
 					+ "}"
 					+ "normalized = normalized + param_normalized;";
+		GeometryColumnInfo gcInfo = marmot.getDataSet(taxiDsId).getGeometryColumnInfo();
 		
 		Plan plan;
 		plan = marmot.planBuilder("격자별_유동인구_카드매출_택시승하차_표준값_합계")
-					.loadHashJoin(OUTPUT(ANALY_CARD), "cell_id", OUTPUT(ANALY_FLOW_POP), "cell_id",
+					.loadHashJoin(cardDsId, "cell_id", flowpopDsId, "cell_id",
 									"left.*,right.{the_geom as right_geom, cell_id as right_cell_id,"
 									+ "normalized as right_normalized}",
-									FULL_OUTER_JOIN(51))
+									FULL_OUTER_JOIN(31))
 					.update(merge1)
 					.project("the_geom,cell_id,normalized")
 					
-					.hashJoin("cell_id", OUTPUT(ANALY_TAXI_LOG), "cell_id",
+					.hashJoin("cell_id", taxiDsId, "cell_id",
 							"*,param.{the_geom as param_geom,cell_id as param_cell_id,"
 							+ "normalized as param_normalized}", FULL_OUTER_JOIN(51))
 					.update(merge2)
 					
 					.project("the_geom,cell_id,normalized as value")
-					.store(RESULT, FORCE(GC_INFO))
+					.store(outDsId, FORCE(gcInfo))
 					.build();
-		PlanAnalysis anal = new PlanAnalysis("지하철역사_추천/격자별_표준값_합계", plan);
-		marmot.addAnalysis(anal, true);
-		components.add(anal.getId());
+		marmot.execute(plan);
+		
+		DataSet ds = marmot.getDataSet(outDsId);
+		System.out.printf("%s(%d건), 소요시간=%s%n", ds.getId(), ds.getRecordCount(),
+														watch.getElapsedMillisString());
 	}
 	
 	private static String OUTPUT(String analId) {

@@ -37,8 +37,7 @@ public class SampleE2SFCASetup {
 		Plan plan;
 		Geometry gangnaum = getGangnamGu(marmot);
 		
-		DataSet flowPop = marmot.getDataSet(FLOW_POP);
-		GeometryColumnInfo gcInfo = flowPop.getGeometryColumnInfo();
+		GeometryColumnInfo GC_INFO = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		plan = marmot.planBuilder("강남구 영역 유동인구 정보 추출")
 						.query(FLOW_POP, gangnaum)
 						.expand("year:int", "year = std_ym.substring(0,4)")
@@ -46,7 +45,8 @@ public class SampleE2SFCASetup {
 											AVG("avg_08tmst").as("avg_08tmst"),
 											AVG("avg_15tmst").as("avg_15tmst"))
 						.project("*-{year}")
-						.store(RESULT, FORCE(gcInfo))
+						.transformCrs("the_geom", "EPSG:5179", "EPSG:5186")
+						.store(RESULT, FORCE(GC_INFO))
 						.build();
 		marmot.execute(plan);
 		DataSet result = marmot.getDataSet(RESULT);
