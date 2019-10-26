@@ -1,17 +1,25 @@
 package demo.poc.map;
 
+import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.optor.AggregateFunction.COUNT;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
+import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.exec.CompositeAnalysis;
+import marmot.exec.ExternAnalysis;
 import marmot.exec.PlanAnalysis;
+import marmot.optor.JoinOptions;
+import marmot.optor.ParseCsvOptions;
 import marmot.optor.StoreAsCsvOptions;
+import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -20,13 +28,28 @@ import marmot.remote.protobuf.PBMarmotClient;
  */
 public class AddTaxiRoad {
 	private static final String TAXI_LOG = "연세대/사업단실증/MapMatching/택시로그";
+	private static final String ROAD = "연세대/사업단실증/도로_링크";
+	private static final String ROAD_MESH = "연세대/사업단실증/MapMatching/link_mesh";
+	private static final String RESULT = "분석결과/도로별_승하차_순위";
 	
 	private static final String ANALYSIS = "택시승하차_분석";
-	private static final String ANALY_TAXI_LOG = "택시승하차_분석/택시승하차";
-	private static final String ANALY_BUS = "대중교통_접근성/강남구_버스";
-	private static final String ANALY_SUBWAY = "대중교통_접근성/강남구_지하철";
-	
+	private static final String ANALY_TAXI_LOG = "택시승하차_분석/택시승하차_준비";
+	private static final String ANALY_LINK_MESH = "택시승하차_분석/도로_링크_메쉬_준비";
+	private static final String ANALY_MAP_MATCHING = "택시승하차_분석/맵_매칭";
+	private static final String ANALY_ROAD_COUNT = "택시승하차_분석/도로별_승하차_합계";
+	private static final String ANALY_RANK = "택시승하차_분석/도로별_승하차_순위선정";
+	private static final String ANALY_ROAD_RANK = "택시승하차_분석/도로별_승하차_순위_수집";
+
+	private static final String CSV_LINK_MESH_PATH = "tmp/taxi/link_mesh.csv";
 	private static final String CSV_TAXI_LOG_PATH = "tmp/taxi/MapMatching_input.csv";
+	private static final String CSV_MAP_MATCHING_PATH = "tmp/taxi/MapMatching_output.csv";
+	private static final String CSV_RANK_INPUT_PATH = "tmp/taxi/rank_input.csv";
+	private static final String CSV_RANK_OUTPUT_PATH = "tmp/taxi/rank_output.csv";
+	
+	private static final String SPARK_PATH = "/usr/bin/spark-submit";
+	private static final String HEADER = "vehicle,date,month_created,area_code,x_bessel,y_bessel,status,company_code,driver_ID,x_wgs84,y_wgs84";
+	private static final String HEADER2 = HEADER + ",mesh,link_id,car2LinkDistance";
+	private static final String RANK_HEADER = "WKT,Join_Count,Id,X,Y,Percentile_Rank";
 	
 	public static final void main(String... args) throws Exception {
 //		PropertyConfigurator.configure("log4j.properties");
@@ -40,8 +63,11 @@ public class AddTaxiRoad {
 		List<String> compIdList = new ArrayList<>();
 		
 		addTaxiLog(marmot, compIdList);
-//		addBusInfo(marmot, compIdList);
-//		addSubwayInfo(marmot, compIdList);
+		addLinkMesh(marmot, compIdList);
+		addExecMapMatching(marmot, compIdList);
+		addRoadCount(marmot, compIdList);
+		addExecRank(marmot, compIdList);
+		addCollectRank(marmot, compIdList);
 
 		marmot.addAnalysis(new CompositeAnalysis(ANALYSIS, compIdList), true);
 	}
@@ -51,72 +77,99 @@ public class AddTaxiRoad {
 		
 		Plan plan;
 		plan = marmot.planBuilder("택시_승하차_추출")
-						.load(TAXI_LOG)
-						.expand("status:int")
-						.filter("status==1 || status == 2")
-						.toXY("the_geom", "x_wgs84", "y_wgs84")
-						.project("vehicle,date,month_created,area_code,x_bessel,y_bessel,status,company_code,driver_ID,x_wgs84,y_wgs84")
-						.shard(1)
-						.storeAsCsv(CSV_TAXI_LOG_PATH, opts)
-						.build();
+				.load(TAXI_LOG)
+				.expand("status:int")
+				.filter("status==1 || status == 2")
+				.toXY("the_geom", "x_wgs84", "y_wgs84")
+				.project(HEADER)
+				.shard(1)
+				.storeAsCsv(CSV_TAXI_LOG_PATH, opts)
+				.build();
 		PlanAnalysis anal1 = new PlanAnalysis(ANALY_TAXI_LOG, plan);
 		marmot.addAnalysis(anal1, true);
 		compIdList.add(anal1.getId());
 	}
 	
-//	private static void addCollectMatching(MarmotRuntime marmot, List<String> compIdList) {
-//		String header = "X_COORD,Y_COORD,A_box_08,A_exp_08,A_pow_08,A_box_15,A_exp_15,A_pow_15";
-//		ParseCsvOptions opts = ParseCsvOptions.DEFAULT().header(header);
-//		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-//		
-//		Plan plan;
-//		plan = marmot.planBuilder("접근성 결과 수집")
-//					.loadTextFile(Globals.CSV_RESULT_PATH)
-//					.parseCsv("text", opts)
-//					.filter("!X_COORD.equals('X_COORD')")
-//					.expand("A_box_08:double,A_exp_08:double,A_pow_08:double,A_box_15:double,A_exp_15:double,A_pow_15:double")
-//					.toPoint("X_COORD", "Y_COORD", "the_geom")
-//					.project("the_geom,*-{the_geom,X_COORD,Y_COORD}")
-//					.store(Globals.RESULT, StoreDataSetOptions.FORCE(gcInfo))
-//					.build();
-//		PlanAnalysis anal1 = new PlanAnalysis(ANALY_COLLECT, plan);
-//		marmot.addAnalysis(anal1, true);
-//		compIdList.add(anal1.getId());
-//	}
+	private static void addLinkMesh(MarmotRuntime marmot, List<String> compIdList) {
+		StoreAsCsvOptions opts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
+		
+		Plan plan;
+		plan = marmot.planBuilder("도로_링크_메쉬_추출")
+					.load(ROAD_MESH)
+					.shard(1)
+					.storeAsCsv(CSV_LINK_MESH_PATH, opts)
+					.build();
+		PlanAnalysis anal = new PlanAnalysis(ANALY_LINK_MESH, plan);
+		marmot.addAnalysis(anal, true);
+		compIdList.add(anal.getId());
+	}
 	
-//	private static void addTaxiLog(MarmotRuntime marmot, List<String> compIdList) {
-//		StoreAsCsvOptions opts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
-//		
-//		Plan plan;
-//		plan = marmot.planBuilder("강남구_버스정보_추출")
-//					.load(Globals.BUS)
-//					.toXY("the_geom", "XCOORD", "YCOORD")
-//					.project("StationNM,XCOORD,YCOORD,ARSID,Slevel_08,Slevel_15")
-//					.shard(1)
-//					.storeAsCsv(Globals.CSV_BUS_PATH, opts)
-//					.build();
-//		PlanAnalysis anal1 = new PlanAnalysis(ANALY_BUS, plan);
-//		marmot.addAnalysis(anal1, true);
-//		compIdList.add(anal1.getId());
-//	}
-//	
-//	private static void addSubwayInfo(MarmotRuntime marmot, List<String> compIdList) {
-//		StoreAsCsvOptions opts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
-//		
-//		Plan plan;
-//		plan = marmot.planBuilder("강남구_치하철정보_추출")
-//					.load(Globals.SUBWAY)
-//					.toXY("the_geom", "XCOORD", "YCOORD")
-//					.project("station_nm,XCOORD,YCOORD,line_num,Slevel_08,Slevel_15")
-//					.shard(1)
-//					.storeAsCsv(Globals.CSV_SUBWAY_PATH, opts)
-//					.build();
-//		PlanAnalysis anal1 = new PlanAnalysis(ANALY_SUBWAY, plan);
-//		marmot.addAnalysis(anal1, true);
-//		compIdList.add(anal1.getId());
-//	}
-//	
-//	private static String OUTPUT(String analId) {
-//		return "/tmp/" + analId;
-//	}
+	private static void addExecMapMatching(MarmotRuntime marmot, List<String> compIdList) {
+		String[] args = new String[] {
+			"--packages", "org.datasyslab:geospark:1.2.0,org.datasyslab:geospark-sql_2.3:1.2.0",
+			"--class", "main.scala.MapMatching", "extensions/mapmatching_2.11-yarn_3.0.jar",
+			CSV_TAXI_LOG_PATH, CSV_LINK_MESH_PATH, CSV_MAP_MATCHING_PATH,
+			HEADER
+		};
+		
+		ExternAnalysis anal = new ExternAnalysis(ANALY_MAP_MATCHING, SPARK_PATH, args);
+		marmot.addAnalysis(anal, true);
+		compIdList.add(anal.getId());
+	}
+	
+	private static void addRoadCount(MarmotRuntime marmot, List<String> compIdList) {
+		ParseCsvOptions opts = ParseCsvOptions.DEFAULT().header(HEADER2);
+		StoreAsCsvOptions storeOpts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
+		
+		Plan plan;
+		plan = marmot.planBuilder("맵매칭 결과 수집")
+					.loadTextFile(CSV_MAP_MATCHING_PATH)
+					.parseCsv("text", opts)
+					.filter("!vehicle.equals('vehicle')")
+					.project("link_id")
+					.aggregateByGroup(Group.ofKeys("link_id"), COUNT().as("Join_Count"))
+					.defineColumn("WKT:string", "'N/A'")
+					.defineColumn("X:double", "0")
+					.defineColumn("Y:double", "0")
+					.project("WKT,Join_Count,link_id as Id,X,Y")
+					.storeAsCsv(CSV_RANK_INPUT_PATH, storeOpts)
+					.build();
+		PlanAnalysis anal1 = new PlanAnalysis(ANALY_ROAD_COUNT, plan);
+		marmot.addAnalysis(anal1, true);
+		compIdList.add(anal1.getId());
+	}
+	
+	private static void addExecRank(MarmotRuntime marmot, List<String> compIdList) {
+		String[] args = new String[] {
+			"--class", "main.scala.PercentileRank",
+			"extensions/percentilerank_2.11-yarn_3.0.jar",
+			CSV_RANK_INPUT_PATH, CSV_RANK_OUTPUT_PATH,
+			"WKT,Join_Count,Id,X,Y"
+		};
+		
+		ExternAnalysis anal = new ExternAnalysis(ANALY_RANK, SPARK_PATH, args);
+		marmot.addAnalysis(anal, true);
+		compIdList.add(anal.getId());
+	}
+	
+	private static void addCollectRank(MarmotRuntime marmot, List<String> compIdList) {
+		ParseCsvOptions opts = ParseCsvOptions.DEFAULT().header(RANK_HEADER);
+		
+		GeometryColumnInfo gcInfo = marmot.getDataSet(ROAD).getGeometryColumnInfo();
+		
+		Plan plan;
+		plan = marmot.planBuilder("순위 결과 수집")
+					.loadTextFile(CSV_RANK_OUTPUT_PATH)
+					.parseCsv("text", opts)
+					.filter("!WKT.equals('WKT')")
+					.defineColumn("Percentile_Rank:float")
+					.project("id as link_id,Percentile_Rank as rank")
+					.hashJoin("link_id", ROAD, "link_id", "param.the_geom,link_id,rank",
+							JoinOptions.INNER_JOIN)
+					.store(RESULT, FORCE(gcInfo))
+					.build();
+		PlanAnalysis anal1 = new PlanAnalysis(ANALY_ROAD_RANK, plan);
+		marmot.addAnalysis(anal1, true);
+		compIdList.add(anal1.getId());
+	}
 }
