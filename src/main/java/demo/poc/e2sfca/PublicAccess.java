@@ -47,17 +47,22 @@ public class PublicAccess {
 	public static final void main(String... args) throws Exception {
 //		PropertyConfigurator.configure("log4j.properties");
 		LogManager.getRootLogger().setLevel(Level.OFF);
+		
+		StopWatch watch = StopWatch.start();
+		System.out.println("시작: 강남구 대중교통 접근성 분석 (E2SFCA)...... ");
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
-//		setGangnamFlowPop(marmot, CSV_FLOWPOP_PATH);
-//		setGangnamBus(marmot, CSV_BUS_PATH);
-//		setGangnamSubway(marmot, CSV_SUBWAY_PATH);
+		setGangnamFlowPop(marmot, CSV_FLOWPOP_PATH);
+		setGangnamBus(marmot, CSV_BUS_PATH);
+		setGangnamSubway(marmot, CSV_SUBWAY_PATH);
 		execE2SFCA(marmot, CSV_FLOWPOP_PATH, CSV_BUS_PATH, CSV_SUBWAY_PATH, CSV_RESULT_PATH);
-//		collectResult(marmot, CSV_RESULT_PATH, RESULT);
-//
-//		marmot.addAnalysis(new CompositeAnalysis(ANALYSIS, compIdList), true);
+		collectResult(marmot, CSV_RESULT_PATH, RESULT);
+
+		DataSet ds = marmot.getDataSet(RESULT);
+		System.out.printf("종료: %s(%d건), 소요시간=%ss%n",
+				ds.getId(), ds.getRecordCount(), watch.getElapsedMillisString());
 	}
 	
 	private static void setGangnamFlowPop(MarmotRuntime marmot, String outCsvPath) {
