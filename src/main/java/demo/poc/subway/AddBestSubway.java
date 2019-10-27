@@ -88,7 +88,7 @@ public class AddBestSubway {
 		// 격자별_유동인구_카드매출_택시승하차_비율 합계
 		mergeAll(marmot, compIdList);
 		
-		SystemAnalysis delDir = SystemAnalysis.deleteDir(ANALY_TAXI_LOG + "_임시파일들_삭제",
+		SystemAnalysis delDir = SystemAnalysis.deleteDir(ANALY_TAXI_LOG + "_임시파일_삭제",
 														OUTPUT(ANALY));
 		marmot.addAnalysis(delDir, true);
 		compIdList.add(delDir.getId());

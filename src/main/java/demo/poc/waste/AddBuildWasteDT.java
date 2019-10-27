@@ -16,6 +16,7 @@ import marmot.exec.CompositeAnalysis;
 import marmot.exec.ExternAnalysis;
 import marmot.exec.ModuleAnalysis;
 import marmot.exec.PlanAnalysis;
+import marmot.exec.SystemAnalysis;
 import marmot.optor.JoinOptions;
 import marmot.optor.StoreAsCsvOptions;
 import marmot.process.NormalizeParameters;
@@ -38,7 +39,7 @@ public class AddBuildWasteDT {
 	private static final String ANALY_DT = ANALYSIS + "/결정트리_생성";
 
 	private static final String CSV_DT_INPUT_PATH = "tmp/decision_tree/decision_tree_input.txt";
-	private static final String CSV_RESULT_PATH = "tmp/decision_tree/decision_tree_output.txt";
+	private static final String CSV_RESULT_PATH = "tmp/decision_tree/decision_tree_output";
 
 	private static final String SPARK_PATH = "/usr/bin/spark-submit";
 
@@ -86,6 +87,11 @@ public class AddBuildWasteDT {
 		
 		addGetRawData(marmot, compIdList);
 		addBuildDT(marmot, compIdList);
+		
+		SystemAnalysis delDir = SystemAnalysis.deleteDir(ANALYSIS + "_임시파일_삭제",
+														OUTPUT(ANALYSIS));
+		marmot.addAnalysis(delDir, true);
+		compIdList.add(delDir.getId());
 
 		marmot.addAnalysis(new CompositeAnalysis(ANALYSIS, compIdList), true);
 	}
