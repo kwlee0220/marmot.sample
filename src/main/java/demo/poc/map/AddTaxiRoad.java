@@ -28,7 +28,7 @@ import marmot.remote.protobuf.PBMarmotClient;
  */
 public class AddTaxiRoad {
 	private static final String TAXI_LOG = "연세대/사업단실증/MapMatching/택시로그";
-	private static final String ROAD = "연세대/사업단실증/도로_링크";
+	private static final String ROAD = "연세대/사업단실증/MapMatching/도로_링크";
 	private static final String ROAD_MESH = "연세대/사업단실증/MapMatching/link_mesh";
 	private static final String RESULT = "분석결과/도로별_승하차_순위";
 	

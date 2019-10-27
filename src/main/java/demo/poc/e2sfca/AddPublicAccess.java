@@ -33,7 +33,7 @@ public class AddPublicAccess {
 	private static final String ANALY_FLOWPOP = "대중교통_접근성/강남구_유동인구_준비";
 	private static final String ANALY_BUS = "대중교통_접근성/강남구_버스_준비";
 	private static final String ANALY_SUBWAY = "대중교통_접근성/강남구_지하철_준비";
-	private static final String ANALY_SUBMIT = "대중교통_접근성/분석";
+	private static final String ANALY_SUBMIT = "대중교통_접근성/E2SFCA_분석";
 	private static final String ANALY_COLLECT = "대중교통_접근성/결과수집";
 
 	private static final String CSV_FLOWPOP_PATH = "tmp/e2sfca/pop_input.csv";
