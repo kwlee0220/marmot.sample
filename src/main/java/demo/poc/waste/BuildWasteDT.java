@@ -1,6 +1,5 @@
 package demo.poc.waste;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -8,25 +7,24 @@ import org.apache.log4j.LogManager;
 
 import com.google.common.collect.Lists;
 
+import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
-import marmot.exec.CompositeAnalysis;
 import marmot.exec.ExternAnalysis;
-import marmot.exec.ModuleAnalysis;
-import marmot.exec.PlanAnalysis;
 import marmot.optor.JoinOptions;
 import marmot.optor.StoreAsCsvOptions;
 import marmot.process.NormalizeParameters;
 import marmot.remote.protobuf.PBMarmotClient;
+import utils.StopWatch;
 import utils.stream.FStream;
 
 /**
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class AddWaste {
+public class BuildWasteDT {
 	private static final String SGG = "연세대/사업단실증/DecisionTree/시군구";
 	private static final String VAR = "연세대/사업단실증/DecisionTree/변수_면적계산전";
 	private static final String TARGET = "연세대/사업단실증/DecisionTree/타겟변수_폐기물";
@@ -34,24 +32,12 @@ public class AddWaste {
 	private static final String ANALYSIS = "폐기물분석";
 	private static final String ANALY_RAW_DATA = ANALYSIS + "/변수_데이터_준비";
 	private static final String ANALY_NORMALIZE = ANALYSIS + "/정규화";
-	private static final String ANALY_DATA = ANALYSIS + "/학습_데이터_준비";
 	private static final String ANALY_DT = ANALYSIS + "/결정트리_생성";
 
 	private static final String CSV_DT_INPUT_PATH = "tmp/decision_tree/decision_tree_input.txt";
 	private static final String CSV_RESULT_PATH = "tmp/decision_tree/decision_tree_output.txt";
 
 	private static final String SPARK_PATH = "/usr/bin/spark-submit";
-
-//	private static String[] VAR_COLS = new String[] {
-//		"총전입_year","총전출_year",
-//		"순이동_year","사망건수_year","이혼건수_year","자연증가수_year","출생건수_year","혼인건수_year",
-//		"세대수_year","남자인구수_year","여자인구수_year","총인구수_year","세대당인구_year","건설업사업체수",
-//		"교육서비스업사업체수","금융및보험업사업체수","기타개인서비스업사업체수","도매및소매업사업체수",
-//		"보건및사회복지사업사업체수","부동산및임대업사업체수","숙박및음식점업사업체수","제조업사업체수",
-//		"건설업종사자수","교육서비스업종사자수","금융및보험업종사자수","기타개인서비스업종사자수",
-//		"도매및소매업종사자수","보건및사회복지사업종사자수","부동산및임대업종사자수","숙박및음식점업종사자수",
-//		"제조업종사자수","예산", "area"
-//	};
 	
 	private static String[] VAR_COLS = new String[] {
 		"인구_00_04세","인구_05_09세","인구_10_14세","인구_15_19세","인구_20_24세","인구_25_29세",
@@ -76,21 +62,23 @@ public class AddWaste {
 	public static final void main(String... args) throws Exception {
 //		PropertyConfigurator.configure("log4j.properties");
 		LogManager.getRootLogger().setLevel(Level.OFF);
+		
+		StopWatch watch = StopWatch.start();
+		System.out.println("시작: 시군구별 생활 폐기물 패출양 요인 분석 (DecisionTree)...... ");
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
-		marmot.deleteAnalysis(ANALYSIS, true);
-	
-		List<String> compIdList = new ArrayList<>();
+		prepareTrainData(marmot, CSV_DT_INPUT_PATH);
+		buildDecisionTree(marmot, CSV_RESULT_PATH);
 		
-		addGetRawData(marmot, compIdList);
-		addBuildDT(marmot, compIdList);
-
-		marmot.addAnalysis(new CompositeAnalysis(ANALYSIS, compIdList), true);
+		System.out.printf("output=%s, 소요시간=%ss%n", CSV_RESULT_PATH, watch.getElapsedMillisString());
 	}
 	
-	private static void addGetRawData(MarmotRuntime marmot, List<String> compIdList) {
+	private static void prepareTrainData(MarmotRuntime marmot, String outCsvPath) {
+		StopWatch watch = StopWatch.start();
+		System.out.print("\t단계: 시군구별 종속 데이터 준비 -> ");
+		
 		String prjExpr = FStream.of(VAR_COLS)
 								.zipWithIndex()
 								.map(t -> String.format("%s as c%03d", t._1, t._2))
@@ -113,18 +101,33 @@ public class AddWaste {
 						.project("*-{the_geom}")
 						.store(OUTPUT(ANALY_RAW_DATA), StoreDataSetOptions.FORCE)
 						.build();
-		PlanAnalysis anal = new PlanAnalysis(ANALY_RAW_DATA, plan);
-		marmot.addAnalysis(anal, true);
-		compIdList.add(anal.getId());
+		marmot.execute(plan);
+
+		DataSet ds;
+		ds = marmot.getDataSet(OUTPUT(ANALY_RAW_DATA));
+		System.out.printf("%s(%d건), 소요시간=%ss%n",
+							ds.getId(), ds.getRecordCount(), watch.getElapsedMillisString());
+		
+		// ******************************************************************************
+		
+		watch = StopWatch.start();
+		System.out.print("\t단계: 시군구별 종속 데이터 정규화 -> ");
 		
 		NormalizeParameters params = new NormalizeParameters();
 		params.inputDataset(OUTPUT(ANALY_RAW_DATA));
 		params.inputFeatureColumns(inCols);
 		params.outputDataset(OUTPUT(ANALY_NORMALIZE));
 		params.outputFeatureColumns(outCols);
-		ModuleAnalysis manal = new ModuleAnalysis(ANALY_NORMALIZE, "normalize", params.toMap());
-		marmot.addAnalysis(manal, true);
-		compIdList.add(manal.getId());
+		marmot.executeProcess("normalize", params.toMap());
+
+		ds = marmot.getDataSet(OUTPUT(ANALY_NORMALIZE));
+		System.out.printf("%s(%d건), 소요시간=%ss%n", ds.getId(), ds.getRecordCount(),
+														watch.getElapsedMillisString());
+		
+		// ******************************************************************************
+		
+		watch = StopWatch.start();
+		System.out.print("\t단계: 타겟 데이터 (시군구별 폐기물 배출양) 병합 -> ");
 		
 		String declExpr = FStream.from(outCols)
 								.map(c -> String.format("%s:string", c))
@@ -141,22 +144,24 @@ public class AddWaste {
 								"param.가정생활폐기물 as waste, *-{sigungu_cd}",
 								JoinOptions.INNER_JOIN)
 					.expand(declExpr, updExpr)
-					.storeAsCsv(CSV_DT_INPUT_PATH, opts)
+					.storeAsCsv(outCsvPath, opts)
 					.build();
-		PlanAnalysis anal2 = new PlanAnalysis(ANALY_DATA, plan);
-		marmot.addAnalysis(anal2, true);
-		compIdList.add(anal2.getId());
+		marmot.execute(plan);
+		
+		System.out.printf("output=%s, 소요시간=%ss%n", outCsvPath, watch.getElapsedMillisString());
 	}
 	
-	private static void addBuildDT(MarmotRuntime marmot, List<String> compIdList) {
+	private static void buildDecisionTree(MarmotRuntime marmot, String outCsvPath) {
+		StopWatch watch = StopWatch.start();
+		System.out.print("\t단계: 결정트리 학습 -> ");
+		
 		String[] args = new String[] {
 			"--class", "main.scala.DT", "extensions/dt_2.11-yarn_3.0.jar",
 			CSV_DT_INPUT_PATH, CSV_RESULT_PATH, "0.7", "variance", "5", "32", "5"
 		};
 
 		ExternAnalysis anal = new ExternAnalysis(ANALY_DT, SPARK_PATH, args);
-		marmot.addAnalysis(anal, true);
-		compIdList.add(anal.getId());
+		marmot.executeAnalysis(anal);
 	}
 	
 	private static String OUTPUT(String analId) {

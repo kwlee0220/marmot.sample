@@ -40,10 +40,10 @@ import utils.Size2d;
 public class AddBestSubway {
 	private static final String SID = "구역/시도";
 	private static final String STATIONS = "교통/지하철/역사";
-	private static final String TAXI_LOG = "로그/나비콜/택시로그";
-	private static final String BLOCKS = "구역/지오비전_집계구";
-	private static final String FLOW_POP_BYTIME = "주민/유동인구/%d/월별_시간대";
-	private static final String CARD_BYTIME = "주민/카드매출/%d/월별_시간대";
+	private static final String TAXI_LOG = "나비콜/택시로그";
+	private static final String BLOCKS = "지오비전/집계구/2015";
+	private static final String FLOW_POP_BYTIME = "지오비전/유동인구/%d/월별_시간대";
+	private static final String CARD_BYTIME = "지오비전/카드매출/%d/일별_시간대";
 	private static final String RESULT = "분석결과/지하철역사_추천/최종결과";
 	private static final int[] YEARS = new int[] {2015, 2016, 2017};
 //	private static final int[] YEARS = new int[] {2015};
@@ -272,7 +272,7 @@ public class AddBestSubway {
 									.mapToObj(idx -> String.format("avg_%02dtmst", idx))
 									.collect(Collectors.joining("+"));
 		String avgExpr = String.format("(%s) / 24", sumExpr);
-		GeometryColumnInfo gcInfo = marmot.getDataSet(OUTPUT(ANALY_BLOCK_RATIO)).getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = marmot.getDataSet(BLOCKS).getGeometryColumnInfo();
 
 		Plan plan;
 		plan = marmot.planBuilder(planName)

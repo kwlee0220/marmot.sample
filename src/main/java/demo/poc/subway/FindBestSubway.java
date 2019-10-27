@@ -351,7 +351,7 @@ public class FindBestSubway {
 					.defineColumn("amount:double", sumExpr)
 					
 					// 집계구별 일간 카드매출 합계 계산
-					.aggregateByGroup(Group.ofKeys("block_cd").workerCount(31),
+					.aggregateByGroup(Group.ofKeys("block_cd").workerCount(23),
 										AVG("amount").as("amount"))
 
 					// 격자 정보 부가함
@@ -411,7 +411,7 @@ public class FindBestSubway {
 					.loadHashJoin(cardDsId, "cell_id", flowpopDsId, "cell_id",
 									"left.*,right.{the_geom as right_geom, cell_id as right_cell_id,"
 									+ "normalized as right_normalized}",
-									FULL_OUTER_JOIN(31))
+									FULL_OUTER_JOIN(11))
 					.update(merge1)
 					.project("the_geom,cell_id,normalized")
 					
