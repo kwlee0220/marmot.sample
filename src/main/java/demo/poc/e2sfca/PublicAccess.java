@@ -24,7 +24,7 @@ public class PublicAccess {
 	private static final String FLOW_POP = "연세대/사업단실증/E2SFCA/유동인구";
 	private static final String BUS = "연세대/사업단실증/E2SFCA/버스";
 	private static final String SUBWAY = "연세대/사업단실증/E2SFCA/지하철";
-	private static final String RESULT = "분석결과/E2SFCA/대중교통_접근성";
+	private static final String RESULT = "분석결과/대중교통_접근성";
 	
 	private static final String ANALYSIS = "대중교통_접근성";
 	private static final String ANALY_FLOWPOP = "대중교통_접근성/강남구_유동인구_준비";
@@ -67,7 +67,7 @@ public class PublicAccess {
 	
 	private static void setGangnamFlowPop(MarmotRuntime marmot, String outCsvPath) {
 		StopWatch watch = StopWatch.start();
-		System.out.print("단계: 강남구 유동인구 데이터 준비 -> ");
+		System.out.print("단계: 강남구 유동인구 데이터 준비 -> "); System.out.flush();
 		
 		StoreAsCsvOptions opts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
 		
@@ -89,7 +89,7 @@ public class PublicAccess {
 	
 	private static void setGangnamBus(MarmotRuntime marmot, String outCsvPath) {
 		StopWatch watch = StopWatch.start();
-		System.out.print("단계: 강남구 버스 데이터 준비 -> ");
+		System.out.print("단계: 강남구 버스 데이터 준비 -> "); System.out.flush();
 		
 		StoreAsCsvOptions opts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
 		
@@ -108,7 +108,7 @@ public class PublicAccess {
 	
 	private static void setGangnamSubway(MarmotRuntime marmot, String outCsvPath) {
 		StopWatch watch = StopWatch.start();
-		System.out.print("단계: 강남구 지하철 데이터 준비 -> ");
+		System.out.print("단계: 강남구 지하철 데이터 준비 -> "); System.out.flush();
 		
 		StoreAsCsvOptions opts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
 		
@@ -128,7 +128,7 @@ public class PublicAccess {
 	private static void execE2SFCA(MarmotRuntime marmot, String flowPop, String bus, String subway,
 									String outCsvPath) {
 		StopWatch watch = StopWatch.start();
-		System.out.print("단계: E2SFCA -> ");
+		System.out.print("단계: E2SFCA -> "); System.out.flush();
 		
 		String[] args = new String[] {
 			"--class", "main.scala.E2SFCA", "extensions/e2sfca_2.11-yarn_3.0.jar",
@@ -144,7 +144,7 @@ public class PublicAccess {
 	
 	private static void collectResult(MarmotRuntime marmot, String resultCsvPath, String outDsId) {
 		StopWatch watch = StopWatch.start();
-		System.out.print("단계: collect result -> ");
+		System.out.print("단계: collect result -> "); System.out.flush();
 		
 		String header = "X_COORD,Y_COORD,A_box_08,A_exp_08,A_pow_08,A_box_15,A_exp_15,A_pow_15";
 		ParseCsvOptions opts = ParseCsvOptions.DEFAULT().header(header);

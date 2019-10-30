@@ -35,7 +35,7 @@ public class BuildWasteDT {
 	private static final String ANALY_DT = ANALYSIS + "/결정트리_생성";
 
 	private static final String CSV_DT_INPUT_PATH = "tmp/decision_tree/decision_tree_input.txt";
-	private static final String CSV_RESULT_PATH = "tmp/decision_tree/decision_tree_output.txt";
+	private static final String CSV_RESULT_PATH = "tmp/decision_tree/decision_tree_output";
 
 	private static final String SPARK_PATH = "/usr/bin/spark-submit";
 	
@@ -72,12 +72,12 @@ public class BuildWasteDT {
 		prepareTrainData(marmot, CSV_DT_INPUT_PATH);
 		buildDecisionTree(marmot, CSV_RESULT_PATH);
 		
-		System.out.printf("output=%s, 소요시간=%ss%n", CSV_RESULT_PATH, watch.getElapsedMillisString());
+		System.out.printf("output=%s, 소요시간=%s%n", CSV_RESULT_PATH, watch.getElapsedMillisString());
 	}
 	
 	private static void prepareTrainData(MarmotRuntime marmot, String outCsvPath) {
 		StopWatch watch = StopWatch.start();
-		System.out.print("\t단계: 시군구별 종속 데이터 준비 -> ");
+		System.out.print("\t단계: 시군구별 종속 데이터 준비 -> "); System.out.flush();
 		
 		String prjExpr = FStream.of(VAR_COLS)
 								.zipWithIndex()
@@ -105,13 +105,13 @@ public class BuildWasteDT {
 
 		DataSet ds;
 		ds = marmot.getDataSet(OUTPUT(ANALY_RAW_DATA));
-		System.out.printf("%s(%d건), 소요시간=%ss%n",
+		System.out.printf("%s(%d건), 소요시간=%s%n",
 							ds.getId(), ds.getRecordCount(), watch.getElapsedMillisString());
 		
 		// ******************************************************************************
 		
 		watch = StopWatch.start();
-		System.out.print("\t단계: 시군구별 종속 데이터 정규화 -> ");
+		System.out.print("\t단계: 시군구별 종속 데이터 정규화 -> "); System.out.flush();
 		
 		NormalizeParameters params = new NormalizeParameters();
 		params.inputDataset(OUTPUT(ANALY_RAW_DATA));
@@ -121,13 +121,13 @@ public class BuildWasteDT {
 		marmot.executeProcess("normalize", params.toMap());
 
 		ds = marmot.getDataSet(OUTPUT(ANALY_NORMALIZE));
-		System.out.printf("%s(%d건), 소요시간=%ss%n", ds.getId(), ds.getRecordCount(),
+		System.out.printf("%s(%d건), 소요시간=%s%n", ds.getId(), ds.getRecordCount(),
 														watch.getElapsedMillisString());
 		
 		// ******************************************************************************
 		
 		watch = StopWatch.start();
-		System.out.print("\t단계: 타겟 데이터 (시군구별 폐기물 배출양) 병합 -> ");
+		System.out.print("\t단계: 타겟 데이터 (시군구별 폐기물 배출양) 병합 -> "); System.out.flush();
 		
 		String declExpr = FStream.from(outCols)
 								.map(c -> String.format("%s:string", c))
@@ -148,12 +148,12 @@ public class BuildWasteDT {
 					.build();
 		marmot.execute(plan);
 		
-		System.out.printf("output=%s, 소요시간=%ss%n", outCsvPath, watch.getElapsedMillisString());
+		System.out.printf("output=%s, 소요시간=%s%n", outCsvPath, watch.getElapsedMillisString());
 	}
 	
 	private static void buildDecisionTree(MarmotRuntime marmot, String outCsvPath) {
 		StopWatch watch = StopWatch.start();
-		System.out.print("\t단계: 결정트리 학습 -> ");
+		System.out.print("\t단계: 결정트리 학습 -> "); System.out.flush();
 		
 		String[] args = new String[] {
 			"--class", "main.scala.DT", "extensions/dt_2.11-yarn_3.0.jar",

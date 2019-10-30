@@ -27,7 +27,7 @@ public class AddPublicAccess {
 	private static final String FLOW_POP = "연세대/사업단실증/E2SFCA/유동인구";
 	private static final String BUS = "연세대/사업단실증/E2SFCA/버스";
 	private static final String SUBWAY = "연세대/사업단실증/E2SFCA/지하철";
-	private static final String RESULT = "분석결과/E2SFCA/대중교통_접근성";
+	private static final String RESULT = "분석결과/대중교통_접근성";
 	
 	private static final String ANALYSIS = "대중교통_접근성";
 	private static final String ANALY_FLOWPOP = "대중교통_접근성/강남구_유동인구_준비";

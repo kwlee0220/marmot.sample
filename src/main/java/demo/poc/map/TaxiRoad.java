@@ -61,13 +61,13 @@ public class TaxiRoad {
 		collectRank(marmot, CSV_RANK_OUTPUT_PATH, RESULT);
 
 		DataSet ds = marmot.getDataSet(RESULT);
-		System.out.printf("종료: %s(%d건), 소요시간=%ss%n",
+		System.out.printf("종료: %s(%d건), 소요시간=%s%n",
 				ds.getId(), ds.getRecordCount(), watch.getElapsedMillisString());
 	}
 	
 	private static void setTaxiLog(MarmotRuntime marmot, String outCsvPath) {
 		StopWatch watch = StopWatch.start();
-		System.out.print("\t단계: 택시 승하차 데이터 준비 -> ");
+		System.out.print("\t단계: 택시 승하차 데이터 준비 -> "); System.out.flush();
 		
 		StoreAsCsvOptions opts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
 		
@@ -75,7 +75,7 @@ public class TaxiRoad {
 		plan = marmot.planBuilder("택시_승하차_추출")
 				.load(TAXI_LOG)
 				.expand("status:int")
-				.filter("status==1 || status == 2")
+//				.filter("status==1 || status == 2")
 				.toXY("the_geom", "x_wgs84", "y_wgs84")
 				.project(HEADER)
 				.shard(1)
@@ -83,12 +83,12 @@ public class TaxiRoad {
 				.build();
 		marmot.execute(plan);
 		
-		System.out.printf("output=%s, 소요시간=%ss%n", outCsvPath, watch.getElapsedMillisString());
+		System.out.printf("output=%s, 소요시간=%s%n", outCsvPath, watch.getElapsedMillisString());
 	}
 	
 	private static void setLinkMesh(MarmotRuntime marmot, String outCsvPath) {
 		StopWatch watch = StopWatch.start();
-		System.out.print("\t단계: 도로링크 메쉬 데이터 준비 -> ");
+		System.out.print("\t단계: 도로링크 메쉬 데이터 준비 -> "); System.out.flush();
 		StoreAsCsvOptions opts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
 		
 		Plan plan;
@@ -99,13 +99,13 @@ public class TaxiRoad {
 					.build();
 		marmot.execute(plan);
 		
-		System.out.printf("output=%s, 소요시간=%ss%n", outCsvPath, watch.getElapsedMillisString());
+		System.out.printf("output=%s, 소요시간=%s%n", outCsvPath, watch.getElapsedMillisString());
 	}
 	
 	private static void execMapMatching(MarmotRuntime marmot, String taxiPath, String linkPath,
 										String outCsvPath) {
 		StopWatch watch = StopWatch.start();
-		System.out.print("\t단계: MapMatching -> ");
+		System.out.print("\t단계: MapMatching -> "); System.out.flush();
 		
 		String[] args = new String[] {
 			"--packages", "org.datasyslab:geospark:1.2.0,org.datasyslab:geospark-sql_2.3:1.2.0",
@@ -116,12 +116,12 @@ public class TaxiRoad {
 		ExternAnalysis anal = new ExternAnalysis(ANALY_MAP_MATCHING, SPARK_PATH, args);
 		marmot.executeAnalysis(anal);
 		
-		System.out.printf("output=%s, 소요시간=%ss%n", outCsvPath, watch.getElapsedMillisString());
+		System.out.printf("output=%s, 소요시간=%s%n", outCsvPath, watch.getElapsedMillisString());
 	}
 	
 	private static void countRoadLinks(MarmotRuntime marmot, String outCsvPath) {
 		StopWatch watch = StopWatch.start();
-		System.out.print("\t단계: 도로링크별 택시 승하차 횟수 누적 -> ");
+		System.out.print("\t단계: 도로링크별 택시 승하차 횟수 누적 -> "); System.out.flush();
 		
 		ParseCsvOptions opts = ParseCsvOptions.DEFAULT().header(HEADER2);
 		StoreAsCsvOptions storeOpts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
@@ -141,12 +141,12 @@ public class TaxiRoad {
 					.build();
 		marmot.execute(plan);
 		
-		System.out.printf("output=%s, 소요시간=%ss%n", outCsvPath, watch.getElapsedMillisString());
+		System.out.printf("output=%s, 소요시간=%s%n", outCsvPath, watch.getElapsedMillisString());
 	}
 	
 	private static void execRank(MarmotRuntime marmot, String rankInput, String outCsvPath) {
 		StopWatch watch = StopWatch.start();
-		System.out.print("\t단계: PercentileRank -> ");
+		System.out.print("\t단계: PercentileRank -> "); System.out.flush();
 		
 		String[] args = new String[] {
 			"--class", "main.scala.PercentileRank",
@@ -158,12 +158,12 @@ public class TaxiRoad {
 		ExternAnalysis anal = new ExternAnalysis(ANALY_RANK, SPARK_PATH, args);
 		marmot.executeAnalysis(anal);
 		
-		System.out.printf("output=%s, 소요시간=%ss%n", outCsvPath, watch.getElapsedMillisString());
+		System.out.printf("output=%s, 소요시간=%s%n", outCsvPath, watch.getElapsedMillisString());
 	}
 	
 	private static void collectRank(MarmotRuntime marmot, String resultCsvPath, String outDsId) {
 		StopWatch watch = StopWatch.start();
-		System.out.print("\t단계: 순위 결과 수집 -> ");
+		System.out.print("\t단계: 순위 결과 수집 -> "); System.out.flush();
 		
 		ParseCsvOptions opts = ParseCsvOptions.DEFAULT().header(RANK_HEADER);
 		
@@ -183,7 +183,7 @@ public class TaxiRoad {
 		marmot.execute(plan);
 		
 		DataSet ds = marmot.getDataSet(outDsId);
-		System.out.printf("%s(%d건), 소요시간=%ss%n",
+		System.out.printf("%s(%d건), 소요시간=%s%n",
 							ds.getId(), ds.getRecordCount(), watch.getElapsedMillisString());
 	}
 }
