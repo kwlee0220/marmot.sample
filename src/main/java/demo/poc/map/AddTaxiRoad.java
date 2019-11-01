@@ -33,7 +33,7 @@ public class AddTaxiRoad {
 	private static final String RESULT = "분석결과/도로별_승하차_순위";
 	
 	private static final String ANALYSIS = "택시승하차_분석";
-	private static final String ANALY_TAXI_LOG = "택시승하차_분석/택시승하차_준비";
+	private static final String ANALY_TAXI_LOG = "택시승하차_분석/오전_9시_택시_승차로그";
 	private static final String ANALY_LINK_MESH = "택시승하차_분석/도로_링크_메쉬_준비";
 	private static final String ANALY_MAP_MATCHING = "택시승하차_분석/맵_매칭";
 	private static final String ANALY_ROAD_COUNT = "택시승하차_분석/도로별_승하차_합계";
@@ -76,18 +76,17 @@ public class AddTaxiRoad {
 		StoreAsCsvOptions opts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
 		
 		Plan plan;
-		plan = marmot.planBuilder("택시_승하차_추출")
-				.load(TAXI_LOG)
-				.expand("status:int")
-				.filter("status==1 || status == 2")
-				.toXY("the_geom", "x_wgs84", "y_wgs84")
-				.project(HEADER)
-				.shard(1)
-				.storeAsCsv(CSV_TAXI_LOG_PATH, opts)
-				.build();
-		PlanAnalysis anal1 = new PlanAnalysis(ANALY_TAXI_LOG, plan);
-		marmot.addAnalysis(anal1, true);
-		compIdList.add(anal1.getId());
+		plan = marmot.planBuilder("오전_9시_택시_승차로그_추출")
+					.load(TAXI_LOG)
+					.filter("status == '1' && date.substring(8,10) == '09'")
+					.sample(0.05)
+					.project(HEADER)
+					.shard(1)
+					.storeAsCsv(CSV_TAXI_LOG_PATH, opts)
+					.build();
+		PlanAnalysis anal = new PlanAnalysis(ANALY_TAXI_LOG, plan);
+		marmot.addAnalysis(anal, true);
+		compIdList.add(anal.getId());
 	}
 	
 	private static void addLinkMesh(MarmotRuntime marmot, List<String> compIdList) {

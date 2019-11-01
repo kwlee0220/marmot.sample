@@ -67,20 +67,19 @@ public class TaxiRoad {
 	
 	private static void setTaxiLog(MarmotRuntime marmot, String outCsvPath) {
 		StopWatch watch = StopWatch.start();
-		System.out.print("\t단계: 택시 승하차 데이터 준비 -> "); System.out.flush();
+		System.out.print("\t단계: 오전_9시_택시_승차로그_추출 준비 -> "); System.out.flush();
 		
 		StoreAsCsvOptions opts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
 		
 		Plan plan;
-		plan = marmot.planBuilder("택시_승하차_추출")
-				.load(TAXI_LOG)
-				.expand("status:int")
-//				.filter("status==1 || status == 2")
-				.toXY("the_geom", "x_wgs84", "y_wgs84")
-				.project(HEADER)
-				.shard(1)
-				.storeAsCsv(outCsvPath, opts)
-				.build();
+		plan = marmot.planBuilder("오전_9시_택시_승차로그_추출")
+					.load(TAXI_LOG)
+					.filter("status == '1' && date.substring(8,10) == '09'")
+					.sample(0.05)
+					.project(HEADER)
+					.shard(1)
+					.storeAsCsv(outCsvPath, opts)
+					.build();
 		marmot.execute(plan);
 		
 		System.out.printf("output=%s, 소요시간=%s%n", outCsvPath, watch.getElapsedMillisString());
