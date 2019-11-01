@@ -74,7 +74,7 @@ public class TaxiRoad {
 		Plan plan;
 		plan = marmot.planBuilder("오전_9시_택시_승차로그_추출")
 					.load(TAXI_LOG)
-					.filter("status == '1' && date.substring(8,10) == '09'")
+					.filter("status == '2' && date.substring(8,10) == '09'")
 					.sample(0.05)
 					.project(HEADER)
 					.shard(1)
