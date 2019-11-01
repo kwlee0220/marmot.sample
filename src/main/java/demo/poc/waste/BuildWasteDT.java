@@ -156,7 +156,7 @@ public class BuildWasteDT {
 		System.out.print("\t단계: 결정트리 학습 -> "); System.out.flush();
 		
 		String[] args = new String[] {
-			"--class", "main.scala.DT", "extensions/dt_2.11-yarn_3.0.jar",
+			"--class", "main.scala.DT", "extensions/dt_2.11-yarn_3.2.jar",
 			CSV_DT_INPUT_PATH, CSV_RESULT_PATH, "0.7", "variance", "5", "32", "5"
 		};
 
