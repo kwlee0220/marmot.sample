@@ -42,8 +42,8 @@ public class FindBestSubway {
 	private static final String FLOW_POP_BYTIME = "지오비전/유동인구/%d/월별_시간대";
 	private static final String CARD_BYTIME = "지오비전/카드매출/%d/일별_시간대";
 	private static final String RESULT = "분석결과/지하철역사_추천";
-	private static final int[] YEARS = new int[] {2015, 2016, 2017};
-//	private static final int[] YEARS = new int[] {2015};
+//	private static final int[] YEARS = new int[] {2015, 2016, 2017};
+	private static final int[] YEARS = new int[] {2015};
 
 	private static final String ANALY = "지하철역사_추천";
 	private static final String ANALY_SEOUL = "지하철역사_추천/서울특별시_영역";
