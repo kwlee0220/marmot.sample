@@ -33,7 +33,7 @@ public class AddTaxiRoad {
 	private static final String RESULT = "분석결과/도로별_승하차_순위";
 	
 	private static final String ANALYSIS = "택시승하차_분석";
-	private static final String ANALY_TAXI_LOG = "택시승하차_분석/오전_9시_택시_승차로그";
+	private static final String ANALY_TAXI_LOG = "택시승하차_분석/오전_9시_택시_하차_추출";
 	private static final String ANALY_LINK_MESH = "택시승하차_분석/도로_링크_메쉬_준비";
 	private static final String ANALY_MAP_MATCHING = "택시승하차_분석/맵_매칭";
 	private static final String ANALY_ROAD_COUNT = "택시승하차_분석/도로별_승하차_합계";
@@ -76,7 +76,7 @@ public class AddTaxiRoad {
 		StoreAsCsvOptions opts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
 		
 		Plan plan;
-		plan = marmot.planBuilder("오전_9시_택시_승차로그_추출")
+		plan = marmot.planBuilder("오전_9시_택시_하차_추출")
 					.load(TAXI_LOG)
 					.filter("status == '2' && date.substring(8,10) == '09'")
 					.sample(0.05)
