@@ -5,11 +5,11 @@ def FLOWPOP_2015 = "주민/유동인구/월별_시간대/2015"
 def TAXI = "로그/나비콜/택시로그"
 
 def GC_INFO = 'the_geom(EPSG:5186)'
-def OUT_DIR = "분석결과/지하철역사_추천"
+def OUT_DIR = "분석결과/지하철역사_추천/지하철역사_추천"
 def TMP_DIR = "tmp/subway"
 def TEMP_STATIONS = "$OUT_DIR/지하철역사_100m_버퍼"
-def TEMP_FLOW_POP = "분석결과/지하철역사_추천/유동인구";
-def TEMP_TAXI_LOG = "분석결과/지하철역사_추천/택시로그";
+def TEMP_FLOW_POP = "분석결과/지하철역사_추천/지하철역사_추천/유동인구";
+def TEMP_TAXI_LOG = "분석결과/지하철역사_추천/지하철역사_추천/택시로그";
 
 createDataSet(TEMP_STATIONS) {
 	geometry GC_INFO
@@ -111,7 +111,7 @@ normalized = normalized + param_normalized;
 """
 def outCols = 'the_geom,cell_id,normalized,param.{the_geom as param_geom,cell_id as param_cell_id,normalized as param_normalized}'
 
-createDataSet("분석결과/지하철역사_추천/최종결과") {
+createDataSet("분석결과/지하철역사_추천/지하철역사_추천/최종결과") {
 	geometry GC_INFO
 	force = true
 	from plan("그리드 셀단위 유동인구 비율과 택시 승하차 로그 비율 합계 계산") {

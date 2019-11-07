@@ -58,7 +58,7 @@ importShapefile("$MARMOT_DATA/기타/안양대제공/도봉구/GRID_100", DS_GRI
 	force true
 }
 
-createDataSet('분석결과/안양대/도봉구/공원_감석분석_맵') {
+createDataSet('분석결과/지하철역사_추천/안양대/도봉구/공원_감석분석_맵') {
 	geometry GC_INFO
 	force = true
 	from plan('이름기반 공원 감성분석 맵매칭') {
@@ -68,7 +68,7 @@ createDataSet('분석결과/안양대/도봉구/공원_감석분석_맵') {
 	}
 }
 
-createDataSet('분석결과/안양대/도봉구/공원_감석분석_맵_ID') {
+createDataSet('분석결과/지하철역사_추천/안양대/도봉구/공원_감석분석_맵_ID') {
 	geometry GC_INFO
 	force = true
 	from plan('이름기반 공원 감성분석 맵매칭_ID') {
@@ -79,7 +79,7 @@ createDataSet('분석결과/안양대/도봉구/공원_감석분석_맵_ID') {
 }
 
 
-createDataSet('분석결과/안양대/도봉구/필지별_공원민원수') {
+createDataSet('분석결과/지하철역사_추천/안양대/도봉구/필지별_공원민원수') {
 	geometry GC_INFO
 	force = true
 	from plan('필지별 공원관련 민원수 합계') {
@@ -90,7 +90,7 @@ createDataSet('분석결과/안양대/도봉구/필지별_공원민원수') {
 	}
 }
 
-createDataSet('분석결과/안양대/도봉구/격자별_공원민원수') {
+createDataSet('분석결과/지하철역사_추천/안양대/도봉구/격자별_공원민원수') {
 	geometry GC_INFO
 	force = true
 	from plan('격자별 공원관련 민원수 합계') {
@@ -100,7 +100,7 @@ createDataSet('분석결과/안양대/도봉구/격자별_공원민원수') {
 	}
 }
 
-createDataSet('분석결과/안양대/도봉구/팀별_필지별_민원수') {
+createDataSet('분석결과/지하철역사_추천/안양대/도봉구/팀별_필지별_민원수') {
 	geometry GC_INFO
 	force = true
 	from plan('담당팀_필지별_민원수 합계') {
@@ -112,7 +112,7 @@ createDataSet('분석결과/안양대/도봉구/팀별_필지별_민원수') {
 	}
 }
 
-createDataSet('분석결과/안양대/도봉구/격자별_팀별_민원수') {
+createDataSet('분석결과/지하철역사_추천/안양대/도봉구/격자별_팀별_민원수') {
 	geometry GC_INFO
 	force = true
 	from plan('격자별_팀별_민원수') {

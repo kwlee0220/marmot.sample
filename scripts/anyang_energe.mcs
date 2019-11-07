@@ -5,7 +5,7 @@ def LAND_PRICES = "토지/개별공시지가";
 def GAS = "건물/건물에너지/가스사용량";
 def ELECTRO = "건물/건물에너지/전기사용량";
 
-def OUT_DIR = "분석결과/건물_에너지"
+def OUT_DIR = "분석결과/지하철역사_추천/건물_에너지"
 def OUT_MAP_LAND = "$OUT_DIR/map_land_price"
 def OUT_GRID_LAND = "$OUT_DIR/grid_land_price"
 def OUT_MAP_GAS_YEAR = "$OUT_DIR/map_gas_$YEAR"

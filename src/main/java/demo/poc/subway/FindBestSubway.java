@@ -48,7 +48,7 @@ public class FindBestSubway {
 	private static final String ANALY = "지하철역사_추천";
 	private static final String ANALY_SEOUL = "지하철역사_추천/서울특별시_영역";
 	private static final String ANAL_STATIONS = "지하철역사_추천/서울지역_지하철역사_버퍼";
-	private static final String ANALY_BLOCK_RATIO = "지하철역사_추천/집계구_비율";
+	private static final String ANALY_BLOCK_RATIO = "지하철역사_추천/격자_집계구_겹침_비율";
 	private static final String ANALY_TAXI_LOG = "지하철역사_추천/격자별_택시승하차";
 	private static final String ANALY_FLOW_POP = "지하철역사_추천/격자별_유동인구";
 	private static final String ANALY_CARD = "지하철역사_추천/격자별_카드매출";

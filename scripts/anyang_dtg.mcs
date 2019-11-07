@@ -2,7 +2,7 @@
 def DTG = "교통/dtg_t";
 def EMD = "구역/읍면동";
 
-def OUT_DIR = "분석결과/안양대/네트워크분석"
+def OUT_DIR = "분석결과/지하철역사_추천/안양대/네트워크분석"
 def OUT_DTG_BY_EMD = "$OUT_DIR/dtg_by_emd"
 
 def TEMP_DIR = "tmp/anyang/dtg"

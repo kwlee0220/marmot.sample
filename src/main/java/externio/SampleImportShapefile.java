@@ -38,7 +38,7 @@ public class SampleImportShapefile {
 		
 		ShapefileParameters shpParams = ShapefileParameters.create()
 													.charset(Charset.forName("euc-kr"))
-													.shpSrid("EPSG:5186");
+													.srid("EPSG:5186");
 		
 		ImportIntoDataSet importDs = ImportShapefile.from(file, shpParams, importParams);
 		importDs.run(marmot);

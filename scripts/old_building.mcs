@@ -9,7 +9,7 @@ def TEMP_BLOCKS_EMD = "$TEMP_DIR/blocks_emd"
 def TEMP_BUILDINGS_EMD = "$TEMP_DIR/buildings_emd";
 def TEMP_CARD_SALES_EMD = "$TEMP_DIR/card_sale_emd";
 def TEMP_FLOWPOP_EMD = "$TEMP_DIR/pop_emd";
-def RESULT = "분석결과/건물재생/result";
+def RESULT = "분석결과/지하철역사_추천/건물재생/result";
 
 
 createDataSet(TEMP_BLOCKS_EMD) {
