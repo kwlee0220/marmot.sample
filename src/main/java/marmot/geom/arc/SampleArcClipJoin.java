@@ -4,8 +4,6 @@ import java.util.Map;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import io.vavr.Tuple;
-import io.vavr.Tuple2;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
@@ -15,6 +13,7 @@ import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
+import utils.func.Tuple;
 
 /**
  * 
@@ -65,7 +64,7 @@ public class SampleArcClipJoin {
 		
 		try ( RecordSet rset = result.read() ) {
 			for ( Record r: rset ) {
-				Tuple2<String,Double> t = summarize(r);
+				Tuple<String,Double> t = summarize(r);
 				Double area = data.remove(t._1);
 				if ( area == null ) {
 					System.err.println("unknown: id=" + t._1);
@@ -85,7 +84,7 @@ public class SampleArcClipJoin {
 //		}
 	}
 	
-	private static Tuple2<String,Double> summarize(Record record) {
+	private static Tuple<String,Double> summarize(Record record) {
 		String id = record.getString("OBJECTID");
 		double area = record.getGeometry("the_geom").getLength();
 		
