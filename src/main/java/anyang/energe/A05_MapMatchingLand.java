@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import io.vavr.control.Option;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
@@ -20,6 +19,7 @@ import marmot.remote.protobuf.PBMarmotClient;
 import marmot.type.DataType;
 import utils.StopWatch;
 import utils.UnitUtils;
+import utils.func.FOption;
 import utils.stream.FStream;
 
 /**
@@ -33,7 +33,7 @@ public class A05_MapMatchingLand {
 	private static final String OUTPUT = "tmp/anyang/map_land";
 	private static final String PATTERN = "if (land_%d == null) {land_%d = 0}";
 	private static final String PATTERN2 = "land_%d *= area;";
-	private static final Option<Long> BLOCK_SIZE = Option.some(UnitUtils.parseByteSize("128mb"));
+	private static final FOption<Long> BLOCK_SIZE = FOption.of(UnitUtils.parseByteSize("128mb"));
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");

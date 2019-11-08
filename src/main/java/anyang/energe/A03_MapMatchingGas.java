@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import io.vavr.control.Option;
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
@@ -19,6 +18,7 @@ import marmot.remote.protobuf.PBMarmotClient;
 import marmot.type.DataType;
 import utils.StopWatch;
 import utils.UnitUtils;
+import utils.func.FOption;
 import utils.stream.FStream;
 
 /**
@@ -33,7 +33,7 @@ public class A03_MapMatchingGas {
 	private static final String PATTERN = "if (gas_%d == null) {gas_%d = 0}";
 	private static final int[] YEARS = {2011, 2012, 2013, 2014, 2015, 2016, 2017};
 	private static final List<String> COL_NAMES = FStream.of(YEARS).map(i -> "gas_" + i).toList();
-	private static final Option<Long> BLOCK_SIZE = Option.some(UnitUtils.parseByteSize("128mb"));
+	private static final FOption<Long> BLOCK_SIZE = FOption.of(UnitUtils.parseByteSize("128mb"));
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
