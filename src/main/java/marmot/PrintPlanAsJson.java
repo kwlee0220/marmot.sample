@@ -8,8 +8,6 @@ import com.google.protobuf.util.JsonFormat;
 import com.vividsolutions.jts.geom.Envelope;
 
 import marmot.command.MarmotClientCommands;
-import marmot.optor.AggregateFunction;
-import marmot.optor.ParseCsvOptions;
 import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
