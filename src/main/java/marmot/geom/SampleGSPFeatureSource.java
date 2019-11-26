@@ -22,7 +22,6 @@ import marmot.remote.protobuf.PBMarmotClient;
  */
 public class SampleGSPFeatureSource {
 	private static final String INPUT = "건물/건물통합정보마스터";
-//	private static final String INPUT = "주소/건물POI";
 	private static final String SIDO = "구역/시도";
 	private static final String SGG = "구역/시군구";
 	private static final String EMD = "구역/읍면동";

@@ -1,13 +1,17 @@
 package marmot.advanced;
 
+import java.io.IOException;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 import marmot.DataSet;
 import marmot.GeometryColumnInfo;
+import marmot.InsufficientThumbnailException;
 import marmot.Plan;
 import marmot.RecordSet;
+import marmot.ThumbnailNotFoundException;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 
@@ -47,7 +51,7 @@ public class SampleReadThumbnail {
 		print(input, range);
 	}
 	
-	private static void print(DataSet ds, Envelope range) {
+	private static void print(DataSet ds, Envelope range) throws ThumbnailNotFoundException, InsufficientThumbnailException, IOException {
 		try ( RecordSet rset = ds.readThumbnail(range, SAMPLE_SIZE) ) {
 			System.out.println("count = " + rset.count());
 		}

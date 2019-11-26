@@ -12,7 +12,7 @@ import marmot.Plan;
 import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
 import marmot.geo.query.DataSetPartitionCache;
-import marmot.geo.query.IndexScan;
+import marmot.geo.query.IndexBasedScan;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -35,7 +35,7 @@ public class SampleIndexScan {
 		DataSet input = marmot.getDataSet(INPUT);
 		Envelope range = getSeoChoGu(marmot);
 		
-		IndexScan scan = IndexScan.on(input, range, SAMPLE_COUNT, cache, 20);
+		IndexBasedScan scan = IndexBasedScan.on(input, range, SAMPLE_COUNT, cache, 20);
 		try ( RecordSet rset = scan.run() ) {
 			long count = rset.count();
 			System.out.println("scan count: " + count);
