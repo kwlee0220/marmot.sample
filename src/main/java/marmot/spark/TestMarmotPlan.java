@@ -21,38 +21,38 @@ import utils.StopWatch;
  */
 public class TestMarmotPlan {
 	private static final String RESULT = "tmp/result";
-	private static final String TEMP = "tmp/tmp";
+	private static final String TEMP = "tmp/temp";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
-		PBMarmotSparkSessionClient session = PBMarmotSparkSessionClient.connect("192.168.1.101", 5685);
+		PBMarmotSparkSessionClient session = PBMarmotSparkSessionClient.connect("192.168.1.108", 5685);
 		
 		StopWatch watch = StopWatch.start();
 		
 		Plan plan;
 		plan = marmot.planBuilder("phase_01")
-					.load("blockgeo")
-					.hashJoin("emdcode", "emdgeo", "emdcode", "BLOCK_CD,param.{sigcode}", INNER_JOIN)
-					.hashJoin("sigcode", "siggeo", "sigcode", "BLOCK_CD,param.{sdcode}", INNER_JOIN)
-					.hashJoin("sdcode", "sdgeo", "sdcode", "BLOCK_CD,param.{name}", INNER_JOIN)
-					.store("tmp/temp", FORCE)
+					.load("sdgeo")
+					.hashJoin("sdcode", "siggeo", "sdcode", "name,param.{sigcode}", INNER_JOIN)
+					.hashJoin("sigcode", "emdgeo", "sigcode", "name,param.{emdcode}", INNER_JOIN)
+					.hashJoin("emdcode", "blockgeo", "emdcode", "name,param.{BLOCK_CD}", INNER_JOIN)
+					.store(TEMP, FORCE)
 					.build();
-//		marmot.execute(plan);
-		session.execute(plan);
+		marmot.execute(plan);
+//		session.execute(plan);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 		
 		plan = marmot.planBuilder("phase_02")
-					.load("flow_pop_time")
-					.hashJoin("BLOCK_CD", "tmp/temp", "BLOCK_CD", "avg_10tmst,param.{name}",INNER_JOIN)
+					.loadHashJoin("flow_pop_time2", "BLOCK_CD", TEMP, "BLOCK_CD",
+									"left.avg_10tmst,right.name", INNER_JOIN)
 					.aggregateByGroup(Group.ofKeys("name"), AVG("avg_10tmst"))
 					.store(RESULT, FORCE)
 					.build();
-//		marmot.execute(plan);
-		session.execute(plan);
-		marmot.deleteDataSet("tmp/temp");
+		marmot.execute(plan);
+//		session.execute(plan);
+		marmot.deleteDataSet(TEMP);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 		
 		DataSet result = marmot.getDataSet(RESULT);
