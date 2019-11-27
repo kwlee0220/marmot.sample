@@ -74,7 +74,7 @@ public class SampleCreateDataSet {
 
 		// 세번째 레코드 (컬럼 값 리스트를 통한 설정)
 		record.clear();
-		record.setAll(Arrays.asList(GeoClientUtils.toPoint(7.0, 9.5), "이몽룡", 19, 3.1));
+		record.setValues(Arrays.asList(GeoClientUtils.toPoint(7.0, 9.5), "이몽룡", 19, 3.1));
 		recordList.add(record.duplicate());
 		
 		// 생성된 레코드들을 이용하여 레코드 세트 생성
