@@ -1,8 +1,6 @@
 package marmot.spark;
 
 import static marmot.StoreDataSetOptions.FORCE;
-import static marmot.optor.AggregateFunction.AVG;
-import static marmot.optor.JoinOptions.INNER_JOIN;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -10,6 +8,8 @@ import common.SampleUtils;
 import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
+import marmot.optor.AggregateFunction;
+import marmot.optor.JoinOptions;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.remote.protobuf.PBMarmotSparkSessionClient;
@@ -28,31 +28,26 @@ public class TestMarmotPlan {
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
-		PBMarmotSparkSessionClient session = PBMarmotSparkSessionClient.connect("192.168.1.108", 5685);
+		PBMarmotSparkSessionClient session = PBMarmotSparkSessionClient.connect("192.168.1.112", 5685);
 		
 		StopWatch watch = StopWatch.start();
 		
 		Plan plan;
 		plan = marmot.planBuilder("phase_01")
+//					.load("교통/dtg_201809")
 					.load("sdgeo")
-					.hashJoin("sdcode", "siggeo", "sdcode", "name,param.{sigcode}", INNER_JOIN)
-					.hashJoin("sigcode", "emdgeo", "sigcode", "name,param.{emdcode}", INNER_JOIN)
-					.hashJoin("emdcode", "blockgeo", "emdcode", "name,param.{BLOCK_CD}", INNER_JOIN)
-					.store(TEMP, FORCE)
-					.build();
-		marmot.execute(plan);
-//		session.execute(plan);
-		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
-		
-		plan = marmot.planBuilder("phase_02")
-					.loadHashJoin("flow_pop_time2", "BLOCK_CD", TEMP, "BLOCK_CD",
-									"left.avg_10tmst,right.name", INNER_JOIN)
-					.aggregateByGroup(Group.ofKeys("name"), AVG("avg_10tmst"))
+					.hashJoin("sdcode", "siggeo", "sdcode", "name,param.{sigcode}", JoinOptions.INNER_JOIN)
+					.hashJoin("sigcode", "emdgeo", "sigcode", "name,param.{emdcode}", JoinOptions.INNER_JOIN)
+					.hashJoin("emdcode", "blockgeo", "emdcode", "name,param.{BLOCK_CD}", JoinOptions.INNER_JOIN)
+					.hashJoin("BLOCK_CD", "flow_pop_time2", "BLOCK_CD", "name,param.{avg_10tmst,year}",
+							JoinOptions.INNER_JOIN)
+					.filter("year == 2015")
+					.aggregateByGroup(Group.ofKeys("name,year"), AggregateFunction.AVG("avg_10tmst"))
+//					.aggregate(AggregateFunction.COUNT())
 					.store(RESULT, FORCE)
 					.build();
-		marmot.execute(plan);
-//		session.execute(plan);
-		marmot.deleteDataSet(TEMP);
+//		marmot.execute(plan);
+		session.execute(plan);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 		
 		DataSet result = marmot.getDataSet(RESULT);

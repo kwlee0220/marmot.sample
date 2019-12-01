@@ -24,7 +24,7 @@ public class TestClient {
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
-		PBMarmotSparkSessionClient session = PBMarmotSparkSessionClient.connect("192.168.1.106", 5685);
+		PBMarmotSparkSessionClient session = PBMarmotSparkSessionClient.connect("192.168.1.112", 5685);
 		
 		StopWatch watch = StopWatch.start();
 		
@@ -118,5 +118,11 @@ public class TestClient {
 
 		SampleUtils.printPrefix(result, 5);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
+		
+		for ( int i =0; i < 5; ++i ) {
+			StopWatch watch2 = StopWatch.start();
+			session.runSql(sql, RESULT, FORCE);
+			System.out.printf("elapsed=%s%n", watch2.stopAndGetElpasedTimeString());
+		}
 	}
 }
