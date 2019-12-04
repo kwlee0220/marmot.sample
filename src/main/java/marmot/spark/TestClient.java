@@ -24,7 +24,7 @@ public class TestClient {
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
-		PBMarmotSparkSessionClient session = PBMarmotSparkSessionClient.connect("192.168.1.112", 5685);
+		PBMarmotSparkSessionClient session = PBMarmotSparkSessionClient.connect("192.168.1.114", 5685);
 		
 		StopWatch watch = StopWatch.start();
 		
@@ -38,7 +38,19 @@ public class TestClient {
 		session.createOrReplaceView("flow_pop_time", "flow_pop_time");
 		session.createOrReplaceView("dtg", "교통/dtg_201809");
 
+		String sql;
+		
+		sql = "select siggeo.name as c0 "
+			+ "from blockgeo as blockgeo, emdgeo as emdgeo, siggeo as siggeo, sdgeo as sdgeo "
+			+ "where siggeo.sdcode = sdgeo.sdcode "
+			+ "and emdgeo.sigcode = siggeo.sigcode "
+			+ "and blockgeo.emdcode = emdgeo.emdcode "
+			+ "and (sdgeo.name = '서울특별시') "
+			+ "and siggeo.name = '강동구' " 
+			+ "group by siggeo.name";
 /*
+ 		
+ 
 		String sql = "select count(*) from dtg";
 		String sql = "select flow_pop_time "
 					+ "from flow_pop_time "
@@ -64,7 +76,6 @@ public class TestClient {
 										+ "'성북구', '송파구', '양천구', '영등포구', '용산구', "
 										+ "'은평구', '종로구', '중구', '중랑구') "
 					+ "group by sdgeo.name, siggeo.name, flow_pop_time.year";
-*/
 
 		String sql = "select sdgeo.name as c0, avg(flow_pop_time.avg_10tmst) as m0 "
 					+ "from sdgeo, siggeo, emdgeo, blockgeo, flow_pop_time "
@@ -73,7 +84,7 @@ public class TestClient {
 					+ "and emdgeo.sigcode = siggeo.sigcode "
 					+ "and siggeo.sdcode = sdgeo.sdcode "
 					+ "group by sdgeo.name";
-/*
+					
 		String sql = "select sdgeo.name as c0, flow_pop_time.year as c1, "
 						+ "avg(flow_pop_time.avg_10tmst) as m0 "
 					+ "from sdgeo, siggeo, emdgeo, blockgeo, flow_pop_time "
