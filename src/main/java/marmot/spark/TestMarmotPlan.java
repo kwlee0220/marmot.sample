@@ -1,6 +1,7 @@
 package marmot.spark;
 
 import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.optor.JoinOptions.INNER_JOIN;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -10,7 +11,6 @@ import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
-import marmot.optor.JoinOptions;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.remote.protobuf.PBMarmotSparkSessionClient;
@@ -50,11 +50,11 @@ public class TestMarmotPlan {
 		return marmot.planBuilder("test")
 					.load("emdgeo")
 					.hashJoin("sigcode", "siggeo", "sigcode",
-								"*,param.*-{geom,sigcode},param.geom as geom2", JoinOptions.INNER_JOIN)
-					.hashJoin("sigcode", "emdgeo", "sigcode", "name,param.{emdcode}", JoinOptions.INNER_JOIN)
-					.hashJoin("emdcode", "blockgeo", "emdcode", "name,param.{BLOCK_CD}", JoinOptions.INNER_JOIN)
+								"*,param.*-{geom,sigcode},param.geom as geom2", INNER_JOIN)
+					.hashJoin("sigcode", "emdgeo", "sigcode", "name,param.{emdcode}", INNER_JOIN)
+					.hashJoin("emdcode", "blockgeo", "emdcode", "name,param.{BLOCK_CD}", INNER_JOIN)
 					.hashJoin("BLOCK_CD", "flow_pop_time2", "BLOCK_CD", "name,param.{avg_10tmst,year}",
-							JoinOptions.INNER_JOIN)
+								INNER_JOIN)
 					.filter("year == 2015")
 					.aggregateByGroup(Group.ofKeys("name,year"), AggregateFunction.AVG("avg_10tmst"))
 					.store(RESULT, FORCE)
@@ -64,11 +64,11 @@ public class TestMarmotPlan {
 	private static final Plan getPlan(MarmotRuntime marmot) {
 		return marmot.planBuilder("test")
 					.load("sdgeo")
-					.hashJoin("sdcode", "siggeo", "sdcode", "name,param.{sigcode}", JoinOptions.INNER_JOIN)
-					.hashJoin("sigcode", "emdgeo", "sigcode", "name,param.{emdcode}", JoinOptions.INNER_JOIN)
-					.hashJoin("emdcode", "blockgeo", "emdcode", "name,param.{BLOCK_CD}", JoinOptions.INNER_JOIN)
+					.hashJoin("sdcode", "siggeo", "sdcode", "name,param.{sigcode}", INNER_JOIN)
+					.hashJoin("sigcode", "emdgeo", "sigcode", "name,param.{emdcode}", INNER_JOIN)
+					.hashJoin("emdcode", "blockgeo", "emdcode", "name,param.{BLOCK_CD}", INNER_JOIN)
 					.hashJoin("BLOCK_CD", "flow_pop_time2", "BLOCK_CD", "name,param.{avg_10tmst,year}",
-							JoinOptions.INNER_JOIN)
+								INNER_JOIN)
 					.filter("year == 2015")
 					.aggregateByGroup(Group.ofKeys("name,year"), AggregateFunction.AVG("avg_10tmst"))
 					.store(RESULT, FORCE)
@@ -79,7 +79,7 @@ public class TestMarmotPlan {
 		return marmot.planBuilder("test2")
 					.load("구역/시군구")
 					.hashJoin("SIG_CD", "교통/지하철/역사", "SIG_CD",
-								"SIG_KOR_NM,param.{the_geom,KOR_SUB_NM}", JoinOptions.INNER_JOIN)
+								"SIG_KOR_NM,param.{the_geom,KOR_SUB_NM}", INNER_JOIN)
 					.store(RESULT, FORCE)
 					.build();
 	}
@@ -88,7 +88,7 @@ public class TestMarmotPlan {
 		return marmot.planBuilder("test3")
 					.load("구역/시군구")
 					.hashJoin("SIG_CD", "교통/지하철/역사", "SIG_CD",
-								"SIG_KOR_NM,param.{the_geom,KOR_SUB_NM}", JoinOptions.INNER_JOIN)
+								"SIG_KOR_NM,param.{the_geom,KOR_SUB_NM}", INNER_JOIN)
 					.store(RESULT, FORCE)
 					.build();
 	}
