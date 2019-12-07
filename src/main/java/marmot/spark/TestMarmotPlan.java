@@ -1,6 +1,7 @@
 package marmot.spark;
 
 import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.JoinOptions.INNER_JOIN;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -13,7 +14,6 @@ import marmot.command.MarmotClientCommands;
 import marmot.optor.AggregateFunction;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import marmot.remote.protobuf.PBMarmotSparkSessionClient;
 import utils.StopWatch;
 
 /**
@@ -29,14 +29,14 @@ public class TestMarmotPlan {
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
-		PBMarmotSparkSessionClient session = PBMarmotSparkSessionClient.connect("192.168.1.101", 5685);
+//		PBMarmotSparkSessionClient session = PBMarmotSparkSessionClient.connect("192.168.1.101", 5685);
 		
 		StopWatch watch = StopWatch.start();
 		
 		Plan plan;
-		plan = getPlan(marmot);
-//		marmot.execute(plan);
-		session.execute(plan);
+		plan = getPlan4(marmot);
+		marmot.execute(plan);
+//		session.execute(plan);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 		
 		DataSet result = marmot.getDataSet(RESULT);
@@ -48,15 +48,14 @@ public class TestMarmotPlan {
 	
 	private static final Plan getPlan4(MarmotRuntime marmot) {
 		return marmot.planBuilder("test")
-					.load("emdgeo")
-					.hashJoin("sigcode", "siggeo", "sigcode",
-								"*,param.*-{geom,sigcode},param.geom as geom2", INNER_JOIN)
-					.hashJoin("sigcode", "emdgeo", "sigcode", "name,param.{emdcode}", INNER_JOIN)
-					.hashJoin("emdcode", "blockgeo", "emdcode", "name,param.{BLOCK_CD}", INNER_JOIN)
-					.hashJoin("BLOCK_CD", "flow_pop_time2", "BLOCK_CD", "name,param.{avg_10tmst,year}",
+					.load("flow_pop_time")
+					.hashJoin("BLOCK_CD", "blockgeo", "BLOCK_CD", "year,avg_10tmst,param.{emdcode}",
 								INNER_JOIN)
-					.filter("year == 2015")
-					.aggregateByGroup(Group.ofKeys("name,year"), AggregateFunction.AVG("avg_10tmst"))
+					.hashJoin("emdcode", "emdgeo", "emdcode", "year,avg_10tmst,param.{sigcode}", INNER_JOIN)
+					.hashJoin("sigcode", "siggeo", "sigcode", "year,avg_10tmst,param.{sdcode}", INNER_JOIN)
+					.hashJoin("sdcode", "sdgeo", "sdcode", "year,avg_10tmst,param.{name}", INNER_JOIN)
+					.aggregateByGroup(Group.ofKeys("name"), AVG("avg_10tmst"))
+					.project("name as c0, avg as m0")
 					.store(RESULT, FORCE)
 					.build();
 	}

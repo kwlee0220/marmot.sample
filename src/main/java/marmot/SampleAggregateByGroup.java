@@ -38,7 +38,7 @@ public class SampleAggregateByGroup {
 											STDDEV("sub_sta_sn"))
 							.store(RESULT, FORCE)
 							.build();
-		marmot.execute(plan);
+		marmot.execute(plan, ExecutePlanOptions.DISABLE_LOCAL_EXEC);
 		
 		DataSet result = marmot.getDataSet(RESULT);
 		SampleUtils.printPrefix(result, 5);
