@@ -7,7 +7,6 @@ import com.vividsolutions.jts.geom.Envelope;
 import common.SampleUtils;
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.func.FOption;
 
 /**
  * 
@@ -26,7 +25,7 @@ public class SampleQuery {
 		Envelope bounds = getSeoChoDong(marmot);
 		
 		DataSet ds = marmot.getDataSet(INPUT);
-		try ( RecordSet rset = ds.queryRange(bounds, FOption.of("trnsit_yn = '1'")) ) {
+		try ( RecordSet rset = ds.queryRange(bounds, 5000) ) {
 			SampleUtils.printPrefix(rset, 5);
 //			rset.stream().count();
 		}

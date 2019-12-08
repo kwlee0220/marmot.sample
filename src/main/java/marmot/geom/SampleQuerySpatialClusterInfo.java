@@ -1,7 +1,7 @@
 package marmot.geom;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -10,9 +10,10 @@ import com.vividsolutions.jts.geom.Envelope;
 import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.SpatialClusterInfo;
 import marmot.command.MarmotClientCommands;
+import marmot.geo.query.RangeQueryEstimate.ClusterEstimate;
 import marmot.remote.protobuf.PBMarmotClient;
+import utils.stream.FStream;
 
 /**
  * 
@@ -38,11 +39,10 @@ public class SampleQuerySpatialClusterInfo {
 		test(ds, "서울특별시", getSiDo(marmot, "서울특별시"));
 	}
 	
-	private static void test(DataSet ds, String title, Envelope range) {
-		List<String> quadKeys = ds.querySpatialClusterInfo(range)
-									.stream()
-									.map(SpatialClusterInfo::getQuadKey)
-									.collect(Collectors.toList());
+	private static void test(DataSet ds, String title, Envelope range) throws IOException {
+		List<String> quadKeys = FStream.from(ds.estimateRangeQuery(range).getClusterEstimates())
+									.map(ClusterEstimate::getQuadKey)
+									.toList();
 		System.out.print(title + ": ");
 		System.out.println(quadKeys);
 		System.out.println("------------------------------------------------");

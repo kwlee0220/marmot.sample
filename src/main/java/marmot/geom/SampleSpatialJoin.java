@@ -6,6 +6,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.ExecutePlanOptions;
 import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
@@ -32,7 +33,7 @@ public class SampleSpatialJoin {
 							.spatialJoin("the_geom", EMD, "*,param.emd_kor_nm as emd_name")
 							.store(RESULT, FORCE(gcInfo))
 							.build();
-		marmot.execute(plan);
+		marmot.execute(plan, ExecutePlanOptions.DISABLE_LOCAL_EXEC);
 		DataSet result = marmot.getDataSet(RESULT);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
