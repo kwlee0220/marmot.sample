@@ -25,12 +25,12 @@ public class SampleFindFirstByGroup {
 
 		Plan plan = marmot.planBuilder("group_by")
 							.load(INPUT)
-							.filter("sig_cd.startsWith('11')")
-							.takeByGroup(Group.ofKeys("sig_cd"), 1)
+//							.filter("sig_cd.startsWith('11')")
+							.takeByGroup(Group.ofKeys("sig_cd").orderBy("SUB_STA_SN:D"), 1)
 							.project("* - {the_geom}")
 							.store(RESULT, FORCE)
 							.build();
-		marmot.execute(plan);
+		marmot.execute(plan, ExecutePlanOptions.DISABLE_LOCAL_EXEC);
 		
 		DataSet result = marmot.getDataSet(RESULT);
 		SampleUtils.printPrefix(result, 10);
