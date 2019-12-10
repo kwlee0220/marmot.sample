@@ -30,14 +30,14 @@ public class TestMarmotPlan {
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
-		PBMarmotSparkSessionClient session = PBMarmotSparkSessionClient.connect("192.168.1.108", 5685);
+//		PBMarmotSparkSessionClient session = PBMarmotSparkSessionClient.connect("192.168.1.108", 5685);
 		
 		StopWatch watch = StopWatch.start();
 		
 		Plan plan;
 		plan = getPlan4(marmot);
-//		marmot.execute(plan);
-		session.execute(plan);
+		marmot.execute(plan);
+//		session.execute(plan);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 		
 		DataSet result = marmot.getDataSet(RESULT);
