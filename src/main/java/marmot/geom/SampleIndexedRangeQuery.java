@@ -13,8 +13,9 @@ import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
-import marmot.geo.GeoClientUtils;
+import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
+import utils.StopWatch;
 
 /**
  * 
@@ -31,20 +32,26 @@ public class SampleIndexedRangeQuery {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
-		Envelope bounds = GeoClientUtils.expandBy(getBorder(marmot).getEnvelopeInternal(), -14000);
+		StopWatch watch = StopWatch.start();
+		
+//		Envelope bounds = GeoClientUtils.expandBy(getBorder(marmot).getEnvelopeInternal(), -14000);
+		Envelope bounds = new Envelope(193189.76162216233, 202242.27243390775,
+										550547.406706411, 552863.5428850177);
 //		Geometry key = GeoClientUtils.toPolygon(bounds);
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		Plan plan = marmot.planBuilder("sample_indexed_rangequery")
 							.query(BUILDINGS, bounds)
-							.project("the_geom,시군구코드,건물명")
-							.store(RESULT, FORCE(gcInfo))
+							.aggregate(AggregateFunction.COUNT())
+//							.project("the_geom,시군구코드,건물명")
+							.store(RESULT, FORCE)
 							.build();
 		marmot.execute(plan);
 		DataSet result = marmot.getDataSet(RESULT);
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
 		SampleUtils.printPrefix(result, 5);
+		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 	}
 	
 	private static Geometry getBorder(MarmotRuntime marmot) {
