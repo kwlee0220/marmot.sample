@@ -11,15 +11,15 @@ import com.google.common.collect.Lists;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.StoreDataSetOptions;
+import marmot.analysis.module.NormalizeParameters;
+import marmot.analysis.system.SystemAnalysis;
 import marmot.command.MarmotClientCommands;
 import marmot.exec.CompositeAnalysis;
 import marmot.exec.ExternAnalysis;
 import marmot.exec.ModuleAnalysis;
 import marmot.exec.PlanAnalysis;
-import marmot.exec.SystemAnalysis;
 import marmot.optor.JoinOptions;
 import marmot.optor.StoreAsCsvOptions;
-import marmot.process.NormalizeParameters;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.stream.FStream;
 

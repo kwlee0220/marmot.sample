@@ -22,15 +22,15 @@ import marmot.DataSet;
 import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
+import marmot.analysis.module.NormalizeParameters;
+import marmot.analysis.system.SystemAnalysis;
 import marmot.command.MarmotClientCommands;
 import marmot.exec.CompositeAnalysis;
 import marmot.exec.ModuleAnalysis;
 import marmot.exec.PlanAnalysis;
-import marmot.exec.SystemAnalysis;
 import marmot.optor.geo.SquareGrid;
 import marmot.plan.Group;
 import marmot.plan.LoadOptions;
-import marmot.process.NormalizeParameters;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.Size2d;
 

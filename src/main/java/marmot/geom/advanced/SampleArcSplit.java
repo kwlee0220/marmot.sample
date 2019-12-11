@@ -4,8 +4,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.DataSet;
+import marmot.analysis.module.geo.arc.ArcSplitParameters;
 import marmot.command.MarmotClientCommands;
-import marmot.process.geo.arc.ArcSplitParameters;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**

@@ -4,12 +4,12 @@ import static marmot.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import marmot.analysis.system.SystemAnalysis;
 import marmot.command.MarmotClientCommands;
 import marmot.exec.CompositeAnalysis;
 import marmot.exec.MarmotAnalysis;
 import marmot.exec.MarmotExecution;
 import marmot.exec.PlanAnalysis;
-import marmot.exec.SystemAnalysis;
 import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 
@@ -82,10 +82,12 @@ public class SampleCompositeAnalysis {
 		marmot.addAnalysis(SystemAnalysis.clusterDataSet("10min/경로당필요지역_색인",
 																"/분석결과/10min/경로당필요지역"), true);
 		
-		marmot.addAnalysis(SystemAnalysis.deleteDataSet("10min/임시파일 제거",
-															"/tmp/10min/노인복지시설_경로당_버퍼",
-															"/tmp/10min/10000이상_인구밀도_중심점",
-															"/tmp/10min/10000이상_인구밀도_행정동"), true);
+		marmot.addAnalysis(SystemAnalysis.deleteDataSet("10min/경로당_버퍼_파일 제거",
+														"/tmp/10min/노인복지시설_경로당_버퍼"), true);
+		marmot.addAnalysis(SystemAnalysis.deleteDataSet("10min/인구밀도_중심점_제거",
+														"/tmp/10min/10000이상_인구밀도_중심점"), true);
+		marmot.addAnalysis(SystemAnalysis.deleteDataSet("10min/인구밀도_행정동_제거",
+														"/tmp/10min/10000이상_인구밀도_행정동"), true);
 		marmot.addAnalysis(new CompositeAnalysis("10min",
 														"10min/노인복지시설_경로당_버퍼",
 														"10min/노인복지시설_경로당_버퍼_색인",

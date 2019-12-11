@@ -7,6 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.google.common.collect.Maps;
 
+import marmot.analysis.system.SystemAnalysis;
 import marmot.command.MarmotClientCommands;
 import marmot.exec.AnalysisNotFoundException;
 import marmot.exec.CompositeAnalysis;
@@ -14,7 +15,6 @@ import marmot.exec.MarmotAnalysis;
 import marmot.exec.MarmotAnalysis.Type;
 import marmot.exec.ModuleAnalysis;
 import marmot.exec.PlanAnalysis;
-import marmot.exec.SystemAnalysis;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.Utilities;
 import utils.stream.FStream;
