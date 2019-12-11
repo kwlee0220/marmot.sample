@@ -27,7 +27,7 @@ public class SampleFullScan {
 		
 		DataSet input = marmot.getDataSet(INPUT);
 		
-		FullScan scan = FullScan.on(input);
+		FullScan scan = FullScan.on(marmot, input);
 		try ( RecordSet rset = scan.run() ) {
 			long count = rset.count();
 			System.out.println("scan count: " + count);
@@ -47,7 +47,7 @@ public class SampleFullScan {
 			}
 		}
 
-		scan = FullScan.on(input);
+		scan = FullScan.on(marmot, input);
 		scan.setRange(getSeoChoGu(marmot));
 		
 		try ( RecordSet rset = scan.run() ) {

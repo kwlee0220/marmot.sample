@@ -35,7 +35,7 @@ public class SampleIndexScan {
 		DataSet input = marmot.getDataSet(INPUT);
 		Envelope range = getSeoChoGu(marmot);
 		
-		IndexBasedScan scan = IndexBasedScan.on(input, range, SAMPLE_COUNT, cache, 20);
+		IndexBasedScan scan = IndexBasedScan.on(marmot, input, range, SAMPLE_COUNT, cache, 20);
 		try ( RecordSet rset = scan.run() ) {
 			long count = rset.count();
 			System.out.println("scan count: " + count);
