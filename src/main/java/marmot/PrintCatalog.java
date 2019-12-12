@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.CommandLine;
 import utils.CommandLineParser;
@@ -39,7 +41,6 @@ public class PrintCatalog {
 		List<DataSet> dsList = marmot.getDataSetAll();
 		for ( DataSet ds: dsList ) {
 			System.out.println("DataSet name: " + ds.getId());
-			System.out.println("\tDir: " + ds.getDirName());
 			System.out.println("\tType: " + ds.getType());
 			if ( ds.hasGeometryColumn() ) {
 				GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();

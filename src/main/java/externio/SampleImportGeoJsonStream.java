@@ -7,10 +7,10 @@ import java.nio.file.Files;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.DataSet;
 import marmot.Plan;
 import marmot.command.ImportParameters;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
 import marmot.externio.ImportIntoDataSet;
 import marmot.externio.geojson.GeoJsonParameters;
 import marmot.externio.geojson.ImportGeoJson;

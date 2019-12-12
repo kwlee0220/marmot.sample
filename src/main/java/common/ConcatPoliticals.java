@@ -1,15 +1,15 @@
 package common;
 
-import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.JoinOptions.INNER_JOIN;
 import static marmot.optor.JoinOptions.RIGHT_OUTER_JOIN;
+import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.optor.JoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;

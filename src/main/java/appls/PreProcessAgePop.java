@@ -1,12 +1,12 @@
 package appls;
 
-import static marmot.StoreDataSetOptions.GEOMETRY;
+import static marmot.optor.StoreDataSetOptions.GEOMETRY;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.optor.AggregateFunction;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;

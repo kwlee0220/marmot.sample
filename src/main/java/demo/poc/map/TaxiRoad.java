@@ -1,16 +1,16 @@
 package demo.poc.map;
 
-import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.COUNT;
+import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.exec.ExternAnalysis;
 import marmot.optor.JoinOptions;
 import marmot.optor.ParseCsvOptions;

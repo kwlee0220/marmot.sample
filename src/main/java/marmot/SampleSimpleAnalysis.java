@@ -13,6 +13,7 @@ import marmot.exec.AnalysisNotFoundException;
 import marmot.exec.CompositeAnalysis;
 import marmot.exec.MarmotAnalysis;
 import marmot.exec.MarmotAnalysis.Type;
+import marmot.optor.StoreDataSetOptions;
 import marmot.exec.ModuleAnalysis;
 import marmot.exec.PlanAnalysis;
 import marmot.remote.protobuf.PBMarmotClient;

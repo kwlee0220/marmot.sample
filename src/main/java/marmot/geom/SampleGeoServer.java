@@ -2,8 +2,8 @@ package marmot.geom;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import marmot.DataSet;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
 import marmot.geo.geoserver.rest.GeoServer;
 import marmot.remote.protobuf.PBMarmotClient;
 

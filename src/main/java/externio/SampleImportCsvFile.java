@@ -5,9 +5,9 @@ import java.io.File;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.DataSet;
 import marmot.command.ImportParameters;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
 import marmot.externio.ImportIntoDataSet;
 import marmot.externio.csv.CsvParameters;
 import marmot.externio.csv.ImportCsv;

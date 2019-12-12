@@ -1,6 +1,6 @@
 package marmot;
 
-import static marmot.CreateDataSetOptions.FORCE;
+import static marmot.optor.CreateDataSetOptions.FORCE;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +11,8 @@ import com.google.common.collect.Lists;
 
 import common.SampleUtils;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.geo.GeoClientUtils;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.support.DefaultRecord;

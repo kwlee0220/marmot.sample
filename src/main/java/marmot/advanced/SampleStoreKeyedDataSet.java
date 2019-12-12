@@ -6,11 +6,11 @@ import static marmot.ExecutePlanOptions.DISABLE_LOCAL_EXEC;
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.dataset.GeometryColumnInfo;
+import marmot.optor.StoreDataSetOptions;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 

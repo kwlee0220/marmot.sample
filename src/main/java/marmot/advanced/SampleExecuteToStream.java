@@ -1,19 +1,19 @@
 package marmot.advanced;
 
-import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.optor.StoreDataSetOptions.FORCE;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSet;
-import marmot.StoreDataSetOptions;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.optor.StoreDataSetOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.support.DefaultRecord;
 import utils.StopWatch;

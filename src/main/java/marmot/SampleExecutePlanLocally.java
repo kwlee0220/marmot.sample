@@ -7,6 +7,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import marmot.command.MarmotClientCommands;
 import marmot.externio.shp.ShapefileRecordSet;
+import marmot.optor.CreateDataSetOptions;
+import marmot.optor.StoreDataSetOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.support.DefaultRecord;
 

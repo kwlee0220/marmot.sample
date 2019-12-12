@@ -1,12 +1,12 @@
 package demo.poc.subway;
 
-import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.SUM;
 import static marmot.optor.AggregateFunction.UNION_GEOM;
 import static marmot.optor.JoinOptions.FULL_OUTER_JOIN;
 import static marmot.optor.JoinOptions.INNER_JOIN;
+import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +18,13 @@ import org.apache.log4j.LogManager;
 
 import com.google.common.collect.Lists;
 
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.analysis.module.NormalizeParameters;
 import marmot.analysis.system.SystemAnalysis;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.exec.CompositeAnalysis;
 import marmot.exec.ModuleAnalysis;
 import marmot.exec.PlanAnalysis;

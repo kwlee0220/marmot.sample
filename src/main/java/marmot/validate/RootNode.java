@@ -1,6 +1,6 @@
 package marmot.validate;
 
-import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import marmot.MarmotRuntime;
 import marmot.Plan;

@@ -1,11 +1,13 @@
 package marmot;
 
-import static marmot.StoreDataSetOptions.*;
+import static marmot.optor.StoreDataSetOptions.*;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**

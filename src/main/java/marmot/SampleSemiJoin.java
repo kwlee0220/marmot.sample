@@ -1,12 +1,14 @@
 package marmot;
 
-import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.JoinOptions.SEMI_JOIN;
+import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**

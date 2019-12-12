@@ -3,6 +3,7 @@ package marmot;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**

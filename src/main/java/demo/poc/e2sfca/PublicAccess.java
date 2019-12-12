@@ -1,15 +1,15 @@
 package demo.poc.e2sfca;
 
-import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.exec.ExternAnalysis;
 import marmot.optor.ParseCsvOptions;
 import marmot.optor.StoreAsCsvOptions;

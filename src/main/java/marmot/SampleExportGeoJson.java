@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
 import marmot.externio.geojson.GeoJsonRecordSetWriter;
 import marmot.remote.protobuf.PBMarmotClient;
 

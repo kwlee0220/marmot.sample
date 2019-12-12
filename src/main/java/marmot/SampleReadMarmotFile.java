@@ -4,6 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**

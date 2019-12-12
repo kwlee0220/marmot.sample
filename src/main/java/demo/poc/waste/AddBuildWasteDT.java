@@ -10,7 +10,6 @@ import com.google.common.collect.Lists;
 
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.StoreDataSetOptions;
 import marmot.analysis.module.NormalizeParameters;
 import marmot.analysis.system.SystemAnalysis;
 import marmot.command.MarmotClientCommands;
@@ -20,6 +19,7 @@ import marmot.exec.ModuleAnalysis;
 import marmot.exec.PlanAnalysis;
 import marmot.optor.JoinOptions;
 import marmot.optor.StoreAsCsvOptions;
+import marmot.optor.StoreDataSetOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.stream.FStream;
 

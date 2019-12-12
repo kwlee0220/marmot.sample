@@ -1,6 +1,6 @@
 package common;
 
-import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import java.io.File;
 import java.util.Map;
@@ -9,13 +9,13 @@ import org.apache.commons.lang.SystemUtils;
 
 import com.google.common.collect.Maps;
 
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
+import marmot.dataset.DataSet;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.support.DefaultRecord;
 
 /**

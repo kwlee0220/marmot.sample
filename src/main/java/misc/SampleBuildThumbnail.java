@@ -5,13 +5,13 @@ import java.util.List;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import marmot.DataSet;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.rset.ConcatedRecordSet;
 import marmot.support.DefaultRecord;

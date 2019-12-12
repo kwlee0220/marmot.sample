@@ -1,6 +1,6 @@
 package misc.perf.join;
 
-import static marmot.CreateDataSetOptions.FORCE;
+import static marmot.optor.CreateDataSetOptions.FORCE;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,14 +13,14 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-import marmot.DataSet;
-import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSchema;
 import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.geo.GeoClientUtils;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.rset.AbstractRecordSet;

@@ -4,12 +4,12 @@ import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.BindDataSetOptions;
-import marmot.DataSet;
-import marmot.DataSetType;
-import marmot.GeometryColumnInfo;
 import marmot.Plan;
 import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.dataset.DataSetType;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.io.MarmotFileNotFoundException;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.Utilities;

@@ -4,12 +4,12 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
 import marmot.BindDataSetOptions;
-import marmot.DataSet;
-import marmot.DataSetType;
-import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
+import marmot.dataset.DataSetType;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.optor.AggregateFunction;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;

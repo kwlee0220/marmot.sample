@@ -1,14 +1,14 @@
 package marmot.geom;
 
-import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
-import marmot.DataSet;
 import marmot.ExecutePlanOptions;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 

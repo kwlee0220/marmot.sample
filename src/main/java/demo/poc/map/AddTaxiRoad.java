@@ -1,7 +1,7 @@
 package demo.poc.map;
 
-import static marmot.StoreDataSetOptions.FORCE;
 import static marmot.optor.AggregateFunction.COUNT;
+import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +9,10 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 
-import marmot.GeometryColumnInfo;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.exec.CompositeAnalysis;
 import marmot.exec.ExternAnalysis;
 import marmot.exec.PlanAnalysis;

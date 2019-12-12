@@ -1,6 +1,6 @@
 package marmot.geom.advanced;
 
-import static marmot.StoreDataSetOptions.FORCE;
+import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import java.util.Map;
 
@@ -9,11 +9,11 @@ import org.apache.log4j.PropertyConfigurator;
 import com.google.common.collect.Maps;
 
 import common.SampleUtils;
-import marmot.DataSet;
 import marmot.Plan;
 import marmot.Record;
 import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
+import marmot.dataset.DataSet;
 import marmot.optor.AggregateFunction;
 import marmot.optor.geo.advanced.LISAWeight;
 import marmot.remote.protobuf.PBMarmotClient;
