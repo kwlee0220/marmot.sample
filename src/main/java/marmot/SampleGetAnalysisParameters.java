@@ -21,12 +21,12 @@ public class SampleGetAnalysisParameters {
 
 //		marmot.deleteAnalysisAll();
 		
-		for ( String id: marmot.getSystemAnalsisClassIdAll() ) {
+		for ( String id: marmot.getSystemAnalysisClassIdAll() ) {
 			System.out.println("system analysis: " + id);
 			System.out.println("\targs: " + marmot.getSystemAnalysisParameterNameAll(id));
 		}
 		
-		for ( String id: marmot.getModuleAnalsisClassIdAll() ) {
+		for ( String id: marmot.getModuleAnalysisClassIdAll() ) {
 			System.out.println("module analysis: " + id);
 			System.out.println("\targs: " + marmot.getModuleAnalysisParameterNameAll(id));
 		}
