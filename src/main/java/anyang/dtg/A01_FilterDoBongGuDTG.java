@@ -42,7 +42,7 @@ public class A01_FilterDoBongGuDTG {
 		GeometryColumnInfo gcInfo = marmot.getDataSet(DOBONG_GU).getGeometryColumnInfo();
 		
 		Plan plan;
-		plan = marmot.planBuilder("도봉구_영역_DTG 추출")
+		plan = Plan.builder("도봉구_영역_DTG 추출")
 						.query(DTG, dobong)
 //						.project(prjExpr)
 						.transformCrs("the_geom", "EPSG:4326", "EPSG:5186")
@@ -61,7 +61,7 @@ public class A01_FilterDoBongGuDTG {
 	
 	private static Geometry getDoBongGuRegion(MarmotRuntime marmot) {
 		Plan plan;
-		plan = marmot.planBuilder("도봉구 영역 추출")
+		plan = Plan.builder("도봉구 영역 추출")
 						.load(DOBONG_GU)
 						.filter("sig_kor_nm == '도봉구'")
 						.project("the_geom")

@@ -34,7 +34,7 @@ public class SampleArcClipJoin {
 		StopWatch watch = StopWatch.start();
 		
 		GeometryColumnInfo gcInfo = marmot.getDataSet(INPUT).getGeometryColumnInfo();
-		Plan plan = marmot.planBuilder("sample_arc_clip")
+		Plan plan = Plan.builder("sample_arc_clip")
 							.load(INPUT)
 							.arcClip("the_geom", PARAM)
 							.build();

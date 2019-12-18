@@ -60,7 +60,7 @@ public class PerfTransform {
 											+ "운행속도,RPM,브레이크신호,X좌표,Y좌표,방위각,가속도X,가속도Y");
 		RecordScript tsExpr = RecordScript.of("$pat = DateTimePattern('yyyyMMddkkmmss')",
 												"DateTimeParseLE(운행일자 + 운행시분초.substring(0,6), $pat)");
-		Plan plan = marmot.planBuilder(planName)
+		Plan plan = Plan.builder(planName)
 						.load(input)
 						.parseCsv("text", opts)
 						.defineColumn("ts:datetime",tsExpr)

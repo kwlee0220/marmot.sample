@@ -82,7 +82,7 @@ public class PerfGroupBy {
 	
 	private static final long process(MarmotRuntime marmot, String input, int nworkers) {
 		String planName = "perf_group_by_" + input.replaceAll("/", ".");
-		Plan plan = marmot.planBuilder(planName)
+		Plan plan = Plan.builder(planName)
 							.load(input)
 							.filter("운행속도 > 80")
 							.defineColumn("hour:byte", "DateTimeGetHour(ts)")

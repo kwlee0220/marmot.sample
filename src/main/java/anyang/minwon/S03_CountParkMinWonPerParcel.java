@@ -35,7 +35,7 @@ public class S03_CountParkMinWonPerParcel {
 		GeometryColumnInfo gcInfo = marmot.getDataSet(PARCEL).getGeometryColumnInfo();
 		
 		Plan plan;		
-		plan = marmot.planBuilder("필지별 공원관련 민원수 합계")
+		plan = Plan.builder("필지별 공원관련 민원수 합계")
 					.load(PARK_MINWON)
 					.hashJoin("all_parcel_layer_id", PARCEL, "id", 
 							"param.{the_geom,id},team_name", RIGHT_OUTER_JOIN)

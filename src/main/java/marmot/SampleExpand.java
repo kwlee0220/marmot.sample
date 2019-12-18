@@ -30,7 +30,7 @@ public class SampleExpand {
 		DataSet input = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder("update")
+		Plan plan = Plan.builder("update")
 							.load(INPUT)
 							.expand("the_geom:point,area:double",
 									"area = ST_Area(the_geom);"

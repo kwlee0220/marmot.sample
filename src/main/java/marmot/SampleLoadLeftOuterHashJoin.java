@@ -35,21 +35,21 @@ public class SampleLoadLeftOuterHashJoin {
 		DataSet input = marmot.getDataSet(SGG);
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		
-		plan = marmot.planBuilder("drop some sido")
+		plan = Plan.builder("drop some sido")
 					.load(SIDO)
 					.filter("ctprvn_cd < 40")
 					.store(TMP_SIDO, FORCE(gcInfo))
 					.build();
 		marmot.execute(plan);
 		
-		plan = marmot.planBuilder("drop some sgg")
+		plan = Plan.builder("drop some sgg")
 					.load(SGG)
 					.defineColumn("sido_cd:string", "sig_cd.substring(0,2)")
 					.store(TMP_SGG, FORCE(gcInfo))
 					.build();
 		marmot.execute(plan);
 		
-		plan = marmot.planBuilder("test left_outer_equi_join")
+		plan = Plan.builder("test left_outer_equi_join")
 					.loadHashJoin(TMP_SGG, "sido_cd", TMP_SIDO, "ctprvn_cd",
 									"left.the_geom,right.ctp_kor_nm,left.sig_kor_nm,left.sig_cd",
 									LEFT_OUTER_JOIN)

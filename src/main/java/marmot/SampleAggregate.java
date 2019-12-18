@@ -29,7 +29,7 @@ public class SampleAggregate {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
-		Plan plan = marmot.planBuilder("sample_aggreate")
+		Plan plan = Plan.builder("sample_aggreate")
 							.load(INPUT)
 							.filter("휘발유 > 0")
 							.aggregate(COUNT(), MAX("휘발유"), MIN("휘발유"), AVG("휘발유"), STDDEV("휘발유"),

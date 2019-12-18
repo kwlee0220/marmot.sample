@@ -47,7 +47,7 @@ public class ConcatPoliticals {
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
 		Plan plan;
-		plan = marmot.planBuilder("통합_행정경계구역_생성")
+		plan = Plan.builder("통합_행정경계구역_생성")
 					.load(LI)
 					.defineColumn("emd_cd2:string", "li_cd.substring(0,8)")
 					.hashJoin("emd_cd2", EMD, "emd_cd",

@@ -37,7 +37,7 @@ public class SampleSimpleAnalysis {
 //		marmot.deleteAnalysisAll();
 		
 		Plan plan;
-		plan = marmot.planBuilder("test")
+		plan = Plan.builder("test")
 					.load(INPUT)
 					.store(RESULT, StoreDataSetOptions.FORCE)
 					.build();

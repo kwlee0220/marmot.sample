@@ -35,7 +35,7 @@ public class S02_JoinParkAndSent_ID {
 						+ "선호도 as preference";
 
 		Plan plan;
-		plan = marmot.planBuilder("이름기반 공원 감성분석 맵매칭_ID")
+		plan = Plan.builder("이름기반 공원 감성분석 맵매칭_ID")
 					.load(PARK)
 					.hashJoin("id", EMOTION, "id", "the_geom,param.*-{the_geom}",
 							JoinOptions.INNER_JOIN)

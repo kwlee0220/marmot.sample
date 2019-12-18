@@ -18,7 +18,7 @@ public class SampleExecuteToRecordSet {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
-		Plan plan = marmot.planBuilder("test")
+		Plan plan = Plan.builder("test")
 							.load(INPUT)
 							.filter("sub_sta_sn > 300 && sub_sta_sn < 310")
 							.project("sub_sta_sn")

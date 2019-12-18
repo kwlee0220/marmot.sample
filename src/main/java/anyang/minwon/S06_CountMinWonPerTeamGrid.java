@@ -34,7 +34,7 @@ public class S06_CountMinWonPerTeamGrid {
 		GeometryColumnInfo gcInfo = marmot.getDataSet(MINWON).getGeometryColumnInfo();
 
 		Plan plan;
-		plan = marmot.planBuilder("격자별_팀별_민원수")
+		plan = Plan.builder("격자별_팀별_민원수")
 					.load(MINWON)
 					.filter("team_name != null")
 					.spatialJoin("the_geom", GRID,

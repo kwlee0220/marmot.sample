@@ -59,7 +59,7 @@ public class SampleFilterSpatially {
 	
 	private static void filterIntersects(MarmotRuntime marmot, Envelope bounds) {
 		Plan plan;
-		plan = marmot.planBuilder("test")
+		plan = Plan.builder("test")
 						.load(INPUT)
 						.filterSpatially("the_geom", INTERSECTS, bounds)
 						.aggregate(COUNT())
@@ -70,7 +70,7 @@ public class SampleFilterSpatially {
 	
 	private static void filterIsContainedBy(MarmotRuntime marmot, Envelope bounds) {
 		Plan plan;
-		plan = marmot.planBuilder("test")
+		plan = Plan.builder("test")
 						.load(INPUT)
 						.filterSpatially("the_geom", IS_CONTAINED_BY, bounds)
 						.aggregate(COUNT())

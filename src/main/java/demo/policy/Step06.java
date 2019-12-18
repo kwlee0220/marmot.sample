@@ -32,7 +32,7 @@ public class Step06 {
 		DataSet ds = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
-		Plan plan = marmot.planBuilder("인구밀도_10000이상_행정동추출")
+		Plan plan = Plan.builder("인구밀도_10000이상_행정동추출")
 						.load(INPUT)
 						.spatialSemiJoin(gcInfo.name(), PARAM)	// (6) 교차분석
 						.store(RESULT, FORCE(gcInfo))

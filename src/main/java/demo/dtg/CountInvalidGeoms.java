@@ -34,7 +34,7 @@ public class CountInvalidGeoms {
 		Envelope bounds = getValidWgsBounds(marmot);
 
 		Plan plan;
-		plan = marmot.planBuilder("count invalid geometry records")
+		plan = Plan.builder("count invalid geometry records")
 					.load(DTG)
 					.toPoint("x좌표", "y좌표", "the_geom")
 					.filterSpatially("the_geom", INTERSECTS, bounds, PredicateOptions.NEGATED)

@@ -36,7 +36,7 @@ public class BuildGridCellHistogram {
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 
 		Plan plan;
-		plan = marmot.planBuilder("build_histogram_grid")
+		plan = Plan.builder("build_histogram_grid")
 					.load(TAGGED)
 					.aggregateByGroup(Group.ofKeys("cell_id").tags("grid")
 											.workerCount(WORKER_COUNT),

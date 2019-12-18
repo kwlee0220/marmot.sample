@@ -67,7 +67,7 @@ public class JoinWithoutGroup {
 		GeometryColumnInfo gcInfo = marmot.getDataSet(dsId).getGeometryColumnInfo();
 		
 		Plan plan;
-		plan = marmot.planBuilder(planName)
+		plan = Plan.builder(planName)
 					.load(dsId, LoadOptions.SPLIT_COUNT(2))
 					.spatialJoin("the_geom", INPUT, "the_geom,param.출입구일련번호",
 								SpatialJoinOptions.EMPTY.clusterOuterRecords(false))

@@ -63,7 +63,7 @@ public class BuildTenMinutePolicyFull {
 		DataSet ds = marmot.getDataSet(CADASTRAL);
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
-		Plan plan = marmot.planBuilder("경로당필요지역추출")
+		Plan plan = Plan.builder("경로당필요지역추출")
 						.load(CADASTRAL)
 						.project("the_geom,pnu")
 						.spatialSemiJoin(gcInfo.name(), ELDERLY_CARE_BUFFER,
@@ -91,7 +91,7 @@ public class BuildTenMinutePolicyFull {
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
 		Plan plan;
-		plan = marmot.planBuilder("노인복지시설_경로당_추출_버퍼")
+		plan = Plan.builder("노인복지시설_경로당_추출_버퍼")
 					.load(ELDERLY_CARE)
 					.filter("induty_nm == '경로당'")			// (1) 영역분석
 					.project("the_geom")
@@ -108,7 +108,7 @@ public class BuildTenMinutePolicyFull {
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
 		Plan plan;
-		plan = marmot.planBuilder("인구밀도_2017_중심점추출_10000이상")
+		plan = Plan.builder("인구밀도_2017_중심점추출_10000이상")
 					.load(POP_DENSITY)
 					.centroid("the_geom")						// (4) 중심점 추출
 					.filter("value >= 10000")								// (5) 영역분석
@@ -125,7 +125,7 @@ public class BuildTenMinutePolicyFull {
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
 		Plan plan;
-		plan = marmot.planBuilder("인구밀도_10000이상_행정동추출")
+		plan = Plan.builder("인구밀도_10000이상_행정동추출")
 					.load(HDONG)
 					.project("the_geom")
 					.spatialSemiJoin("the_geom", HIGH_DENSITY_CENTER)	// (6) 교차분석

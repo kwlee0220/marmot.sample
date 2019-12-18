@@ -54,7 +54,7 @@ public class Step4_Pop {
 		avgExpr = String.format("avg = %s / 24;", avgExpr);
 		
 		Plan plan;
-		plan = marmot.planBuilder("읍면동별 2015년도 유동인구 집계")
+		plan = Plan.builder("읍면동별 2015년도 유동인구 집계")
 					.load(FLOW_POP)
 					.defineColumn("avg:double", avgExpr)
 					.project("block_cd,avg")

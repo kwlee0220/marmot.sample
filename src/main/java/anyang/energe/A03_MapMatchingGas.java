@@ -53,7 +53,7 @@ public class A03_MapMatchingGas {
 		DataSet ds = marmot.getDataSet(CADASTRAL);
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder("연속지적도 매칭")
+		Plan plan = Plan.builder("연속지적도 매칭")
 						.loadHashJoin(CADASTRAL, "pnu", INTERM, "pnu",
 										"left.*," + rightCols, LEFT_OUTER_JOIN(17))
 						.update(updateExpr)
@@ -77,7 +77,7 @@ public class A03_MapMatchingGas {
 												(b,cn) -> b.addColumn(cn, DataType.LONG))
 										.build();
 		
-		Plan plan = marmot.planBuilder("put_side_by_size_gas")
+		Plan plan = Plan.builder("put_side_by_size_gas")
 						.load(INPUT)
 						.expand("tag:string", "tag = 'gas_' + year")
 						.reduceToSingleRecordByGroup(Group.ofKeys("pnu"), outSchema, "tag", "usage")

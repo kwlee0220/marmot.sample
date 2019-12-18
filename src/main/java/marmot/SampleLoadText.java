@@ -24,7 +24,7 @@ public class SampleLoadText {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		Plan plan;
-		plan = marmot.planBuilder("load_text")
+		plan = Plan.builder("load_text")
 					.loadTextFile(PATH)
 					.aggregate(AggregateFunction.COUNT())
 //					.filter("text.endsWith('37.633827')")

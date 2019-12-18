@@ -33,7 +33,7 @@ public class MapMatchingTaxiLog {
 //		String script = String.format("%s = ST_ClosestPointOnLine(%s, line)", geomCol, geomCol);
 		
 		Plan plan;
-		plan = marmot.planBuilder("택시로그_맵_매핑_org_road")
+		plan = Plan.builder("택시로그_맵_매핑_org_road")
 					.load(Globals.TAXI_LOG)
 					.knnJoin(geomCol, Globals.ROADS, 1, 10, "*,param.{link_id,road_name}")
 					.store(Globals.TAXI_LOG_MAP, FORCE(gcInfo))

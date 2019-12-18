@@ -33,7 +33,7 @@ public class SampleLoadSquareGridFile {
 		GeometryColumnInfo gcInfo = dataset.getGeometryColumnInfo();
 		Size2d dim = new Size2d(SIDE_LEN, SIDE_LEN);
 
-		Plan plan = marmot.planBuilder("sample_load_squaregrid")
+		Plan plan = Plan.builder("sample_load_squaregrid")
 							.loadGrid(new SquareGrid(INPUT, dim))
 							.spatialSemiJoin("the_geom", INPUT)
 							.store(RESULT, FORCE(gcInfo))

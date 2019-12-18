@@ -93,7 +93,7 @@ public class CreateSampleDataSet {
 	
 	private static final List<Point> findPartitionCenters(MarmotRuntime marmot) {
 		Plan plan;
-		plan = marmot.planBuilder("list partitions")
+		plan = Plan.builder("list partitions")
 					.loadSpatialClusterIndexFile(INPUT)
 					.defineColumn("center:point", "ST_Centroid(tile_bounds)")
 					.project("center")

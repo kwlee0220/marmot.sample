@@ -24,7 +24,7 @@ public class SampleTakeByGroup {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
-		Plan plan = marmot.planBuilder("group_by")
+		Plan plan = Plan.builder("group_by")
 							.load(INPUT)
 							.filter("sig_cd.startsWith('11')")
 							.takeByGroup(Group.ofKeys("sig_cd")

@@ -31,7 +31,7 @@ public class Step04 {
 		DataSet ds = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
-		Plan plan = marmot.planBuilder("인구밀도_2017_중심점추출")
+		Plan plan = Plan.builder("인구밀도_2017_중심점추출")
 							.load(INPUT)
 							.centroid(gcInfo.name())		// (4) 중심점 추출
 							.store(RESULT, FORCE(gcInfo))

@@ -23,7 +23,7 @@ public class SampleStoreAsCsv {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
 		Plan plan;
-		plan = marmot.planBuilder("test")
+		plan = Plan.builder("test")
 					.load(INPUT)
 					.filter("sub_sta_sn > 320")
 					.project("kor_sub_nm,sub_sta_sn,sig_cd")
@@ -31,7 +31,7 @@ public class SampleStoreAsCsv {
 					.build();
 		marmot.execute(plan);
 		
-		plan = marmot.planBuilder("test")
+		plan = Plan.builder("test")
 					.load(INPUT)
 					.filter("sub_sta_sn > 320")
 					.project("kor_sub_nm,sub_sta_sn,sig_cd")

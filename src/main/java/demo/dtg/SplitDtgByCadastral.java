@@ -45,7 +45,7 @@ public class SplitDtgByCadastral {
 		int nworkers = Math.max((int)(ds.length() / UnitUtils.parseByteSize("20gb")), 1);
 
 		Plan plan;
-		plan = marmot.planBuilder("split_dtg")
+		plan = Plan.builder("split_dtg")
 					.load(DTG)
 
 					.toPoint("x좌표", "y좌표", "the_geom")
@@ -66,7 +66,7 @@ public class SplitDtgByCadastral {
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:4326");
 		
 		Plan plan;
-		plan = marmot.planBuilder("to_wgs84_political")
+		plan = Plan.builder("to_wgs84_political")
 					.load(POLITICAL)
 					.transformCrs("the_geom", "EPSG:5186", "EPSG:4326")
 					.store(outDsId, FORCE(gcInfo))

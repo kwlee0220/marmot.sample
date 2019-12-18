@@ -16,7 +16,7 @@ public class RootNode extends Node {
 
 	@Override
 	protected void extractKeys(MarmotRuntime marmot) {
-		Plan plan = marmot.planBuilder("extract id (" + m_name + ")")
+		Plan plan = Plan.builder("extract id (" + m_name + ")")
 						.load(m_dsId)
 						.project(m_keyCol)
 						.store(getIdDataSet(), FORCE)

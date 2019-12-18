@@ -82,7 +82,7 @@ public class SampleE2SFCA {
 		marmot.executeProcess("e2sfca", params2.toMap());
 		
 		GeometryColumnInfo gcInfo = marmot.getDataSet(RESULT_BUS).getGeometryColumnInfo();
-		plan = marmot.planBuilder("append bus result")
+		plan = Plan.builder("append bus result")
 					.load(RESULT_BUS)
 					.project("the_geom,block_cd,index_08,index_15")
 					.store(RESULT_CONCAT, FORCE(gcInfo))
@@ -90,7 +90,7 @@ public class SampleE2SFCA {
 		marmot.execute(plan);
 		result = marmot.getDataSet(RESULT_CONCAT);
 		
-		plan = marmot.planBuilder("append subway result")
+		plan = Plan.builder("append subway result")
 					.load(RESULT_SUBWAY)
 					.project("the_geom,block_cd,index_08,index_15")
 					.store(RESULT_CONCAT)
@@ -98,7 +98,7 @@ public class SampleE2SFCA {
 		marmot.execute(plan);
 		result = marmot.getDataSet(RESULT_CONCAT);
 		
-		plan = marmot.planBuilder("combine two results")
+		plan = Plan.builder("combine two results")
 					.load(RESULT_CONCAT)
 					.aggregateByGroup(Group.ofKeys("block_cd").tags("the_geom"),
 										SUM("index_08").as("index_08"),

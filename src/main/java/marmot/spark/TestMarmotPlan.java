@@ -48,7 +48,7 @@ public class TestMarmotPlan {
 	}
 	
 	private static final Plan getPlan4(MarmotRuntime marmot) {
-		return marmot.planBuilder("test")
+		return Plan.builder("test")
 					.load("flow_pop_time")
 					.hashJoin("BLOCK_CD", "blockgeo", "BLOCK_CD", "year,avg_10tmst,param.{emdcode}",
 								INNER_JOIN)
@@ -62,7 +62,7 @@ public class TestMarmotPlan {
 	}
 	
 	private static final Plan getPlan(MarmotRuntime marmot) {
-		return marmot.planBuilder("test")
+		return Plan.builder("test")
 					.load("sdgeo")
 					.hashJoin("sdcode", "siggeo", "sdcode", "name,param.{sigcode}", INNER_JOIN)
 					.hashJoin("sigcode", "emdgeo", "sigcode", "name,param.{emdcode}", INNER_JOIN)
@@ -76,7 +76,7 @@ public class TestMarmotPlan {
 	}
 	
 	private static final Plan getPlan2(MarmotRuntime marmot) {
-		return marmot.planBuilder("test2")
+		return Plan.builder("test2")
 					.load("구역/시군구")
 					.hashJoin("SIG_CD", "교통/지하철/역사", "SIG_CD",
 								"SIG_KOR_NM,param.{the_geom,KOR_SUB_NM}", INNER_JOIN)
@@ -85,7 +85,7 @@ public class TestMarmotPlan {
 	}
 	
 	private static final Plan getPlan3(MarmotRuntime marmot) {
-		return marmot.planBuilder("test3")
+		return Plan.builder("test3")
 					.load("구역/시군구")
 					.hashJoin("SIG_CD", "교통/지하철/역사", "SIG_CD",
 								"SIG_KOR_NM,param.{the_geom,KOR_SUB_NM}", INNER_JOIN)

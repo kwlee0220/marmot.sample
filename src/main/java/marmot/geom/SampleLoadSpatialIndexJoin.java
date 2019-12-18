@@ -29,7 +29,7 @@ public class SampleLoadSpatialIndexJoin {
 		
 		StopWatch watch = StopWatch.start();
 		
-		Plan plan = marmot.planBuilder("load_spatial_index_join")
+		Plan plan = Plan.builder("load_spatial_index_join")
 								.loadSpatialIndexJoin(OUTER, INNER,
 													"left.*,right.{the_geom as the_geom2}")
 								.intersection("the_geom", "the_geom2", "the_geom")

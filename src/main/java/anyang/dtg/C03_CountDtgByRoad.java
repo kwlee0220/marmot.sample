@@ -36,7 +36,7 @@ public class C03_CountDtgByRoad {
 
 		RecordScript script = RecordScript.of("$pat = ST_DTPattern(\"yyyyMMddHHmmss\")",
 										"ST_DTParseLE(운행일자 + 운행시분초.substring(0,6), $pat)");
-		Plan aggrPlan = marmot.planBuilder("aggregate")
+		Plan aggrPlan = Plan.builder("aggregate")
 								.clusterChronicles("ts", "interval", "10m")
 								.aggregate(AggregateFunction.COUNT())
 								.build();
@@ -44,7 +44,7 @@ public class C03_CountDtgByRoad {
 		GeometryColumnInfo gcInfo = marmot.getDataSet(ROADS).getGeometryColumnInfo();
 
 		Plan plan;
-		plan = marmot.planBuilder("전국_도로별_통행량")
+		plan = Plan.builder("전국_도로별_통행량")
 					.load(DTG)
 					.filter("운행속도 > 0")
 					.defineColumn("ts:datetime", script)

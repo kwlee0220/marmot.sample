@@ -33,7 +33,7 @@ public class SampleFindLocalMoranI {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
-		Plan plan0 = marmot.planBuilder("find_statistics")
+		Plan plan0 = Plan.builder("find_statistics")
 								.load(INPUT)
 								.aggregate(AggregateFunction.COUNT(),
 											AggregateFunction.AVG(VALUE_COLUMN),
@@ -43,7 +43,7 @@ public class SampleFindLocalMoranI {
 		Record result = marmot.executeToRecord(plan0).get();
 		Map<String,Object> params = Maps.newHashMap(result.toMap());
 		double avg = (Double)params.get("avg");
-		Plan plan1 = marmot.planBuilder("find_statistics2")
+		Plan plan1 = Plan.builder("find_statistics2")
 							.load(INPUT)
 							.defineColumn("diff:double", "fctr_meas -" + avg)
 							.expand("diff2:double,diff4:double",
@@ -56,7 +56,7 @@ public class SampleFindLocalMoranI {
 		RecordSet result1 = marmot.executeToRecordSet(plan1);
 		params.putAll(result1.findFirst().toMap());
 		
-		Plan plan = marmot.planBuilder("local_spatial_auto_correlation")
+		Plan plan = Plan.builder("local_spatial_auto_correlation")
 								.loadLocalMoranI(INPUT, "uid", "fctr_meas", 1000,
 												LISAWeight.FIXED_DISTANCE_BAND)
 								.project("uid,moran_i,moran_zscore,moran_pvalue")

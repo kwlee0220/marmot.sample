@@ -30,7 +30,7 @@ public class SampleArcSpatialJoin {
 		StopWatch watch = StopWatch.start();
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		Plan plan = marmot.planBuilder("spatial_join")
+		Plan plan = Plan.builder("spatial_join")
 							.load(INPUT)
 							.arcSpatialJoin("the_geom", PARAM, false, true)
 							.store(RESULT, FORCE(gcInfo))

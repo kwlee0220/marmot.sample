@@ -36,7 +36,7 @@ public class SampleCompositeAnalysis {
 		marmot.deleteAnalysis("10min", true);
 		
 		gcInfo = marmot.getDataSet("POI/노인복지시설").getGeometryColumnInfo();
-		plan = marmot.planBuilder("노인복지시설_경로당_버퍼")
+		plan = Plan.builder("노인복지시설_경로당_버퍼")
 						.load("POI/노인복지시설")
 						.filter("induty_nm == '경로당'")
 						.project("the_geom")
@@ -48,7 +48,7 @@ public class SampleCompositeAnalysis {
 															"/tmp/10min/노인복지시설_경로당_버퍼"), true);
 
 		gcInfo = marmot.getDataSet("주민/인구밀도_2000").getGeometryColumnInfo();
-		plan = marmot.planBuilder("10000이상_인구밀도_중심점_추출")
+		plan = Plan.builder("10000이상_인구밀도_중심점_추출")
 						.load("주민/인구밀도_2000")
 						.centroid("the_geom")
 						.filter("value >= 10000")
@@ -60,7 +60,7 @@ public class SampleCompositeAnalysis {
 															"/tmp/10min/10000이상_인구밀도_중심점"), true);
 		
 		gcInfo = marmot.getDataSet("구역/행정동코드").getGeometryColumnInfo();
-		plan = marmot.planBuilder("10000이상_인구밀도_행정동_추출")
+		plan = Plan.builder("10000이상_인구밀도_행정동_추출")
 						.load("구역/행정동코드")
 						.project("the_geom")
 						.spatialSemiJoin("the_geom", "/tmp/10min/10000이상_인구밀도_중심점")
@@ -71,7 +71,7 @@ public class SampleCompositeAnalysis {
 																"/tmp/10min/10000이상_인구밀도_행정동"), true);
 		
 		gcInfo = marmot.getDataSet("구역/연속지적도_2017").getGeometryColumnInfo();
-		plan = marmot.planBuilder("경로당필요지역_추출")
+		plan = Plan.builder("경로당필요지역_추출")
 						.load("구역/연속지적도_2017")
 						.project("the_geom,pnu")
 						.spatialSemiJoin("the_geom", "/tmp/10min/노인복지시설_경로당_버퍼",

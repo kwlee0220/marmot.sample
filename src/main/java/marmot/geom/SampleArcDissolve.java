@@ -29,7 +29,7 @@ public class SampleArcDissolve {
 		StopWatch watch = StopWatch.start();
 		
 		GeometryColumnInfo gcInfo = marmot.getDataSet(INPUT).getGeometryColumnInfo();
-		Plan plan = marmot.planBuilder("sample_arc_dissolve")
+		Plan plan = Plan.builder("sample_arc_dissolve")
 							.load(INPUT)
 							.dissolve("sido", "the_geom")
 							.store(RESULT, FORCE(gcInfo))

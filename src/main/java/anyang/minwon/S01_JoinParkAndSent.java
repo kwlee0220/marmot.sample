@@ -33,7 +33,7 @@ public class S01_JoinParkAndSent {
 		GeometryColumnInfo gcInfo = marmot.getDataSet(PARK).getGeometryColumnInfo();
 
 		Plan plan;
-		plan = marmot.planBuilder("이름기반 공원 감성분석 맵매칭")
+		plan = Plan.builder("이름기반 공원 감성분석 맵매칭")
 					.load(PARK)
 					.filter("!kor_par_nm.equals('#N/A')")
 					.hashJoin("kor_par_nm", EMOTION, "poi", "the_geom,param.*-{the_geom}",

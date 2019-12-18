@@ -26,7 +26,7 @@ public class SampleFindGetisOrdGiStar {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
-		Plan plan = marmot.planBuilder("local_spatial_auto_correlation")
+		Plan plan = Plan.builder("local_spatial_auto_correlation")
 								.loadGetisOrdGi(INPUT, VALUE_COLUMN, 1000,
 												LISAWeight.FIXED_DISTANCE_BAND)
 								.project("UID,gi_zscore,gi_pvalue")

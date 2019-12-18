@@ -31,7 +31,7 @@ public class SampleStoreKeyedDataSet {
 		
 		DataSet input = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
-		Plan plan = marmot.planBuilder("test StoreKeyedDataSet")
+		Plan plan = Plan.builder("test StoreKeyedDataSet")
 						.load(INPUT)
 						.storeByGroup(Group.ofKeys("sig_cd"), RESULT, StoreDataSetOptions.FORCE(gcInfo))
 						.build();

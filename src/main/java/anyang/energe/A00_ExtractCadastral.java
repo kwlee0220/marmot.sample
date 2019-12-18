@@ -34,7 +34,7 @@ public class A00_ExtractCadastral {
 		long blockSize = UnitUtils.parseByteSize("128mb");
 
 		Plan plan;
-		plan = marmot.planBuilder("연속지적도 추출")
+		plan = Plan.builder("연속지적도 추출")
 					.load(INPUT)
 					.project("the_geom,고유번호 as pnu")
 					.shard(1)

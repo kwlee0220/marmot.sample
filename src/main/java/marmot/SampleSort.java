@@ -28,7 +28,7 @@ public class SampleSort {
 		
 		DataSet input = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
-		Plan plan = marmot.planBuilder("sample_aggreate")
+		Plan plan = Plan.builder("sample_aggreate")
 							.load(INPUT)
 							.sort("보관일수:A:F,카메라대수:A")
 							.project("the_geom,관리기관명,보관일수,카메라대수")

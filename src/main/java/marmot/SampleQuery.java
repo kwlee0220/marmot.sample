@@ -33,7 +33,7 @@ public class SampleQuery {
 	}
 	
 	private static Envelope getSeoChoDong(MarmotRuntime marmot) {
-		Plan plan = marmot.planBuilder("get seochodong")
+		Plan plan = Plan.builder("get seochodong")
 							.load(EMD)
 							.filter("emd_cd==11650108")
 							.project("the_geom")

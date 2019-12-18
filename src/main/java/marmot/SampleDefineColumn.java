@@ -28,7 +28,7 @@ public class SampleDefineColumn {
 //		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("THE_GEOM", "EPSG:5186");
 
-		Plan plan = marmot.planBuilder("update")
+		Plan plan = Plan.builder("update")
 							.load(INPUT)
 							.defineColumn("AREA:double", "ST_Area(the_geom);")
 							.defineColumn("the_geom:point", "ST_Centroid(the_geom)")

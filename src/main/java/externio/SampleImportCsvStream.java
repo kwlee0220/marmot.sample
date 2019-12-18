@@ -41,7 +41,7 @@ public class SampleImportCsvStream {
 		importParams.setGeometryColumnInfo("the_geom", "EPSG:5186");
 		importParams.setForce(true);
 		
-		Plan plan = marmot.planBuilder("import_plan")
+		Plan plan = Plan.builder("import_plan")
 							.project("the_geom,고유번호,휘발유")
 							.build();
 		

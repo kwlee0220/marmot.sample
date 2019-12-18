@@ -28,7 +28,7 @@ public class SampleSpatialJoin {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		Plan plan = marmot.planBuilder("spatial_join")
+		Plan plan = Plan.builder("spatial_join")
 							.load(GAS_STATIONS)
 							.spatialJoin("the_geom", EMD, "*,param.emd_kor_nm as emd_name")
 							.store(RESULT, FORCE(gcInfo))

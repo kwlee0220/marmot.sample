@@ -75,7 +75,7 @@ public class SampleGSPFeatureSource {
 	}
 	
 	private static Envelope getSeoChoGu(MarmotRuntime marmot) {
-		Plan plan = marmot.planBuilder("get seochogu")
+		Plan plan = Plan.builder("get seochogu")
 							.load(SGG)
 							.filter("sig_cd == 11650")
 							.project("the_geom")
@@ -84,7 +84,7 @@ public class SampleGSPFeatureSource {
 	}
 	
 	private static Envelope getSeoChoDong(MarmotRuntime marmot) {
-		Plan plan = marmot.planBuilder("get seochodong")
+		Plan plan = Plan.builder("get seochodong")
 							.load(EMD)
 							.filter("emd_cd == 11650108")
 							.project("the_geom")
@@ -93,7 +93,7 @@ public class SampleGSPFeatureSource {
 	}
 	
 	private static Envelope getSeoChoDongSub(MarmotRuntime marmot) {
-		Plan plan = marmot.planBuilder("get seochodong")
+		Plan plan = Plan.builder("get seochodong")
 							.load(EMD)
 							.filter("emd_cd == 11650108")
 							.project("the_geom")
@@ -107,7 +107,7 @@ public class SampleGSPFeatureSource {
 	
 	private static Envelope getSiDo(MarmotRuntime marmot, String name) {
 		String expr = String.format("ctp_kor_nm == '%s'", name);
-		Plan plan = marmot.planBuilder("get seoul")
+		Plan plan = Plan.builder("get seoul")
 							.load(SIDO)
 							.filter(expr)
 							.project("the_geom")
@@ -117,7 +117,7 @@ public class SampleGSPFeatureSource {
 	
 	private static Envelope getGu(MarmotRuntime marmot, String guName) {
 		String expr = String.format("sig_kor_nm == '%s'", guName);
-		Plan plan = marmot.planBuilder("get seochodong")
+		Plan plan = Plan.builder("get seochodong")
 							.load(SGG)
 							.filter(expr)
 							.project("the_geom")

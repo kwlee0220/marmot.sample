@@ -83,7 +83,7 @@ public class PerfCount {
 	
 	private static final long process(MarmotRuntime marmot, String input) {
 		String planName = "perf_count_" + input.replaceAll("/", ".");
-		Plan plan = marmot.planBuilder(planName)
+		Plan plan = Plan.builder(planName)
 							.load(input)
 							.aggregate(AggregateFunction.COUNT())
 							.store("tmp/result", FORCE)

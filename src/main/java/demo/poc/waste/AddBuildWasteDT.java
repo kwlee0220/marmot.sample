@@ -108,7 +108,7 @@ public class AddBuildWasteDT {
 		String decl = FStream.from(inCols).map(n -> n + ":double").join(",");
 		
 		Plan plan;
-		plan = marmot.planBuilder("변수_데이터_준비")
+		plan = Plan.builder("변수_데이터_준비")
 						.load(VAR)
 						.hashJoin("sigungu_cd", SGG, "sigungu_cd",
 									"*,param.{the_geom}",
@@ -141,7 +141,7 @@ public class AddBuildWasteDT {
 								.join(" ");
 
 		StoreAsCsvOptions opts = StoreAsCsvOptions.DEFAULT(' ').headerFirst(false);
-		plan = marmot.planBuilder("폐기물_데이터_병합")
+		plan = Plan.builder("폐기물_데이터_병합")
 					.load(OUTPUT(ANALY_NORMALIZE))
 					.hashJoin("sigungu_cd", TARGET, "sigungu_cd",
 								"param.가정생활폐기물 as waste, *-{sigungu_cd}",

@@ -28,7 +28,7 @@ public class SampleDistinct {
 		DataSet input = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder("test_distinct")
+		Plan plan = Plan.builder("test_distinct")
 							.load(INPUT)
 							.distinct("sig_cd")
 							.store(RESULT, FORCE(gcInfo))

@@ -53,7 +53,7 @@ public class A08_GridAnalysisLand {
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		
 		Plan plan;
-		plan = marmot.planBuilder("개별공시지가 사용량 격자 분석")
+		plan = Plan.builder("개별공시지가 사용량 격자 분석")
 					.load(INPUT)
 					.assignGridCell("the_geom", new SquareGrid(bounds, cellSize), false)
 					.intersection("the_geom", "cell_geom", "overlap")
@@ -83,7 +83,7 @@ public class A08_GridAnalysisLand {
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
 		Plan plan;
-		plan = marmot.planBuilder("연도별 격자 분석 추출")
+		plan = Plan.builder("연도별 격자 분석 추출")
 					.load(OUTPUT)
 					.project(projectExpr)
 					.store(output, FORCE(gcInfo))

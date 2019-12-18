@@ -38,7 +38,7 @@ public class SampleE2SFCASetup {
 		Geometry gangnaum = getGangnamGu(marmot);
 		
 		GeometryColumnInfo GC_INFO = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		plan = marmot.planBuilder("강남구 영역 유동인구 정보 추출")
+		plan = Plan.builder("강남구 영역 유동인구 정보 추출")
 						.query(FLOW_POP, gangnaum)
 						.expand("year:int", "year = std_ym.substring(0,4)")
 						.aggregateByGroup(Group.ofKeys("block_cd,year").tags("the_geom"),
@@ -59,7 +59,7 @@ public class SampleE2SFCASetup {
 	
 	private static Geometry getGangnamGu(MarmotRuntime marmot) {
 		Plan plan;
-		plan = marmot.planBuilder("강남구 추출")
+		plan = Plan.builder("강남구 추출")
 					.load(SGG)
 					.filter("sig_cd.startsWith('11') && sig_kor_nm == '강남구'")
 					.project("the_geom")

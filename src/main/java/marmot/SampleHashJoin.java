@@ -29,7 +29,7 @@ public class SampleHashJoin {
 		DataSet input = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder("test equi_join")
+		Plan plan = Plan.builder("test equi_join")
 							.load(INPUT)
 							.update("sig_cd = sig_cd.substring(0,2)")
 							.hashJoin("sig_cd", PARAM, "ctprvn_cd",

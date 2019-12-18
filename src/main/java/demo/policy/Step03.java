@@ -34,7 +34,7 @@ public class Step03 {
 		DataSet ds = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
-		Plan plan = marmot.planBuilder("노인복지시설필요지역추출")
+		Plan plan = Plan.builder("노인복지시설필요지역추출")
 						.load(INPUT)
 						.spatialSemiJoin(gcInfo.name(), PARAM, SpatialJoinOptions.NEGATED) // (3) 교차반전
 						.store(RESULT, FORCE(gcInfo))

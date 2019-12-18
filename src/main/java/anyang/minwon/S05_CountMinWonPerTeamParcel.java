@@ -35,7 +35,7 @@ public class S05_CountMinWonPerTeamParcel {
 		GeometryColumnInfo gcInfo = marmot.getDataSet(PARCEL).getGeometryColumnInfo();
 		
 		Plan plan;		
-		plan = marmot.planBuilder("담당팀_필지별_민원수 합계")
+		plan = Plan.builder("담당팀_필지별_민원수 합계")
 					.load(MINWON)
 					.filter("team_name != null")
 					.hashJoin("all_parcel_layer_id", PARCEL, "id", 

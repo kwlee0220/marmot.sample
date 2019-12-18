@@ -30,7 +30,7 @@ public class A01_SumMonthGasUsages {
 		StopWatch watch = StopWatch.start();
 
 		Plan plan;
-		plan = marmot.planBuilder("연별 가스 사용량 합계")
+		plan = Plan.builder("연별 가스 사용량 합계")
 					.load(INPUT)
 					.defineColumn("year:short", "사용년월.substring(0, 4)")
 					.update("사용량 = Math.max(사용량, 0)")

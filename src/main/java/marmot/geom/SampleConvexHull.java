@@ -27,7 +27,7 @@ public class SampleConvexHull {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		Plan plan = marmot.planBuilder("convex_hull")
+		Plan plan = Plan.builder("convex_hull")
 								.load(INPUT)
 								.aggregate(CONVEX_HULL("the_geom").as("the_geom"))
 								.store(RESULT, FORCE(gcInfo))

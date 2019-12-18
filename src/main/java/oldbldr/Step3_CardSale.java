@@ -53,7 +53,7 @@ public class Step3_CardSale {
 								.collect(Collectors.joining("+"));
 		
 		Plan plan;
-		plan = marmot.planBuilder("읍면동별 2015년도 카드매출 집계")
+		plan = Plan.builder("읍면동별 2015년도 카드매출 집계")
 					.load(CARD_SALES)
 					.defineColumn("sale_amt:double", sumExpr)
 					.project("block_cd,sale_amt")

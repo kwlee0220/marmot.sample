@@ -34,7 +34,7 @@ public class SampleRegisterPlanAnalytics {
 		DataSet input = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder("sample_assign_uid")
+		Plan plan = Plan.builder("sample_assign_uid")
 							.load(INPUT)
 							.filter("(long)출입구일련번호 % 119999 == 3")
 							.assignUid("guid")

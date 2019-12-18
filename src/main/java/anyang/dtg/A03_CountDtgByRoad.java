@@ -33,13 +33,13 @@ public class A03_CountDtgByRoad {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
 		GeometryColumnInfo gcInfo = marmot.getDataSet(ROADS).getGeometryColumnInfo();
-		Plan aggrPlan = marmot.planBuilder("aggregate")
+		Plan aggrPlan = Plan.builder("aggregate")
 								.clusterChronicles("ts", "interval", "10m")
 								.aggregate(AggregateFunction.COUNT())
 								.build();
 
 		Plan plan;
-		plan = marmot.planBuilder("읍면동별 DTG 빈도집계")
+		plan = Plan.builder("읍면동별 DTG 빈도집계")
 					.load(DTG)
 					.filter("운행속도 > 0")
 					.spatialJoin("the_geom", ROADS, "param.*,차량번호,ts",

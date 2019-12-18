@@ -48,7 +48,7 @@ public class Step1FlowPop {
 		String geomCol = ds.getGeometryColumn();
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder("대도시 상업지역 구역별 유동인구수 집계")
+		Plan plan = Plan.builder("대도시 상업지역 구역별 유동인구수 집계")
 							.load(FLOW_POP)
 							.update(handleNull)
 							// 시간대 단위의 유동인구는 모두 합쳐 하루 매출액을 계산한다. 

@@ -55,7 +55,7 @@ public class B07_GridAnalysisElectroYear {
 		
 		Plan plan;
 		String planName = String.format("%d 전기 사용량 격자 분석", Globals.YEAR);
-		plan = marmot.planBuilder(planName)
+		plan = Plan.builder(planName)
 					.load(INPUT)
 					.assignGridCell("the_geom", new SquareGrid(bounds, cellSize), false)
 					.intersection("the_geom", "cell_geom", "overlap")
@@ -87,7 +87,7 @@ public class B07_GridAnalysisElectroYear {
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
 		Plan plan;
-		plan = marmot.planBuilder("월별 격자 분석 추출")
+		plan = Plan.builder("월별 격자 분석 추출")
 					.load(OUTPUT)
 					.project(projectExpr)
 					.store(output, FORCE(gcInfo))

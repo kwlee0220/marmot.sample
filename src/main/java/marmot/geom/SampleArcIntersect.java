@@ -29,7 +29,7 @@ public class SampleArcIntersect {
 		
 		StopWatch watch = StopWatch.start();
 		
-		Plan plan = marmot.planBuilder("sample_intersection_join")
+		Plan plan = Plan.builder("sample_intersection_join")
 							.load(INPUT)
 							.intersectionJoin("the_geom", PARAM, SpatialJoinOptions.EMPTY)
 							.store(RESULT, FORCE)

@@ -38,7 +38,7 @@ public class SampleMarmotClient {
 		
 		// Plan을 이용한 데이터 접근
 		//
-		plan = marmot.planBuilder("test")
+		plan = Plan.builder("test")
 					.load("교통/지하철/서울역사")
 					.filter("kor_sub_nm.length() > 5")
 					.project("sub_sta_sn,kor_sub_nm")
@@ -49,7 +49,7 @@ public class SampleMarmotClient {
 		// 사용자가 제공하는 입력 레코드세트를 활용한 Plan 수행.
 		//
 		ds = marmot.getDataSet("교통/지하철/서울역사");
-		plan = marmot.planBuilder("test2")
+		plan = Plan.builder("test2")
 					.filter("kor_sub_nm.length() > 5")
 					.project("sub_sta_sn,kor_sub_nm")
 					.build();

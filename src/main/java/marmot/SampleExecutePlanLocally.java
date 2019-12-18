@@ -34,7 +34,7 @@ public class SampleExecutePlanLocally {
 	}
 	
 	private static void sample1(PBMarmotClient marmot) {
-		Plan plan = marmot.planBuilder("test")
+		Plan plan = Plan.builder("test")
 							.load(INPUT)
 							.filter("sub_sta_sn > 300 && sub_sta_sn < 305")
 							.project("sub_sta_sn")
@@ -45,7 +45,7 @@ public class SampleExecutePlanLocally {
 	}
 	
 	private static void sample2(PBMarmotClient marmot) {
-		Plan plan = marmot.planBuilder("test")
+		Plan plan = Plan.builder("test")
 							.load(INPUT)
 							.filter("sub_sta_sn > 300 && sub_sta_sn < 305")
 							.project("sub_sta_sn")
@@ -62,7 +62,7 @@ public class SampleExecutePlanLocally {
 	private static final File SHP_FILE = new File("/mnt/data/sbdata/data/포스웨이브/서울지하철역사");
 	private static void sample3(PBMarmotClient marmot) {
 		try ( ShapefileRecordSet rset = new ShapefileRecordSet(SHP_FILE, Charset.forName("euc-kr")) ) {
-			Plan plan = marmot.planBuilder("test")
+			Plan plan = Plan.builder("test")
 								.filter("sub_sta_sn > 300 && sub_sta_sn < 305")
 								.project("sub_sta_sn")
 								.store(RESULT, StoreDataSetOptions.FORCE)
@@ -73,7 +73,7 @@ public class SampleExecutePlanLocally {
 	
 	private static void sample4(PBMarmotClient marmot) {
 		try ( ShapefileRecordSet rset = new ShapefileRecordSet(SHP_FILE, Charset.forName("euc-kr")) ) {
-			Plan plan = marmot.planBuilder("test")
+			Plan plan = Plan.builder("test")
 								.filter("sub_sta_sn > 300 && sub_sta_sn < 305")
 								.project("sub_sta_sn")
 								.build();
@@ -92,7 +92,7 @@ public class SampleExecutePlanLocally {
 	private static final File SHP_FILE2 = new File("/mnt/data/sbdata/data/사업단자료/행정동코드");
 	private static void sample5(PBMarmotClient marmot) {
 		try ( ShapefileRecordSet rset = new ShapefileRecordSet(SHP_FILE2, Charset.forName("utf-8")) ) {
-			Plan plan = marmot.planBuilder("test")
+			Plan plan = Plan.builder("test")
 								.project("the_geom,hcode")
 								.build();
 			RecordSchema schema = marmot.getOutputRecordSchema(plan, rset.getRecordSchema());

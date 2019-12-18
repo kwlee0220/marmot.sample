@@ -38,7 +38,7 @@ public class SampleInterpolateSpatially {
 		
 		String tempPath = "tmp/points";
 		
-		plan = marmot.planBuilder("to_point")
+		plan = Plan.builder("to_point")
 						.load(INPUT)
 						.centroid("the_geom")
 						.project("the_geom, big_sq, value")
@@ -58,7 +58,7 @@ public class SampleInterpolateSpatially {
 									+ "denominator += weight;"
 								+ "}"
 								+ "return numerator / denominator;}";
-		plan = marmot.planBuilder("calc_idw_interpolation")
+		plan = Plan.builder("calc_idw_interpolation")
 					.load(tempPath)
 					.interpolateSpatially("the_geom", tempPath, VALUE_COLUMN, RADIUS,
 											"value", IDWInterpolation.ofPower(1))

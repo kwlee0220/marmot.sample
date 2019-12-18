@@ -29,7 +29,7 @@ public class A09_SplitGasMap {
 		
 		GeometryColumnInfo info = marmot.getDataSet(INPUT).getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder("2017 가스사용량 연속지적도 매칭 분할")
+		Plan plan = Plan.builder("2017 가스사용량 연속지적도 매칭 분할")
 						.load(INPUT)
 						.defineColumn("sido:string", "pnu.substring(0, 2)")
 						.storeByGroup(Group.ofKeys("sido"), OUTPUT, GEOMETRY(info))

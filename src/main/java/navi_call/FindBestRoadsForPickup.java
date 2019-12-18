@@ -32,7 +32,7 @@ public class FindBestRoadsForPickup {
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
 		Plan plan;
-		plan = marmot.planBuilder("시간별_택시_픽업_최적지")
+		plan = Plan.builder("시간별_택시_픽업_최적지")
 					.load(Globals.TAXI_LOG_MAP)
 					.filter("status == 0")
 					.defineColumn("hour:int", "ts.substring(8,10)")

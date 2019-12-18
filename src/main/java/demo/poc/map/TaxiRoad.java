@@ -72,7 +72,7 @@ public class TaxiRoad {
 		StoreAsCsvOptions opts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
 		
 		Plan plan;
-		plan = marmot.planBuilder("오전_9시_택시_하차_추출")
+		plan = Plan.builder("오전_9시_택시_하차_추출")
 					.load(TAXI_LOG)
 					.filter("status == '2' && date.substring(8,10) == '09'")
 					.sample(0.05)
@@ -91,7 +91,7 @@ public class TaxiRoad {
 		StoreAsCsvOptions opts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
 		
 		Plan plan;
-		plan = marmot.planBuilder("도로_링크_메쉬_추출")
+		plan = Plan.builder("도로_링크_메쉬_추출")
 					.load(ROAD_MESH)
 					.shard(1)
 					.storeAsCsv(outCsvPath, opts)
@@ -126,7 +126,7 @@ public class TaxiRoad {
 		StoreAsCsvOptions storeOpts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
 		
 		Plan plan;
-		plan = marmot.planBuilder("맵매칭 결과 수집")
+		plan = Plan.builder("맵매칭 결과 수집")
 					.loadTextFile(CSV_MAP_MATCHING_PATH)
 					.parseCsv("text", opts)
 					.filter("!vehicle.equals('vehicle')")
@@ -169,7 +169,7 @@ public class TaxiRoad {
 		GeometryColumnInfo gcInfo = marmot.getDataSet(ROAD).getGeometryColumnInfo();
 		
 		Plan plan;
-		plan = marmot.planBuilder("순위 결과 수집")
+		plan = Plan.builder("순위 결과 수집")
 					.loadTextFile(resultCsvPath)
 					.parseCsv("text", opts)
 					.filter("!WKT.equals('WKT')")

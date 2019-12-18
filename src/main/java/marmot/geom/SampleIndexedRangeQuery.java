@@ -40,7 +40,7 @@ public class SampleIndexedRangeQuery {
 //		Geometry key = GeoClientUtils.toPolygon(bounds);
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		Plan plan = marmot.planBuilder("sample_indexed_rangequery")
+		Plan plan = Plan.builder("sample_indexed_rangequery")
 							.query(BUILDINGS, bounds)
 							.aggregate(AggregateFunction.COUNT())
 //							.project("the_geom,시군구코드,건물명")
@@ -55,7 +55,7 @@ public class SampleIndexedRangeQuery {
 	}
 	
 	private static Geometry getBorder(MarmotRuntime marmot) {
-		Plan plan = marmot.planBuilder("get seould")
+		Plan plan = Plan.builder("get seould")
 							.load(SIDO)
 							.filter("ctprvn_cd == 11")
 							.project("the_geom")

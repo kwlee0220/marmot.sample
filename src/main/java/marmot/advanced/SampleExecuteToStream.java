@@ -55,7 +55,7 @@ public class SampleExecuteToStream {
 	
 	private static final void perfBatchTiny(MarmotRuntime marmot) {
 		Plan plan;
-		plan = marmot.planBuilder("perf_batch_tiny")
+		plan = Plan.builder("perf_batch_tiny")
 					.load(TINY)
 					.filter("trnsit_yn == 1")
 					.store(RESULT, FORCE)
@@ -77,7 +77,7 @@ public class SampleExecuteToStream {
 	}
 	private static final void perfStreamTiny(MarmotRuntime marmot) {
 		Plan plan;
-		plan = marmot.planBuilder("perf_stream_tiny")
+		plan = Plan.builder("perf_stream_tiny")
 					.load(TINY)
 					.filter("trnsit_yn == 1")
 					.build();
@@ -98,7 +98,7 @@ public class SampleExecuteToStream {
 	
 	private static final Envelope getRange(MarmotRuntime marmot) {
 		Plan plan;
-		plan = marmot.planBuilder("range")
+		plan = Plan.builder("range")
 					.load(RANGE)
 					.filter("hdong_name == '행궁동'")
 					.build();
@@ -106,7 +106,7 @@ public class SampleExecuteToStream {
 	}
 	private static final void perfBatchSmall(MarmotRuntime marmot, Envelope range) {
 		Plan plan;
-		plan = marmot.planBuilder("test batch_medium")
+		plan = Plan.builder("test batch_medium")
 					.load(SMALL)
 					.filterSpatially("the_geom", INTERSECTS, range)
 					.store(RESULT, FORCE)
@@ -128,7 +128,7 @@ public class SampleExecuteToStream {
 	}
 	private static final void perfStreamSmall(MarmotRuntime marmot, Envelope range) {
 		Plan plan;
-		plan = marmot.planBuilder("test SampleGetStream")
+		plan = Plan.builder("test SampleGetStream")
 					.load(SMALL)
 					.filterSpatially("the_geom", INTERSECTS, range)
 					.build();
@@ -148,7 +148,7 @@ public class SampleExecuteToStream {
 	
 	private static final void perfBatchMedium(MarmotRuntime marmot) {
 		Plan plan;
-		plan = marmot.planBuilder("perf_batch_medium")
+		plan = Plan.builder("perf_batch_medium")
 					.load(MEDIUM)
 					.filter("grnd_flr >= 20")
 					.store(RESULT, FORCE)
@@ -170,7 +170,7 @@ public class SampleExecuteToStream {
 	}
 	private static final void perfStreamMedium(MarmotRuntime marmot) {
 		Plan plan;
-		plan = marmot.planBuilder("perf_stream_medium")
+		plan = Plan.builder("perf_stream_medium")
 					.load(MEDIUM)
 					.filter("grnd_flr >= 20")
 					.build();
@@ -190,7 +190,7 @@ public class SampleExecuteToStream {
 	
 	private static final void perfBatchLarge(MarmotRuntime marmot) {
 		Plan plan;
-		plan = marmot.planBuilder("perf_batch_large")
+		plan = Plan.builder("perf_batch_large")
 					.load(LARGE)
 					.filter("운행속도 == 1 && rpm > 1000")
 					.store(RESULT, FORCE)
@@ -212,7 +212,7 @@ public class SampleExecuteToStream {
 	}
 	private static final void perfStreamLarge(MarmotRuntime marmot) {
 		Plan plan;
-		plan = marmot.planBuilder("perf_stream_large")
+		plan = Plan.builder("perf_stream_large")
 					.load(LARGE)
 					.filter("운행속도 == 1 && rpm > 1000")
 					.build();

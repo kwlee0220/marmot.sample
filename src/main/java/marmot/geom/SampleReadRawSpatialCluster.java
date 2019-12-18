@@ -43,7 +43,7 @@ public class SampleReadRawSpatialCluster {
 	
 	private static Envelope getGu(MarmotRuntime marmot, String guName) {
 		String expr = String.format("sig_kor_nm == '%s'", guName);
-		Plan plan = marmot.planBuilder("get seochodong")
+		Plan plan = Plan.builder("get seochodong")
 							.load(SGG)
 							.filter(expr)
 							.project("the_geom")

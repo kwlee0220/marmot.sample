@@ -59,7 +59,7 @@ public class TagDtgWithRoad {
 		DataSet output;
 
 		Plan plan;
-		plan = marmot.planBuilder("calc_histogram_road_links")
+		plan = Plan.builder("calc_histogram_road_links")
 					.load(DTG)
 
 					.toPoint("x좌표", "y좌표", "the_geom")
@@ -102,7 +102,7 @@ public class TagDtgWithRoad {
 		GeometryColumnInfo gcInfo = marmot.getDataSet(ROAD).getGeometryColumnInfo();
 		
 		Plan plan;
-		plan = marmot.planBuilder("exclude highway")
+		plan = Plan.builder("exclude highway")
 					.load(ROAD)
 					.filter("road_rank != '101'")
 					.filter("road_type == '000' || road_type == '003'")
@@ -118,7 +118,7 @@ public class TagDtgWithRoad {
 	
 	private static DataSet filterCargo(PBMarmotClient marmot, String output) {
 		Plan plan;
-		plan = marmot.planBuilder("find cargos")
+		plan = Plan.builder("find cargos")
 					.load(DTG_COMPANY)
 					.filter("업종코드 == 31 || 업종코드 == 32")
 					.store(output, FORCE)

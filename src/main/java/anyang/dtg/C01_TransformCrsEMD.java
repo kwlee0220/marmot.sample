@@ -35,7 +35,7 @@ public class C01_TransformCrsEMD {
 		GeometryColumnInfo dtgInfo = marmot.getDataSet(DTG).getGeometryColumnInfo();
 
 		Plan plan;
-		plan = marmot.planBuilder("전국_읍면동 좌표계 변환")
+		plan = Plan.builder("전국_읍면동 좌표계 변환")
 					.load(EMD)
 					.transformCrs("the_geom", gcInfo.srid(), dtgInfo.srid())
 					.project("the_geom,emd_cd,emd_kor_nm")

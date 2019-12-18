@@ -40,7 +40,7 @@ public class FilterOutInvalidDTG {
 		GeometryColumnInfo gcInfo = dtg.getGeometryColumnInfo();
 
 		Plan plan;
-		plan = marmot.planBuilder("count invalid geometry records")
+		plan = Plan.builder("count invalid geometry records")
 					.load(DTG)
 					.spatialSemiJoin(gcInfo.name(), boundary.getId(), SpatialJoinOptions.NEGATED)
 					.aggregate(COUNT())
@@ -63,7 +63,7 @@ public class FilterOutInvalidDTG {
 		GeometryColumnInfo outGcInfo = new  GeometryColumnInfo(gcInfo.name(), "EPSG:4326");
 		
 		Plan plan;
-		plan = marmot.planBuilder("build_square_grid")
+		plan = Plan.builder("build_square_grid")
 					.load(REFERENCE)
 					.assignGridCell(gcInfo.name(), grid, false)
 					.project(prjExpr)

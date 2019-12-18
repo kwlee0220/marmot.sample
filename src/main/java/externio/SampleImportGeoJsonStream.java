@@ -38,7 +38,7 @@ public class SampleImportGeoJsonStream {
 		importParams.setGeometryColumnInfo("the_geom", "EPSG:5186");
 		importParams.setForce(true);
 		
-		Plan plan = marmot.planBuilder("import_plan")
+		Plan plan = Plan.builder("import_plan")
 							.project("the_geom,emd_kor_name")
 							.build();
 		

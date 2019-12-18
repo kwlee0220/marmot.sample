@@ -33,7 +33,7 @@ public class SampleLoadHexagonGridFile {
 		Envelope bounds = dataset.getBounds();
 		bounds.expandBy(2*SIDE_LEN, SIDE_LEN);
 
-		Plan plan = marmot.planBuilder("load_hexagon_grid")
+		Plan plan = Plan.builder("load_hexagon_grid")
 							.loadHexagonGridFile(bounds, gcInfo.srid(), SIDE_LEN, 8)
 							.spatialSemiJoin("the_geom", INPUT)
 							.store(RESULT, FORCE(gcInfo))

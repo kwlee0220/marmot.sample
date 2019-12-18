@@ -24,7 +24,7 @@ public class SampleLoadWholeFile {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		Plan plan;
-		plan = marmot.planBuilder("load_text")
+		plan = Plan.builder("load_text")
 					.loadWholeFile(PATH, LoadOptions.SPLIT_COUNT(16))
 					.defineColumn("length:long", "length = bytes.length")
 					.project("path,length")

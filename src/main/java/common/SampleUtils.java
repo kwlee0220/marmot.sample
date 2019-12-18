@@ -38,7 +38,7 @@ public class SampleUtils {
 	
 	public static DataSet writeSeoul(MarmotRuntime marmot, String dsId) {
 		GeometryColumnInfo gcInfo = marmot.getDataSet("구역/시도").getGeometryColumnInfo();
-		Plan plan = marmot.planBuilder("extract_seoul")
+		Plan plan = Plan.builder("extract_seoul")
 						.load("구역/시도")
 						.filter("ctprvn_cd == '11'")
 						.store(dsId, FORCE(gcInfo))

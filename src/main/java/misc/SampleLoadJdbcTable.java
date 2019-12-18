@@ -33,7 +33,7 @@ public class SampleLoadJdbcTable {
 
 		JdbcConnectOptions jdbcOpts
 			= JdbcConnectOptions.POSTGRES_SQL("129.254.82.95", 5433, "sbdata", USER, PASSWD, null);
-		Plan plan = marmot.planBuilder("test")
+		Plan plan = Plan.builder("test")
 							.loadJdbcTable(TABLE_NAME, jdbcOpts,
 											SELECT("ST_AsBinary(the_geom) as the_geom")
 												.mapperCount(7))

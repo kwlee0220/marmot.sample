@@ -79,7 +79,7 @@ public class SampleBuildThumbnail {
 							.build();
 
 			String filterExpr = String.format("Math.round(count * %f) >= 1", m_ratio);
-			Plan plan = marmot.planBuilder("test")
+			Plan plan = Plan.builder("test")
 							.loadSpatialClusterIndexFile(source.getId())
 							.filter(filterExpr)
 							.build();

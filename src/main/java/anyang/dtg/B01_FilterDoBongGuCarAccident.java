@@ -46,7 +46,7 @@ public class B01_FilterDoBongGuCarAccident {
 		GeometryColumnInfo gcInfo = marmot.getDataSet(DEATH_ACCIDENT).getGeometryColumnInfo();
 
 		Plan plan;
-		plan = marmot.planBuilder("도봉구_사망교통사고_추출")
+		plan = Plan.builder("도봉구_사망교통사고_추출")
 						.query(DEATH_ACCIDENT, dobong)
 						.project(prjExpr)
 						.store(OUTPUT, FORCE(gcInfo))
@@ -63,7 +63,7 @@ public class B01_FilterDoBongGuCarAccident {
 	
 	private static Geometry getDoBongGuRegion(MarmotRuntime marmot) {
 		Plan plan;
-		plan = marmot.planBuilder("get_dobong_gu")
+		plan = Plan.builder("get_dobong_gu")
 						.load(DOBONG_GU)
 						.filter("sig_kor_nm == '도봉구'")
 						.project("the_geom")

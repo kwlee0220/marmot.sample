@@ -82,7 +82,7 @@ public class PerfSpatialJoin {
 	
 	private static final long process(MarmotRuntime marmot, String input, int nworkers) {
 		String planName = "perf_spatial_join_" + input.replaceAll("/", ".");
-		Plan plan = marmot.planBuilder(planName)
+		Plan plan = Plan.builder(planName)
 							.load(input)
 							.transformCrs("the_geom", "EPSG:4326", "EPSG:5186")
 							.buffer("the_geom", 100)

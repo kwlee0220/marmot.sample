@@ -32,7 +32,7 @@ public class SampleTee {
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 
 		marmot.deleteDataSet(RESULT);
-		Plan plan = marmot.planBuilder("filter")
+		Plan plan = Plan.builder("filter")
 							.load(INPUT)
 							.filter("휘발유 > 2000")
 							.tee("tmp/temp")

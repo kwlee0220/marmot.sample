@@ -51,7 +51,7 @@ public class FindUnsafeChildZone {
 		DataSet output;
 
 		Plan plan;
-		plan = marmot.planBuilder("find average speed around primary schools")
+		plan = Plan.builder("find average speed around primary schools")
 					.load(DTG)
 
 					.filter("운행속도 > 1")
@@ -96,7 +96,7 @@ public class FindUnsafeChildZone {
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("area", "EPSG:5186");
 		
 		Plan plan;
-		plan = marmot.planBuilder("buffer child zones")
+		plan = Plan.builder("buffer child zones")
 					.load(CHILD_ZONE)
 					.buffer("the_geom", DISTANCE, GeomOpOptions.OUTPUT("area"))
 					.project("the_geom,id,대상시설명,area")

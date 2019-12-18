@@ -53,7 +53,7 @@ public class B04_MapMatchingElectroYear {
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
 		String planName = String.format("%d 전기사용량 연속지적도 매칭", Globals.YEAR);
-		Plan plan = marmot.planBuilder(planName)
+		Plan plan = Plan.builder(planName)
 						.loadHashJoin(CADASTRAL, "pnu", INTERM, "pnu",
 									"left.*," + rightCols, LEFT_OUTER_JOIN(17))
 						.update(updateExpr)
@@ -76,7 +76,7 @@ public class B04_MapMatchingElectroYear {
 												(b,cn) -> b.addColumn(cn, DataType.LONG))
 										.build();
 		
-		Plan plan = marmot.planBuilder("put_side_by_side_electro")
+		Plan plan = Plan.builder("put_side_by_side_electro")
 						.load(INPUT)
 						.expand("tag:string", "tag = 'month_' + month")
 						.reduceToSingleRecordByGroup(Group.ofKeys("pnu"), outSchema, "tag", "usage")

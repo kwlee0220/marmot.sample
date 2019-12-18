@@ -36,7 +36,7 @@ public class SampleAssignSquareGridCell {
 		Envelope border = getBorder(marmot).getEnvelopeInternal();
 		Size2d cellSize = new Size2d(border.getWidth() / 100, border.getHeight() / 100);
 		
-		Plan plan = marmot.planBuilder("assign_fishnet_gridcell")
+		Plan plan = Plan.builder("assign_fishnet_gridcell")
 						.load(INPUT)
 						.assignGridCell("the_geom", new SquareGrid(border, cellSize), false)
 						.defineColumn("count:int", "1")
@@ -55,7 +55,7 @@ public class SampleAssignSquareGridCell {
 	}
 	
 	private static Geometry getBorder(MarmotRuntime marmot) {
-		Plan plan = marmot.planBuilder("get seould")
+		Plan plan = Plan.builder("get seould")
 							.load(SIDO)
 							.filter("ctprvn_cd == 11")
 							.project("the_geom")

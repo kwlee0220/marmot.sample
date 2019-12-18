@@ -29,7 +29,7 @@ public class SampleSemiJoin {
 		DataSet input = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder("test semi_join")
+		Plan plan = Plan.builder("test semi_join")
 							.load(INPUT)
 							.hashJoin("sig_cd", PARAM, "sig_cd", "param.sig_kor_nm", SEMI_JOIN)
 							.store(RESULT, FORCE(gcInfo))

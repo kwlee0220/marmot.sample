@@ -65,7 +65,7 @@ public class A05_MapMatchingLand {
 										.join(" ");
 
 		Plan plan;
-		plan = marmot.planBuilder("개별공시지가 매핑")
+		plan = Plan.builder("개별공시지가 매핑")
 						.loadHashJoin(BASE, "pnu", INTERM, "pnu", outCols,
 										LEFT_OUTER_JOIN(25))
 						.update(updateExpr)
@@ -94,7 +94,7 @@ public class A05_MapMatchingLand {
 												(b,y) -> b.addColumn("land_"+y, DataType.LONG))
 										.build();
 		
-		Plan plan = marmot.planBuilder("put_side_by_size_land")
+		Plan plan = Plan.builder("put_side_by_size_land")
 						.load(INPUT)
 						.project("pnu, 기준년도 as year, 개별공시지가 as usage")
 						.expand("tag:string", "tag = 'land_' + year")

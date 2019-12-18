@@ -32,7 +32,7 @@ public class Step07 {
 		DataSet ds = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
-		Plan plan = marmot.planBuilder("경로당필요지역추출")
+		Plan plan = Plan.builder("경로당필요지역추출")
 						.load(INPUT)
 						.arcClip(gcInfo.name(), PARAM)				// (7) 클립분석
 						.shard(1)

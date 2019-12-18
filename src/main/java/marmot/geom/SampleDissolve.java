@@ -26,7 +26,7 @@ public class SampleDissolve {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		Plan plan = marmot.planBuilder("dissolve")
+		Plan plan = Plan.builder("dissolve")
 								.load(INPUT)
 								.project("the_geom,sig_cd")
 								.dissolve("sig_cd", "the_geom")

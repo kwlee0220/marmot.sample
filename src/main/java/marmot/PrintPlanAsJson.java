@@ -69,7 +69,7 @@ public class PrintPlanAsJson {
 		RecordScript script2 = RecordScript.of("$pat = ST_DTPattern(\"yyyyMMddHHmmss\")",
 										"ST_DTParseLE(운행일자 + 운행시분초.substring(0,6), $pat)");
 		Plan plan;
-		plan = marmot.planBuilder("import_plan")
+		plan = Plan.builder("import_plan")
 					.load("/POI/주유소_가격")
 					.spatialJoin("the_geom", "/구역/읍면동", SpatialJoinOptions.OUTPUT("the_geom"))
 //					.parseCsv("text", ',', ParseCsvOption.HEADER(header),

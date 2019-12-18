@@ -48,7 +48,7 @@ public class CreateAgeInterval {
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
 		Plan plan;
-		plan = marmot.planBuilder(id)
+		plan = Plan.builder(id)
 					.load(inDsId)
 					.defineColumn("base_year:int")
 					.filter("base_year == " + year)

@@ -24,7 +24,7 @@ public class SampleLoadGHdfsFile {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		Plan plan;
-		plan = marmot.planBuilder("load_text")
+		plan = Plan.builder("load_text")
 					.loadGHdfsFile(LAYER)
 					.filter("age_intvl==20")
 //					.aggregate(AggregateFunction.COUNT())

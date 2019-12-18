@@ -32,7 +32,7 @@ public class SampleArcSelectByLocation {
 		
 		GeometryColumnInfo gcInfo = marmot.getDataSet(INPUT1).getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder("sample_arc_dissolve")
+		Plan plan = Plan.builder("sample_arc_dissolve")
 							.load(INPUT1)
 							.spatialSemiJoin(gcInfo.name(), INPUT2, WITHIN_DISTANCE(50))
 							.store(RESULT, FORCE(gcInfo))

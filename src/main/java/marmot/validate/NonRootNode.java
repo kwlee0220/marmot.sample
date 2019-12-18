@@ -57,7 +57,7 @@ public class NonRootNode extends Node {
 	protected void extractKeys(MarmotRuntime marmot) {
 		String projExpr = String.format("%s,parent_key", m_keyCol);
 		
-		Plan plan = marmot.planBuilder("extract links")
+		Plan plan = Plan.builder("extract links")
 							.load(m_dsId)
 							.defineColumn("parent_key:string", getParentKeyExpr())
 							.project(projExpr)
@@ -81,7 +81,7 @@ public class NonRootNode extends Node {
 	
 			String output = m_prefix + "orphans";
 			String danglingExpr = String.format("%s == null", m_parent.m_keyCol);
-			plan = marmot.planBuilder("find orphan ids")
+			plan = Plan.builder("find orphan ids")
 							.load(temp.getId())
 							.filter(danglingExpr)
 							.project(m_keyCol)
@@ -95,7 +95,7 @@ public class NonRootNode extends Node {
 				marmot.deleteDataSet(result.getId());
 			}
 	
-			plan = marmot.planBuilder("find infertile nodes")
+			plan = Plan.builder("find infertile nodes")
 							.load(temp.getId())
 							.filter("parent_key == null")
 							.project(m_parent.m_keyCol)
@@ -120,7 +120,7 @@ public class NonRootNode extends Node {
 		String filterExpr = String.format("parent_key == null || %s == null", m_parent.m_keyCol);
 		String tempDsId = m_prefix + "id_pairs";
 		
-		Plan plan = marmot.planBuilder("build id pairs")
+		Plan plan = Plan.builder("build id pairs")
 					.loadHashJoin(getIdDataSet(), "parent_key",
 									m_parent.getIdDataSet(), m_parent.m_keyCol,
 									outCols, FULL_OUTER_JOIN)
@@ -140,7 +140,7 @@ public class NonRootNode extends Node {
 			Plan plan;
 			
 			String output = m_prefix + "uncovered_geoms";
-			plan = marmot.planBuilder("find uncovered geoms")
+			plan = Plan.builder("find uncovered geoms")
 						.loadHashJoin(tempId, "parent_key", m_parent.m_dsId, m_parent.m_keyCol,
 										"left.*,right.the_geom as parent_geom",
 										JoinOptions.INNER_JOIN(nworkers))
@@ -169,7 +169,7 @@ public class NonRootNode extends Node {
 
 	private DataSet createParentBindings(MarmotRuntime marmot, String outDsId) {
 		String joinExpr = String.format("the_geom, %s, parent_key", m_keyCol);
-		Plan plan = marmot.planBuilder("create a parent bindings")
+		Plan plan = Plan.builder("create a parent bindings")
 							.load(m_dsId)
 							.defineColumn("parent_key:string", getParentKeyExpr())
 							.project(joinExpr)

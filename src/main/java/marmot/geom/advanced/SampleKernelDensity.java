@@ -31,7 +31,7 @@ public class SampleKernelDensity {
 		
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		SquareGrid grid = new SquareGrid(INPUT, new Size2d(1000, 1000));
-		Plan plan = marmot.planBuilder("sample_estimate_kernel_density")
+		Plan plan = Plan.builder("sample_estimate_kernel_density")
 						.loadGrid(grid)
 						.estimateKernelDensity("the_geom", INPUT, VALUE_COLUMN, RADIUS, VALUE_COLUMN)
 						.store(RESULT, FORCE(gcInfo))

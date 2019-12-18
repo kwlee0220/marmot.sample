@@ -38,7 +38,7 @@ public class BuildJinBunPOI {
 		RecordSchema schema;
 
 		String tempDs = "tmp/" + UUID.randomUUID().toString();
-		plan = marmot.planBuilder("distinct_jibun")
+		plan = Plan.builder("distinct_jibun")
 					.load(JIBUN)
 					.distinct("건물관리번호", 11) 
 					.store(tempDs, FORCE)
@@ -51,7 +51,7 @@ public class BuildJinBunPOI {
 			String geomCol = ds.getGeometryColumn();
 			GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 			
-			plan = marmot.planBuilder("build_jibun_poi")
+			plan = Plan.builder("build_jibun_poi")
 							.load(BUILD_POI)
 							.project(geomCol + ",도로명코드,건물본번,건물부번,지하여부,법정동코드")
 							.hashJoin("도로명코드,건물본번,건물부번,지하여부",

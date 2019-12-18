@@ -43,7 +43,7 @@ public class Step1CardSales {
 		String geomCol = ds.getGeometryColumn();
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder("대도시 상업지역 구역별 카드 일매출 집계")
+		Plan plan = Plan.builder("대도시 상업지역 구역별 카드 일매출 집계")
 							// 전국 카드매출액 파일을 읽는다.
 							.load(CARD_SALES)
 							// 시간대 단위의 매출액은 모두 합쳐 하루 매출액을 계산한다. 

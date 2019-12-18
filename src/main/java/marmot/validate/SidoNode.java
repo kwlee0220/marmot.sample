@@ -35,7 +35,7 @@ public class SidoNode extends RootNode {
 		Plan plan;
 		DataSet result;
 		
-		plan = marmot.planBuilder("validate sido id")
+		plan = Plan.builder("validate sido id")
 					.load(getIdDataSet())
 					.filter(RecordScript.of(filterInitExpr, filterExpr))
 					.store(m_prefix + "bad_keys", FORCE)

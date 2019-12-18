@@ -35,7 +35,7 @@ public class SampleEstimateIDW {
 		
 		String tempPath = "tmp/points";
 		
-		plan = marmot.planBuilder("to_point")
+		plan = Plan.builder("to_point")
 						.load(INPUT)
 						.centroid("the_geom")
 						.project("the_geom, big_sq, value")
@@ -45,7 +45,7 @@ public class SampleEstimateIDW {
 		result = marmot.getDataSet(RESULT);
 		result.cluster();
 		
-		plan = marmot.planBuilder("sample_estimate_idw")
+		plan = Plan.builder("sample_estimate_idw")
 						.load(tempPath)
 						.estimateIdw("the_geom", tempPath, VALUE_COLUMN, RADIUS,
 										TOP_K, "value", FOption.empty())

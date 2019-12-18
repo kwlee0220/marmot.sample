@@ -39,7 +39,7 @@ public class Step2 {
 						+ "if ( cell_id == null ) {cell_id = param_cell_id;}"
 						+ "if ( sgg_cd == null ) {sgg_cd = param_sgg_cd;}";
 
-		Plan plan = marmot.planBuilder("대도시 상업지역 구역별 카드매출액 및 유동인구수 통합")
+		Plan plan = Plan.builder("대도시 상업지역 구역별 카드매출액 및 유동인구수 통합")
 							.load(BIZ_GRID_SALES)
 							.hashJoin("std_ym,cell_id,sgg_cd", BIZ_GRID_FLOW_POP,
 									"std_ym,cell_id,sgg_cd",

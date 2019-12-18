@@ -19,7 +19,7 @@ public class SampleExecuteToSingle {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
-		Plan plan = marmot.planBuilder("test")
+		Plan plan = Plan.builder("test")
 							.load(INPUT)
 							.aggregate(AggregateFunction.COUNT())
 							.build();

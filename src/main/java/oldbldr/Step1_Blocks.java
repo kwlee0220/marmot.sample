@@ -43,7 +43,7 @@ public class Step1_Blocks {
 		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan;
-		plan = marmot.planBuilder("읍면동별 집계구 수집")
+		plan = Plan.builder("읍면동별 집계구 수집")
 					.load(BLOCKS)
 					.spatialJoin("the_geom", EMD, "param.emd_cd,block_cd")
 					.store(RESULT, FORCE)

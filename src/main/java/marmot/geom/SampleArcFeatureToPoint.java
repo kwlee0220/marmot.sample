@@ -30,7 +30,7 @@ public class SampleArcFeatureToPoint {
 		StopWatch watch = StopWatch.start();
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		Plan plan = marmot.planBuilder("spatial_join")
+		Plan plan = Plan.builder("spatial_join")
 							.load(INPUT)
 							.centroid("the_geom", true, GeomOpOptions.DEFAULT)
 							.store(RESULT, FORCE(gcInfo))

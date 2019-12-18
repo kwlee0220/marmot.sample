@@ -105,7 +105,7 @@ public class FindBestSubway {
 		GeometryColumnInfo gcInfo = stations.getGeometryColumnInfo();
 
 		Plan plan;
-		plan = marmot.planBuilder("서울지역 지하철역사 1KM 버퍼")
+		plan = Plan.builder("서울지역 지하철역사 1KM 버퍼")
 					.load(STATIONS)
 					.filter("sig_cd.substring(0,2) == '11'")
 					.buffer(gcInfo.name(), 1000)
@@ -132,7 +132,7 @@ public class FindBestSubway {
 		GeometryColumnInfo gcInfo = marmot.getDataSet(SID).getGeometryColumnInfo();
 		
 		Plan plan;
-		plan = marmot.planBuilder("get_seoul")
+		plan = Plan.builder("get_seoul")
 					.load(SID)
 					.filter("ctprvn_cd == '11'")
 					.store(outDsId, FORCE(gcInfo))
@@ -157,7 +157,7 @@ public class FindBestSubway {
 		SquareGrid grid = new SquareGrid(seoul.getId(), new Size2d(300, 300));
 		
 		Plan plan;
-		plan = marmot.planBuilder("격자_집계구_비율")
+		plan = Plan.builder("격자_집계구_비율")
 					.load(BLOCKS)
 					.filter("block_cd.substring(0,2) == '11'")
 					.differenceJoin(gcInfo.name(), subway.getId())
@@ -190,7 +190,7 @@ public class FindBestSubway {
 		String outJoinCols = String.format("*-{%s},param.*-{%s}", gcInfo.name(), blocks.getGeometryColumn());
 		
 		Plan plan;
-		plan = marmot.planBuilder("격자별_택시승하차_집계")
+		plan = Plan.builder("격자별_택시승하차_집계")
 					// 택시 로그를  읽는다.
 					.load(TAXI_LOG)
 					
@@ -233,7 +233,7 @@ public class FindBestSubway {
 		}
 		
 		Plan plan;
-		plan = marmot.planBuilder("격자별_유동인구_통합")
+		plan = Plan.builder("격자별_유동인구_통합")
 					.load(DS_IDS, LoadOptions.DEFAULT)
 					.aggregateByGroup(Group.ofKeys("cell_id").tags("cell_pos"),
 										AVG("normalized").as("normalized"))
@@ -263,7 +263,7 @@ public class FindBestSubway {
 		String avgExpr = String.format("(%s) / 24", sumExpr);
 
 		Plan plan;
-		plan = marmot.planBuilder(planName)
+		plan = Plan.builder(planName)
 					// 유동인구를  읽는다.
 					.load(inDsId)
 					
@@ -312,7 +312,7 @@ public class FindBestSubway {
 		}
 		
 		Plan plan;
-		plan = marmot.planBuilder("격자별_카드매출_통합")
+		plan = Plan.builder("격자별_카드매출_통합")
 					.load(DS_IDS, LoadOptions.DEFAULT)
 					.aggregateByGroup(Group.ofKeys("cell_id").tags("cell_pos"),
 										AVG("normalized").as("normalized"))
@@ -341,7 +341,7 @@ public class FindBestSubway {
 									.collect(Collectors.joining("+"));
 
 		Plan plan;
-		plan = marmot.planBuilder(planName)
+		plan = Plan.builder(planName)
 					// 카드매출을  읽는다.
 					.load(inDsId)
 					
@@ -401,7 +401,7 @@ public class FindBestSubway {
 					+ "normalized = normalized + param_normalized;";
 		
 		Plan plan;
-		plan = marmot.planBuilder("격자별_유동인구_카드매출_택시승하차_표준값_합계")
+		plan = Plan.builder("격자별_유동인구_카드매출_택시승하차_표준값_합계")
 					.loadHashJoin(card.getId(), "cell_id", flowPop.getId(), "cell_id",
 									"left.*,right.{cell_id as right_cell_id,"
 												+ "normalized as right_normalized}",
@@ -435,7 +435,7 @@ public class FindBestSubway {
 		String outJoinCols = String.format("%s,cell_id,cell_pos,param.value", gcInfo.name());
 		
 		Plan plan;
-		plan = marmot.planBuilder("공간데이터 첨부")
+		plan = Plan.builder("공간데이터 첨부")
 					.load(blocks.getId())
 					
 					// 격자별로 집계구 겹침 영역 union

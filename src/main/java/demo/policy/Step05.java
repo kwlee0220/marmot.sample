@@ -31,7 +31,7 @@ public class Step05 {
 		DataSet ds = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
-		Plan plan = marmot.planBuilder("인구밀도_2017_중심점추출_10000이상")
+		Plan plan = Plan.builder("인구밀도_2017_중심점추출_10000이상")
 							.load(INPUT)
 							.filter("value >= 10000")				// (5) 영역분석
 							.store(RESULT, FORCE(gcInfo))

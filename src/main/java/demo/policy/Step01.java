@@ -32,7 +32,7 @@ public class Step01 {
 		DataSet ds = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
-		Plan plan = marmot.planBuilder("노인복지시설_경로당_추출")
+		Plan plan = Plan.builder("노인복지시설_경로당_추출")
 						.load(INPUT)
 						.filter("induty_nm == '경로당'")			// (1) 영역분석
 						.store(RESULT, FORCE(gcInfo))

@@ -32,7 +32,7 @@ public class PreProcessAgePop {
 		
 		GeometryColumnInfo gcInfo = marmot.getDataSet(INPUT).getGeometryColumnInfo();
 		
-		plan = marmot.planBuilder("pre_process_age_pop")
+		plan = Plan.builder("pre_process_age_pop")
 					.load(INPUT)
 					.defineColumn("base_year:int")
 					.defineColumn("age_intvl:int", "(item_name.substring(7) / 10) * 10")

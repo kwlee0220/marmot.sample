@@ -31,7 +31,7 @@ public class BuildGeoVisionRegionCenter {
 		DataSet blocks = marmot.getDataSet(BLOCKS);
 		GeometryColumnInfo gcInfo = blocks.getGeometryColumnInfo();
 
-		Plan plan = marmot.planBuilder("지오비전_집계구_중심점_추출")
+		Plan plan = Plan.builder("지오비전_집계구_중심점_추출")
 								.load(BLOCKS)
 								.centroid(gcInfo.name())
 								.store(BLOCK_CENTERS, FORCE(gcInfo))

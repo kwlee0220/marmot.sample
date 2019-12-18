@@ -75,7 +75,7 @@ public class PerfRangeQuery {
 	
 	private static final long process(MarmotRuntime marmot, String input, Envelope range) {
 		String planName = "perf_range_query_" + input.replaceAll("/", ".");
-		Plan plan = marmot.planBuilder(planName)
+		Plan plan = Plan.builder(planName)
 							.query(input, range)
 							.buffer("the_geom", 100)
 							.store("tmp/result", FORCE)
@@ -93,7 +93,7 @@ public class PerfRangeQuery {
 	}
 	
 	private static Envelope getSeoChoDong(MarmotRuntime marmot) {
-		Plan plan = marmot.planBuilder("get seochodong")
+		Plan plan = Plan.builder("get seochodong")
 							.load(SIDO)
 							.filter("ctprvn_cd == '41' || ctprvn_cd == '28' || ctprvn_cd == '11'")
 							.project("the_geom")

@@ -58,7 +58,7 @@ public class Step0 {
 		Size2d cellSize = new Size2d(100, 100);
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
 		
-		Plan plan = marmot.planBuilder("대도시 상업지역 100mX100m 그리드 구역 생성")
+		Plan plan = Plan.builder("대도시 상업지역 100mX100m 그리드 구역 생성")
 							// 용도지구에 대한 100m 크기의 그리드를 생성 
 							.loadGrid(new SquareGrid(bounds, cellSize), -1)
 							// 상업지구에 겹치는 그리드 셀만 추출한다.
@@ -100,7 +100,7 @@ public class Step0 {
 		DataSet political = marmot.getDataSet(POLITICAL);
 		GeometryColumnInfo gcInfo = political.getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder("대도시지역 추출")
+		Plan plan = Plan.builder("대도시지역 추출")
 								.load(POLITICAL)
 								.expand("sid_cd:string,sgg_cd:string",
 										"sid_cd = bjd_cd.substring(0,2);"
@@ -119,7 +119,7 @@ public class Step0 {
 		DataSet political = marmot.getDataSet(CADASTRAL);
 		GeometryColumnInfo gcInfo = political.getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder("filter_big_cities")
+		Plan plan = Plan.builder("filter_big_cities")
 								.load(CADASTRAL)
 								.expand("sid_cd:string,sgg_cd:string",
 										"sid_cd = pnu.substring(0,2);"
@@ -143,7 +143,7 @@ public class Step0 {
 		
 		DataSet ds = marmot.getDataSet(LAND_USAGE);
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
-		Plan plan = marmot.planBuilder("상업지역 추출")
+		Plan plan = Plan.builder("상업지역 추출")
 							.load(LAND_USAGE)
 							.filter(RecordScript.of(initExpr, "$types.contains(dgm_nm)"))
 							.project("the_geom")

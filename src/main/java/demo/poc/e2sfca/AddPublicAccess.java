@@ -72,7 +72,7 @@ public class AddPublicAccess {
 		StoreAsCsvOptions opts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
 		
 		Plan plan;
-		plan = marmot.planBuilder("강남구_유동인구_추출")
+		plan = Plan.builder("강남구_유동인구_추출")
 						.load(FLOW_POP)
 						.toXY("the_geom", "XCOORD", "YCOORD")
 						.project("std_ym as STD_YM,block_cd as BLOCK_CD,"
@@ -91,7 +91,7 @@ public class AddPublicAccess {
 		StoreAsCsvOptions opts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
 		
 		Plan plan;
-		plan = marmot.planBuilder("강남구_버스정보_추출")
+		plan = Plan.builder("강남구_버스정보_추출")
 					.load(BUS)
 					.toXY("the_geom", "XCOORD", "YCOORD")
 					.project(HEADER_BUS)
@@ -107,7 +107,7 @@ public class AddPublicAccess {
 		StoreAsCsvOptions opts = StoreAsCsvOptions.DEFAULT().headerFirst(true);
 		
 		Plan plan;
-		plan = marmot.planBuilder("강남구_치하철정보_추출")
+		plan = Plan.builder("강남구_치하철정보_추출")
 					.load(SUBWAY)
 					.toXY("the_geom", "XCOORD", "YCOORD")
 					.project(HEADER_SUBWAY)
@@ -137,7 +137,7 @@ public class AddPublicAccess {
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		
 		Plan plan;
-		plan = marmot.planBuilder("접근성 결과 수집")
+		plan = Plan.builder("접근성 결과 수집")
 					.loadTextFile(CSV_RESULT_PATH)
 					.parseCsv("text", opts)
 					.filter("!X_COORD.equals('X_COORD')")

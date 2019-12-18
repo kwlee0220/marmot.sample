@@ -86,7 +86,7 @@ public class FindBestSubwayStationCandidates {
 		GeometryColumnInfo gcInfo = marmot.getDataSet(SID).getGeometryColumnInfo();
 		
 		Plan plan;
-		plan = marmot.planBuilder("get_seoul")
+		plan = Plan.builder("get_seoul")
 					.load(SID)
 					.filter("ctprvn_cd == '11'")
 					.store(outDsId, FORCE(gcInfo))
@@ -107,7 +107,7 @@ public class FindBestSubwayStationCandidates {
 		GeometryColumnInfo gcInfo = stations.getGeometryColumnInfo();
 
 		Plan plan;
-		plan = marmot.planBuilder("서울지역 지하철역사 1KM 버퍼")
+		plan = Plan.builder("서울지역 지하철역사 1KM 버퍼")
 					.load(STATIONS)
 					.filter("sig_cd.substring(0,2) == '11'")
 					.buffer(gcInfo.name(), 1000)
@@ -133,7 +133,7 @@ public class FindBestSubwayStationCandidates {
 									.collect(Collectors.joining("+"));
 
 		Plan plan;
-		plan = marmot.planBuilder("'500mX500m 격자단위 유동인구' 집계")
+		plan = Plan.builder("'500mX500m 격자단위 유동인구' 집계")
 					// 서울시 영역만 추출한다.
 					.query(FLOW_POP_BYTIME, seoul.getId())
 					
@@ -197,7 +197,7 @@ public class FindBestSubwayStationCandidates {
 		
 		// 택시 운행 로그 기록에서 성울시 영역부분에서 승하차 로그 데이터만 추출한다.
 		Plan plan;
-		plan = marmot.planBuilder("택시승하차 로그 집계")
+		plan = Plan.builder("택시승하차 로그 집계")
 					// 택시 로그를  읽는다.
 					.load(TAXI_LOG)
 					
@@ -266,7 +266,7 @@ public class FindBestSubwayStationCandidates {
 					+ "}"
 					+ "normalized = normalized + param_normalized;";
 		
-		plan = marmot.planBuilder("그리드 셀단위 유동인구 비율과 택시 승하차 로그 비율 합계 계산")
+		plan = Plan.builder("그리드 셀단위 유동인구 비율과 택시 승하차 로그 비율 합계 계산")
 					.load(TEMP_FLOW_POP)
 					.hashJoin("cell_id", TEMP_TAXI_LOG, "cell_id",
 							"the_geom,cell_id,normalized,"

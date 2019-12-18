@@ -55,7 +55,7 @@ public class A04_MapMatchingElectro {
 		DataSet ds = marmot.getDataSet(CADASTRAL);
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder("연속지적도 매칭")
+		Plan plan = Plan.builder("연속지적도 매칭")
 						.loadHashJoin(CADASTRAL, "pnu", INTERM, "pnu",
 										"left.*," + rightCols, LEFT_OUTER_JOIN(17))
 						.update(updateExpr)
@@ -79,7 +79,7 @@ public class A04_MapMatchingElectro {
 												(b,y) -> b.addColumn("electro_"+y, DataType.LONG))
 										.build();
 		
-		Plan plan = marmot.planBuilder("put_side_by_size_electro")
+		Plan plan = Plan.builder("put_side_by_size_electro")
 						.load(INPUT)
 						.expand("tag:string", "tag = 'electro_' + year")
 						.reduceToSingleRecordByGroup(Group.ofKeys("pnu"), outSchema, "tag", "usage")

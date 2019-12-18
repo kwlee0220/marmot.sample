@@ -29,7 +29,7 @@ public class SampleSpatialAggregateJoin {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		Plan plan = marmot.planBuilder("spatial_join")
+		Plan plan = Plan.builder("spatial_join")
 								.load(EMD)
 								.spatialAggregateJoin("the_geom", GAS_STATIONS, COUNT(), MAX("휘발유"))
 								.store(RESULT, FORCE(gcInfo))

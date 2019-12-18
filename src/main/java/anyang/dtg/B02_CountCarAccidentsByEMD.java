@@ -33,7 +33,7 @@ public class B02_CountCarAccidentsByEMD {
 		GeometryColumnInfo gcInfo = marmot.getDataSet(ACCIDENT).getGeometryColumnInfo();
 
 		Plan plan;
-		plan = marmot.planBuilder("읍면동별 사망사고 빈도집계")
+		plan = Plan.builder("읍면동별 사망사고 빈도집계")
 						.load(EMD)
 						.spatialAggregateJoin("the_geom", ACCIDENT, AggregateFunction.COUNT())
 						.project("the_geom,db_id,행정동 as name,count")

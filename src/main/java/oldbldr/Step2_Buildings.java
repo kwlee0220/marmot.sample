@@ -62,7 +62,7 @@ public class Step2_Buildings {
 					+ "}"
 					+ "else { old = 0; be5 = 0; }";		
 		
-		plan = marmot.planBuilder("행정구역당 20년 이상된 건물 집계")
+		plan = Plan.builder("행정구역당 20년 이상된 건물 집계")
 					.load(BUILDINGS)
 					.defineColumn("emd_cd:string", "pnu.substring(0,8)")
 					.expand("old:byte,be5:byte", RecordScript.of(init, trans))

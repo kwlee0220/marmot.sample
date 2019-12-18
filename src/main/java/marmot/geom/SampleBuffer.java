@@ -26,7 +26,7 @@ public class SampleBuffer {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		GeometryColumnInfo gcInfo = marmot.getDataSet(INPUT).getGeometryColumnInfo();
-		Plan plan = marmot.planBuilder("buffer")
+		Plan plan = Plan.builder("buffer")
 						.load(INPUT)
 						.buffer("the_geom", 50)
 						.store(RESULT, FORCE(gcInfo))

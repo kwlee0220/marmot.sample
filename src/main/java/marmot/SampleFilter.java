@@ -27,7 +27,7 @@ public class SampleFilter {
 		DataSet input = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 
-		Plan plan = marmot.planBuilder("filter")
+		Plan plan = Plan.builder("filter")
 							.load(INPUT)
 							.filter("휘발유 > 2000")
 							.project("THE_GEOM,상호,휘발유")

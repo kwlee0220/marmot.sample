@@ -33,7 +33,7 @@ public class B02_SumMonthElectroYear {
 		String filterPred = String.format("year == %d", Globals.YEAR);
 
 		Plan plan;
-		plan = marmot.planBuilder(planName)
+		plan = Plan.builder(planName)
 					.load(INPUT)
 					.defineColumn("year:short", "사용년월.substring(0, 4)")
 					.filter(filterPred)

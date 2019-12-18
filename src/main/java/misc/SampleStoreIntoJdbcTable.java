@@ -42,7 +42,7 @@ public class SampleStoreIntoJdbcTable {
 		JdbcConnectOptions jdbcOpts
 						= JdbcConnectOptions.POSTGRES_SQL("129.254.82.95", 5433, "sbdata",
 															"sbdata", "urc2004", null);
-		Plan plan = marmot.planBuilder("test")
+		Plan plan = Plan.builder("test")
 							.load("교통/지하철/서울역사")
 							.project("the_geom,sig_cd")
 							.expand("the_geom:binary", "the_geom = ST_AsBinary(the_geom)")

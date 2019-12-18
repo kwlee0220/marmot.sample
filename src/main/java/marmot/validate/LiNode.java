@@ -28,7 +28,7 @@ public class LiNode extends NonRootNode {
 			String output = m_prefix + SUFFIX_EMPTY_PARENT;
 			
 			String outCols = String.format("right.{%s,emd_kor_nm}", m_parent.m_keyCol);
-			Plan plan = marmot.planBuilder("adjust empty childs")
+			Plan plan = Plan.builder("adjust empty childs")
 							.loadHashJoin(m_prefix + "__tmp", m_parent.m_keyCol,
 											m_parent.m_dsId, m_parent.m_keyCol,
 											outCols, INNER_JOIN)

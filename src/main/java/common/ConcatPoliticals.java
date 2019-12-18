@@ -53,7 +53,7 @@ public class ConcatPoliticals {
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
 		Plan plan;
-		plan = marmot.planBuilder("merge_politicals")
+		plan = Plan.builder("merge_politicals")
 						.load(LI)
 						.expand("emd_cd2:string", "emd_cd2 = li_cd.substring(0,8)")
 						.hashJoin("emd_cd2", EMD, "emd_cd",

@@ -31,7 +31,7 @@ public class Step02 {
 		DataSet ds = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
-		Plan plan = marmot.planBuilder("노인복지시설_경로당_추출_버퍼")
+		Plan plan = Plan.builder("노인복지시설_경로당_추출_버퍼")
 						.load(INPUT)
 						.buffer(gcInfo.name(), 400)	// (2) 버퍼추정
 						.store(RESULT, FORCE(gcInfo))

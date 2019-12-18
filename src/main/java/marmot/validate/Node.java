@@ -52,7 +52,7 @@ public abstract class Node {
 		String filterExpr = String.format("%s.length() != %d", m_keyCol, m_keyLength);
 		String outDsId = m_prefix + "bad_length_keys";
 		
-		Plan plan = marmot.planBuilder("find bad length keys")
+		Plan plan = Plan.builder("find bad length keys")
 							.load(getIdDataSet())
 							.filter(filterExpr)
 							.project(m_keyCol)
@@ -70,7 +70,7 @@ public abstract class Node {
 	private void findDuplicatedKeys(MarmotRuntime marmot) {
 		String outDsId = m_prefix + "duplicated_ids";
 		
-		Plan plan = marmot.planBuilder("find duplicated keys")
+		Plan plan = Plan.builder("find duplicated keys")
 							.load(getIdDataSet())
 							.aggregateByGroup(Group.ofKeys(m_keyCol), COUNT())
 							.filter("count > 1")
@@ -92,7 +92,7 @@ public abstract class Node {
 											geomCol, m_keyCol, geomCol, m_keyCol);
 		String outDsId = m_prefix + "overlaped_geoms";
 		
-		Plan plan = marmot.planBuilder("find overlapping geoms")
+		Plan plan = Plan.builder("find overlapping geoms")
 							.loadSpatialIndexJoin(m_dsId, m_dsId, outColExpr)
 							.filter("key1 < key2")
 							.defineColumn("overlap:double", "ST_Area(ST_Intersection(the_geom1, the_geom2))")

@@ -28,7 +28,7 @@ public class SampleSpatialSemiJoin {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		GeometryColumnInfo gcInfo = marmot.getDataSet(INPUT).getGeometryColumnInfo();
-		Plan plan = marmot.planBuilder("within_distance")
+		Plan plan = Plan.builder("within_distance")
 							.load(INPUT)
 							.spatialSemiJoin("the_geom", PARAMS,
 											SpatialJoinOptions.WITHIN_DISTANCE(30))

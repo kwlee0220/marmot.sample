@@ -36,7 +36,7 @@ public class B03_CountCarAccidentsByRoad {
 		AggregateFunction[] aggrs = new AggregateFunction[]{ COUNT() };
 
 		Plan plan;
-		plan = marmot.planBuilder("도로별 사망사고 빈도집계")
+		plan = Plan.builder("도로별 사망사고 빈도집계")
 					.load(ROADS)
 					.spatialAggregateJoin("the_geom", ACCIDENT, aggrs,
 											WITHIN_DISTANCE(15))

@@ -66,7 +66,7 @@ public class TagDtgFully {
 		DataSet output;
 
 		Plan plan;
-		plan = marmot.planBuilder("tag dtg")
+		plan = Plan.builder("tag dtg")
 					.load(DTG)
 					
 					.hashJoin("운송사코드", DTG_COMPANY, "회사코드", "*,param.업종코드",
@@ -96,7 +96,7 @@ public class TagDtgFully {
 	
 	private static Geometry getGyoungGiDo(PBMarmotClient marmot) {
 		Plan plan;
-		plan = marmot.planBuilder("find gyounggi")
+		plan = Plan.builder("find gyounggi")
 					.load(POLITICAL)
 					.filter("ctprvn_cd == 41")
 					.project("the_geom")

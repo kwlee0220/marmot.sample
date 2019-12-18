@@ -29,7 +29,7 @@ public class A11_SplitLandMap {
 		
 		GeometryColumnInfo info = marmot.getDataSet(INPUT).getGeometryColumnInfo();
 		
-		Plan plan = marmot.planBuilder("2012-2017년도 개별공시지가 연속지적도 매칭 분할")
+		Plan plan = Plan.builder("2012-2017년도 개별공시지가 연속지적도 매칭 분할")
 						.load(INPUT)
 						.defineColumn("sido:string", "pnu.substring(0, 2)")
 						.storeByGroup(Group.ofKeys("sido"), OUTPUT, GEOMETRY(info))
