@@ -9,12 +9,11 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.optor.AggregateFunction;
 import marmot.plan.Group;
+import marmot.plan.LoadOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import marmot.remote.protobuf.PBMarmotSparkSessionClient;
 import utils.StopWatch;
 
 /**
@@ -29,7 +28,8 @@ public class TestMarmotPlan {
 		PropertyConfigurator.configure("log4j.properties");
 
 		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = MarmotClientCommands.connect();
+//		PBMarmotClient marmot = MarmotClientCommands.connect();
+		PBMarmotClient marmot = PBMarmotClient.connect("220.74.32.5", 12988);
 //		PBMarmotSparkSessionClient session = PBMarmotSparkSessionClient.connect("192.168.1.108", 5685);
 		
 		StopWatch watch = StopWatch.start();
@@ -49,13 +49,12 @@ public class TestMarmotPlan {
 	
 	private static final Plan getPlan4(MarmotRuntime marmot) {
 		return Plan.builder("test")
-					.load("flow_pop_time")
-					.hashJoin("BLOCK_CD", "blockgeo", "BLOCK_CD", "year,avg_10tmst,param.{emdcode}",
-								INNER_JOIN)
+					.load("flow_pop_time", LoadOptions.FIXED_MAPPERS())
+					.hashJoin("BLOCK_CD", "blockgeo", "BLOCK_CD", "year,avg_10tmst,param.{emdcode}", INNER_JOIN)
 					.hashJoin("emdcode", "emdgeo", "emdcode", "year,avg_10tmst,param.{sigcode}", INNER_JOIN)
 					.hashJoin("sigcode", "siggeo", "sigcode", "year,avg_10tmst,param.{sdcode}", INNER_JOIN)
 					.hashJoin("sdcode", "sdgeo", "sdcode", "year,avg_10tmst,param.{name}", INNER_JOIN)
-					.aggregateByGroup(Group.ofKeys("name"), AVG("avg_10tmst"))
+					.aggregateByGroup(Group.ofKeys("name").workerCount(2), AVG("avg_10tmst"))
 					.project("name as c0, avg as m0")
 					.store(RESULT, FORCE)
 					.build();

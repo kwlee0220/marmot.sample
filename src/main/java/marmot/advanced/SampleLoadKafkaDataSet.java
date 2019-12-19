@@ -9,6 +9,7 @@ import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
+import marmot.plan.LoadOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -29,7 +30,7 @@ public class SampleLoadKafkaDataSet {
 		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		
 		Plan plan = Plan.builder("sample_assign_uid")
-							.load(INPUT)
+							.load(INPUT, LoadOptions.FIXED_MAPPERS(2))
 							.filter("(long)출입구일련번호 % 119999 == 3")
 							.assignUid("guid")
 							.project("the_geom,guid,출입구일련번호")
