@@ -9,6 +9,7 @@ import org.apache.log4j.PropertyConfigurator;
 import common.SampleUtils;
 import marmot.MarmotRuntime;
 import marmot.Plan;
+import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.optor.AggregateFunction;
 import marmot.plan.Group;
