@@ -1,7 +1,7 @@
 apply plugin: 'java'
 
 group = 'etri'
-version = '19.12.19'
+version = '20.01.08'
 
 sourceCompatibility = JavaVersion.VERSION_1_8;
 [compileJava,compileTestJava]*.options*.encoding = 'UTF-8'
