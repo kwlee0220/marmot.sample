@@ -28,8 +28,11 @@ public class SampleGeoDataStore {
 
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
-		
-		GeoDataStore store = GeoDataStore.from(marmot).setUsePrefetch(true);
+
+		GeoDataStore store = GeoDataStore.builder()
+										.setMarmotRuntime(marmot)
+										.setUsePrefetch(true)
+										.build();
 		
 		for ( DataSet ds: store.getGeoDataSetAll() ) {
 			System.out.println(ds);

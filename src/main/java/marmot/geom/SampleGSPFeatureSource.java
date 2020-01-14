@@ -14,6 +14,7 @@ import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
 import marmot.geo.geoserver.GSPDataStore;
 import marmot.geo.geoserver.GSPFeatureSource;
+import marmot.geo.query.GeoDataStore;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -37,9 +38,13 @@ public class SampleGSPFeatureSource {
 		File parentDir = Files.createTempDir().getParentFile();
 		File cacheDir =  new File(parentDir, "marmot_geoserver_cache");
 		
-		GSPDataStore store = new GSPDataStore(marmot, cacheDir);
-		store.setSampleCount(20000);
-		store.usePrefetch(true);
+		GeoDataStore geoStore = GeoDataStore.builder()
+											.setMarmotRuntime(marmot)
+											.setCacheDir(cacheDir)
+											.setSampleCount(20000)
+											.setUsePrefetch(true)
+											.build();
+		GSPDataStore store = new GSPDataStore(geoStore);
 		
 		RecordSet rset;
 //		GSPFeatureSource src = (GSPFeatureSource)store.getFeatureSource("주소.건물POI");
