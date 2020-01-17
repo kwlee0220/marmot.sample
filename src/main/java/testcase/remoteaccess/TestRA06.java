@@ -8,7 +8,6 @@ import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
-import marmot.dataset.DataSet;
 import marmot.geo.query.GeoDataStore;
 import marmot.remote.protobuf.PBMarmotClient;
 
@@ -16,7 +15,7 @@ import marmot.remote.protobuf.PBMarmotClient;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class TestRA03 {
+public class TestRA06 {
 	private static final String INPUT = "건물/건물통합정보마스터";
 	private static final String SIDO = "구역/시도";
 	private static final String SGG = "구역/시군구";
@@ -32,9 +31,7 @@ public class TestRA03 {
 										.setMarmotRuntime(marmot)
 										.build();
 
-		Envelope range = getSiDo(marmot, "경기도");
-		range.expandToInclude(getSiDo(marmot, "충청남도"));
-		range.expandToInclude(getSiDo(marmot, "강원도"));
+		Envelope range = getSiDo(marmot, "서울특별시");
 		try ( RecordSet rset = store.createRangeQuery(INPUT, range).run() ) {
 			long count = rset.count();
 			System.out.printf("total count: %d%n", count);

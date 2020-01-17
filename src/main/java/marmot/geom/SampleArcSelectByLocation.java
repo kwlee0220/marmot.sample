@@ -18,8 +18,8 @@ import utils.StopWatch;
  * @author Kang-Woo Lee (ETRI)
  */
 public class SampleArcSelectByLocation {
-	private static final String INPUT1 = "안양대/공간연산/select/input1";
-	private static final String INPUT2 = "안양대/공간연산/select/input2";
+	private static final String BUILDING = "안양대/공간연산/select/building";
+	private static final String RIVER = "안양대/공간연산/select/river";
 	private static final String RESULT = "tmp/result";
 
 	public static final void main(String... args) throws Exception {
@@ -30,11 +30,11 @@ public class SampleArcSelectByLocation {
 		
 		StopWatch watch = StopWatch.start();
 		
-		GeometryColumnInfo gcInfo = marmot.getDataSet(INPUT1).getGeometryColumnInfo();
+		GeometryColumnInfo gcInfo = marmot.getDataSet(BUILDING).getGeometryColumnInfo();
 		
-		Plan plan = Plan.builder("sample_arc_dissolve")
-							.load(INPUT1)
-							.spatialSemiJoin(gcInfo.name(), INPUT2, WITHIN_DISTANCE(50))
+		Plan plan = Plan.builder("sample_select_by_location")
+							.load(BUILDING)
+							.spatialSemiJoin(gcInfo.name(), RIVER, WITHIN_DISTANCE(50))
 							.store(RESULT, FORCE(gcInfo))
 							.build();
 		marmot.execute(plan);

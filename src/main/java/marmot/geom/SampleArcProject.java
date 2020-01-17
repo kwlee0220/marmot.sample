@@ -29,10 +29,12 @@ public class SampleArcProject {
 		StopWatch watch = StopWatch.start();
 		
 		GeometryColumnInfo gcInfo = marmot.getDataSet(INPUT).getGeometryColumnInfo();
-		Plan plan = Plan.builder("sample_arc_dissolve")
+		GeometryColumnInfo tarGcInfo = new GeometryColumnInfo(gcInfo.name(), "EPSG:5186");
+		
+		Plan plan = Plan.builder("sample_arc_project")
 							.load(INPUT)
 							.transformCrs(gcInfo.name(), gcInfo.srid(), "EPSG:5186")
-							.store(RESULT, FORCE(gcInfo))
+							.store(RESULT, FORCE(tarGcInfo))
 							.build();
 		marmot.execute(plan);
 		DataSet result = marmot.getDataSet(RESULT);

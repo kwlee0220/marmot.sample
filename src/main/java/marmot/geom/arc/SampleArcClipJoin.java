@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import common.SampleUtils;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.Record;
@@ -11,6 +12,7 @@ import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
+import marmot.optor.StoreDataSetOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 import utils.func.Tuple;
@@ -38,11 +40,11 @@ public class SampleArcClipJoin {
 							.load(INPUT)
 							.arcClip("the_geom", PARAM)
 							.build();
-//		DataSet result = marmot.createDataSet(RESULT, plan, FORCE(gcInfo));
-//		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
-//		
-//		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-//		SampleUtils.printPrefix(result, 5);
+		DataSet result = marmot.createDataSet(RESULT, plan, StoreDataSetOptions.FORCE(gcInfo));
+		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
+		
+		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
+		SampleUtils.printPrefix(result, 5);
 		
 		check(marmot);
 	}

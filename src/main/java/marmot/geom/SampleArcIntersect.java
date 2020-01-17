@@ -1,6 +1,6 @@
 package marmot.geom;
 
-import static marmot.optor.StoreDataSetOptions.FORCE;
+import static marmot.optor.StoreDataSetOptions.*;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -8,6 +8,7 @@ import common.SampleUtils;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
+import marmot.dataset.GeometryColumnInfo;
 import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -28,11 +29,13 @@ public class SampleArcIntersect {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		StopWatch watch = StopWatch.start();
+		DataSet input = marmot.getDataSet(INPUT);
+		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
 		
 		Plan plan = Plan.builder("sample_intersection_join")
 							.load(INPUT)
 							.intersectionJoin("the_geom", PARAM, SpatialJoinOptions.EMPTY)
-							.store(RESULT, FORCE)
+							.store(RESULT, FORCE(gcInfo))
 							.build();
 		marmot.execute(plan);
 		DataSet result = marmot.getDataSet(RESULT);
