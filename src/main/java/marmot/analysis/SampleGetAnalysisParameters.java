@@ -1,4 +1,4 @@
-package marmot;
+package marmot.analysis;
 
 import org.apache.log4j.PropertyConfigurator;
 

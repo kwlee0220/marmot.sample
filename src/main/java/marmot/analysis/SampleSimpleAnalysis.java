@@ -1,4 +1,4 @@
-package marmot;
+package marmot.analysis;
 
 import java.util.List;
 import java.util.Map;
@@ -7,6 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.google.common.collect.Maps;
 
+import marmot.Plan;
 import marmot.analysis.system.SystemAnalysis;
 import marmot.command.MarmotClientCommands;
 import marmot.exec.AnalysisNotFoundException;

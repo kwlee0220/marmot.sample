@@ -1,4 +1,4 @@
-package marmot;
+package marmot.analysis;
 
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
