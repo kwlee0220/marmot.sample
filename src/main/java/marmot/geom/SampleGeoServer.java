@@ -1,5 +1,7 @@
 package marmot.geom;
 
+import java.util.List;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.command.MarmotClientCommands;
@@ -27,14 +29,28 @@ public class SampleGeoServer {
 		DataSet ds = marmot.getDataSet(HOSPITAL);
 		
 		GeoServer server = GeoServer.create("220.74.32.5", 9987, "admin", "geoserver");
+//		GeoServer server = GeoServer.create("localhost", 8080, "admin", "geoserver");
 		
-		System.out.println("before remove layer: " + server.listLayers());
-
-		server.removeLayer(ds.getId());
-		System.out.println("after remove layer: " + server.listLayers());
+		List<String> layerIdList = server.listLayers();
+		for ( String layerId: layerIdList ) {
+			System.out.println("layer: " + layerId);
+		}
+		
+		boolean exists = layerIdList.contains(ds.getId());
+		if ( exists ) {
+			System.out.println("remove layer: " + ds.getId());
+			server.removeLayer(ds.getId());
+			System.out.println("LAYERS= " + server.listLayers());
+		}
+		
+		System.out.println("add layer: " + ds.getId());
 		server.addLayer(ds);
-		System.out.println("after add layer: " + server.listLayers());
-		server.removeLayer(ds.getId());
-		System.out.println("after remove layer again: " + server.listLayers());
+		System.out.println("LAYERS= " + server.listLayers());
+		
+		if ( !exists ) {
+			System.out.println("remove layer: " + ds.getId());
+			server.removeLayer(ds.getId());
+			System.out.println("LAYERS= " + server.listLayers());
+		}
 	}
 }
