@@ -3,8 +3,7 @@ package marmot.geom.advanced;
 import static marmot.optor.AggregateFunction.SUM;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
+import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
 import marmot.Plan;
@@ -16,8 +15,6 @@ import marmot.optor.geo.advanced.Power;
 import marmot.optor.geo.advanced.WeightFunction;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.CommandLine;
-import utils.CommandLineParser;
 import utils.StopWatch;
 
 /**
@@ -34,25 +31,12 @@ public class SampleE2SFCA {
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
-//		PropertyConfigurator.configure("log4j.properties");
-		LogManager.getRootLogger().setLevel(Level.OFF);
-		
-		CommandLineParser parser = new CommandLineParser("Y2S_1 ");
-		parser.addArgOption("host", "ip_addr", "marmot server host (default: localhost)", false);
-		parser.addArgOption("port", "number", "marmot server port (default: 12985)", false);
-		
-		CommandLine cl = parser.parseArgs(args);
-		if ( cl.hasOption("help") ) {
-			cl.exitWithUsage(0);
-		}
+		PropertyConfigurator.configure("log4j.properties");
 
-		String host = MarmotClientCommands.getMarmotHost(cl);
-		int port = MarmotClientCommands.getMarmotPort(cl);
+		// 원격 MarmotServer에 접속.
+		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		StopWatch watch = StopWatch.start();
-		
-		// 원격 MarmotServer에 접속.
-		PBMarmotClient marmot = PBMarmotClient.connect(host, port);
 		
 		Plan plan;
 		DataSet result;
