@@ -17,7 +17,7 @@ import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.GeoClientUtils;
-import marmot.geo.command.ClusterDataSetOptions;
+import marmot.geo.command.CreateSpatialIndexOptions;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -113,7 +113,7 @@ public class TagDtgWithRoad {
 		marmot.execute(plan);
 		
 		DataSet output = marmot.getDataSet(outDsId);
-		output.cluster(ClusterDataSetOptions.WORKER_COUNT(1));
+		output.cluster(CreateSpatialIndexOptions.WORKER_COUNT(1));
 	}
 	
 	private static DataSet filterCargo(PBMarmotClient marmot, String output) {

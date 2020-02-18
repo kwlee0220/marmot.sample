@@ -8,7 +8,7 @@ import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
-import marmot.geo.command.ClusterDataSetOptions;
+import marmot.geo.command.CreateSpatialIndexOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 
@@ -44,7 +44,7 @@ public class C01_TransformCrsEMD {
 		marmot.execute(plan);
 		
 		DataSet result = marmot.getDataSet(OUTPUT);
-		result.cluster(ClusterDataSetOptions.WORKER_COUNT(1));
+		result.cluster(CreateSpatialIndexOptions.WORKER_COUNT(1));
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		marmot.close();

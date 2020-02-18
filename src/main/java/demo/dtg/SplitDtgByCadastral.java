@@ -13,7 +13,7 @@ import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.geo.GeoClientUtils;
-import marmot.geo.command.ClusterDataSetOptions;
+import marmot.geo.command.CreateSpatialIndexOptions;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -74,7 +74,7 @@ public class SplitDtgByCadastral {
 		marmot.execute(plan);
 		
 		DataSet output = marmot.getDataSet(outDsId);
-		output.cluster(ClusterDataSetOptions.WORKER_COUNT(1));
+		output.cluster(CreateSpatialIndexOptions.WORKER_COUNT(1));
 		
 		return output;
 	}
