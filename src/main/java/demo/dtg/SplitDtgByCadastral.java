@@ -1,6 +1,6 @@
 package demo.dtg;
 
-import static marmot.optor.StoreDataSetOptions.EMPTY;
+import static marmot.optor.StoreDataSetOptions.DEFAULT;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
@@ -53,7 +53,7 @@ public class SplitDtgByCadastral {
 					
 					.spatialJoin("the_geom", TEMP_POLITICAL, "*-{the_geom},param.sig_cd")
 
-					.storeByGroup(Group.ofKeys("sig_cd").workerCount(nworkers), RESULT, EMPTY)
+					.storeByGroup(Group.ofKeys("sig_cd").workerCount(nworkers), RESULT, DEFAULT)
 					.build();
 		marmot.deleteDir(RESULT);
 		marmot.execute(plan);
