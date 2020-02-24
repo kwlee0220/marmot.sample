@@ -12,6 +12,7 @@ import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
+import marmot.optor.geo.SpatialRelation;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 
@@ -43,12 +44,13 @@ public class A01_FilterDoBongGuDTG {
 		
 		Plan plan;
 		plan = Plan.builder("도봉구_영역_DTG 추출")
-						.query(DTG, dobong)
-//						.project(prjExpr)
-						.transformCrs("the_geom", "EPSG:4326", "EPSG:5186")
-						.shard(7)
-						.store(OUTPUT, FORCE(gcInfo))
-						.build();
+					.query(DTG, dobong.getEnvelopeInternal())
+					.filterSpatially(gcInfo.name(), SpatialRelation.INTERSECTS, dobong)
+//					.project(prjExpr)
+					.transformCrs("the_geom", "EPSG:4326", "EPSG:5186")
+					.shard(7)
+					.store(OUTPUT, FORCE(gcInfo))
+					.build();
 		marmot.execute(plan);
 		
 		DataSet result = marmot.getDataSet(OUTPUT);

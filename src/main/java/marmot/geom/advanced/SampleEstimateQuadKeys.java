@@ -1,4 +1,4 @@
-package marmot.module;
+package marmot.geom.advanced;
 
 import org.apache.log4j.PropertyConfigurator;
 

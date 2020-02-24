@@ -13,6 +13,7 @@ import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
+import marmot.geo.CoordinateTransform;
 import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
@@ -21,10 +22,13 @@ import utils.StopWatch;
  * 
  * @author Kang-Woo Lee (ETRI)
  */
-public class SampleIndexedRangeQuery {
+public class SampleRangeQuery {
 	private static final String RESULT = "tmp/result";
 	private static final String SIDO = "구역/시도";
-	private static final String BUILDINGS = "주소/건물POI";
+	private static final String EMD = "구역/읍면동";
+//	private static final String BUILDINGS = "주소/건물POI";
+//	private static final String INPUT = "주소/건물POI_clustered";
+	private static final String INPUT = "교통/dtg_201609_clustered";
 
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -33,19 +37,17 @@ public class SampleIndexedRangeQuery {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		StopWatch watch = StopWatch.start();
-		
-//		Envelope bounds = GeoClientUtils.expandBy(getBorder(marmot).getEnvelopeInternal(), -14000);
-		Envelope bounds = new Envelope(193189.76162216233, 202242.27243390775,
-										550547.406706411, 552863.5428850177);
-//		Geometry key = GeoClientUtils.toPolygon(bounds);
 
-		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
-		Plan plan = Plan.builder("sample_indexed_rangequery")
-							.query(BUILDINGS, bounds)
-							.aggregate(AggregateFunction.COUNT())
-//							.project("the_geom,시군구코드,건물명")
-							.store(RESULT, FORCE)
-							.build();
+		DataSet input = marmot.getDataSet(INPUT);
+		GeometryColumnInfo gcInfo = input.getGeometryColumnInfo();
+		Envelope bounds = getEMD(marmot, "가정동", gcInfo.srid());
+
+		Plan plan = Plan.builder("sample_rangequery")
+						.query(INPUT, bounds)
+						.aggregate(AggregateFunction.COUNT())
+//						.project("the_geom,시군구코드,건물명")
+						.store(RESULT, FORCE)
+						.build();
 		marmot.execute(plan);
 		DataSet result = marmot.getDataSet(RESULT);
 		
@@ -61,5 +63,23 @@ public class SampleIndexedRangeQuery {
 							.project("the_geom")
 							.build();
 		return marmot.executeToGeometry(plan).get();
+	}
+	
+	private static Envelope getEMD(MarmotRuntime marmot, String name, String targetSrid) {
+		String expr = String.format("emd_kor_nm == '%s'", name);
+		Plan plan = Plan.builder("get dong")
+							.load(EMD)
+							.filter(expr)
+							.project("the_geom")
+							.build();
+		Envelope bounds = marmot.executeToGeometry(plan).get().getEnvelopeInternal();
+
+		GeometryColumnInfo gcInfo = marmot.getDataSet(EMD).getGeometryColumnInfo();
+		if ( gcInfo.srid() != targetSrid ) {
+			bounds = CoordinateTransform.get(gcInfo.srid(), targetSrid)
+										.transform(bounds);
+		}
+		
+		return bounds;
 	}
 }
