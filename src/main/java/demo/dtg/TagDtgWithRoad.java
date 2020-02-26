@@ -113,7 +113,7 @@ public class TagDtgWithRoad {
 		marmot.execute(plan);
 		
 		DataSet output = marmot.getDataSet(outDsId);
-		output.cluster(CreateSpatialIndexOptions.WORKER_COUNT(1));
+		output.createSpatialIndex(CreateSpatialIndexOptions.WORKER_COUNT(1));
 	}
 	
 	private static DataSet filterCargo(PBMarmotClient marmot, String output) {

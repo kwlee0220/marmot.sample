@@ -75,6 +75,6 @@ public class ConcatPoliticals {
 		marmot.execute(plan);
 		
 		DataSet output = marmot.getDataSet(POLITICAL);
-		output.cluster();
+		output.createSpatialIndex();
 	}
 }

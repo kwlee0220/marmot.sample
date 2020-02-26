@@ -44,7 +44,7 @@ public class C01_TransformCrsEMD {
 		marmot.execute(plan);
 		
 		DataSet result = marmot.getDataSet(OUTPUT);
-		result.cluster(CreateSpatialIndexOptions.WORKER_COUNT(1));
+		result.createSpatialIndex(CreateSpatialIndexOptions.WORKER_COUNT(1));
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
 		
 		marmot.close();

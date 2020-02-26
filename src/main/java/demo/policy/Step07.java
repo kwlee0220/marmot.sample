@@ -40,7 +40,7 @@ public class Step07 {
 						.build();
 		marmot.execute(plan);
 		DataSet result = marmot.getDataSet(RESULT);
-		result.cluster();
+		result.createSpatialIndex();
 		
 		watch.stop();
 		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());

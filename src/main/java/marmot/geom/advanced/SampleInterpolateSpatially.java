@@ -46,7 +46,7 @@ public class SampleInterpolateSpatially {
 						.build();
 		marmot.execute(plan);
 		result = marmot.getDataSet(tempPath);
-		result.cluster();
+		result.createSpatialIndex();
 		
 		String interpolator = "def interpolate(factors) { "
 								+ "double numerator = 0;"

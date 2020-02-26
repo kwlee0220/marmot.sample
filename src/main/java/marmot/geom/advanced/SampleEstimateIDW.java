@@ -43,7 +43,7 @@ public class SampleEstimateIDW {
 						.build();
 		marmot.execute(plan);
 		result = marmot.getDataSet(RESULT);
-		result.cluster();
+		result.createSpatialIndex();
 		
 		plan = Plan.builder("sample_estimate_idw")
 						.load(tempPath)

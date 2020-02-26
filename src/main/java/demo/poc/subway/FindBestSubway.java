@@ -116,7 +116,7 @@ public class FindBestSubway {
 
 		// 서울지역 지하철 역사에 대한 공간색인을 생성한다.
 		DataSet ds = marmot.getDataSet(outDsId);
-		ds.cluster();
+		ds.createSpatialIndex();
 		
 		System.out.printf("%s(%d건), 소요시간=%ss%n",
 							outDsId, ds.getRecordCount(), watch.getElapsedMillisString());
@@ -141,7 +141,7 @@ public class FindBestSubway {
 		
 		// 서울지역 버퍼에 대한 공간색인을 생성한다.
 		DataSet ds = marmot.getDataSet(outDsId);
-		ds.cluster();
+		ds.createSpatialIndex();
 		
 		System.out.printf("1건, 소요시간=%ss%n", watch.getElapsedMillisString());
 		return marmot.getDataSet(outDsId);
@@ -171,7 +171,7 @@ public class FindBestSubway {
 		
 		// 격자_집계구_비율에 대한 공간색인을 생성한다.
 		DataSet ds = marmot.getDataSet(outDsId);
-		ds.cluster();
+		ds.createSpatialIndex();
 
 		System.out.printf("%s(%d건), 소요시간=%ss%n",
 							outDsId, ds.getRecordCount(), watch.getElapsedMillisString());

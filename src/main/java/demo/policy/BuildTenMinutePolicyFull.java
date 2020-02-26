@@ -41,21 +41,21 @@ public class BuildTenMinutePolicyFull {
 		
 		// '노인복지시설_경로당_추출_버퍼' 추출
 		output = bufferElderlyCareFacilities(marmot);
-		output.cluster();
+		output.createSpatialIndex();
 		System.out.println("완료: '노인복지시설_경로당_추출_버퍼' 추출, elapsed="
 							+ watch2.stopAndGetElpasedTimeString());
 
 		// '인구밀도_2017_중심점추출_10000이상' 추출
 		watch2 = StopWatch.start();
 		output = findHighPopulationDensity(marmot);
-		output.cluster();
+		output.createSpatialIndex();
 		System.out.println("완료: '인구밀도_2017_중심점추출_10000이상' 추출, elapsed="
 							+ watch2.stopAndGetElpasedTimeString());
 
 		// 인구밀도_10000이상_행정동추출
 		watch2 = StopWatch.start();
 		output = findHighPopulationHDong(marmot);
-		output.cluster();
+		output.createSpatialIndex();
 		System.out.println("완료: '인구밀도_10000이상_행정동' 추출, elapsed="
 							+ watch2.stopAndGetElpasedTimeString());
 
@@ -74,7 +74,7 @@ public class BuildTenMinutePolicyFull {
 						.build();
 		marmot.execute(plan);
 		output = marmot.getDataSet(RESULT);
-		output.cluster();
+		output.createSpatialIndex();
 		System.out.println("완료: '경로당필요지역' 추출, elapsed="
 							+ watch2.stopAndGetElpasedTimeString());
 		
