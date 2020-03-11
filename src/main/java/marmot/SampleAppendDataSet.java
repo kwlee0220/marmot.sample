@@ -1,10 +1,11 @@
 package marmot;
 
+import static marmot.optor.CreateDataSetOptions.FORCE;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
-import marmot.optor.CreateDataSetOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 
@@ -26,7 +27,7 @@ public class SampleAppendDataSet {
 		DataSet input = marmot.getDataSet(INPUT);
 		
 		DataSet created = marmot.createDataSet(RESULT, input.getRecordSchema(),
-												CreateDataSetOptions.FORCE(input.getGeometryColumnInfo()));
+												FORCE(input.getGeometryColumnInfo()));
 		
 		try ( RecordSet rset = input.read() ) {
 			System.out.println("created: " + created.append(rset));
@@ -39,6 +40,7 @@ public class SampleAppendDataSet {
 		}
 		
 		created = marmot.getDataSet(RESULT);
-		System.out.println("total count=" + created.getRecordCount() + ", elapsed=" + watch.stopAndGetElpasedTimeString());
+		System.out.println("total count=" + created.getRecordCount()
+							+ ", elapsed=" + watch.stopAndGetElpasedTimeString());
 	}
 }
