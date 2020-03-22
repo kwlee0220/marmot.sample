@@ -65,7 +65,7 @@ public class SampleClusterSpatialDataSet {
 		params.force(true);
 		params.compressionCodecName("lz4");
 		params.blockSize(blockSize);
-		params.workerCount(workerCount);
+		params.partitionCount(workerCount);
 		marmot.executeProcess(ClusterSpatialDataSetParameters.moduleName(), params.toMap());
 		
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
