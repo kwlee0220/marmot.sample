@@ -16,6 +16,9 @@ import marmot.remote.protobuf.PBMarmotClient;
  * @author Kang-Woo Lee (ETRI)
  */
 public class TestPlan {
+	private static final String INPUT1 = "구역/연속지적도_2017";
+	private static final String INPUT2 = "tmp/result";
+	
 	public static void main(String[] args) throws Exception {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

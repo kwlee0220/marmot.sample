@@ -51,7 +51,7 @@ public class TestCase03 {
 													.groupByKey(PartitionKey::getDataSetId,
 																PartitionKey::getQuadKey);
 		for ( String key: groups.keySet() ) {
-			String qkeyList = FStream.from(groups.get(key)).join(", ");
+			String qkeyList = FStream.from(groups.getOrEmptyList(key)).join(", ");
 			System.out.printf("%s: { %s }%n", key, qkeyList);
 		}
 		

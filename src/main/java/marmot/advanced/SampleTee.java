@@ -9,8 +9,8 @@ import marmot.BindDataSetOptions;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
-import marmot.dataset.DataSetType;
 import marmot.dataset.GeometryColumnInfo;
+import marmot.io.MarmotFileWriteOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 
 /**
@@ -35,18 +35,18 @@ public class SampleTee {
 		Plan plan = Plan.builder("filter")
 							.load(INPUT)
 							.filter("휘발유 > 2000")
-							.tee("tmp/temp")
+							.tee("tmp/temp", "tmp/temp_info", gcInfo, MarmotFileWriteOptions.FORCE)
 							.project("THE_GEOM,상호,휘발유")
 							.store(RESULT, FORCE(gcInfo))
 							.build();
 		marmot.execute(plan);
 		DataSet result = marmot.getDataSet(RESULT);
 		
-		SampleUtils.printPrefix(result, 5);
+//		SampleUtils.printPrefix(result, 5);
 		
-		result = marmot.bindExternalDataSet(RESULT2, "tmp/temp", DataSetType.FILE,
-											BindDataSetOptions.DEFAULT(gcInfo));
+		result = marmot.buildDataSet(RESULT2, "tmp/temp", "tmp/temp_info",
+										BindDataSetOptions.FORCE(gcInfo));
 		SampleUtils.printPrefix(result, 5);
-		marmot.deleteDataSet(RESULT2);
+//		marmot.deleteDataSet(RESULT2);
 	}
 }

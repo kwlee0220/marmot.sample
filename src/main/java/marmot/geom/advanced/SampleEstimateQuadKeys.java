@@ -1,20 +1,20 @@
 package marmot.geom.advanced;
 
+import java.util.Set;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-import common.SampleUtils;
-import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.geo.CoordinateTransform;
-import marmot.optor.StoreDataSetOptions;
+import marmot.geo.command.EstimateQuadKeysOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 import utils.UnitUtils;
-import utils.func.FOption;
+import utils.stream.FStream;
 
 /**
  * 
@@ -22,11 +22,12 @@ import utils.func.FOption;
  */
 public class SampleEstimateQuadKeys {
 	private static final String SIDO = "구역/시도";
-//	private static final String INPUT = "교통/dtg_201609";
-	private static final String INPUT = "나비콜/택시로그";
 //	private static final String INPUT = "교통/지하철/서울역사";
+//	private static final String INPUT = "구역/집계구";
 //	private static final String INPUT = "주소/건물POI";
-	private static final String OUTPUT = "tmp/result";
+//	private static final String INPUT = "구역/연속지적도_2017";
+	private static final String INPUT = "교통/dtg_2016";
+//	private static final String INPUT = "나비콜/택시로그";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -46,19 +47,17 @@ public class SampleEstimateQuadKeys {
 										.transform(bounds);
 		}
 		
-		long clusterSize = UnitUtils.parseByteSize("64mb");
-		
-		Plan plan;
-		plan = Plan.builder("test_estimate_quadkeys")
-					.load(INPUT)
-					.estimateQueryKeys(gcInfo, 0.001, FOption.of(bounds), 17, clusterSize)
-					.store(OUTPUT, StoreDataSetOptions.FORCE(gcInfo))
-					.build();
-		marmot.execute(plan);
-		
+		long sampleSize = UnitUtils.parseByteSize("256mb");
+		long clusterSize = UnitUtils.parseByteSize("1gb");
+		EstimateQuadKeysOptions opts = EstimateQuadKeysOptions.DEFAULT()
+//															.mapperCount(71)
+															.validRange(bounds)
+															.sampleSize(sampleSize)
+															.maxQuadKeyLength(19)
+															.clusterSize(clusterSize);
+		Set<String> quadKeys = input.estimateQuadKeys(opts);
+		FStream.from(quadKeys)
+				.forEach(System.out::println);
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
-		
-		DataSet result = marmot.getDataSet(OUTPUT);
-		SampleUtils.printPrefix(result, 5);
 	}
 }
