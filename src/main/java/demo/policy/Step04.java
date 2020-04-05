@@ -40,7 +40,7 @@ public class Step04 {
 
 		Plan plan = Plan.builder("노인복지시설필요지역추출")
 //						.load(INPUT)
-						.load(INPUT, LoadOptions.MAPPERS())
+						.load(INPUT, LoadOptions.FIXED_MAPPERS())
 						.spatialSemiJoin(gcInfo.name(), PARAM, SpatialJoinOptions.NEGATED) // (3) 교차반전
 						.arcClip(gcInfo.name(), PARAM2)				// (7) 클립분석
 						.store(TEMP, FORCE(gcInfo))

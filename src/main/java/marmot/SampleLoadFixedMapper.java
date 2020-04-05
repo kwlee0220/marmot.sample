@@ -33,7 +33,7 @@ public class SampleLoadFixedMapper {
 		
 		Plan plan;
 		plan = Plan.builder("load_text")
-					.load(INPUT, LoadOptions.FIXED_MAPPERS(31))
+					.load(INPUT, LoadOptions.MAPPERS(31))
 					.aggregate(AggregateFunction.COUNT())
 					.store("tmp/result", FORCE)
 					.build();

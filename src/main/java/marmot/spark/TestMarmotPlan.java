@@ -50,7 +50,7 @@ public class TestMarmotPlan {
 	
 	private static final Plan getPlan4(MarmotRuntime marmot) {
 		return Plan.builder("test")
-					.load("flow_pop_time", LoadOptions.MAPPERS())
+					.load("flow_pop_time", LoadOptions.FIXED_MAPPERS())
 					.hashJoin("BLOCK_CD", "blockgeo", "BLOCK_CD", "year,avg_10tmst,param.{emdcode}", INNER_JOIN)
 					.hashJoin("emdcode", "emdgeo", "emdcode", "year,avg_10tmst,param.{sigcode}", INNER_JOIN)
 					.hashJoin("sigcode", "siggeo", "sigcode", "year,avg_10tmst,param.{sdcode}", INNER_JOIN)
