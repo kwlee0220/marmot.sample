@@ -40,10 +40,9 @@ public class Step04 {
 
 		Plan plan = Plan.builder("노인복지시설필요지역추출")
 //						.load(INPUT)
-						.load(INPUT, LoadOptions.FIXED_MAPPERS())
+						.load(INPUT, LoadOptions.MAPPERS())
 						.spatialSemiJoin(gcInfo.name(), PARAM, SpatialJoinOptions.NEGATED) // (3) 교차반전
 						.arcClip(gcInfo.name(), PARAM2)				// (7) 클립분석
-//						.shard(1)
 						.store(TEMP, FORCE(gcInfo))
 						.build();
 		marmot.execute(plan);
@@ -51,7 +50,6 @@ public class Step04 {
 
 		DataSet result = marmot.getDataSet(TEMP);
 		result.clusterSpatially(RESULT, ClusterSpatiallyOptions.FORCE());
-//		result.createSpatialIndex();
 		
 		watch.stop();
 		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());
