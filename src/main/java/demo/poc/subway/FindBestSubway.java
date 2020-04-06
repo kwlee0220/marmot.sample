@@ -1,7 +1,6 @@
 package demo.poc.subway;
 
 import static marmot.optor.AggregateFunction.AVG;
-import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.AggregateFunction.SUM;
 import static marmot.optor.AggregateFunction.UNION_GEOM;
 import static marmot.optor.JoinOptions.FULL_OUTER_JOIN;
@@ -9,8 +8,6 @@ import static marmot.optor.JoinOptions.INNER_JOIN;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -19,6 +16,7 @@ import com.google.common.collect.Lists;
 
 import marmot.MarmotRuntime;
 import marmot.Plan;
+import marmot.PlanBuilder;
 import marmot.analysis.module.NormalizeParameters;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
@@ -65,7 +63,7 @@ public class FindBestSubway {
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
 		// 서울지역 지하철 역사의 버퍼 작업을 수행한다.
-		DataSet subway = bufferSubway(marmot, OUTPUT(ANAL_STATIONS));
+		DataSet subway = bufferSubway(marmot, STATIONS, OUTPUT(ANAL_STATIONS));
 		
 		// 전국 시도 행정구역 데이터에서 서울특별시 영역만을 추출한다.
 		DataSet seoul = getSeoulBoundary(marmot, OUTPUT(ANALY_SEOUL));
@@ -95,7 +93,7 @@ public class FindBestSubway {
 							ds.getId(), ds.getRecordCount(), watch.getElapsedMillisString());
 	}
 
-	private static DataSet bufferSubway(MarmotRuntime marmot, String outDsId) {
+	static DataSet bufferSubway(MarmotRuntime marmot, String inDsId, String outDsId) {
 		System.out.print("\t단계: '전국_지하쳘_역사' 중 서울 소재 역사 추출 후 1KM 버퍼 계산 -> ");
 		
 		StopWatch watch = StopWatch.start();
@@ -106,7 +104,7 @@ public class FindBestSubway {
 
 		Plan plan;
 		plan = Plan.builder("서울지역 지하철역사 1KM 버퍼")
-					.load(STATIONS)
+					.load(inDsId)
 					.filter("sig_cd.substring(0,2) == '11'")
 					.buffer(gcInfo.name(), 1000)
 					.project("the_geom")
@@ -124,7 +122,7 @@ public class FindBestSubway {
 		return ds;
 	}
 	
-	private static DataSet getSeoulBoundary(MarmotRuntime marmot, String outDsId) {
+	 static DataSet getSeoulBoundary(MarmotRuntime marmot, String outDsId) {
 		StopWatch watch = StopWatch.start();
 
 		System.out.print("\t단계: '전국_법정시도경계'에서 서울특별시 영역 추출 -> ");
@@ -147,7 +145,7 @@ public class FindBestSubway {
 		return marmot.getDataSet(outDsId);
 	}
 	
-	private static DataSet calcBlockRatio(MarmotRuntime marmot, DataSet seoul, DataSet subway,
+	static DataSet calcBlockRatio(MarmotRuntime marmot, DataSet seoul, DataSet subway,
 										String outDsId) {
 		StopWatch watch = StopWatch.start();
 		System.out.print("\t단계: '지오비전_집계구'와 격자 겹치는 영역 비율 계산 -> ");
@@ -179,29 +177,34 @@ public class FindBestSubway {
 		return ds;
 	}
 
-	private static DataSet gridTaxiLog(MarmotRuntime marmot, DataSet blocks, String outDsId) {
+	static DataSet gridTaxiLog(MarmotRuntime marmot, DataSet blocks, String outDsId) {
 		StopWatch watch = StopWatch.start();
 		
 		System.out.print("\t단계: 격자별 택시승하차 집계 후 정규화 -> ");
-		String tempOutDsId = TEMP_OUTPUT(ANALY_TAXI_LOG);
+		String tempOutDsId = FindBestSubway.TEMP_OUTPUT(ANALY_TAXI_LOG);
 		
 		DataSet taxi = marmot.getDataSet(TAXI_LOG);
 		GeometryColumnInfo gcInfo = taxi.getGeometryColumnInfo();
+		
 		String outJoinCols = String.format("*-{%s},param.*-{%s}", gcInfo.name(), blocks.getGeometryColumn());
 		
 		Plan plan;
-		plan = Plan.builder("격자별_택시승하차_집계")
-					// 택시 로그를  읽는다.
-					.load(TAXI_LOG)
-					
-					// 승하차 로그만 선택한다.
-					.filter("status == 1 || status == 2")
-					
+		PlanBuilder builder = Plan.builder("격자별_택시승하차_집계")
+									// 택시 로그를  읽는다.
+									.load(TAXI_LOG, LoadOptions.FIXED_MAPPERS())
+									
+									// 승하차 로그만 선택한다.
+									.filter("status == 1 || status == 2");
+		if ( !gcInfo.srid().equals(blocks.getGeometryColumnInfo().srid()) ) {
+			builder = builder.transformCrs(gcInfo.name(), gcInfo.srid(),
+											blocks.getGeometryColumnInfo().srid());
+		}
+		plan = builder		
 					// 로그에 격자 정보 부가함
 					.spatialJoin(gcInfo.name(), blocks.getId(), outJoinCols)
 	
 					// 격자별로 택시 승하차 로그수를 계산한다.
-					.aggregateByGroup(Group.ofKeys("cell_id").tags("cell_pos"), COUNT())
+					.aggregateByGroup(Group.ofKeys("cell_id").tags("cell_pos"), SUM("portion"))
 					
 					.store(tempOutDsId, FORCE)
 					.build();
@@ -210,7 +213,7 @@ public class FindBestSubway {
 		NormalizeParameters params = new NormalizeParameters();
 		params.inputDataset(tempOutDsId);
 		params.outputDataset(outDsId);
-		params.inputFeatureColumns("count");
+		params.inputFeatureColumns("sum");
 		params.outputFeatureColumns("normalized");
 		marmot.executeProcess("normalize", params.toMap());
 
@@ -221,7 +224,7 @@ public class FindBestSubway {
 		return ds;
 	}
 
-	private static DataSet gridFlowPopulation(MarmotRuntime marmot, DataSet blocks,
+	static DataSet gridFlowPopulation(MarmotRuntime marmot, DataSet blocks,
 											String outDsId) {
 		StopWatch watch = StopWatch.start();
 		System.out.printf(String.format("\t단계: 연차별로 격자단위 유동인구 수집 -> %n"));
@@ -237,7 +240,7 @@ public class FindBestSubway {
 					.load(DS_IDS, LoadOptions.DEFAULT)
 					.aggregateByGroup(Group.ofKeys("cell_id").tags("cell_pos"),
 										AVG("normalized").as("normalized"))
-					.store(OUTPUT(ANALY_FLOW_POP), FORCE)
+					.store(outDsId, FORCE)
 					.build();
 		marmot.execute(plan);
 		
@@ -248,7 +251,7 @@ public class FindBestSubway {
 		return ds;
 	}
 	
-	private static void gridFlowPopulation(MarmotRuntime marmot, int year, DataSet blocks,
+	static void gridFlowPopulation(MarmotRuntime marmot, int year, DataSet blocks,
 											String outDsId) {
 		StopWatch watch = StopWatch.start();
 		System.out.printf(String.format("\t\t단계: %d년도 격자별 유동인구수 정규화 -> ", year));
@@ -257,21 +260,16 @@ public class FindBestSubway {
 		String inDsId = String.format(FLOW_POP_BYTIME, year);
 		String tempOutDsId = outDsId + "_집계";
 
-		String sumExpr = IntStream.range(0, 24)
-									.mapToObj(idx -> String.format("avg_%02dtmst", idx))
-									.collect(Collectors.joining("+"));
-		String avgExpr = String.format("(%s) / 24", sumExpr);
-
 		Plan plan;
 		plan = Plan.builder(planName)
 					// 유동인구를  읽는다.
-					.load(inDsId)
+					.load(inDsId, LoadOptions.FIXED_MAPPERS())
 					
 					// 서울지역 데이터만 선택
 					.filter("block_cd.startsWith('11')")
 					
 					// 하루동안의 시간대별 평균 유동인구를 계산
-					.defineColumn("daily_avg:double", avgExpr)
+					.defineColumn("daily_avg:double", "ST_ArrayAvg(avg)")
 					
 					// 집계구별 평균 일간 유동인구 평균 계산
 					.aggregateByGroup(Group.ofKeys("block_cd").workerCount(7), AVG("daily_avg"))
@@ -301,7 +299,7 @@ public class FindBestSubway {
 														watch.getElapsedMillisString());
 	}
 
-	private static DataSet gridCardSales(MarmotRuntime marmot, DataSet blocks, String outDsId) {
+	static DataSet gridCardSales(MarmotRuntime marmot, DataSet blocks, String outDsId) {
 		StopWatch watch = StopWatch.start();
 		System.out.printf(String.format("\t단계: 연차별로 격자단위 카드매출액 수집 -> %n"));
 		
@@ -327,7 +325,7 @@ public class FindBestSubway {
 		return ds;
 	}
 	
-	private static void gridCardSales(MarmotRuntime marmot, int year, DataSet blocks,
+	static void gridCardSales(MarmotRuntime marmot, int year, DataSet blocks,
 										String outDsId) {
 		StopWatch watch = StopWatch.start();
 		System.out.printf(String.format("\t\t단계: %d년도 격자별 카드매출액 정규화 -> ", year));
@@ -335,21 +333,17 @@ public class FindBestSubway {
 		String planName = String.format("%d년도 격자별_카드매출 집계", year);
 		String inDsId = String.format(CARD_BYTIME, year);
 		String tempOutDsId = outDsId + "_집계";
-		
-		String sumExpr = IntStream.range(0, 24)
-									.mapToObj(idx -> String.format("sale_amt_%02dtmst", idx))
-									.collect(Collectors.joining("+"));
 
 		Plan plan;
 		plan = Plan.builder(planName)
 					// 카드매출을  읽는다.
-					.load(inDsId)
+					.load(inDsId, LoadOptions.FIXED_MAPPERS())
 					
 					// 서울지역 데이터만 선택
 					.filter("block_cd.startsWith('11')")
 					
 					// 하루동안의 카드매출 합계를 계산
-					.defineColumn("amount:double", sumExpr)
+					.defineColumn("amount:double", "ST_ArraySum(SALE_AMT)")
 					
 					// 집계구별 일간 카드매출 합계 계산
 					.aggregateByGroup(Group.ofKeys("block_cd").workerCount(11),
@@ -454,15 +448,15 @@ public class FindBestSubway {
 														watch.getElapsedMillisString());
 	}
 	
-	private static String OUTPUT(String analId) {
+	static String OUTPUT(String analId) {
 		return "/tmp/" + analId;
 	}
 	
-	private static String OUTPUT(String analId, int year) {
+	static String OUTPUT(String analId, int year) {
 		return "/tmp/" + analId + "_연도별/" + year;
 	}
 	
-	private static String TEMP_OUTPUT(String analId) {
+	static String TEMP_OUTPUT(String analId) {
 		return "/tmp/" + analId + "_집계";
 	}
 }
