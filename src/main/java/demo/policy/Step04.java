@@ -1,8 +1,6 @@
 package demo.policy;
 
 
-import static marmot.optor.StoreDataSetOptions.FORCE;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import common.SampleUtils;
@@ -11,6 +9,7 @@ import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.geo.command.ClusterSpatiallyOptions;
+import marmot.optor.StoreDataSetOptions;
 import marmot.plan.LoadOptions;
 import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -35,6 +34,7 @@ public class Step04 {
 		
 		StopWatch watch = StopWatch.start();
 		
+		DataSet result;
 		DataSet ds = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
@@ -43,12 +43,12 @@ public class Step04 {
 						.load(INPUT, LoadOptions.FIXED_MAPPERS())
 						.spatialSemiJoin(gcInfo.name(), PARAM, SpatialJoinOptions.NEGATED) // (3) 교차반전
 						.arcClip(gcInfo.name(), PARAM2)				// (7) 클립분석
-						.store(TEMP, FORCE(gcInfo))
+						.store(TEMP, StoreDataSetOptions.FORCE(gcInfo))
 						.build();
 		marmot.execute(plan);
 		System.out.printf("elapsed time=%s (processing)%n", watch.getElapsedMillisString());
 
-		DataSet result = marmot.getDataSet(TEMP);
+		result = marmot.getDataSet(TEMP);
 		result.clusterSpatially(RESULT, ClusterSpatiallyOptions.FORCE());
 		
 		watch.stop();
