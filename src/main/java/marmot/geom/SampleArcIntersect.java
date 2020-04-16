@@ -34,7 +34,7 @@ public class SampleArcIntersect {
 		
 		Plan plan = Plan.builder("sample_intersection_join")
 							.load(INPUT)
-							.intersectionJoin("the_geom", PARAM, SpatialJoinOptions.EMPTY)
+							.intersectionJoin("the_geom", PARAM, SpatialJoinOptions.DEFAULT)
 							.store(RESULT, FORCE(gcInfo))
 							.build();
 		marmot.execute(plan);

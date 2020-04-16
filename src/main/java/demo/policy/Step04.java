@@ -24,7 +24,6 @@ public class Step04 {
 	private static final String PARAM = Step01.RESULT;
 	private static final String PARAM2 = Step03.RESULT;
 	private static final String RESULT = "tmp/10min/result";
-	private static final String TEMP = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
@@ -39,23 +38,21 @@ public class Step04 {
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
 		Plan plan = Plan.builder("노인복지시설필요지역추출")
-//						.load(INPUT)
-						.load(INPUT, LoadOptions.FIXED_MAPPERS())
+						.load(INPUT, LoadOptions.FIXED_MAPPERS)
 						.spatialSemiJoin(gcInfo.name(), PARAM, SpatialJoinOptions.NEGATED) // (3) 교차반전
 						.arcClip(gcInfo.name(), PARAM2)				// (7) 클립분석
-						.store(TEMP, StoreDataSetOptions.FORCE(gcInfo))
+						.store(RESULT, StoreDataSetOptions.FORCE(gcInfo))
 						.build();
 		marmot.execute(plan);
 		System.out.printf("elapsed time=%s (processing)%n", watch.getElapsedMillisString());
 
-		result = marmot.getDataSet(TEMP);
-		result.clusterSpatially(RESULT, ClusterSpatiallyOptions.FORCE());
+		result = marmot.getDataSet(RESULT);
+//		result.cluster(ClusterSpatiallyOptions.FORCE);
 		
 		watch.stop();
-		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		result = marmot.getDataSet(RESULT);
 		SampleUtils.printPrefix(result, 5);
+		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());
 	}
 }

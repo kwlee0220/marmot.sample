@@ -70,7 +70,7 @@ public class JoinWithoutGroup {
 		plan = Plan.builder(planName)
 					.load(dsId, LoadOptions.SPLIT_COUNT(2))
 					.spatialJoin("the_geom", INPUT, "the_geom,param.출입구일련번호",
-								SpatialJoinOptions.EMPTY.clusterOuterRecords(false))
+								SpatialJoinOptions.DEFAULT.clusterOuterRecords(false))
 					.store("tmp/result", FORCE(gcInfo))
 					.build();
 

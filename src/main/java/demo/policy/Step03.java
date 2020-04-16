@@ -20,7 +20,6 @@ import utils.StopWatch;
 public class Step03 {
 	private static final String INPUT = "구역/행정동코드";
 	private static final String PARAM = Step02.RESULT;
-	static final String TEMP = "tmp/result";
 	static final String RESULT = "tmp/10min/step03";
 	
 	public static final void main(String... args) throws Exception {
@@ -37,20 +36,18 @@ public class Step03 {
 		Plan plan = Plan.builder("인구밀도_10000이상_행정동추출")
 						.load(INPUT)
 						.spatialSemiJoin(gcInfo.name(), PARAM)	// (6) 교차분석
-						.store(TEMP, FORCE(gcInfo))
+						.store(RESULT, FORCE(gcInfo))
 						.build();
 		marmot.execute(plan);
 		System.out.printf("elapsed time=%s (processing)%n", watch.getElapsedMillisString());
 		
-		DataSet result = marmot.getDataSet(TEMP);
-		result.clusterSpatially(RESULT, ClusterSpatiallyOptions.FORCE());
-//		result.createSpatialIndex();
+		DataSet result = marmot.getDataSet(RESULT);
+		result.cluster(ClusterSpatiallyOptions.FORCE);
 		
 		watch.stop();
-		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.
-		result = marmot.getDataSet(RESULT);
 		SampleUtils.printPrefix(result, 5);
+		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());
 	}
 }

@@ -53,7 +53,6 @@ public class SampleEstimateQuadKeys {
 //															.mapperCount(71)
 															.validRange(bounds)
 															.sampleSize(sampleSize)
-															.maxQuadKeyLength(19)
 															.clusterSize(clusterSize);
 		Set<String> quadKeys = input.estimateQuadKeys(opts);
 		FStream.from(quadKeys)

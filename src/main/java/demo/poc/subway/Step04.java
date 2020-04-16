@@ -74,7 +74,7 @@ public class Step04 {
 		Plan plan;
 		PlanBuilder builder = Plan.builder("격자별_택시승하차_집계")
 									// 택시 로그를  읽는다.
-									.load(TAXI_LOG, LoadOptions.FIXED_MAPPERS())
+									.load(TAXI_LOG, LoadOptions.FIXED_MAPPERS)
 									
 									// 승하차 로그만 선택한다.
 									.filter("status == 1 || status == 2");

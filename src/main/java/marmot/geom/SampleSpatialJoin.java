@@ -36,7 +36,7 @@ public class SampleSpatialJoin {
 
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", "EPSG:5186");
 		Plan plan = Plan.builder("spatial_join")
-//							.load(INPUT, LoadOptions.FIXED_MAPPERS())
+//							.load(INPUT, LoadOptions.FIXED_MAPPERS)
 							.load(INPUT)
 							.spatialJoin("the_geom", PARAM, "the_geom,상호", WITHIN_DISTANCE(500))
 							.store(RESULT, FORCE(gcInfo))

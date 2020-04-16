@@ -9,6 +9,7 @@ import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.geo.command.ClusterSpatiallyOptions;
 import marmot.optor.StoreDataSetOptions;
+import marmot.plan.LoadOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import utils.StopWatch;
 
@@ -19,7 +20,6 @@ import utils.StopWatch;
  */
 public class Step01 {
 	private static final String INPUT = "POI/노인복지시설";
-	static final String TEMP = "tmp/result";
 	static final String RESULT = "tmp/10min/step01";
 	
 	public static final void main(String... args) throws Exception {
@@ -34,16 +34,16 @@ public class Step01 {
 		GeometryColumnInfo gcInfo = ds.getGeometryColumnInfo();
 
 		Plan plan = Plan.builder("노인복지시설_경로당_추출_버퍼400")
-						.load(INPUT)
+						.load(INPUT, LoadOptions.FIXED_MAPPERS)
 						.filter("induty_nm == '경로당'")		// (1) 영역분석
 						.buffer(gcInfo.name(), 400)				// (2) 버퍼추정
-						.store(TEMP, StoreDataSetOptions.FORCE(gcInfo))
+						.store(RESULT, StoreDataSetOptions.FORCE(gcInfo))
 						.build();
 		marmot.execute(plan);
 		System.out.printf("elapsed time=%s (processing)%n", watch.getElapsedMillisString());
 		
-		DataSet result = marmot.getDataSet(TEMP);
-		result.clusterSpatially(RESULT, ClusterSpatiallyOptions.FORCE());
+		DataSet result = marmot.getDataSet(RESULT);
+		result.cluster(ClusterSpatiallyOptions.FORCE);
 		
 		watch.stop();
 		System.out.printf("elapsed time=%s%n", watch.getElapsedMillisString());

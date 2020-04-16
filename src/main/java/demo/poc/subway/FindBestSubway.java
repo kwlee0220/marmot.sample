@@ -191,7 +191,7 @@ public class FindBestSubway {
 		Plan plan;
 		PlanBuilder builder = Plan.builder("격자별_택시승하차_집계")
 									// 택시 로그를  읽는다.
-									.load(TAXI_LOG, LoadOptions.FIXED_MAPPERS())
+									.load(TAXI_LOG, LoadOptions.FIXED_MAPPERS)
 									
 									// 승하차 로그만 선택한다.
 									.filter("status == 1 || status == 2");
@@ -263,7 +263,7 @@ public class FindBestSubway {
 		Plan plan;
 		plan = Plan.builder(planName)
 					// 유동인구를  읽는다.
-					.load(inDsId, LoadOptions.FIXED_MAPPERS())
+					.load(inDsId, LoadOptions.FIXED_MAPPERS)
 					
 					// 서울지역 데이터만 선택
 					.filter("block_cd.startsWith('11')")
@@ -337,7 +337,7 @@ public class FindBestSubway {
 		Plan plan;
 		plan = Plan.builder(planName)
 					// 카드매출을  읽는다.
-					.load(inDsId, LoadOptions.FIXED_MAPPERS())
+					.load(inDsId, LoadOptions.FIXED_MAPPERS)
 					
 					// 서울지역 데이터만 선택
 					.filter("block_cd.startsWith('11')")
