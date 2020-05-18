@@ -22,6 +22,7 @@ import utils.StopWatch;
  */
 public class SampleTest {
 	private static final String PARAM = "구역/행정동코드";
+	private static final String TEST_PARAM = "tmp/param";
 	private static final String INPUT = "교통/dtg_201609";
 //	private static final String INPUT = "나비콜/택시로그";
 	private static final String RESULT = "tmp/result";
@@ -44,15 +45,16 @@ public class SampleTest {
 					.load(PARAM)
 					.project("the_geom,hcode")
 					.transformCrs(param.getGeometryColumn(), fromGcInfo.srid(), toGcInfo.srid())
-					.store("tmp/result2", FORCE(toGcInfo))
+					.store(TEST_PARAM, FORCE(toGcInfo))
 					.build();
 		marmot.execute(plan);
-		param = marmot.getDataSet("tmp/result2");
+		param = marmot.getDataSet(TEST_PARAM);
 		param.cluster(ClusterSpatiallyOptions.FORCE);
 
 		plan = Plan.builder("group_by")
-					.load(INPUT, LoadOptions.FIXED_MAPPERS)
-					.spatialJoin("the_geom", "tmp/result2", "param.hcode")
+//					.load(INPUT, LoadOptions.FIXED_MAPPERS)
+					.load(INPUT)
+					.spatialJoin("the_geom", TEST_PARAM, "right.hcode")
 					.aggregateByGroup(Group.ofKeys("hcode"), COUNT())
 					.store(RESULT, FORCE)
 					.build();

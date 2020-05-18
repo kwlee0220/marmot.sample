@@ -63,6 +63,7 @@ public class BuildTenMinutePolicy {
 
 		Plan plan = Plan.builder("경로당필요지역추출")
 						.load(CADASTRAL, LoadOptions.FIXED_MAPPERS)
+//						.load(CADASTRAL)
 						.spatialSemiJoin(gcInfo.name(), ELDERLY_CARE_BUFFER,	// (3) 교차반전
 										SpatialJoinOptions.NEGATED)
 						.arcClip(gcInfo.name(), HIGH_DENSITY_HDONG)			// (7) 클립분석

@@ -64,8 +64,8 @@ public class B03_MapMatchingGasYear {
 		DataSet result = marmot.getDataSet(OUTPUT);
 		marmot.deleteDataSet(INTERM);
 
+		SampleUtils.printPrefix(result, 5);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
-		SampleUtils.printPrefix(result, 10);
 		
 		marmot.close();
 	}

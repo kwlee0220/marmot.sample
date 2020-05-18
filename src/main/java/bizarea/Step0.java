@@ -59,16 +59,16 @@ public class Step0 {
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo("the_geom", srid);
 		
 		Plan plan = Plan.builder("대도시 상업지역 100mX100m 그리드 구역 생성")
-							// 용도지구에 대한 100m 크기의 그리드를 생성 
-							.loadGrid(new SquareGrid(bounds, cellSize), -1)
-							// 상업지구에 겹치는 그리드 셀만 추출한다.
-							.spatialSemiJoin("the_geom", TEMP_BIZ_AREA)
-							// 상업지구 그리드 셀에 대해 대도시 영역만을 선택하고,
-							// 행정도 코드(sgg_cd)를 부여한다.
-							.spatialJoin("the_geom", TEMP_BIG_CITIES, "*-{cell_pos},param.sgg_cd")
-							// 소지역 코드 (block_cd)를 부여한다.
-							.spatialJoin("the_geom", BLOCK_CENTERS, "*-{cell_pos},param.block_cd")
-							.store(BIZ_GRID, FORCE(gcInfo))
+						// 용도지구에 대한 100m 크기의 그리드를 생성 
+						.loadGrid(new SquareGrid(bounds, cellSize), -1)
+						// 상업지구에 겹치는 그리드 셀만 추출한다.
+						.spatialSemiJoin("the_geom", TEMP_BIZ_AREA)
+						// 상업지구 그리드 셀에 대해 대도시 영역만을 선택하고,
+						// 행정도 코드(sgg_cd)를 부여한다.
+						.spatialJoin("the_geom", TEMP_BIG_CITIES, "*-{cell_pos},param.sgg_cd")
+						// 소지역 코드 (block_cd)를 부여한다.
+						.spatialJoin("the_geom", BLOCK_CENTERS, "*-{cell_pos},param.block_cd")
+						.store(BIZ_GRID, FORCE(gcInfo))
 							.build();
 		marmot.execute(plan);
 		
@@ -89,9 +89,9 @@ public class Step0 {
 							.collect(Collectors.joining(",", "[", "]"));
 		SGG_EXPR = Arrays.asList("41115","41111","41117", "41113", "48125", "48123",
 								"48127", "48121", "48129", "41281", "41285", "41287")
-								.stream()
-								.map(str -> "'" + str + "'")
-								.collect(Collectors.joining(",", "[", "]"));
+						.stream()
+						.map(str -> "'" + str + "'")
+						.collect(Collectors.joining(",", "[", "]"));
 	}
 
 	private static final DataSet filterBigCities(MarmotRuntime marmot, String result) {

@@ -35,21 +35,19 @@ public class B01_SumMonthGasYear {
 		Plan plan;
 		plan = Plan.builder(planName)
 					.load(INPUT)
+					.filter("사용량 >= 0")
 					.defineColumn("year:short", "사용년월.substring(0, 4)")
 					.filter(filterPred)
 					.defineColumn("month:short", "사용년월.substring(4, 6)")
-					.update("사용량 = Math.max(사용량, 0)")
-					.aggregateByGroup(Group.ofKeys("pnu,month").workerCount(1),
-									SUM("사용량").as("usage"))
+					.aggregateByGroup(Group.ofKeys("pnu,month").workerCount(1), SUM("사용량").as("usage"))
 					.project("pnu, month,  usage")
 					.store(OUTPUT, FORCE)
 					.build();
 		marmot.execute(plan);
 		
 		DataSet result = marmot.getDataSet(OUTPUT);
+		SampleUtils.printPrefix(result, 5);
 		System.out.println("elapsed time: " + watch.stopAndGetElpasedTimeString());
-		
-		SampleUtils.printPrefix(result, 30);
 		
 		marmot.close();
 	}
