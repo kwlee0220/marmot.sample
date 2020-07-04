@@ -69,7 +69,7 @@ public class Step04 {
 		DataSet taxi = marmot.getDataSet(TAXI_LOG);
 		GeometryColumnInfo gcInfo = taxi.getGeometryColumnInfo();
 		
-		String outJoinCols = String.format("*-{%s},param.*-{%s}", gcInfo.name(), blocks.getGeometryColumn());
+		String outJoinCols = String.format("left.*-{%s},right.*-{%s}", gcInfo.name(), blocks.getGeometryColumn());
 		
 		Plan plan;
 		PlanBuilder builder = Plan.builder("격자별_택시승하차_집계")

@@ -186,7 +186,7 @@ public class FindBestSubway {
 		DataSet taxi = marmot.getDataSet(TAXI_LOG);
 		GeometryColumnInfo gcInfo = taxi.getGeometryColumnInfo();
 		
-		String outJoinCols = String.format("*-{%s},param.*-{%s}", gcInfo.name(), blocks.getGeometryColumn());
+		String outJoinCols = String.format("left.*-{%s},right.*-{%s}", gcInfo.name(), blocks.getGeometryColumn());
 		
 		Plan plan;
 		PlanBuilder builder = Plan.builder("격자별_택시승하차_집계")
@@ -275,7 +275,7 @@ public class FindBestSubway {
 					.aggregateByGroup(Group.ofKeys("block_cd").workerCount(7), AVG("daily_avg"))
 
 					// 격자 정보 부가함
-					.hashJoin("block_cd", blocks.getId(), "block_cd", "param.*,avg", INNER_JOIN)
+					.hashJoin("block_cd", blocks.getId(), "block_cd", "right.*,left.avg", INNER_JOIN)
 					
 					// 비율 값 반영
 					.update("avg *= portion")
@@ -350,7 +350,7 @@ public class FindBestSubway {
 										AVG("amount").as("amount"))
 
 					// 격자 정보 부가함
-					.hashJoin("block_cd", blocks.getId(), "block_cd", "param.*,amount", INNER_JOIN)
+					.hashJoin("block_cd", blocks.getId(), "block_cd", "right.*,left.amount", INNER_JOIN)
 
 					// 비율 값 반영
 					.update("amount *= portion")
@@ -404,7 +404,7 @@ public class FindBestSubway {
 					.project("cell_id,normalized")
 					
 					.hashJoin("cell_id", taxi.getId(), "cell_id",
-							"*,param.{cell_id as param_cell_id,"
+							"left.*,right.{cell_id as param_cell_id,"
 									+ "normalized as param_normalized}", FULL_OUTER_JOIN(11))
 					.update(merge2)
 					.project("cell_id,normalized as value")
@@ -426,7 +426,7 @@ public class FindBestSubway {
 		System.out.printf(String.format("\t단계: 격자별_결과에_공간객체_부여 -> "));
 		
 		GeometryColumnInfo gcInfo = blocks.getGeometryColumnInfo();
-		String outJoinCols = String.format("%s,cell_id,cell_pos,param.value", gcInfo.name());
+		String outJoinCols = String.format("left.{%s,cell_id,cell_pos},right.value", gcInfo.name());
 		
 		Plan plan;
 		plan = Plan.builder("공간데이터 첨부")
