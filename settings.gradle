@@ -1,12 +1,12 @@
 rootProject.name = 'marmot.sample'
 
-ext.common_dir = "../../../common"
-['utils'].each {
+ext.common_dir = "../../common"
+['utils', 'utilsx'].each {
 	include ":$it"
 	project(":$it").projectDir = file("$common_dir/$it")
 }
 
-ext.marmot_dir = "../.."
+ext.marmot_dir = ".."
 ['marmot.common', 'marmot.client'].each {
 	include ":$it"
 	project(":$it").projectDir = file("$marmot_dir/$it")

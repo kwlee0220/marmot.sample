@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;

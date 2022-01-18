@@ -5,7 +5,7 @@ import java.io.File;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.google.common.io.Files;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 import common.SampleUtils;
 import marmot.MarmotRuntime;

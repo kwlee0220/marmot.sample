@@ -4,7 +4,7 @@ import java.util.Set;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;

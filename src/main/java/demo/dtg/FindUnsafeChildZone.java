@@ -7,8 +7,8 @@ import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Polygon;
 
 import common.SampleUtils;
 import marmot.Plan;

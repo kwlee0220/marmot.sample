@@ -17,8 +17,6 @@ import com.google.common.collect.Maps;
 
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.CommandLine;
-import utils.CommandLineParser;
 import utils.StopWatch;
 
 /**

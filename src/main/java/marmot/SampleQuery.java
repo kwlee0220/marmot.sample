@@ -2,7 +2,7 @@ package marmot;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 import common.SampleUtils;
 import marmot.command.MarmotClientCommands;

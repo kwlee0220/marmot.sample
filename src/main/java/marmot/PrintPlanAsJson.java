@@ -5,7 +5,7 @@ import java.text.DecimalFormat;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.google.protobuf.util.JsonFormat;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 import marmot.command.MarmotClientCommands;
 import marmot.plan.SpatialJoinOptions;

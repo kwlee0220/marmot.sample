@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 import marmot.MarmotRuntime;
 import marmot.Plan;

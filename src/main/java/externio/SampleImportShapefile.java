@@ -13,8 +13,6 @@ import marmot.externio.ImportIntoDataSet;
 import marmot.externio.shp.ImportShapefile;
 import marmot.externio.shp.ShapefileParameters;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.CommandLine;
-import utils.CommandLineParser;
 import utils.StopWatch;
 
 /**

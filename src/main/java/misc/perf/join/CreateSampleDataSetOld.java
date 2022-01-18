@@ -9,9 +9,9 @@ import java.util.Random;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.google.common.collect.Lists;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 
 import marmot.MarmotRuntime;
 import marmot.Plan;
