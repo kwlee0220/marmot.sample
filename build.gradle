@@ -6,6 +6,10 @@ version = '20.02.12'
 sourceCompatibility = JavaVersion.VERSION_1_8;
 [compileJava,compileTestJava]*.options*.encoding = 'UTF-8'
 
+ext {
+	kafka_client_version = '3.1.0'
+}
+
 repositories {
     mavenLocal()
 	maven {
@@ -22,6 +26,8 @@ repositories {
 
 dependencies {
 	compile project(':marmot.client')
+	
+	implementation "org.apache.kafka:kafka-clients:${kafka_client_version}"
 }
 
 task sourceJar(type: Jar) {
