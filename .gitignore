@@ -28,6 +28,7 @@ hs_err_pid*
 /.gradle/
 /.settings/
 /classes/
+/test_classes/
 /build/
 /result.gjson
 /data/
