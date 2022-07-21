@@ -3,16 +3,15 @@ package demo.dtg;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import org.locationtech.jts.geom.Envelope;
+
+import utils.StopWatch;
 
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.geo.CoordinateTransform;
 import marmot.plan.PredicateOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -24,8 +23,6 @@ public class CountInvalidGeoms {
 	private static final String RESULT = "tmp/dtg/taggeds";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

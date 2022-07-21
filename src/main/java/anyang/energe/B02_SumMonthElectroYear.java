@@ -3,7 +3,7 @@ package anyang.energe;
 import static marmot.optor.AggregateFunction.SUM;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
 
 import common.SampleUtils;
 import marmot.Plan;
@@ -11,7 +11,6 @@ import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -22,8 +21,6 @@ public class B02_SumMonthElectroYear {
 	private static final String OUTPUT = String.format("tmp/anyang/electro%d", Globals.YEAR);
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

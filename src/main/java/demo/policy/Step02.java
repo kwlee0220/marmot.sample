@@ -1,6 +1,6 @@
 package demo.policy;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
 
 import common.SampleUtils;
 import marmot.Plan;
@@ -10,7 +10,6 @@ import marmot.dataset.GeometryColumnInfo;
 import marmot.geo.command.ClusterSpatiallyOptions;
 import marmot.optor.StoreDataSetOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -21,8 +20,6 @@ public class Step02 {
 	static final String RESULT = "tmp/10min/step02";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

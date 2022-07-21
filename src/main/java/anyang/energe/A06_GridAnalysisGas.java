@@ -7,8 +7,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.PropertyConfigurator;
 import org.locationtech.jts.geom.Envelope;
+
+import utils.Size2d;
+import utils.StopWatch;
 
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
@@ -18,8 +20,6 @@ import marmot.optor.AggregateFunction;
 import marmot.optor.geo.SquareGrid;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.Size2d;
-import utils.StopWatch;
 
 /**
  * 
@@ -30,8 +30,6 @@ public class A06_GridAnalysisGas {
 	private static final String OUTPUT = "tmp/anyang/grid/grid_gas";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

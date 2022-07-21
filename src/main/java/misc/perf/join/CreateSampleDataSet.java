@@ -6,12 +6,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.log4j.PropertyConfigurator;
-
-import com.google.common.collect.Lists;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
+
+import com.google.common.collect.Lists;
+
+import utils.func.FOption;
+import utils.stream.FStream;
+import utils.stream.LongFStream;
 
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -26,9 +29,6 @@ import marmot.remote.protobuf.PBMarmotClient;
 import marmot.rset.AbstractRecordSet;
 import marmot.support.Range;
 import marmot.type.DataType;
-import utils.func.FOption;
-import utils.stream.FStream;
-import utils.stream.LongFStream;
 
 /**
  * 
@@ -60,8 +60,6 @@ public class CreateSampleDataSet {
 	private static final double[] DIST_9 = {0.33, 0.15, 0.13, 0.11, 0.1, 0.07, 0.05, 0.05, 0.01};
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

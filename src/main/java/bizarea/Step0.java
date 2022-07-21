@@ -5,9 +5,10 @@ import static marmot.optor.StoreDataSetOptions.FORCE;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import org.locationtech.jts.geom.Envelope;
+
+import utils.Size2d;
+import utils.StopWatch;
 
 import common.SampleUtils;
 import marmot.MarmotRuntime;
@@ -18,8 +19,6 @@ import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.optor.geo.SquareGrid;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.Size2d;
-import utils.StopWatch;
 
 /**
  * 
@@ -35,8 +34,6 @@ public class Step0 {
 	private static final String BIZ_GRID = "tmp/bizarea/grid100";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

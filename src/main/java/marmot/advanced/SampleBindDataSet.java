@@ -1,6 +1,6 @@
 package marmot.advanced;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.Utilities;
 
 import common.SampleUtils;
 import marmot.BindDataSetOptions;
@@ -12,7 +12,6 @@ import marmot.dataset.DataSetType;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.io.MarmotFileNotFoundException;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.Utilities;
 
 /**
  * 
@@ -23,8 +22,6 @@ public class SampleBindDataSet {
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

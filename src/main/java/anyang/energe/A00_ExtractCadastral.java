@@ -2,7 +2,8 @@ package anyang.energe;
 
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
+import utils.UnitUtils;
 
 import common.SampleUtils;
 import marmot.Plan;
@@ -10,8 +11,6 @@ import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
-import utils.UnitUtils;
 
 /**
  * 
@@ -22,8 +21,6 @@ public class A00_ExtractCadastral {
 	private static final String OUTPUT = Globals.CADASTRAL;
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

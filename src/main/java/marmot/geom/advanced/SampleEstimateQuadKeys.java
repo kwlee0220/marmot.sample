@@ -2,9 +2,11 @@ package marmot.geom.advanced;
 
 import java.util.Set;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import org.locationtech.jts.geom.Envelope;
+
+import utils.StopWatch;
+import utils.UnitUtils;
+import utils.stream.FStream;
 
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
@@ -12,9 +14,6 @@ import marmot.dataset.GeometryColumnInfo;
 import marmot.geo.CoordinateTransform;
 import marmot.geo.command.EstimateQuadKeysOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
-import utils.UnitUtils;
-import utils.stream.FStream;
 
 /**
  * 
@@ -30,8 +29,6 @@ public class SampleEstimateQuadKeys {
 //	private static final String INPUT = "나비콜/택시로그";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

@@ -4,8 +4,6 @@ import static marmot.ExecutePlanOptions.DISABLE_LOCAL_EXEC;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.plan.LoadJdbcTableOptions.SELECT;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.JdbcConnectOptions;
@@ -26,8 +24,6 @@ public class SampleLoadJdbcTable {
 	private static final String TABLE_NAME = "buildings";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 

@@ -5,11 +5,14 @@ import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import java.util.Map;
 
-import org.apache.log4j.PropertyConfigurator;
-
-import com.google.common.collect.Maps;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+
+import com.google.common.collect.Maps;
+
+import utils.Size2d;
+import utils.StopWatch;
+import utils.UnitUtils;
 
 import common.SampleUtils;
 import marmot.Plan;
@@ -22,9 +25,6 @@ import marmot.geo.GeoClientUtils;
 import marmot.optor.geo.SquareGrid;
 import marmot.plan.GeomOpOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.Size2d;
-import utils.StopWatch;
-import utils.UnitUtils;
 
 /**
  * 
@@ -41,8 +41,6 @@ public class TagDtgFully {
 	private static final double DIST = 15d;
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

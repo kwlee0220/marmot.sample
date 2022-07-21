@@ -3,8 +3,7 @@ package demo.poc.subway;
 import static marmot.optor.AggregateFunction.SUM;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
+import utils.StopWatch;
 
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -16,7 +15,6 @@ import marmot.dataset.GeometryColumnInfo;
 import marmot.plan.Group;
 import marmot.plan.LoadOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -43,8 +41,6 @@ public class Step04 {
 	private static final String ANALY_MERGE = "지하철역사_추천/통합";
 	
 	public static final void main(String... args) throws Exception {
-//		PropertyConfigurator.configure("log4j.properties");
-		LogManager.getRootLogger().setLevel(Level.OFF);
 		System.out.println("시작: 서울지역 지하철 역사 후보지 추천:...... ");
 		
 		StopWatch watch = StopWatch.start();

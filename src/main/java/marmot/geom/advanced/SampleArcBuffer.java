@@ -1,7 +1,5 @@
 package marmot.geom.advanced;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import common.SampleUtils;
 import marmot.analysis.module.geo.arc.ArcBufferParameters;
 import marmot.command.MarmotClientCommands;
@@ -17,8 +15,6 @@ public class SampleArcBuffer {
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

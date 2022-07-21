@@ -4,8 +4,6 @@ import static marmot.optor.JoinOptions.INNER_JOIN;
 import static marmot.optor.JoinOptions.RIGHT_OUTER_JOIN;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
@@ -24,8 +22,6 @@ public class ConcatPoliticals {
 	private static final String POLITICAL = "구역/통합법정동";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 

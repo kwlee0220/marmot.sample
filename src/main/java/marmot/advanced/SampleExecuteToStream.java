@@ -3,9 +3,9 @@ package marmot.advanced;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import org.locationtech.jts.geom.Envelope;
+
+import utils.StopWatch;
 
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -13,10 +13,8 @@ import marmot.Record;
 import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
-import marmot.optor.StoreDataSetOptions;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.support.DefaultRecord;
-import utils.StopWatch;
 
 /**
  * 
@@ -31,8 +29,6 @@ public class SampleExecuteToStream {
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

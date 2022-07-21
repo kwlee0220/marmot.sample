@@ -5,7 +5,10 @@ import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import java.util.List;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
+import utils.UnitUtils;
+import utils.func.FOption;
+import utils.stream.FStream;
 
 import common.SampleUtils;
 import marmot.Plan;
@@ -16,10 +19,6 @@ import marmot.dataset.GeometryColumnInfo;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.type.DataType;
-import utils.StopWatch;
-import utils.UnitUtils;
-import utils.func.FOption;
-import utils.stream.FStream;
 
 /**
  * 
@@ -36,8 +35,6 @@ public class A03_MapMatchingGas {
 	private static final FOption<Long> BLOCK_SIZE = FOption.of(UnitUtils.parseByteSize("128mb"));
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

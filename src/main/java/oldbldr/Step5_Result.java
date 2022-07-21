@@ -4,7 +4,7 @@ import static marmot.optor.JoinOptions.FULL_OUTER_JOIN;
 import static marmot.optor.JoinOptions.INNER_JOIN;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
 
 import common.SampleUtils;
 import marmot.Plan;
@@ -12,7 +12,6 @@ import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -27,8 +26,6 @@ public class Step5_Result {
 	private static final String RESULT = "tmp/oldbld/result";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

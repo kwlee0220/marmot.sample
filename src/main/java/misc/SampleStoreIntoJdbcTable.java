@@ -3,14 +3,13 @@ package misc;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.func.Try;
+import utils.jdbc.JdbcProcessor;
 
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.plan.JdbcConnectOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.func.Try;
-import utils.jdbc.JdbcProcessor;
 
 /**
  * 
@@ -20,8 +19,6 @@ public class SampleStoreIntoJdbcTable {
 	private static final String TABLE_NAME = "test";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

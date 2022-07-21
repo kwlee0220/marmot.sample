@@ -4,8 +4,6 @@ import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import java.util.Map;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import com.google.common.collect.Maps;
 
 import common.SampleUtils;
@@ -28,8 +26,6 @@ public class SampleFindLocalMoranI {
 	private static final String VALUE_COLUMN = "FCTR_MEAS";
 
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

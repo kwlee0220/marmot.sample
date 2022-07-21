@@ -2,7 +2,7 @@ package externio;
 
 import java.io.File;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
 
 import common.SampleUtils;
 import marmot.command.ImportParameters;
@@ -12,7 +12,6 @@ import marmot.externio.ImportIntoDataSet;
 import marmot.externio.csv.CsvParameters;
 import marmot.externio.csv.ImportCsv;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -20,8 +19,6 @@ import utils.StopWatch;
  */
 public class SampleImportCsvFile {
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

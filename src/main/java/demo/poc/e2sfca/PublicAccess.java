@@ -2,8 +2,7 @@ package demo.poc.e2sfca;
 
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
+import utils.StopWatch;
 
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -14,7 +13,6 @@ import marmot.exec.ExternAnalysis;
 import marmot.optor.ParseCsvOptions;
 import marmot.optor.StoreAsCsvOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -45,9 +43,6 @@ public class PublicAccess {
 	private static final String SPARK_PATH = "/usr/bin/spark-submit";
 	
 	public static final void main(String... args) throws Exception {
-//		PropertyConfigurator.configure("log4j.properties");
-		LogManager.getRootLogger().setLevel(Level.OFF);
-		
 		StopWatch watch = StopWatch.start();
 		System.out.println("시작: 강남구 대중교통 접근성 분석 (E2SFCA)...... ");
 

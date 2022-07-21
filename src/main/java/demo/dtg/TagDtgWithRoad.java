@@ -5,10 +5,11 @@ import static marmot.optor.JoinOptions.SEMI_JOIN;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Polygon;
+
+import utils.StopWatch;
+import utils.UnitUtils;
 
 import common.SampleUtils;
 import marmot.Plan;
@@ -20,8 +21,6 @@ import marmot.geo.GeoClientUtils;
 import marmot.geo.command.CreateSpatialIndexOptions;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
-import utils.UnitUtils;
 
 /**
  * 
@@ -40,8 +39,6 @@ public class TagDtgWithRoad {
 	private static final int WORKER_COUNT = 5;
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

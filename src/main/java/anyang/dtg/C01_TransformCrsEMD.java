@@ -2,7 +2,7 @@ package anyang.dtg;
 
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
 
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
@@ -10,7 +10,6 @@ import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.geo.command.CreateSpatialIndexOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 
 /**
@@ -23,8 +22,6 @@ public class C01_TransformCrsEMD {
 	private static final String OUTPUT = "분석결과/안양대/네트워크/읍면동_wgs84";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-		
 		StopWatch watch = StopWatch.start();
 
 		// 원격 MarmotServer에 접속.

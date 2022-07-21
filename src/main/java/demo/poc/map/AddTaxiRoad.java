@@ -6,9 +6,6 @@ import static marmot.optor.StoreDataSetOptions.FORCE;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
@@ -52,9 +49,6 @@ public class AddTaxiRoad {
 	private static final String RANK_HEADER = "WKT,Join_Count,Id,X,Y,Percentile_Rank";
 	
 	public static final void main(String... args) throws Exception {
-//		PropertyConfigurator.configure("log4j.properties");
-		LogManager.getRootLogger().setLevel(Level.OFF);
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

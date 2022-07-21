@@ -2,16 +2,16 @@ package marmot;
 
 import java.text.DecimalFormat;
 
-import org.apache.log4j.PropertyConfigurator;
+import org.locationtech.jts.geom.Envelope;
 
 import com.google.protobuf.util.JsonFormat;
-import org.locationtech.jts.geom.Envelope;
+
+import utils.StopWatch;
+import utils.stream.FStream;
 
 import marmot.command.MarmotClientCommands;
 import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
-import utils.stream.FStream;
 
 /**
  * 
@@ -19,8 +19,6 @@ import utils.stream.FStream;
  */
 public class PrintPlanAsJson {
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

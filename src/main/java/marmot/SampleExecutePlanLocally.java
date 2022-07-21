@@ -3,8 +3,6 @@ package marmot;
 import java.io.File;
 import java.nio.charset.Charset;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import marmot.command.MarmotClientCommands;
 import marmot.externio.shp.ShapefileRecordSet;
 import marmot.optor.CreateDataSetOptions;
@@ -21,8 +19,6 @@ public class SampleExecutePlanLocally {
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 

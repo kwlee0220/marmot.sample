@@ -3,8 +3,6 @@ package marmot.geom.advanced;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import org.locationtech.jts.geom.Envelope;
 
 import marmot.MarmotRuntime;
@@ -28,8 +26,6 @@ public class SampleEstimateRangeQuery {
 	private static final String EMD = "구역/읍면동";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-		
 		File root = new File("/home/kwlee/tmp/gsp");
 		org.apache.commons.io.FileUtils.deleteDirectory(root);
 		root.mkdirs();

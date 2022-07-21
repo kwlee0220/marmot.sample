@@ -1,8 +1,9 @@
 package marmot.geom;
 
 import static marmot.optor.StoreDataSetOptions.FORCE;
+import static marmot.plan.SpatialJoinOptions.WITHIN_DISTANCE;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
 
 import common.SampleUtils;
 import marmot.ExecutePlanOptions;
@@ -10,9 +11,7 @@ import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
-import static marmot.plan.SpatialJoinOptions.*;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -27,8 +26,6 @@ public class SampleSpatialJoin {
 	private static final String PARAM = "교통/지하철/서울역사";
 
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

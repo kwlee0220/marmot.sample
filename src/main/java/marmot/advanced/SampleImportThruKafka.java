@@ -7,7 +7,6 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.apache.log4j.PropertyConfigurator;
 
 import marmot.MarmotRuntime;
 import marmot.Record;
@@ -32,8 +31,6 @@ public class SampleImportThruKafka {
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

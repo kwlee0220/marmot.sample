@@ -1,7 +1,5 @@
 package marmot.geom;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import org.locationtech.jts.geom.Envelope;
 
 import marmot.MarmotRuntime;
@@ -23,8 +21,6 @@ public class SampleReadRawSpatialCluster {
 	private static final String EMD = "구역/읍면동";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

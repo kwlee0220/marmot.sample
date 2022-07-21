@@ -1,7 +1,5 @@
 package testcase;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import org.locationtech.jts.geom.Envelope;
 
 import common.SampleUtils;
@@ -19,8 +17,6 @@ public class TestGeoDataStore {
 	private static final String INPUT = "건물/건물통합정보마스터/201809";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 

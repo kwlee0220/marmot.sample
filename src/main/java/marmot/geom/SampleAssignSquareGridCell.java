@@ -2,10 +2,10 @@ package marmot.geom;
 
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+
+import utils.Size2d;
 
 import common.SampleUtils;
 import marmot.MarmotRuntime;
@@ -16,7 +16,6 @@ import marmot.optor.AggregateFunction;
 import marmot.optor.geo.SquareGrid;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.Size2d;
 
 /**
  * 
@@ -28,8 +27,6 @@ public class SampleAssignSquareGridCell {
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

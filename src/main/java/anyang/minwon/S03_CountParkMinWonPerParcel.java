@@ -3,7 +3,7 @@ package anyang.minwon;
 import static marmot.optor.JoinOptions.RIGHT_OUTER_JOIN;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
 
 import common.SampleUtils;
 import marmot.Plan;
@@ -13,7 +13,6 @@ import marmot.dataset.GeometryColumnInfo;
 import marmot.optor.AggregateFunction;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -25,8 +24,6 @@ public class S03_CountParkMinWonPerParcel {
 	private static final String OUTPUT = "분석결과/안양대/도봉구/필지별_공원민원수";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-		
 		StopWatch watch = StopWatch.start();
 
 		// 원격 MarmotServer에 접속.

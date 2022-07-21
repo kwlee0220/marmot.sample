@@ -4,7 +4,7 @@ import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 import static marmot.plan.SpatialJoinOptions.WITHIN_DISTANCE;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
 
 import common.SampleUtils;
 import marmot.Plan;
@@ -13,7 +13,6 @@ import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.optor.AggregateFunction;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -25,8 +24,6 @@ public class B03_CountCarAccidentsByRoad {
 	private static final String OUTPUT = "분석결과/안양대/도봉구/도로별_사망사고_빈도";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-		
 		StopWatch watch = StopWatch.start();
 
 		// 원격 MarmotServer에 접속.

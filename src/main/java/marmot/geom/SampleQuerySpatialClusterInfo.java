@@ -3,9 +3,9 @@ package marmot.geom;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import org.locationtech.jts.geom.Envelope;
+
+import utils.stream.FStream;
 
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -13,7 +13,6 @@ import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.geo.query.RangeQueryEstimate.ClusterEstimate;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.stream.FStream;
 
 /**
  * 
@@ -26,8 +25,6 @@ public class SampleQuerySpatialClusterInfo {
 	private static final String EMD = "구역/읍면동";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

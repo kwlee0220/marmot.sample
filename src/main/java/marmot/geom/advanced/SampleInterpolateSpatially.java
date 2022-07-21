@@ -2,8 +2,6 @@ package marmot.geom.advanced;
 
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import common.SampleUtils;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
@@ -24,8 +22,6 @@ public class SampleInterpolateSpatially {
 	private static final int TOP_K = 10;
 
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-		
 		System.out.println(IDWInterpolation.ofPower(2));
 		System.exit(1);
 

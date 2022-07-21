@@ -7,7 +7,7 @@ import static marmot.optor.StoreDataSetOptions.FORCE;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
 
 import common.SampleUtils;
 import marmot.Plan;
@@ -16,7 +16,6 @@ import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -28,8 +27,6 @@ public class Step1Building {
 	private static final String RESULT = "tmp/bizarea/grid100_land";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

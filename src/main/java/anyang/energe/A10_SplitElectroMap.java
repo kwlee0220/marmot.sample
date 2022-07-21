@@ -2,14 +2,13 @@ package anyang.energe;
 
 import static marmot.optor.StoreDataSetOptions.GEOMETRY;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
 
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -20,8 +19,6 @@ public class A10_SplitElectroMap {
 	private static final String OUTPUT = "tmp/anyang/map_electro_splits";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

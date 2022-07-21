@@ -1,11 +1,10 @@
 package marmot;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
 
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -13,8 +12,6 @@ import utils.StopWatch;
  */
 public class SampleMarmotClient {
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

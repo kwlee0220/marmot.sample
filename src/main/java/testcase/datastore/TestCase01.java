@@ -1,8 +1,9 @@
 package testcase.datastore;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import org.locationtech.jts.geom.Envelope;
+
+import utils.stream.FStream;
+import utils.stream.KeyedGroups;
 
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -13,8 +14,6 @@ import marmot.geo.query.GeoDataStore;
 import marmot.geo.query.PartitionCache;
 import marmot.geo.query.PartitionCache.PartitionKey;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.stream.FStream;
-import utils.stream.KeyedGroups;
 
 /**
  * 
@@ -26,8 +25,6 @@ public class TestCase01 {
 	private static final String EMD = "구역/읍면동";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 

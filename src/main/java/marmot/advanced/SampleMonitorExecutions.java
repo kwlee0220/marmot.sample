@@ -1,7 +1,5 @@
 package marmot.advanced;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import marmot.command.MarmotClientCommands;
 import marmot.exec.MarmotExecution;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -15,8 +13,6 @@ public class SampleMonitorExecutions {
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

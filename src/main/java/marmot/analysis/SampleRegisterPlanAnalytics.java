@@ -4,7 +4,7 @@ import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.Utilities;
 
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
@@ -15,7 +15,6 @@ import marmot.exec.MarmotAnalysis.Type;
 import marmot.exec.MarmotExecution;
 import marmot.exec.PlanAnalysis;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.Utilities;
 
 /**
  * 
@@ -27,8 +26,6 @@ public class SampleRegisterPlanAnalytics {
 	private static final String ANA_ID = "/tmp/test";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

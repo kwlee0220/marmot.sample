@@ -4,18 +4,16 @@ import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.JoinOptions.INNER_JOIN;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
 
 import common.SampleUtils;
 import marmot.MarmotRuntime;
 import marmot.Plan;
-import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.optor.AggregateFunction;
 import marmot.plan.Group;
 import marmot.plan.LoadOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -26,8 +24,6 @@ public class TestMarmotPlan {
 	private static final String TEMP = "tmp/temp";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 //		PBMarmotClient marmot = MarmotClientCommands.connect();
 		PBMarmotClient marmot = PBMarmotClient.connect("220.74.32.5", 12988);

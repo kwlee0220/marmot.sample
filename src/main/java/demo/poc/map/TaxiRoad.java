@@ -3,8 +3,7 @@ package demo.poc.map;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
+import utils.StopWatch;
 
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -17,7 +16,6 @@ import marmot.optor.ParseCsvOptions;
 import marmot.optor.StoreAsCsvOptions;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -44,9 +42,6 @@ public class TaxiRoad {
 	private static final String RANK_HEADER = "WKT,Join_Count,Id,X,Y,Percentile_Rank";
 	
 	public static final void main(String... args) throws Exception {
-//		PropertyConfigurator.configure("log4j.properties");
-		LogManager.getRootLogger().setLevel(Level.OFF);
-		
 		StopWatch watch = StopWatch.start();
 		System.out.println("시작: 택시 승하차 분석 (MapMatching & PercentileRank)...... ");
 

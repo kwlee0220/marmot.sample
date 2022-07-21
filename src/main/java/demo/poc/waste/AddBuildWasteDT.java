@@ -3,10 +3,9 @@ package demo.poc.waste;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-
 import com.google.common.collect.Lists;
+
+import utils.stream.FStream;
 
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -21,7 +20,6 @@ import marmot.optor.JoinOptions;
 import marmot.optor.StoreAsCsvOptions;
 import marmot.optor.StoreDataSetOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.stream.FStream;
 
 /**
  * 
@@ -75,9 +73,6 @@ public class AddBuildWasteDT {
 	};
 	
 	public static final void main(String... args) throws Exception {
-//		PropertyConfigurator.configure("log4j.properties");
-		LogManager.getRootLogger().setLevel(Level.OFF);
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

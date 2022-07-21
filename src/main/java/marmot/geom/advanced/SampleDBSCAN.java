@@ -2,8 +2,6 @@ package marmot.geom.advanced;
 
 import static marmot.optor.AggregateFunction.CONVEX_HULL;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import common.SampleUtils;
 import marmot.Plan;
 import marmot.analysis.module.geo.DBSCANParameters;
@@ -24,8 +22,6 @@ public class SampleDBSCAN {
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		DataSet ds = marmot.getDataSet(HOSTPITAL);

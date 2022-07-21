@@ -3,9 +3,9 @@ package marmot.geom.advanced;
 import static marmot.optor.AggregateFunction.AVG;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import org.locationtech.jts.geom.Geometry;
+
+import utils.StopWatch;
 
 import common.SampleUtils;
 import marmot.MarmotRuntime;
@@ -16,7 +16,6 @@ import marmot.dataset.GeometryColumnInfo;
 import marmot.optor.geo.SpatialRelation;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -28,8 +27,6 @@ public class SampleE2SFCASetup {
 	private static final String RESULT = "주민/유동인구/강남구/시간대/2015";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

@@ -4,8 +4,6 @@ import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
@@ -22,8 +20,6 @@ public class SampleStartPlan {
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

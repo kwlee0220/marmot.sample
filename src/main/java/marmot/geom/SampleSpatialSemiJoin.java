@@ -2,8 +2,6 @@ package marmot.geom;
 
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import common.SampleUtils;
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
@@ -22,8 +20,6 @@ public class SampleSpatialSemiJoin {
 	private static final String PARAMS = "교통/지하철/역사";
 
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

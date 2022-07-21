@@ -2,8 +2,6 @@ package marmot.geom;
 
 import java.util.List;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.geo.geoserver.rest.GeoServer;
@@ -22,8 +20,6 @@ public class SampleGeoServer {
 	private static final String CHILDREN = "POI/어린이보호구역";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		DataSet ds = marmot.getDataSet(HOSPITAL);

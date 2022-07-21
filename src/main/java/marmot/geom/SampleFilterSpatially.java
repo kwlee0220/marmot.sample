@@ -4,8 +4,6 @@ import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 import static marmot.optor.geo.SpatialRelation.IS_CONTAINED_BY;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import org.locationtech.jts.geom.Envelope;
 
 import marmot.MarmotRuntime;
@@ -24,8 +22,6 @@ public class SampleFilterSpatially {
 	private static final String INPUT = "건물/GIS건물통합정보_2019";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 

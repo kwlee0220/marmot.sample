@@ -2,7 +2,7 @@ package marmot.geom.advanced;
 
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.func.FOption;
 
 import common.SampleUtils;
 import marmot.Plan;
@@ -10,7 +10,6 @@ import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.func.FOption;
 
 /**
  * 
@@ -24,8 +23,6 @@ public class SampleEstimateIDW {
 	private static final int TOP_K = 10;
 
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

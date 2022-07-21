@@ -3,7 +3,8 @@ package misc;
 
 import java.util.List;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
+import utils.stream.FStream;
 
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -16,8 +17,6 @@ import marmot.remote.protobuf.PBMarmotClient;
 import marmot.rset.ConcatedRecordSet;
 import marmot.support.DefaultRecord;
 import marmot.type.DataType;
-import utils.StopWatch;
-import utils.stream.FStream;
 
 /**
  * 
@@ -28,8 +27,6 @@ public class SampleBuildThumbnail {
 	private static final int SAMPLE_SIZE = 1000;
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

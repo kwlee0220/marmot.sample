@@ -2,7 +2,7 @@ package anyang.dtg;
 
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
 
 import common.SampleUtils;
 import marmot.Plan;
@@ -12,7 +12,6 @@ import marmot.dataset.GeometryColumnInfo;
 import marmot.optor.AggregateFunction;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -24,8 +23,6 @@ public class A02_CountDtgByEMD {
 	private static final String OUTPUT = "분석결과/안양대/도봉구/읍면동별_DTG_빈도";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-		
 		StopWatch watch = StopWatch.start();
 
 		// 원격 MarmotServer에 접속.

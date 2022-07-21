@@ -3,9 +3,10 @@ package marmot.analysis;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import com.google.common.collect.Maps;
+
+import utils.Utilities;
+import utils.stream.FStream;
 
 import marmot.Plan;
 import marmot.analysis.system.SystemAnalysis;
@@ -14,12 +15,10 @@ import marmot.exec.AnalysisNotFoundException;
 import marmot.exec.CompositeAnalysis;
 import marmot.exec.MarmotAnalysis;
 import marmot.exec.MarmotAnalysis.Type;
-import marmot.optor.StoreDataSetOptions;
 import marmot.exec.ModuleAnalysis;
 import marmot.exec.PlanAnalysis;
+import marmot.optor.StoreDataSetOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.Utilities;
-import utils.stream.FStream;
 
 /**
  * 
@@ -30,8 +29,6 @@ public class SampleSimpleAnalysis {
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 

@@ -3,8 +3,6 @@ package marmot;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.externio.geojson.GeoJsonRecordSetWriter;
@@ -20,8 +18,6 @@ public class SampleExportGeoJson {
 	private static final String OUTPUT = "data/test.gjson";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

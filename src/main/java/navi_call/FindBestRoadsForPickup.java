@@ -3,7 +3,7 @@ package navi_call;
 import static marmot.optor.AggregateFunction.COUNT;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
 
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
@@ -11,7 +11,6 @@ import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -21,8 +20,6 @@ public class FindBestRoadsForPickup {
 	private static final String RESULT = "분석결과/시간별_택시_픽업_최적지";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-		
 		StopWatch watch = StopWatch.start();
 
 		// 원격 MarmotServer에 접속.

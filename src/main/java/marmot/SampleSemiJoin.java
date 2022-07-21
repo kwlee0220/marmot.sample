@@ -3,8 +3,6 @@ package marmot;
 import static marmot.optor.JoinOptions.SEMI_JOIN;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import common.SampleUtils;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
@@ -21,8 +19,6 @@ public class SampleSemiJoin {
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

@@ -1,7 +1,5 @@
 package marmot;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.remote.protobuf.PBMarmotClient;
@@ -14,8 +12,6 @@ public class SampleGetDataSet {
 	private static final String INPUT = "POI/주유소_가격";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

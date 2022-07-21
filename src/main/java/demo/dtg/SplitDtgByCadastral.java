@@ -4,9 +4,10 @@ import static marmot.optor.StoreDataSetOptions.DEFAULT;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import org.locationtech.jts.geom.Polygon;
+
+import utils.StopWatch;
+import utils.UnitUtils;
 
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
@@ -16,8 +17,6 @@ import marmot.geo.GeoClientUtils;
 import marmot.geo.command.CreateSpatialIndexOptions;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
-import utils.UnitUtils;
 
 /**
  * 
@@ -30,8 +29,6 @@ public class SplitDtgByCadastral {
 	private static final String RESULT = "tmp/dtg/splits";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

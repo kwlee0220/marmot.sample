@@ -1,7 +1,6 @@
 package demo.poc.age;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
+import utils.StopWatch;
 
 import marmot.BindDataSetOptions;
 import marmot.MarmotRuntime;
@@ -14,7 +13,6 @@ import marmot.optor.AggregateFunction;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.type.DataType;
-import utils.StopWatch;
 
 /**
  * 
@@ -22,8 +20,6 @@ import utils.StopWatch;
  */
 public class CreateAgeInterval {
 	public static final void main(String... args) throws Exception {
-//		PropertyConfigurator.configure("log4j.properties");
-		LogManager.getRootLogger().setLevel(Level.OFF);
 		System.out.println("시작: 도시공간구조 분석: 데이터 준비...... ");
 
 		// 원격 MarmotServer에 접속.

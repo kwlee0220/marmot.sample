@@ -10,8 +10,8 @@ import static marmot.optor.geo.SpatialRelation.INTERSECTS;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
+import utils.Size2d;
+import utils.StopWatch;
 
 import common.SampleUtils;
 import marmot.MarmotRuntime;
@@ -24,8 +24,6 @@ import marmot.optor.geo.SquareGrid;
 import marmot.plan.Group;
 import marmot.plan.SpatialJoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.Size2d;
-import utils.StopWatch;
 
 /**
  * 
@@ -47,9 +45,6 @@ public class FindBestSubwayStationCandidates {
 	private static final String TEMP_TAXI_LOG = "분석결과/지하철역사_추천/택시로그";
 	
 	public static final void main(String... args) throws Exception {
-//		PropertyConfigurator.configure("log4j.properties");
-		LogManager.getRootLogger().setLevel(Level.OFF);
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

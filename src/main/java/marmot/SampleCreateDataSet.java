@@ -5,8 +5,6 @@ import static marmot.optor.CreateDataSetOptions.FORCE;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import com.google.common.collect.Lists;
 
 import common.SampleUtils;
@@ -24,8 +22,6 @@ import marmot.type.DataType;
  */
 public class SampleCreateDataSet {
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

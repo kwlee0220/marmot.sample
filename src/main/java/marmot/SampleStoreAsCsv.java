@@ -2,8 +2,6 @@ package marmot;
 
 import static marmot.optor.StoreAsCsvOptions.DEFAULT;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 
@@ -17,8 +15,6 @@ public class SampleStoreAsCsv {
 	private static final String RESULT2 = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 

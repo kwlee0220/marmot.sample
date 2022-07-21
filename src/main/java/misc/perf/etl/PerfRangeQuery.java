@@ -3,9 +3,11 @@ package misc.perf.etl;
 
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import org.locationtech.jts.geom.Envelope;
+
+import utils.StopWatch;
+import utils.UnitUtils;
+import utils.stream.FStream;
 
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -13,9 +15,6 @@ import marmot.RecordSet;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
-import utils.UnitUtils;
-import utils.stream.FStream;
 
 
 /**
@@ -40,8 +39,6 @@ public class PerfRangeQuery {
 	private static final String INPUT_SE = "교통/dtg_se";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

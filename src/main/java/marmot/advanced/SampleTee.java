@@ -2,8 +2,6 @@ package marmot.advanced;
 
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import common.SampleUtils;
 import marmot.BindDataSetOptions;
 import marmot.Plan;
@@ -23,8 +21,6 @@ public class SampleTee {
 	private static final String RESULT2 = "tmp/result2";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

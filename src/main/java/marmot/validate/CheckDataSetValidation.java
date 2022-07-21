@@ -1,7 +1,5 @@
 package marmot.validate;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
 
@@ -14,8 +12,6 @@ public class CheckDataSetValidation {
 	private static final String PREFIX = "tmp/validate/";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-		
 		Node SIDO = new SidoNode("sido", "구역/시도", "CTPRVN_CD", 2, PREFIX);
 		Node SGG = new NonRootNode(SIDO, "sgg", "구역/시군구", "SIG_CD", 5, PREFIX);
 		Node EMD = new NonRootNode(SGG, "emd", "구역/읍면동", "EMD_CD", 8, PREFIX);

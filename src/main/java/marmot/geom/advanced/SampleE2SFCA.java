@@ -3,7 +3,7 @@ package marmot.geom.advanced;
 import static marmot.optor.AggregateFunction.SUM;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
 
 import common.SampleUtils;
 import marmot.Plan;
@@ -15,7 +15,6 @@ import marmot.optor.geo.advanced.Power;
 import marmot.optor.geo.advanced.WeightFunction;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -31,8 +30,6 @@ public class SampleE2SFCA {
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

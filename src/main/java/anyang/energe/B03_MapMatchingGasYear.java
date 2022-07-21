@@ -5,7 +5,8 @@ import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import java.util.List;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
+import utils.stream.FStream;
 
 import common.SampleUtils;
 import marmot.Plan;
@@ -16,8 +17,6 @@ import marmot.dataset.GeometryColumnInfo;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.type.DataType;
-import utils.StopWatch;
-import utils.stream.FStream;
 
 /**
  * 
@@ -35,8 +34,6 @@ public class B03_MapMatchingGasYear {
 	private static final String PATTERN = "if (%s == null) {%s = 0}";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

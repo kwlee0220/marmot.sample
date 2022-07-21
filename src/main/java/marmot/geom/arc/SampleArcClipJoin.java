@@ -2,7 +2,8 @@ package marmot.geom.arc;
 
 import java.util.Map;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
+import utils.func.Tuple;
 
 import common.SampleUtils;
 import marmot.MarmotRuntime;
@@ -14,8 +15,6 @@ import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.optor.StoreDataSetOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
-import utils.func.Tuple;
 
 /**
  * 
@@ -28,8 +27,6 @@ public class SampleArcClipJoin {
 	private static final String RESULT = "tmp/result";
 
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

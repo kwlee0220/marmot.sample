@@ -9,10 +9,10 @@ import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import java.util.List;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-
 import com.google.common.collect.Lists;
+
+import utils.Size2d;
+import utils.StopWatch;
 
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -25,8 +25,6 @@ import marmot.optor.geo.SquareGrid;
 import marmot.plan.Group;
 import marmot.plan.LoadOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.Size2d;
-import utils.StopWatch;
 
 /**
  * 
@@ -53,8 +51,6 @@ public class FindBestSubway {
 	private static final String ANALY_MERGE = "지하철역사_추천/통합";
 	
 	public static final void main(String... args) throws Exception {
-//		PropertyConfigurator.configure("log4j.properties");
-		LogManager.getRootLogger().setLevel(Level.OFF);
 		System.out.println("시작: 서울지역 지하철 역사 후보지 추천:...... ");
 		
 		StopWatch watch = StopWatch.start();

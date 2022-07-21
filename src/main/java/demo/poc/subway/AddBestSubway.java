@@ -13,10 +13,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-
 import com.google.common.collect.Lists;
+
+import utils.Size2d;
 
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -32,7 +31,6 @@ import marmot.optor.geo.SquareGrid;
 import marmot.plan.Group;
 import marmot.plan.LoadOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.Size2d;
 
 /**
  * 
@@ -60,9 +58,6 @@ public class AddBestSubway {
 	private static final String ANALY_ATTACH_GEOM = "지하철역사_추천/공간데이터_병합";
 	
 	public static final void main(String... args) throws Exception {
-//		PropertyConfigurator.configure("log4j.properties");
-		LogManager.getRootLogger().setLevel(Level.OFF);
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

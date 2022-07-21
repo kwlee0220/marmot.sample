@@ -2,8 +2,9 @@ package anyang.dtg;
 
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
 import org.locationtech.jts.geom.Geometry;
+
+import utils.StopWatch;
 
 import common.SampleUtils;
 import marmot.MarmotRuntime;
@@ -13,7 +14,6 @@ import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.optor.geo.SpatialRelation;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -25,8 +25,6 @@ public class A01_FilterDoBongGuDTG {
 	private static final String OUTPUT = "분석결과/안양대/도봉구/DTG";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-		
 		StopWatch watch = StopWatch.start();
 
 		// 원격 MarmotServer에 접속.

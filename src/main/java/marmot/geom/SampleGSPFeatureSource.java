@@ -2,10 +2,9 @@ package marmot.geom;
 
 import java.io.File;
 
-import org.apache.log4j.PropertyConfigurator;
+import org.locationtech.jts.geom.Envelope;
 
 import com.google.common.io.Files;
-import org.locationtech.jts.geom.Envelope;
 
 import common.SampleUtils;
 import marmot.MarmotRuntime;
@@ -28,8 +27,6 @@ public class SampleGSPFeatureSource {
 	private static final String EMD = "구역/읍면동";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

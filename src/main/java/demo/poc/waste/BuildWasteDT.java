@@ -2,10 +2,10 @@ package demo.poc.waste;
 
 import java.util.List;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-
 import com.google.common.collect.Lists;
+
+import utils.StopWatch;
+import utils.stream.FStream;
 
 import marmot.MarmotRuntime;
 import marmot.Plan;
@@ -17,8 +17,6 @@ import marmot.optor.JoinOptions;
 import marmot.optor.StoreAsCsvOptions;
 import marmot.optor.StoreDataSetOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
-import utils.stream.FStream;
 
 /**
  * 
@@ -60,9 +58,6 @@ public class BuildWasteDT {
 	};
 	
 	public static final void main(String... args) throws Exception {
-//		PropertyConfigurator.configure("log4j.properties");
-		LogManager.getRootLogger().setLevel(Level.OFF);
-		
 		StopWatch watch = StopWatch.start();
 		System.out.println("시작: 시군구별 생활 폐기물 패출양 요인 분석 (DecisionTree)...... ");
 

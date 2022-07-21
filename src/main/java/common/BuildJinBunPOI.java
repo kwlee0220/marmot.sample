@@ -4,7 +4,7 @@ import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import java.util.UUID;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.StopWatch;
 
 import marmot.Plan;
 import marmot.RecordSchema;
@@ -13,7 +13,6 @@ import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.optor.JoinOptions;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -26,8 +25,6 @@ public class BuildJinBunPOI {
 	private static final String RESULT = "주소/지번POI";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

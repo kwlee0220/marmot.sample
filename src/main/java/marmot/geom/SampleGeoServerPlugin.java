@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.apache.log4j.PropertyConfigurator;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -15,9 +14,10 @@ import org.opengis.feature.type.GeometryDescriptor;
 
 import com.google.common.collect.Maps;
 
+import utils.StopWatch;
+
 import marmot.command.MarmotClientCommands;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.StopWatch;
 
 /**
  * 
@@ -29,8 +29,6 @@ public class SampleGeoServerPlugin {
 	private static final String RESULT = "tmp/result";
 	
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		

@@ -2,7 +2,7 @@ package marmot.geom.advanced;
 
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
-import org.apache.log4j.PropertyConfigurator;
+import utils.Size2d;
 
 import common.SampleUtils;
 import marmot.Plan;
@@ -11,7 +11,6 @@ import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.optor.geo.SquareGrid;
 import marmot.remote.protobuf.PBMarmotClient;
-import utils.Size2d;
 
 /**
  * 
@@ -24,8 +23,6 @@ public class SampleKernelDensity {
 	private static final double RADIUS = 1 * 1000;
 
 	public static final void main(String... args) throws Exception {
-		PropertyConfigurator.configure("log4j.properties");
-
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
