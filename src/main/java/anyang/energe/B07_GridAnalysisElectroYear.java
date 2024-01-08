@@ -28,7 +28,7 @@ public class B07_GridAnalysisElectroYear {
 	private static final String INPUT = "tmp/anyang/map_electro" + Globals.YEAR;
 	private static final String OUTPUT = "tmp/anyang/grid/grid_electro" + Globals.YEAR;
 	
-	private static final List<String> COL_NAMES = FStream.rangeClosed(1, 12)
+	private static final List<String> COL_NAMES = FStream.range(1, 13)
 														.map(i -> "month_" + i)
 														.toList();
 	

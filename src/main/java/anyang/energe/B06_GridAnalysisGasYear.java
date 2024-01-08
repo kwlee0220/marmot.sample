@@ -28,7 +28,7 @@ public class B06_GridAnalysisGasYear {
 	private static final String INPUT = "tmp/anyang/map_gas" + Globals.YEAR;
 	private static final String OUTPUT = "tmp/anyang/grid/grid_gas" + Globals.YEAR;
 	
-	private static final List<String> COL_NAMES = FStream.rangeClosed(1, 12)
+	private static final List<String> COL_NAMES = FStream.range(1, 13)
 														.map(i -> "month_" + i)
 														.toList();
 	

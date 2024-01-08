@@ -28,7 +28,7 @@ public class B04_MapMatchingElectroYear {
 	private static final String INTERM = "tmp/anyang/pnu_electro";
 	private static final String OUTPUT = "tmp/anyang/map_electro" + Globals.YEAR;
 
-	private static final List<String> COL_NAMES = FStream.rangeClosed(1, 12)
+	private static final List<String> COL_NAMES = FStream.range(1, 13)
 													.map(i -> "month_" + i)
 													.toList();
 	private static final String PATTERN = "if (%s == null) {%s = 0}";
