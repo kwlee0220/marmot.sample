@@ -198,7 +198,7 @@ public class CreateSampleDataSet {
 			
 			double sum = FStream.from(dist).mapToDouble(d -> d.m_ratio).sum();
 			FStream.from(dist).forEach(d -> d.m_ratio = d.m_ratio / sum);
-			FStream.from(dist).foldLeft(0d, (a,d) -> {
+			FStream.from(dist).fold(0d, (a,d) -> {
 				double upper = a + d.m_ratio;
 				d.m_range = Range.of(a, upper);
 				return upper;

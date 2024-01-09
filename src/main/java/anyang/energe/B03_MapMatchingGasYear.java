@@ -69,7 +69,7 @@ public class B03_MapMatchingGasYear {
 
 	private static void putSideBySide(PBMarmotClient marmot, String outDsId) {
 		RecordSchema outSchema = FStream.from(COL_NAMES)
-										.foldLeft(RecordSchema.builder(),
+										.fold(RecordSchema.builder(),
 												(b,cn) -> b.addColumn(cn, DataType.LONG))
 										.build();
 		

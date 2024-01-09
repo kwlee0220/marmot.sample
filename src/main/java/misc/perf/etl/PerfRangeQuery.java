@@ -98,7 +98,7 @@ public class PerfRangeQuery {
 		try ( RecordSet rset = marmot.executeLocally(plan) ) {
 			return rset.fstream().map(r -> r.getGeometry("the_geom"))
 						.map(g -> g.getEnvelopeInternal())
-						.collectLeft(new Envelope(), (c,v) -> c.expandToInclude(v));
+						.collect(new Envelope(), (c,v) -> c.expandToInclude(v));
 		}
 	}
 }

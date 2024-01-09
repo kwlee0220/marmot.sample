@@ -72,7 +72,7 @@ public class A04_MapMatchingElectro {
 	
 	private static void putSideBySide(PBMarmotClient marmot) {
 		RecordSchema outSchema = FStream.of(2011, 2012, 2013, 2014, 2015, 2016, 2017)
-										.foldLeft(RecordSchema.builder(),
+										.fold(RecordSchema.builder(),
 												(b,y) -> b.addColumn("electro_"+y, DataType.LONG))
 										.build();
 		

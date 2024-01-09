@@ -11,7 +11,6 @@ import utils.UnitUtils;
 import utils.func.FOption;
 import utils.stream.FStream;
 
-import common.SampleUtils;
 import marmot.Plan;
 import marmot.RecordSchema;
 import marmot.command.MarmotClientCommands;
@@ -20,6 +19,8 @@ import marmot.dataset.GeometryColumnInfo;
 import marmot.plan.Group;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.type.DataType;
+
+import common.SampleUtils;
 
 /**
  * 
@@ -87,7 +88,7 @@ public class A05_MapMatchingLand {
 	
 	private static void putSideBySide(PBMarmotClient marmot) {
 		RecordSchema outSchema = FStream.of(2012, 2013, 2014, 2015, 2016, 2017)
-										.foldLeft(RecordSchema.builder(),
+										.fold(RecordSchema.builder(),
 												(b,y) -> b.addColumn("land_"+y, DataType.LONG))
 										.build();
 		
