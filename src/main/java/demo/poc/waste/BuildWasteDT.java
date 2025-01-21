@@ -76,7 +76,7 @@ public class BuildWasteDT {
 		
 		String prjExpr = FStream.of(VAR_COLS)
 								.zipWithIndex()
-								.map(t -> String.format("%s as c%03d", t._1, t._2))
+								.map(t -> String.format("%s as c%03d", t.value(), t.index()))
 								.join(",", "sigungu_cd,", "");
 		List<String> inCols = FStream.range(0, VAR_COLS.length)
 									.mapToObj(v -> String.format("c%03d", v))
@@ -129,7 +129,7 @@ public class BuildWasteDT {
 								.join(',');
 		String updExpr = FStream.from(outCols)
 								.zipWithIndex(1)
-								.map(t -> String.format("%s = '%d:' + (float)%s;", t._1, t._2, t._1))
+								.map(t -> String.format("%s = '%d:' + (float)%s;", t.value(), t.index(), t.value()))
 								.join(" ");
 
 		StoreAsCsvOptions opts = StoreAsCsvOptions.DEFAULT(' ').headerFirst(false);

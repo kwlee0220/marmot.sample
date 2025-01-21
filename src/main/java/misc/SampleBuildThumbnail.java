@@ -105,7 +105,7 @@ public class SampleBuildThumbnail {
 						FStream<Record> selecteds = rset.fstream()
 							.takeTopK(topK, SampleBuildThumbnail::compare)
 							.zipWithIndex()
-							.map(t -> attachInfo(t._1, quadKey, topK, t._2));
+							.map(t -> attachInfo(t.value(), quadKey, topK, t.index()));
 						return RecordSet.from(m_schema, selecteds);
 					}
 				}
