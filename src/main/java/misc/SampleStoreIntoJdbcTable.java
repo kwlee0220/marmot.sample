@@ -48,7 +48,7 @@ public class SampleStoreIntoJdbcTable {
 							.build();
 		marmot.execute(plan);
 		
-		try ( ResultSet rs = jdbc.executeQuery(String.format("select count(*) from %s", TABLE_NAME)) ) {
+		try ( ResultSet rs = jdbc.executeQuery(String.format("select count(*) from %s", TABLE_NAME), true) ) {
 			rs.next();
 			long count = rs.getLong(1);
 			System.out.println("count = " + count);
