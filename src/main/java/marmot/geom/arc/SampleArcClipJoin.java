@@ -3,9 +3,8 @@ package marmot.geom.arc;
 import java.util.Map;
 
 import utils.StopWatch;
-import utils.func.Tuple;
+import utils.Tuple;
 
-import common.SampleUtils;
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.Record;
@@ -15,6 +14,8 @@ import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.optor.StoreDataSetOptions;
 import marmot.remote.protobuf.PBMarmotClient;
+
+import common.SampleUtils;
 
 /**
  * 
@@ -57,8 +58,10 @@ public class SampleArcClipJoin {
 		
 		Map<String,Double> data;
 		try ( RecordSet rset = output.read() ) {
-			data = rset.fstream().map(r -> summarize(r))
-						.toMap(t -> t._1, t -> t._2);
+			data = rset.fstream()
+						.map(r -> summarize(r))
+						.toKeyValueStream(t -> t._1, t -> t._2)
+						.toMap();
 		}
 		
 		try ( RecordSet rset = result.read() ) {
