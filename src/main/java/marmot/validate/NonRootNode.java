@@ -3,11 +3,12 @@ package marmot.validate;
 import static marmot.optor.JoinOptions.FULL_OUTER_JOIN;
 import static marmot.optor.StoreDataSetOptions.FORCE;
 
+import java.util.Optional;
+
 import marmot.MarmotRuntime;
 import marmot.Plan;
 import marmot.dataset.DataSet;
 import marmot.optor.JoinOptions;
-import utils.func.FOption;
 
 /**
  * 
@@ -17,7 +18,7 @@ public class NonRootNode extends Node {
 	static final String SUFFIX_EMPTY_PARENT = "no_child_parents";
 	
 	protected final Node m_parent;
-	private final FOption<Integer> m_nworkers;
+	private final Optional<Integer> m_nworkers;
 	
 	protected String getParentKeyExpr() {
 		return String.format("%s.substring(0,%d)", m_keyCol, m_parent.m_keyLength);
@@ -28,7 +29,7 @@ public class NonRootNode extends Node {
 		super(name, dsId, key, keyLen, outputPrefix);
 		
 		m_parent = parent;
-		m_nworkers = FOption.of(nworkers);
+		m_nworkers = Optional.of(nworkers);
 	}
 
 	public NonRootNode(Node parent, String name, String dsId, String key, int keyLen,
@@ -36,7 +37,7 @@ public class NonRootNode extends Node {
 		super(name, dsId, key, keyLen, outputPrefix);
 		
 		m_parent = parent;
-		m_nworkers = FOption.empty();
+		m_nworkers = Optional.empty();
 	}
 
 	@Override
@@ -132,7 +133,7 @@ public class NonRootNode extends Node {
 		return marmot.getDataSet(tempDsId);
 	}
 	
-	private void findUncoveredGeoms(MarmotRuntime marmot, FOption<Integer> nworkers) {
+	private void findUncoveredGeoms(MarmotRuntime marmot, Optional<Integer> nworkers) {
 		String tempId = m_prefix + "tmp_bindings";
 		
 		createParentBindings(marmot, tempId);

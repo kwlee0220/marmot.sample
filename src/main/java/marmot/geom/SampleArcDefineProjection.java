@@ -1,13 +1,15 @@
 package marmot.geom;
 
-import utils.StopWatch;
-import utils.func.FOption;
+import java.util.Optional;
 
-import common.SampleUtils;
+import utils.StopWatch;
+
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.remote.protobuf.PBMarmotClient;
+
+import common.SampleUtils;
 
 /**
  * 
@@ -25,7 +27,7 @@ public class SampleArcDefineProjection {
 		
 		DataSet ds = marmot.getDataSet(INPUT);
 		GeometryColumnInfo gcInfo = new GeometryColumnInfo(ds.getGeometryColumn(), "EPSG:5179");
-		DataSet result = ds.updateGeometryColumnInfo(FOption.of(gcInfo));
+		DataSet result = ds.updateGeometryColumnInfo(Optional.of(gcInfo));
 		System.out.printf("elapsed=%s%n", watch.getElapsedMillisString());
 		
 		// 결과에 포함된 일부 레코드를 읽어 화면에 출력시킨다.

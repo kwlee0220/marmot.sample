@@ -7,7 +7,6 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import common.SampleUtils;
 import marmot.command.MarmotClientCommands;
 import marmot.dataset.DataSet;
 import marmot.dataset.GeometryColumnInfo;
@@ -15,6 +14,8 @@ import marmot.geo.GeoClientUtils;
 import marmot.remote.protobuf.PBMarmotClient;
 import marmot.support.DefaultRecord;
 import marmot.type.DataType;
+
+import common.SampleUtils;
 
 /**
  * 
@@ -42,7 +43,7 @@ public class SampleCreateDataSet {
 							ds.getBlockSize(),
 							ds.getCompressionCodecName()
 								.map(name -> ", compression=" + name)
-								.getOrElse(""));
+								.orElse(""));
 		
 		ds = marmot.createDataSet("tmp/result", schema, FORCE.blockSize(64)
 															.compressionCodecName("snappy"));
@@ -50,7 +51,7 @@ public class SampleCreateDataSet {
 							ds.getBlockSize(),
 							ds.getCompressionCodecName()
 								.map(name -> ", compression=" + name)
-								.getOrElse(""));
+								.orElse(""));
 		
 		// 생성할 데이터세트에 저장될 레코드들의 리스트를 생성.
 		List<Record> recordList = Lists.newArrayList();
@@ -85,7 +86,7 @@ public class SampleCreateDataSet {
 							ds.getGeometryColumnInfo(), ds.getBlockSize(),
 							ds.getCompressionCodecName()
 								.map(name -> ", compression=" + name)
-								.getOrElse(""));
+								.orElse(""));
 		ds.append(rset);
 		
 		ds = marmot.getDataSet("tmp/result2");
