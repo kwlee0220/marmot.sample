@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 
-import utils.Utilities;
+import utils.Preconditions;
 import utils.stream.FStream;
 
 import marmot.Plan;
@@ -47,8 +47,8 @@ public class SampleSimpleAnalysis {
 		CompositeAnalysis composite;
 		
 		anal = marmot.getAnalysis("test1");
-		Utilities.checkState(anal.getId().equals("test1"));
-		Utilities.checkState(anal.getType() == Type.PLAN);
+		Preconditions.checkState(anal.getId().equals("test1"));
+		Preconditions.checkState(anal.getType() == Type.PLAN);
 		
 		Map<String,String> margs = Maps.newHashMap();
 		margs.put("arg1", "value1");
@@ -57,23 +57,23 @@ public class SampleSimpleAnalysis {
 		ModuleAnalysis test2 = new ModuleAnalysis("test2", "normalize", margs);
 		marmot.addAnalysis(test2, true);
 		module = (ModuleAnalysis)marmot.getAnalysis("test2");
-		Utilities.checkState(module.getId().equals("test2"));
-		Utilities.checkState(module.getType() == Type.MODULE);
+		Preconditions.checkState(module.getId().equals("test2"));
+		Preconditions.checkState(module.getType() == Type.MODULE);
 		margs = module.getArguments();
-		Utilities.checkState(margs.get("arg2").equals("value2"));
+		Preconditions.checkState(margs.get("arg2").equals("value2"));
 		
 		CompositeAnalysis test5 = new CompositeAnalysis("test5", "test1", "test2");
 		marmot.addAnalysis(test5, true);
 		composite = (CompositeAnalysis)marmot.getAnalysis("test5");
-		Utilities.checkState(composite.getId().equals("test5"));
-		Utilities.checkState(composite.getComponents().size() == 2);
-		Utilities.checkState(composite.getComponents().contains("test1"));
-		Utilities.checkState(composite.getComponents().contains("test2"));
+		Preconditions.checkState(composite.getId().equals("test5"));
+		Preconditions.checkState(composite.getComponents().size() == 2);
+		Preconditions.checkState(composite.getComponents().contains("test1"));
+		Preconditions.checkState(composite.getComponents().contains("test2"));
 		
 		List<String> idList = FStream.from(marmot.getDescendantAnalysisAll("test5"))
 											.map(MarmotAnalysis::getId).toList();
-		Utilities.checkState(idList.contains("test1"));
-		Utilities.checkState(idList.contains("test2"));
+		Preconditions.checkState(idList.contains("test1"));
+		Preconditions.checkState(idList.contains("test2"));
 		
 		marmot.deleteAnalysis("test5", false);
 		anal = marmot.getAnalysis("test1");
@@ -81,8 +81,8 @@ public class SampleSimpleAnalysis {
 		marmot.addAnalysis(test5, true);
 		
 		marmot.deleteAnalysis("test5", true);
-		Utilities.checkState(marmot.findAnalysis("test1") == null);
-		Utilities.checkState(marmot.findAnalysis("test2") == null);
+		Preconditions.checkState(marmot.findAnalysis("test1") == null);
+		Preconditions.checkState(marmot.findAnalysis("test2") == null);
 		
 		boolean failed = false;
 		try {
@@ -91,7 +91,7 @@ public class SampleSimpleAnalysis {
 		catch ( AnalysisNotFoundException expected ) {
 			failed = true;
 		}
-		Utilities.checkState(failed);
+		Preconditions.checkState(failed);
 
 		marmot.addAnalysis(test1, true);
 		marmot.addAnalysis(test2, true);
@@ -103,40 +103,40 @@ public class SampleSimpleAnalysis {
 		CompositeAnalysis test6 = new CompositeAnalysis("test6", "test5", "test3");
 		marmot.addAnalysis(test6, true);
 		anal = marmot.findParentAnalysis("test1");
-		Utilities.checkState(anal.getId().equals("test5"));
+		Preconditions.checkState(anal.getId().equals("test5"));
 		anal = marmot.findParentAnalysis("test5");
-		Utilities.checkState(anal.getId().equals("test6"));
+		Preconditions.checkState(anal.getId().equals("test6"));
 		
 		idList = FStream.from(marmot.getDescendantAnalysisAll("test6"))
 						.map(MarmotAnalysis::getId).toList();
-		Utilities.checkState(idList.contains("test1"));
-		Utilities.checkState(idList.contains("test2"));
-		Utilities.checkState(idList.contains("test3"));
-		Utilities.checkState(idList.contains("test5"));
+		Preconditions.checkState(idList.contains("test1"));
+		Preconditions.checkState(idList.contains("test2"));
+		Preconditions.checkState(idList.contains("test3"));
+		Preconditions.checkState(idList.contains("test5"));
 		
 		idList = FStream.from(marmot.getAncestorAnalysisAll("test2"))
 						.map(MarmotAnalysis::getId).toList();
-		Utilities.checkState(idList.contains("test5"));
-		Utilities.checkState(idList.contains("test6"));
+		Preconditions.checkState(idList.contains("test5"));
+		Preconditions.checkState(idList.contains("test6"));
 		
 		idList = FStream.from(marmot.getAncestorAnalysisAll("test1"))
 						.map(CompositeAnalysis::getId)
 						.toList();
-		Utilities.checkState(idList.size() == 2);
-		Utilities.checkState(idList.contains("test5"));
-		Utilities.checkState(idList.contains("test6"));
+		Preconditions.checkState(idList.size() == 2);
+		Preconditions.checkState(idList.contains("test5"));
+		Preconditions.checkState(idList.contains("test6"));
 
 		idList = FStream.from(marmot.getAncestorAnalysisAll("test3"))
 						.map(CompositeAnalysis::getId)
 						.toList();
-		Utilities.checkState(idList.size() == 1);
-		Utilities.checkState(idList.contains("test6"));
+		Preconditions.checkState(idList.size() == 1);
+		Preconditions.checkState(idList.contains("test6"));
 		
 		marmot.deleteAnalysis("test6", true);
-		Utilities.checkState(marmot.findAnalysis("test1") == null);
-		Utilities.checkState(marmot.findAnalysis("test2") == null);
-		Utilities.checkState(marmot.findAnalysis("test3") == null);
-		Utilities.checkState(marmot.findAnalysis("test5") == null);
-		Utilities.checkState(marmot.findAnalysis("test6") == null);
+		Preconditions.checkState(marmot.findAnalysis("test1") == null);
+		Preconditions.checkState(marmot.findAnalysis("test2") == null);
+		Preconditions.checkState(marmot.findAnalysis("test3") == null);
+		Preconditions.checkState(marmot.findAnalysis("test5") == null);
+		Preconditions.checkState(marmot.findAnalysis("test6") == null);
 	}
 }

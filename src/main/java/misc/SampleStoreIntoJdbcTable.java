@@ -22,8 +22,12 @@ public class SampleStoreIntoJdbcTable {
 		// 원격 MarmotServer에 접속.
 		PBMarmotClient marmot = MarmotClientCommands.connect();
 		
-		JdbcProcessor jdbc = new JdbcProcessor("jdbc:postgresql://129.254.82.95:5433/sbdata",
-												"sbdata", "urc2004", "org.postgresql.Driver");
+		JdbcProcessor jdbc = JdbcProcessor.builder()
+											.jdbcUrl("jdbc:postgresql://129.254.82.95:5433/sbdata")
+											.user("sbdata")
+											.password("urc2004")
+											.driverClassName("org.postgresql.Driver")
+											.build();
 		
 		DatabaseMetaData meta = jdbc.connect().getMetaData();
 		

@@ -4,7 +4,7 @@ import static marmot.optor.StoreDataSetOptions.FORCE;
 
 import java.util.concurrent.TimeUnit;
 
-import utils.Utilities;
+import utils.Preconditions;
 
 import marmot.Plan;
 import marmot.command.MarmotClientCommands;
@@ -43,13 +43,13 @@ public class SampleRegisterPlanAnalytics {
 		marmot.deleteAnalysis(ANA_ID, true);
 		
 		PlanAnalysis analytics = new PlanAnalysis(ANA_ID, plan);
-		Utilities.checkState(analytics.getId().equals(ANA_ID));
-		Utilities.checkState(analytics.getType() == Type.PLAN);
+		Preconditions.checkState(analytics.getId().equals(ANA_ID));
+		Preconditions.checkState(analytics.getType() == Type.PLAN);
 		marmot.addAnalysis(analytics, true);
 		
 		MarmotAnalysis analytics2 = marmot.getAnalysis(ANA_ID);
-		Utilities.checkState(analytics2.getId().equals(ANA_ID));
-		Utilities.checkState(analytics2.getType() == Type.PLAN);
+		Preconditions.checkState(analytics2.getId().equals(ANA_ID));
+		Preconditions.checkState(analytics2.getType() == Type.PLAN);
 		
 		MarmotExecution exec = marmot.startAnalysis(analytics2);
 		System.out.println(exec.getState());

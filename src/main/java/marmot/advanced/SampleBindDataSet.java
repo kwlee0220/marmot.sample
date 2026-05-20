@@ -1,8 +1,7 @@
 package marmot.advanced;
 
-import utils.Utilities;
+import utils.Preconditions;
 
-import common.SampleUtils;
 import marmot.BindDataSetOptions;
 import marmot.Plan;
 import marmot.RecordSet;
@@ -12,6 +11,8 @@ import marmot.dataset.DataSetType;
 import marmot.dataset.GeometryColumnInfo;
 import marmot.io.MarmotFileNotFoundException;
 import marmot.remote.protobuf.PBMarmotClient;
+
+import common.SampleUtils;
 
 /**
  * 
@@ -42,7 +43,7 @@ public class SampleBindDataSet {
 		
 		DataSet result;
 		result = marmot.getDataSetOrNull(RESULT);
-		Utilities.checkState(result == null, "result should be null");
+		Preconditions.checkState(result == null, "result should be null");
 		
 		result = marmot.bindExternalDataSet(RESULT, RESULT, DataSetType.FILE,
 											BindDataSetOptions.DEFAULT(gcInfo));
